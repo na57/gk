@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>力学总复习讲解 · 牛顿定律 · 能量 · 动量</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: { fontCache: 'global', scale: 1.05 },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+<style>
+  :root{
+    --primary:#1a365d; --accent:#2b6cb0; --accent-light:#ebf8ff; --accent-border:#bee3f8;
+    --text:#2d3748; --muted:#718096; --border:#e2e8f0; --bg-light:#f7fafc;
+    --success:#38a169; --danger:#e53e3e; --warning:#dd6b20; --warn-bg:#fffaf0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;height:100%;overflow:hidden;background:#0f172a;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei",sans-serif;
+    color:var(--text);
+  }
+  #stage{
+    position:absolute; left:50%; top:50%;
+    width:1280px; height:720px;
+    transform:translate(-50%,-50%) scale(1);
+    transform-origin:center center;
+    background:#ffffff;
+    box-shadow:0 0 40px rgba(0,0,0,.4);
+    overflow:hidden;
+  }
+  .slide{
+    position:absolute; inset:0;
+    padding:36px 60px 52px;
+    display:none;
+    flex-direction:column;
+    background:#ffffff;
+    opacity:0;
+    transition:opacity .35s ease;
+  }
+  .slide.active{ display:flex; opacity:1; }
+
+  #progress{ position:absolute; top:0; left:0; height:6px; background:var(--accent); width:0; z-index:50; transition:width .35s; }
+
+  .slide-cover, .slide-divider{ justify-content:center; align-items:center; text-align:center; }
+  .slide-cover{ background:linear-gradient(135deg,#1a365d 0%,#2b6cb0 100%); color:#fff; }
+  .slide-cover .kicker{ font-size:22px; letter-spacing:6px; opacity:.85; margin-bottom:18px;}
+  .slide-cover h1{ font-size:64px; font-weight:800; line-height:1.2; margin-bottom:22px; letter-spacing:2px;}
+  .slide-cover .sub{ font-size:26px; opacity:.92; margin-bottom:36px;}
+  .slide-cover .meta{ font-size:18px; opacity:.8; line-height:2;}
+  .slide-cover .divider{ width:160px;height:5px;background:#fff;opacity:.6;margin:0 auto 30px;border-radius:3px;}
+
+  .slide-divider{ background:linear-gradient(135deg,#2b6cb0 0%,#1a365d 100%); color:#fff;}
+  .slide-divider .num{ font-size:30px; opacity:.7; letter-spacing:4px; margin-bottom:10px;}
+  .slide-divider h2{ font-size:54px; font-weight:800; letter-spacing:3px;}
+  .slide-divider .en{ font-size:20px; opacity:.8; margin-top:16px; letter-spacing:2px;}
+
+  .slide-head{ display:flex; align-items:baseline; gap:16px; border-bottom:3px solid var(--accent); padding-bottom:9px; margin-bottom:12px;}
+  .slide-head .sec{ font-size:17px; color:var(--accent); font-weight:700; background:var(--accent-light); padding:3px 11px; border-radius:6px;}
+  .slide-head h3{ font-size:30px; color:var(--primary); font-weight:700;}
+  .slide-body{ flex:1; display:flex; flex-direction:column; justify-content:center; min-height:0; }
+
+  p{ font-size:21px; line-height:1.65; margin-bottom:8px; text-align:justify;}
+  .lead{ font-size:23px; color:#374151; line-height:1.75;}
+  ul,ol{ margin:0 0 8px 26px; font-size:21px; line-height:1.7;}
+  li{ margin-bottom:5px;}
+  strong{ color:var(--primary); }
+
+  .formula{ background:var(--accent-light); border-left:5px solid var(--accent); border-radius:0 10px 10px 0; padding:9px 22px; margin:9px 0; text-align:center; font-size:23px;}
+  .formula-concl{ background:#fffaf0; border-left:5px solid var(--warning);}
+  .MathJax{ font-size:1.05em !important; }
+  mjx-container[display="true"]{ margin:6px 0 !important; }
+
+  table{ width:100%; border-collapse:collapse; margin:10px 0; font-size:20px;}
+  th{ background:var(--accent); color:#fff; padding:9px 12px; text-align:center; font-weight:600;}
+  td{ padding:8px 12px; border:1px solid var(--border); text-align:center; vertical-align:middle;}
+  tr:nth-child(even) td{ background:var(--bg-light);}
+  td.l{ text-align:left; }
+  table.small{ font-size:17px; }
+  table.small td, table.small th{ padding:6px 10px; }
+
+  .card{ background:var(--accent-light); border:1px solid var(--accent-border); border-radius:12px; padding:12px 20px; margin:10px 0;}
+  .tip{ background:#ebf8ff; border-left:5px solid var(--accent); border-radius:0 10px 10px 0; padding:10px 20px; margin:10px 0; font-size:20px; color:#2c5282;}
+  .deep{ background:#f0fff4; border-left:5px solid var(--success); border-radius:0 10px 10px 0; padding:10px 20px; margin:10px 0; font-size:20px; color:#22543d;}
+  .warn{ background:var(--warn-bg); border-left:5px solid var(--warning); border-radius:0 10px 10px 0; padding:10px 20px; margin:10px 0; font-size:20px; color:#744210;}
+
+  .pause{
+    background:var(--warn-bg); border:2px dashed var(--warning); border-radius:14px;
+    padding:12px 22px; margin:12px 0; display:flex; align-items:center; gap:16px;
+    box-shadow:0 4px 14px rgba(221,107,32,.12);
+  }
+  .pause .icon{ font-size:38px; line-height:1; }
+  .pause .txt b{ color:var(--warning); font-size:22px; }
+  .pause .txt p{ font-size:19px; color:#744210; margin:3px 0 0; }
+
+  .think{ background:#faf5ff; border:2px solid #9f7aea; border-radius:14px; padding:12px 20px; margin:12px 0; display:flex; gap:14px; align-items:flex-start;}
+  .think .icon{ font-size:32px; }
+  .think .txt b{ color:#6b46c1; font-size:21px;}
+  .think .txt p{ font-size:19px; color:#44337a; margin:3px 0 0;}
+
+  .cols{ display:flex; gap:28px; align-items:stretch; }
+  .col{ flex:1; }
+
+  /* 知识地图 */
+  .map{ margin:4px 0; padding:18px; background:var(--bg-light); border:1px solid var(--border); border-radius:12px; }
+  .map .row{ display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin:7px 0; }
+  .map .node{ background:var(--accent); color:#fff; padding:8px 18px; border-radius:8px; font-weight:600; font-size:19px; text-align:center; line-height:1.4;}
+  .map .node small{ font-weight:400; opacity:.85; font-size:15px;}
+  .map .node.root{ background:var(--primary); font-size:24px; padding:12px 34px;}
+  .map .node.view{ background:#d69e2e; }
+  .map .arrow{ text-align:center; color:var(--muted); font-size:20px; line-height:1.1; }
+
+  #footer{ position:absolute; bottom:0; left:0; right:0; height:40px; display:flex; align-items:center; justify-content:space-between; padding:0 30px; font-size:15px; color:#94a3b8; background:rgba(247,250,252,.85); border-top:1px solid var(--border); z-index:40;}
+  #footer .brand{ font-weight:600; color:var(--accent); }
+
+  .nav{ position:absolute; bottom:48px; right:40px; display:flex; gap:12px; z-index:45;}
+  .nav button{ width:54px; height:54px; border-radius:50%; border:none; background:var(--accent); color:#fff; font-size:24px; cursor:pointer; box-shadow:0 3px 10px rgba(43,108,176,.4); display:flex; align-items:center; justify-content:center;}
+  .nav button:hover{ background:var(--primary); }
+  .nav button:disabled{ background:#cbd5e0; cursor:default; box-shadow:none;}
+
+  #hint{ position:absolute; bottom:48px; left:40px; font-size:14px; color:#94a3b8; z-index:45;}
+
+  .stars{ color:#d69e2e; letter-spacing:2px; }
+
+  body.autohide #progress, body.autohide #footer, body.autohide .nav, body.autohide #hint{ display:none !important; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <div id="progress"></div>
+
+  <!-- 0 封面 -->
+  <section class="slide slide-cover active" data-narration="同学们好，欢迎来到力学总复习。力学占高考物理约四十分，是所有模块里最重要的一块，也是电磁学的地基。这一讲我们把力学六大板块——运动学、相互作用与牛顿定律、曲线运动与万有引力、机械能、动量、振动与波——用三大解题观点串成一张网。准备好纸和笔，遇到推导请暂停，亲手算一遍。">
+    <div class="kicker">高 中 物 理 · 力 学 模 块</div>
+    <h1>力学总复习讲解</h1>
+    <div class="sub">三大观点 · 六大板块 · 核心推导 · 经典模型</div>
+    <div class="divider"></div>
+    <div class="meta">
+      依据《高考物理 95+ 分备考指南》力学模块要求<br>
+      高一同步巩固 · 高考一轮复习通用
+    </div>
+  </section>
+
+  <!-- 1 学习目标 -->
+  <section class="slide" data-narration="先说清楚这一讲的目标。第一，建立力学的整体框架，知道六大板块各管什么、互相怎么联系。第二，把十六个必推公式全部过一遍，达到合上书能独立推导的水平。第三，把连接体、传送带、板块、绳杆模型、卫星、双星、子弹打木块这些经典模型形成条件反射。第四，也是最重要的——学会用力的观点、能量观点、动量观点这三条路径去拆任何一道力学题。">
+    <div class="slide-head"><span class="sec">导学</span><h3>本节复习目标</h3></div>
+    <div class="slide-body">
+      <ul>
+        <li><strong>框架成型</strong>：力学六大板块 + 三大解题观点，串成一张知识网</li>
+        <li><strong>推导过关</strong>：16 个必推公式，合上书能独立推导、讲清物理意义</li>
+        <li><strong>模型反射</strong>：连接体、传送带、板块、绳杆、卫星、双星、碰撞、弹簧模型形成条件反射</li>
+        <li><strong>路径会选</strong>：见到题目能秒选"力 / 能量 / 动量"中的最优观点</li>
+      </ul>
+      <div class="deep">💡 力学是高中物理的"操作系统"——电磁学里带电粒子和导体棒的运动，跑的都是力学这套系统。</div>
+    </div>
+  </section>
+
+  <!-- 2 知识地图 -->
+  <section class="slide" data-narration="先看全局。力学有六大板块：运动学是语言，相互作用与牛顿定律是核心，曲线运动和万有引力是应用，机械能和动量是升华，振动与波是特殊运动形式。而这六大板块下面，压着三大解题观点：力的观点、能量观点、动量观点。任何一道力学题，本质都是从这三条路径里选一条或多条来解。高手和普通学生的差别，就在于会不会选路。">
+    <div class="slide-head"><span class="sec">总览</span><h3>力学知识地图：六大板块 × 三大观点</h3></div>
+    <div class="slide-body">
+      <div class="map">
+        <div class="row"><div class="node root">力 学（约 40 分 · 重中之重）</div></div>
+        <div class="arrow">⬇</div>
+        <div class="row">
+          <div class="node">运动学<br><small>3.1 语言</small></div>
+          <div class="node">相互作用·牛顿定律<br><small>3.2 核心</small></div>
+          <div class="node">曲线运动·万有引力<br><small>3.3 应用</small></div>
+        </div>
+        <div class="row">
+          <div class="node">机械能<br><small>3.4 升华</small></div>
+          <div class="node">动量<br><small>3.5 升华</small></div>
+          <div class="node">振动与波<br><small>3.6 特例</small></div>
+        </div>
+        <div class="arrow">⬇ 解题的三条路径 ⬇</div>
+        <div class="row">
+          <div class="node view">力的观点<br><small>F = ma</small></div>
+          <div class="node view">能量观点<br><small>W = ΔE</small></div>
+          <div class="node view">动量观点<br><small>I = Δp</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 模块一 分隔 -->
+  <section class="slide slide-divider" data-narration="第一部分，运动学精要。运动学是描述运动的语言，详细的推导有专门的材料，这里我们只把必须张口就来的核心结论过一遍，做到零失误。">
+    <div class="num">模 块 一</div>
+    <h2>运动学精要</h2>
+    <div class="en">3.1 运动的描述与匀变速直线运动</div>
+  </section>
+
+  <!-- 4 运动学公式卡 -->
+  <section class="slide" data-narration="三个基本公式，三个推论，这是运动学的全部家底。选用原则一句话：哪个公式含的已知量最多、未知量最少，就先写哪个。特别注意速度位移公式不含时间，刹车问题、追及问题里最常用。推论一用来从纸带求瞬时速度，推论三逐差公式用来从纸带求加速度。">
+    <div class="slide-head"><span class="sec">3.1</span><h3>三个基本公式 + 三个推论</h3></div>
+    <div class="slide-body">
+      <table>
+        <thead><tr><th>类别</th><th>公式</th><th>选用场景</th></tr></thead>
+        <tbody>
+          <tr><td>基本</td><td>$v = v_0 + at$</td><td class="l">含 $v, v_0, a, t$（不含 $x$）</td></tr>
+          <tr><td>基本</td><td>$x = v_0 t + \frac{1}{2}at^2$</td><td class="l">含 $x, v_0, a, t$（不含 $v$）</td></tr>
+          <tr><td>基本</td><td>$v^2 - v_0^2 = 2ax$</td><td class="l">含 $v, v_0, a, x$（不含 $t$，最常用）</td></tr>
+          <tr><td>推论</td><td>$\bar{v} = v_{t/2} = \frac{v_0+v}{2}$</td><td class="l">纸带求瞬时速度</td></tr>
+          <tr><td>推论</td><td>$v_{x/2} = \sqrt{\frac{v_0^2+v^2}{2}}$</td><td class="l">中间位置速度（恒大于中间时刻速度）</td></tr>
+          <tr><td>推论</td><td>$\Delta x = aT^2$；$x_m - x_n = (m-n)aT^2$</td><td class="l">逐差法求加速度</td></tr>
+        </tbody>
+      </table>
+      <div class="tip">选用原则：哪个公式含的<strong>已知量最多、未知量最少</strong>，就先用哪个</div>
+    </div>
+  </section>
+
+  <!-- 5 图象与追及相遇 -->
+  <section class="slide" data-narration="图象和追及相遇是运动学的两个高频考点。图象题的铁律是先看坐标轴：x-t 图斜率是速度，v-t 图斜率是加速度、面积是位移。v-t 图的交点只表示速度相等，不是相遇！追及相遇的临界条件永远是：两物体速度相等时，间距取极值。刹车问题一定先算刹车时间，这是年年都有人掉进去的坑。">
+    <div class="slide-head"><span class="sec">3.1</span><h3>图象与追及相遇 · 三句话</h3></div>
+    <div class="slide-body">
+      <ul>
+        <li><strong>x-t 图</strong>：斜率 = 速度，交点 = 相遇，<strong>面积无意义</strong></li>
+        <li><strong>v-t 图</strong>：斜率 = 加速度，面积 = 位移；交点 = 速度相等（<strong>不是相遇！</strong>）</li>
+        <li><strong>追及相遇临界条件</strong>：两物体<strong>速度相等</strong>时，间距取极值——此时判断能否追上/相撞</li>
+        <li><strong>刹车问题</strong>：先算刹车时间 $t_0 = \dfrac{v_0}{a}$，超时按 $t_0$ 算（末速度为零，可逆看）</li>
+      </ul>
+      <div class="warn">⚠️ 运动学是全卷的基础工具，必须零失误。不熟就回到 3.1 专门材料重新推导。</div>
+    </div>
+  </section>
+
+  <!-- 6 模块二 分隔 -->
+  <section class="slide slide-divider" data-narration="第二部分，相互作用与牛顿运动定律。受力分析是物理的第一基本功，传送带、板块这些经典模型要形成条件反射。这一模块我们重点解决四个问题：三种力怎么判断、受力分析怎么画、牛顿第二定律怎么用、四大模型怎么套。">
+    <div class="num">模 块 二</div>
+    <h2>相互作用与牛顿运动定律</h2>
+    <div class="en">3.2 力 · 受力分析 · 牛顿三定律 · 四大模型</div>
+  </section>
+
+  <!-- 7 三种常见力 -->
+  <section class="slide" data-narration="三种常见力。重力注意两个细节：它不等于万有引力，只是万有引力的一个分力；方向是竖直向下，不一定指向地心。弹力的产生条件是接触加弹性形变，缺一不可。绳只能拉不能推，弹簧可拉可压，轻杆可拉可推可侧向——活杆的力沿杆，死杆的力不一定沿杆。判断有没有弹力，用假设法：假设撤走接触面，看运动状态变不变。">
+    <div class="slide-head"><span class="sec">3.2</span><h3>三种常见力：重力 · 弹力</h3></div>
+    <div class="slide-body">
+      <ul>
+        <li><strong>重力</strong>：$G = mg$，竖直向下（≠ 指向地心）；重力是万有引力的一个分力</li>
+        <li><strong>弹力产生条件</strong>：① 直接接触　② 弹性形变（缺一不可）</li>
+        <li><strong>方向</strong>：垂直接触面；绳——只能<strong>拉</strong>；弹簧——可拉可压 $F=kx$；<strong>活杆力沿杆，死杆不一定沿杆</strong></li>
+        <li><strong>有无弹力的判断</strong>：<strong>假设法</strong>——撤去接触面，运动状态不变则无弹力</li>
+      </ul>
+      <div class="think"><div class="icon">🤔</div><div class="txt"><b>想一想</b><p>光滑球夹在竖直墙与斜面之间，墙对球有弹力吗？斜面呢？用假设法验证你的答案。</p></div></div>
+    </div>
+  </section>
+
+  <!-- 8 摩擦力四大误解 -->
+  <section class="slide" data-narration="摩擦力是全章第一易错点，四个误解必须破除。第一，摩擦力不总是阻力——人走路时地面的静摩擦力就是动力。第二，运动的物体也可能受静摩擦力——比如随传送带一起匀速斜向上运动的物体。第三，摩擦力方向与相对运动或相对运动趋势方向相反，可以与运动方向相同。第四，有摩擦力一定有弹力，但有弹力不一定有摩擦力。另外记住：静摩擦力大小是被动的，要靠平衡条件或牛顿定律求解；滑动摩擦力才是 f 等于 μ 乘以正压力，而正压力不一定是重力。">
+    <div class="slide-head"><span class="sec">3.2</span><h3>摩擦力：四大误解一次破除</h3></div>
+    <div class="slide-body">
+      <ul>
+        <li>❌ "摩擦力总是阻力" → ✅ 走路时静摩擦力是<strong>动力</strong>；传送带上也可作动力</li>
+        <li>❌ "静止物体才受静摩擦力" → ✅ 运动的物体也可能受静摩擦力（随带匀速斜向上）</li>
+        <li>❌ "摩擦力与运动方向相反" → ✅ 与<strong>相对运动（趋势）</strong>方向相反，可与运动同向</li>
+        <li>❌ "有弹力就有摩擦力" → ✅ 有摩擦力必有弹力，反之不一定</li>
+      </ul>
+      <div class="warn">大小：静摩擦 $0&lt;f\le f_{\max}$ <strong>被动求解</strong>；滑动摩擦 $f=\mu F_N$，$F_N$ <strong>不一定等于 mg</strong></div>
+    </div>
+  </section>
+
+  <!-- 9 受力分析 -->
+  <section class="slide" data-narration="受力分析四步法：定对象、画场力、找接触、核状态。绕物体一周，每处接触先问有没有弹力，再问有没有摩擦力，最后一定要对照运动状态检查——受力和加速度对不上的话，一定是多画或漏画了。整体法与隔离法的黄金策略是：先整体求加速度，再隔离求内力。整体时系统内力成对抵消，不出现在方程里。">
+    <div class="slide-head"><span class="sec">3.2</span><h3>受力分析：四步法 + 整体与隔离</h3></div>
+    <div class="slide-body">
+      <div class="cols">
+        <div class="col">
+          <p><strong>四步法</strong></p>
+          <ol>
+            <li><strong>定对象</strong>：隔离出研究对象</li>
+            <li><strong>画场力</strong>：先画重力</li>
+            <li><strong>找接触</strong>：每处接触先弹力后摩擦</li>
+            <li><strong>核状态</strong>：受力与加速度必须一致</li>
+          </ol>
+        </div>
+        <div class="col">
+          <p><strong>整体法 vs 隔离法</strong></p>
+          <ul>
+            <li>求外力、求系统加速度 → <strong>整体法</strong>（内力抵消）</li>
+            <li>求物体间内力 → <strong>隔离法</strong>（隔离受力少的）</li>
+            <li>黄金策略：<strong>整体定 a，隔离求 F</strong></li>
+          </ul>
+        </div>
+      </div>
+      <div class="tip">正交分解建轴原则：沿加速度方向建 x 轴，垂直方向方程退化为平衡方程</div>
+    </div>
+  </section>
+
+  <!-- 10 牛顿第二定律与瞬时性 -->
+  <section class="slide" data-narration="牛顿三定律，核心是第二定律 F 合等于 m a。记住它的五性：因果性、矢量性、瞬时性、独立性、同体性。瞬时性是高频考点：刚性绳、轻杆、接触面的弹力可以突变；弹簧和橡皮筋的弹力不能突变——剪断瞬间，弹簧弹力保持原值。解题三步：突变前各力是什么，突变瞬间哪些变哪些不变，用新力求瞬时加速度。第三定律要和平衡力区分开：作用力反作用力作用在两个物体上、性质相同、同时产生同时消失；平衡力作用在同一物体上。">
+    <div class="slide-head"><span class="sec">3.2</span><h3>牛顿第二定律：五性与瞬时性</h3></div>
+    <div class="slide-body">
+      <div class="formula formula-concl">$$F_合 = ma \quad\Rightarrow\quad \text{力是产生加速度的原因}$$</div>
+      <p><strong>五性</strong>：因果性 · 矢量性（$a$ 与 $F_合$ 同向）· <strong>瞬时性</strong> · 独立性 · 同体性</p>
+      <div class="cols">
+        <div class="col"><div class="card">🔩 <strong>刚性绳 / 杆 / 接触面</strong><br>弹力<strong>可以突变</strong>（瞬间改变）</div></div>
+        <div class="col"><div class="card">🌀 <strong>弹簧 / 橡皮筋</strong><br>弹力<strong>不能突变</strong>（剪断瞬间保持原值）</div></div>
+      </div>
+      <div class="tip">瞬时性问题三步：① 突变前各力　② 判断哪些变、哪些不变　③ 用新力求瞬时 a</div>
+    </div>
+  </section>
+
+  <!-- 11 作用力反作用力 vs 平衡力 -->
+  <section class="slide" data-narration="作用力和反作用力与一对平衡力，是每年必考的辨析。记住口诀：作用力反作用力——等大、反向、共线、异物、同性、同时。最关键的区分是看受力物体：作用在两个物体上的是作用力反作用力，作用在同一个物体上的是平衡力。马能拉动车，不是因为马拉车的力大于车拉马的力——这对力永远相等——而是因为马的牵引力大于车受到的阻力。">
+    <div class="slide-head"><span class="sec">3.2</span><h3>作用力与反作用力 vs 一对平衡力</h3></div>
+    <div class="slide-body">
+      <table>
+        <thead><tr><th>对比项</th><th>作用力与反作用力</th><th>一对平衡力</th></tr></thead>
+        <tbody>
+          <tr><td class="l">作用对象</td><td class="l"><strong>两个</strong>物体（异物）</td><td class="l"><strong>同一</strong>物体</td></tr>
+          <tr><td class="l">力的性质</td><td class="l">一定相同</td><td class="l">不一定相同</td></tr>
+          <tr><td class="l">同时性</td><td class="l">同时产生、变化、消失</td><td class="l">无必然关系</td></tr>
+          <tr><td class="l">效果</td><td class="l">不能求合力（不共体）</td><td class="l">相互抵消，合力为零</td></tr>
+        </tbody>
+      </table>
+      <div class="deep">口诀：等大 · 反向 · 共线 · <strong>异物</strong> · <strong>同性</strong> · <strong>同时</strong>——"异物"是区分的钥匙</div>
+    </div>
+  </section>
+
+  <!-- 12 连接体推导 -->
+  <section class="slide" data-narration="现在做这一讲的第一个重要推导：连接体内力公式。请暂停，自己推一遍再继续。光滑水平面上，质量 m 一和 m 二的物体紧挨着，用力 F 推 m 一，求两物体间的作用力。第一步整体：F 等于 m 一加 m 二乘以 a，解出 a。第二步隔离 m 二：它只受推力 N，所以 N 等于 m 二乘 a，代入得 N 等于 m 二比上总质量乘以 F。这个结论可以推广：只要阻力和质量成正比——比如相同摩擦因数的粗糙面、斜面、竖直方向——内力公式形式不变。高考可以直接当结论用，但推导必须会。">
+    <div class="slide-head"><span class="sec">模型 1</span><h3>连接体：内力公式推导</h3></div>
+    <div class="slide-body">
+      <p>光滑水平面，$m_1$、$m_2$ 紧挨，水平力 $F$ 推 $m_1$，求两物体间作用力 $N$：</p>
+      <p><strong>① 整体</strong>（定 a）：$\quad F = (m_1+m_2)a \Rightarrow a = \dfrac{F}{m_1+m_2}$</p>
+      <p><strong>② 隔离 $m_2$</strong>（求 F）：$\quad N = m_2 a$</p>
+      <div class="formula formula-concl">$$\boldsymbol{N = \frac{m_2}{m_1+m_2}\,F} \quad\text{（被推动部分的质量占比 × 总外力）}$$</div>
+      <div class="deep">推广：阻力与质量成正比时（同 μ 粗糙面 / 斜面 / 竖直），内力公式<strong>形式不变</strong>——可直接用，推导要会</div>
+      <div class="pause"><div class="icon">✍️</div><div class="txt"><b>暂停推导</b><p>合上书，把"整体定 a，隔离求 F"完整推一遍，再把 F 换成作用在 m₂ 上重新推。</p></div></div>
+    </div>
+  </section>
+
+  <!-- 13 传送带 + 板块 -->
+  <section class="slide" data-narration="传送带和板块是牛顿定律应用的两大经典。传送带的思维定势是三问：物块放上去瞬间相对传送带向哪滑——定摩擦力方向；能不能加速到共速——比较加速位移和带长；共速后能不能保持相对静止——倾斜传送带上要看 μ 是否大于等于 tan θ。板块模型的关键是：临界条件是两者加速度相等，此时摩擦力达到最大静摩擦；相对滑动时相对加速度等于两者加速度之差；求不掉下来的条件就是相对位移不超过板长。最易错的点：板与地面间的正压力是 M 加 m 的 g，不是 M g。">
+    <div class="slide-head"><span class="sec">模型 2·3</span><h3>传送带 与 板块模型</h3></div>
+    <div class="slide-body">
+      <div class="cols">
+        <div class="col">
+          <p><strong>传送带三问</strong></p>
+          <ol>
+            <li>放上去瞬间<strong>相对</strong>带向哪滑？→ 定摩擦力方向</li>
+            <li>能否共速？→ 比较加速位移与带长</li>
+            <li>共速后能否保持？→ 斜带需 $\mu \ge \tan\theta$</li>
+          </ol>
+          <div class="tip">水平带轻放：$a = \mu g$；共速瞬间摩擦力突变</div>
+        </div>
+        <div class="col">
+          <p><strong>板块模型要点</strong></p>
+          <ol>
+            <li>分别求 $a_块$、$a_板$</li>
+            <li>临界：$a_块 = a_板$（最大静摩擦处）</li>
+            <li>相对加速度 $a_相 = a_块 - a_板$</li>
+            <li>"不掉下"：相对位移 ≤ 板长</li>
+          </ol>
+          <div class="warn">⚠️ 板—地间正压力 $= (M{+}m)g$，不是 $Mg$</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 超重失重 -->
+  <section class="slide" data-narration="超重与失重，先推导。电梯里的人，取向上为正，牛顿第二定律：N 减 m g 等于 m a，所以支持力 N 等于 m 乘括号 g 加 a。加速度向上——加速上升或减速下降——是超重；加速度向下是失重；a 等于负 g 时 N 等于零，完全失重，液体压强消失、天平失效。判断口诀一句话：看 a 不看 v——只看加速度方向，和速度方向无关。向上加速和向下减速，运动方向相反，但都是超重。">
+    <div class="slide-head"><span class="sec">模型 4</span><h3>超重与失重（推导视重公式）</h3></div>
+    <div class="slide-body">
+      <p>电梯中人受力：支持力 $N$、重力 $mg$。取向上为正，由牛顿第二定律：</p>
+      <div class="formula formula-concl">$$N - mg = ma \;\Rightarrow\; \boldsymbol{N = m(g+a)}$$</div>
+      <table>
+        <thead><tr><th>情形</th><th>加速度</th><th>视重</th></tr></thead>
+        <tbody>
+          <tr><td class="l">加速上升 / 减速下降</td><td>$a &gt; 0$</td><td>$N &gt; mg$ <strong>超重</strong></td></tr>
+          <tr><td class="l">减速上升 / 加速下降</td><td>$a &lt; 0$</td><td>$N &lt; mg$ <strong>失重</strong></td></tr>
+          <tr><td class="l">自由落体</td><td>$a = -g$</td><td>$N = 0$ <strong>完全失重</strong></td></tr>
+        </tbody>
+      </table>
+      <div class="deep">判据：<strong>看 a 不看 v</strong>——只看加速度方向，与速度方向无关</div>
+    </div>
+  </section>
+
+  <!-- 15 模块三 分隔 -->
+  <section class="slide slide-divider" data-narration="第三部分，曲线运动与万有引力。这一模块的核心方法只有一个：把曲线运动分解成分运动。平抛分解为水平匀速加竖直自由落体；圆周运动抓住谁提供向心力；天体运动抓住万有引力提供向心力这一条主线。双星模型和变轨问题都要会，不能只停留在基础题。">
+    <div class="num">模 块 三</div>
+    <h2>曲线运动与万有引力</h2>
+    <div class="en">3.3 合成分解 · 平抛 · 圆周 · 卫星 · 双星</div>
+  </section>
+
+  <!-- 16 曲线运动条件 + 小船渡河 -->
+  <section class="slide" data-narration="曲线运动的条件：合外力与速度不在一条直线上。轨迹一定夹在速度方向和力的方向之间，向力的一侧弯曲——力指凹侧。小船渡河两类最值：最短时间渡河，船头垂直对岸，时间等于河宽除以船速，与水速无关；最短位移渡河，船速大于水速时可以垂直到达，让船速的上游分量抵消水速。绳端速度分解只记一个原则：不可伸长的绳，两端沿绳方向的分速度相等，分解的一定是物体的实际速度。">
+    <div class="slide-head"><span class="sec">3.3</span><h3>曲线运动条件 + 两个经典模型</h3></div>
+    <div class="slide-body">
+      <ul>
+        <li><strong>曲线运动条件</strong>：$F_合$ 与 $v$ 不共线；轨迹向力一侧弯曲（<strong>力指凹侧</strong>）</li>
+        <li><strong>小船渡河</strong>：
+          <ul>
+            <li>最短时间：船头垂直对岸，$t_{\min} = \dfrac{d}{v_船}$（与水速无关）</li>
+            <li>最短位移（$v_船 &gt; v_水$）：合速度垂直对岸，$x_{\min} = d$，$\cos\theta = \dfrac{v_水}{v_船}$</li>
+          </ul>
+        </li>
+        <li><strong>绳端速度分解</strong>：绳两端<strong>沿绳方向分速度相等</strong>；分解的是物体的<strong>实际（合）速度</strong></li>
+      </ul>
+      <div class="tip">例：岸上拉绳速度 $v$，绳与水面夹角 $\theta$ → 船速 $v_船 = \dfrac{v}{\cos\theta}$（船比绳快）</div>
+    </div>
+  </section>
+
+  <!-- 17 平抛运动 -->
+  <section class="slide" data-narration="平抛运动，研究方法一句话：水平匀速加竖直自由落体。请暂停，自己推一遍轨迹方程。水平方向 x 等于 v 零 t，竖直方向 y 等于二分之一 g t 方，消去 t 得 y 等于 g 除以 2 v 零方乘以 x 方——抛物线。飞行时间只由高度决定，与初速度无关；水平射程等于 v 零乘以根号下 2 h 比 g。重要推论：速度偏角的正切等于位移偏角正切的两倍，几何意义是速度反向延长线过水平位移中点。把 g 换成 qE 比 m，平抛就变成带电粒子在电场中的类平抛——力学方法迁移到电磁学的第一座桥。">
+    <div class="slide-head"><span class="sec">3.3</span><h3>平抛运动：分解与推导</h3></div>
+    <div class="slide-body">
+      <p><strong>方法</strong>：水平匀速 $x = v_0 t$　＋　竖直自由落体 $y = \frac{1}{2}gt^2$</p>
+      <div class="formula">$$y = \frac{g}{2v_0^2}x^2 \quad\text{（抛物线）} \qquad t = \sqrt{\frac{2h}{g}}\ \text{（只由高度定）} \qquad x = v_0\sqrt{\frac{2h}{g}}$$</div>
+      <div class="formula formula-concl">$$\tan\alpha = \frac{gt}{v_0}, \quad \tan\theta = \frac{gt}{2v_0} \;\Rightarrow\; \boldsymbol{\tan\alpha = 2\tan\theta}$$</div>
+      <ul>
+        <li>几何意义：速度反向延长线过水平位移的<strong>中点</strong></li>
+        <li><strong>类平抛</strong>：电场中 $g \to \frac{qE}{m}$，结论形式不变</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 18 圆周运动 -->
+  <section class="slide" data-narration="圆周运动。各物理量关系：v 等于 ω r，向心加速度有四个等价形式。受力分析铁律：不许画向心力！向心力是效果力，正确问法是谁提供向心力。竖直面圆周的绳模型和杆模型必须对比记：绳只能拉，最高点临界是拉力为零，v 最小等于根号 g r；杆可拉可压，最高点速度可以为零。配套结论：恰好完成圆周运动时最低点速度是根号 5 g r——用动能定理从最高点到最低点推一遍，高度差是 2 r。">
+    <div class="slide-head"><span class="sec">3.3</span><h3>圆周运动：向心力与绳杆模型</h3></div>
+    <div class="slide-body">
+      <div class="formula">$$v = \omega r, \qquad F_n = m\frac{v^2}{r} = m\omega^2 r = m\frac{4\pi^2}{T^2}r$$</div>
+      <div class="warn">⚠️ 铁律：受力分析<strong>不画"向心力"</strong>——只问"哪些力提供向心力"</div>
+      <table>
+        <thead><tr><th></th><th>绳模型（内轨）</th><th>杆模型（管道）</th></tr></thead>
+        <tbody>
+          <tr><td class="l">最高点</td><td>$T + mg = m\frac{v^2}{r}$</td><td>$mg \pm N = m\frac{v^2}{r}$</td></tr>
+          <tr><td class="l">临界速度</td><td>$v_{\min} = \sqrt{gr}$（$T=0$）</td><td>$v_{\min} = 0$（杆可支撑）</td></tr>
+          <tr><td class="l">配套</td><td colspan="2">恰过最高点时最低点 $v_低 = \sqrt{5gr}$（动能定理：高度差 $2r$）</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 19 万有引力与卫星 -->
+  <section class="slide" data-narration="万有引力与航天。两个推导必须滚瓜烂熟。第一，黄金代换：地表忽略自转，重力等于万有引力，所以 G 大 M 等于 g R 方——题目给 g 和 R 而没给质量时，用它替换。第二，卫星规律：万有引力提供向心力，分别令它等于 m v 方比 r、m ω 方 r、m 4 π 方 r 比 T 方，解出 v 等于根号下 G M 比 r，ω 等于根号下 G M 比 r 三次方，T 等于 2 π 根号下 r 三次方比 G M。结论口诀：高轨低速长周期——轨道越高，越慢。注意前提：同一中心天体、圆轨道。">
+    <div class="slide-head"><span class="sec">3.3</span><h3>万有引力：黄金代换 + 卫星规律</h3></div>
+    <div class="slide-body">
+      <p><strong>推导一：黄金代换</strong>（地表重力 = 万有引力）</p>
+      <div class="formula formula-concl">$$mg = G\frac{Mm}{R^2} \;\Rightarrow\; \boldsymbol{GM = gR^2}$$</div>
+      <p><strong>推导二：卫星规律</strong>（万有引力 = 向心力）</p>
+      <div class="formula">$$G\frac{Mm}{r^2} = m\frac{v^2}{r} = m\omega^2 r = m\frac{4\pi^2}{T^2}r \;\Rightarrow\; v = \sqrt{\frac{GM}{r}},\ \omega = \sqrt{\frac{GM}{r^3}},\ T = 2\pi\sqrt{\frac{r^3}{GM}}$$</div>
+      <div class="deep">口诀：<strong>高轨低速长周期</strong>（r 越大，v、ω、a 越小，T 越大）——前提：同一中心天体、圆轨道</div>
+    </div>
+  </section>
+
+  <!-- 20 宇宙速度 + 变轨 + 双星 -->
+  <section class="slide" data-narration="三个进阶点。第一宇宙速度 7.9 公里每秒，推导：近地卫星 m g 等于 m v 方比 R，得 v 等于根号 g R——它既是最大环绕速度，又是最小发射速度，这两个'最'经常被考。变轨：加速离心升轨，减速向心降轨；注意升到高轨后运行速度反而更小——加速反而变慢，因为势能增量大于动能增量。双星模型抓两点：角速度相同，万有引力互为向心力。两式相除得半径与质量成反比，相加得周期公式。请暂停，把双星周期推一遍。">
+    <div class="slide-head"><span class="sec">3.3</span><h3>宇宙速度 · 变轨 · 双星模型</h3></div>
+    <div class="slide-body">
+      <ul>
+        <li><strong>第一宇宙速度</strong>：$mg = m\frac{v^2}{R} \Rightarrow v_1 = \sqrt{gR} = 7.9\,\mathrm{km/s}$——最大环绕速度 + 最小发射速度</li>
+        <li><strong>变轨</strong>：加速 → 离心升轨；减速 → 向心降轨；<strong>升高后运行速度反而变小</strong>（势能增 &gt; 动能减）</li>
+        <li><strong>双星</strong>：① ω 相同　② 引力互为向心力　③ $r_1 + r_2 = L$</li>
+      </ul>
+      <div class="formula formula-concl">$$G\frac{m_1m_2}{L^2} = m_1\omega^2 r_1 = m_2\omega^2 r_2 \;\Rightarrow\; \frac{r_1}{r_2} = \frac{m_2}{m_1},\quad \boldsymbol{T = 2\pi\sqrt{\frac{L^3}{G(m_1+m_2)}}}$$</div>
+      <div class="pause"><div class="icon">✍️</div><div class="txt"><b>暂停推导</b><p>独立写出双星两方程，推出"半径与质量成反比"和周期公式。</p></div></div>
+    </div>
+  </section>
+
+  <!-- 21 模块四 分隔 -->
+  <section class="slide slide-divider" data-narration="第四部分，机械能。能量观点是三大观点里最省事的——只看初末状态，不管中间过程。拿到题先问自己：能不能用能量？这一部分的核心是动能定理、机械能守恒，和那张功能关系总表。">
+    <div class="num">模 块 四</div>
+    <h2>机械能守恒定律</h2>
+    <div class="en">3.4 功 · 功率 · 动能定理 · 功能关系</div>
+  </section>
+
+  <!-- 22 功 -->
+  <section class="slide" data-narration="功。恒力做功 W 等于 F s cos α，注意 s 是对地位移，正负号只看夹角：锐角正功，直角不做功，钝角负功。变力做功四种求法都要会：图象法——F-s 图面积，弹簧做功就是例子；微元法——滑动摩擦力沿曲线做功用路程；动能定理反求；功率法——W 等于 P t，机车恒功率牵引用。记住两个结论：一对静摩擦力做功代数和恒为零；一对滑动摩擦力做功代数和为负，绝对值就是生热。">
+    <div class="slide-head"><span class="sec">3.4</span><h3>功：恒力做功与变力做功四法</h3></div>
+    <div class="slide-body">
+      <div class="formula">$$W = Fs\cos\alpha \quad\text{（}s\text{ 为对地位移；锐角正功、钝角负功、直角零功）}$$</div>
+      <table class="small">
+        <thead><tr><th>变力做功方法</th><th>典型例子</th></tr></thead>
+        <tbody>
+          <tr><td class="l">① 图象法（F-s 面积）</td><td class="l">弹簧 $W = \frac{1}{2}kx^2$</td></tr>
+          <tr><td class="l">② 微元法</td><td class="l">滑动摩擦力沿曲线：$W = -f\cdot s_{路程}$</td></tr>
+          <tr><td class="l">③ 动能定理反求</td><td class="l">只知初末动能求变力功</td></tr>
+          <tr><td class="l">④ 功率法 $W = Pt$</td><td class="l">机车恒定功率牵引</td></tr>
+        </tbody>
+      </table>
+      <div class="tip">一对<strong>静</strong>摩擦力做功代数和恒为零；一对<strong>滑动</strong>摩擦力做功之和 $= -f\cdot s_{相对}$（生热）</div>
+    </div>
+  </section>
+
+  <!-- 23 功率与机车启动 -->
+  <section class="slide" data-narration="功率与机车启动。P 等于 F v 里，v 是瞬时值就是瞬时功率。机车启动两种方式要理清全过程：恒定功率启动，速度增大牵引力减小，做加速度减小的加速运动，直到牵引力等于阻力匀速；恒定加速度启动，先匀加速，功率不断增大，到额定功率后转入恒功率模式。两种方式的最大速度都是额定功率除以阻力——因为匀速时牵引力等于阻力。匀加速阶段的末速度用 P 额等于括号 f 加 m a 乘 v 一来求。">
+    <div class="slide-head"><span class="sec">3.4</span><h3>功率与机车两种启动方式</h3></div>
+    <div class="slide-body">
+      <div class="formula">$$P = \frac{W}{t}\ \text{（平均）} \qquad P = Fv\cos\alpha\ \text{（瞬时）}$$</div>
+      <table>
+        <thead><tr><th>恒定功率启动</th><th>恒定加速度启动</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="l">$v\uparrow \Rightarrow F = \frac{P}{v}\downarrow \Rightarrow a\downarrow$<br>加速度减小的加速 → 匀速</td>
+            <td class="l">先匀加速（$P = Fv$ 增大）→ 达 $P_额$ 后转恒功率 → 匀速</td>
+          </tr>
+          <tr>
+            <td colspan="2">最大速度 $v_m = \dfrac{P_额}{f}$（匀速时 $F = f$）；匀加速末速度 $v_1 = \dfrac{P_额}{f + ma}$</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 24 动能定理推导 -->
+  <section class="slide" data-narration="动能定理，力学中最重要的推导之一，请暂停自己推。合外力 F 等于 m a，运动学公式 v 二方减 v 一方等于 2 a x，两式消去 a，得到 F x 等于二分之一 m v 二方减二分之一 m v 一方——合外力做的功等于动能的变化。深刻理解三点：它对直线曲线、恒力变力、单过程多过程全都成立，这是它比牛顿定律强大的根本原因；W 合是所有力做功的代数和，一个都不能漏；它是标量式，没有方向，求速度用它，求方向还得靠运动分析。优先原则：凡不涉及时间和加速度、只问速度位移关系的，先试动能定理。">
+    <div class="slide-head"><span class="sec">3.4</span><h3>动能定理：推导与深刻理解</h3></div>
+    <div class="slide-body">
+      <p><strong>推导</strong>：$F = ma$ 与 $v_2^2 - v_1^2 = 2ax$ 消去 $a$：</p>
+      <div class="formula formula-concl">$$\boldsymbol{W_合 = \Delta E_k = \frac{1}{2}mv_2^2 - \frac{1}{2}mv_1^2}$$</div>
+      <ul>
+        <li>对<strong>直线/曲线、恒力/变力、多过程</strong>都成立——比牛顿定律更普适</li>
+        <li>$W_合$ = <strong>所有力</strong>做功代数和，一个不能漏（先完整受力分析）</li>
+        <li>标量式、无方向；<strong>求速度用能量，求方向靠运动分析</strong></li>
+      </ul>
+      <div class="deep">优先原则：不涉及时间和加速度、只问速度/位移 → <strong>先试动能定理</strong></div>
+    </div>
+  </section>
+
+  <!-- 25 机械能守恒 -->
+  <section class="slide" data-narration="机械能守恒。守恒条件：只有重力或系统内弹力做功。两个误区要破除：合外力为零不等于机械能守恒——匀速上升的物体动能不变但势能在增加；也不是必须只受重力——受其他力但其他力不做功也守恒，比如绳的拉力总与速度垂直。三种表达式灵活选用：守恒式要选零势能面，最直观；转化式不用选零势能面；转移式最适合系统问题——A 增加多少，B 就减少多少。">
+    <div class="slide-head"><span class="sec">3.4</span><h3>机械能守恒：条件与三种表达式</h3></div>
+    <div class="slide-body">
+      <div class="warn"><strong>守恒条件</strong>：只有重力（或系统内弹力）做功</div>
+      <ul>
+        <li>❌ 合外力为零 ≠ 守恒（匀速上升：动能不变、势能增）</li>
+        <li>❌ 不是"只受重力"——其他力不做功也守恒（绳拉力 ⊥ 速度）</li>
+      </ul>
+      <table class="small">
+        <thead><tr><th>形式</th><th>表达式</th><th>优点</th></tr></thead>
+        <tbody>
+          <tr><td class="l">守恒式</td><td>$E_1 = E_2$</td><td class="l">直观，需选零势能面</td></tr>
+          <tr><td class="l">转化式</td><td>$\Delta E_k = -\Delta E_p$</td><td class="l">不需零势能面</td></tr>
+          <tr><td class="l">转移式</td><td>$\Delta E_A = -\Delta E_B$</td><td class="l">系统问题最方便</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 26 功能关系 + 摩擦生热 -->
+  <section class="slide" data-narration="功能关系总表是压轴题的灵魂：合外力做功对应动能变化；重力做功等于重力势能变化的负值；弹簧弹力做功对应弹性势能；除重力和系统内弹力之外的其他力做功，对应机械能的变化；一对滑动摩擦力做功的代数和等于负的热量。最后推摩擦生热：板块情景，对木块列动能定理，对木板列动能定理，两式相加，系统损失的机械能等于 f 乘以相对位移。最容易错的地方：单个物体做功用对地位移，系统生热才用相对位移——两个位移千万别混。">
+    <div class="slide-head"><span class="sec">3.4</span><h3>功能关系总表 + 摩擦生热推导</h3></div>
+    <div class="slide-body">
+      <table class="small">
+        <thead><tr><th>做功</th><th>能量变化</th><th>关系式</th></tr></thead>
+        <tbody>
+          <tr><td class="l">合外力</td><td class="l">动能</td><td>$W_合 = \Delta E_k$</td></tr>
+          <tr><td class="l">重力 / 弹簧弹力</td><td class="l">对应势能</td><td>$W = -\Delta E_p$</td></tr>
+          <tr><td class="l">其他力（除重力、系统内弹力）</td><td class="l">机械能</td><td>$W_{其他} = \Delta E_机$</td></tr>
+          <tr><td class="l">一对滑动摩擦力（之和）</td><td class="l">内能</td><td>$Q = f\cdot s_{相对}$</td></tr>
+        </tbody>
+      </table>
+      <p><strong>推导</strong>（板块）：$-fs_1 = \Delta E_{k块}$，$fs_2 = \Delta E_{k板}$，相加：</p>
+      <div class="formula formula-concl">$$-f(s_1 - s_2) = \Delta E_{k系} \;\Rightarrow\; \boldsymbol{Q = f\cdot s_{相对}}$$</div>
+      <div class="warn">⚠️ 单个物体做功用<strong>对地位移</strong>；系统生热用<strong>相对位移</strong>——最高频错误！</div>
+    </div>
+  </section>
+
+  <!-- 27 模块五 分隔 -->
+  <section class="slide slide-divider" data-narration="第五部分，动量。动量加能量的综合题是高考高频考点，也是难点。这一部分要拿下：动量定理的推导、动量守恒的三种情形、弹性碰撞的结论和推导，以及子弹打木块、弹簧、人船三大综合模型。">
+    <div class="num">模 块 五</div>
+    <h2>动量守恒定律</h2>
+    <div class="en">3.5 冲量 · 动量定理 · 碰撞 · 综合模型</div>
+  </section>
+
+  <!-- 28 动量定理推导 -->
+  <section class="slide" data-narration="动量定理的推导只有一行：F 等于 m a，a 等于 v 二减 v 一比 t，代入得 F t 等于 m v 二减 m v 一——合外力的冲量等于动量变化。深刻理解：它是矢量式，先规定正方向；对变力也成立，所以可以求变力冲量和平均作用力，比如流体冲击墙面，取 Δt 时间内的流体质量 Δm 等于 ρ S v Δt，得 F 等于 ρ S v 乘速度变化量。动量定理和动能定理是亲兄弟：一个是力对时间的累积改变动量，一个是力对位移的累积改变动能。">
+    <div class="slide-head"><span class="sec">3.5</span><h3>动量定理：一行推导，三层理解</h3></div>
+    <div class="slide-body">
+      <p><strong>推导</strong>：$F = ma$，$a = \dfrac{v_2 - v_1}{t}$ 代入：</p>
+      <div class="formula formula-concl">$$Ft = mv_2 - mv_1 \;\Rightarrow\; \boldsymbol{I_合 = \Delta p}$$</div>
+      <ul>
+        <li><strong>矢量式</strong>：先定正方向，各量带符号；变力同样成立 → 可求变力冲量、平均作用力</li>
+        <li><strong>流体冲击</strong>：$\Delta m = \rho S v\Delta t \Rightarrow F = \rho S v\,(v - v')$（反弹时 $v' = -v$）</li>
+        <li><strong>与动能定理对照</strong>：力对<strong>时间</strong>累积 → 动量；力对<strong>位移</strong>累积 → 动能</li>
+      </ul>
+      <div class="tip">动量与动能换算：$E_k = \dfrac{p^2}{2m}$，$p = \sqrt{2mE_k}$</div>
+    </div>
+  </section>
+
+  <!-- 29 动量守恒条件 -->
+  <section class="slide" data-narration="动量守恒的条件，三种情形都要会判断。理想守恒：系统不受外力或合外力为零，比如光滑水平面上的碰撞。近似守恒：内力远大于外力，比如爆炸、碰撞瞬间，重力和摩擦力的冲量可以忽略。分方向守恒：系统某个方向合外力为零，这个方向的动量就守恒。最容易犯的错：动量守恒不等于机械能守恒！碰撞中动量守恒，但机械能一般损失。判断守恒之前先问：研究对象选对了吗？内力外力分清了吗？">
+    <div class="slide-head"><span class="sec">3.5</span><h3>动量守恒的三种情形</h3></div>
+    <div class="slide-body">
+      <div class="formula">$$\boldsymbol{p_1 + p_2 = p_1' + p_2'}$$</div>
+      <ol>
+        <li><strong>理想守恒</strong>：系统不受外力或合外力为零（光滑面碰撞）</li>
+        <li><strong>近似守恒</strong>：内力 ≫ 外力（爆炸、碰撞瞬间，重力冲量忽略）</li>
+        <li><strong>分方向守恒</strong>：某方向合外力为零 → 该方向动量守恒</li>
+      </ol>
+      <div class="warn">⚠️ 动量守恒 ≠ 机械能守恒！碰撞动量必守恒（近似），机械能一般损失</div>
+      <div class="deep">判断流程：① 定系统 → ② 分内力外力 → ③ 对照三种情形 → ④ 列矢量方程（定正方向）</div>
+    </div>
+  </section>
+
+  <!-- 30 弹性碰撞推导 -->
+  <section class="slide" data-narration="弹性碰撞推导，本讲第二个硬核推导，请暂停。一动碰一静：m 一以 v 零撞静止的 m 二。动量守恒一个方程，动能守恒一个方程。技巧是把动能方程移项因式分解，m 一乘括号 v 零减 v 一乘括号 v 零加 v 一，等于 m 二 v 二方；动量方程移项 m 一乘括号 v 零减 v 一等于 m 二 v 二；两式一除，得到 v 零加 v 一等于 v 二——这个关系能省去大量计算。代回动量方程，解出结论：v 一等于 m 一减 m 二比总质量乘 v 零，v 二等于 2 m 一比总质量乘 v 零。">
+    <div class="slide-head"><span class="sec">3.5</span><h3>弹性碰撞："一动碰一静"推导</h3></div>
+    <div class="slide-body">
+      <p>$m_1$ 以 $v_0$ 碰静止 $m_2$：$\quad m_1 v_0 = m_1 v_1 + m_2 v_2$　（动量）　$\quad \frac{1}{2}m_1 v_0^2 = \frac{1}{2}m_1 v_1^2 + \frac{1}{2}m_2 v_2^2$　（动能）</p>
+      <p>动能式移项因式分解，与动量式<strong>相除</strong>，得快捷关系：</p>
+      <div class="formula">$$v_0 + v_1 = v_2$$</div>
+      <div class="formula formula-concl">$$\boldsymbol{v_1 = \frac{m_1 - m_2}{m_1 + m_2}v_0, \qquad v_2 = \frac{2m_1}{m_1 + m_2}v_0}$$</div>
+      <div class="pause"><div class="icon">✍️</div><div class="txt"><b>暂停推导</b><p>完整推一遍，特别注意"两式相除"这一步的技巧。</p></div></div>
+    </div>
+  </section>
+
+  <!-- 31 碰撞结论 + 综合模型 -->
+  <section class="slide" data-narration="弹性碰撞三种特殊情况直接记：质量相等，交换速度，牛顿摆就是这个原理；重撞轻，重的几乎不变，轻的以两倍速度飞出；轻撞重，轻的原速弹回，球撞墙就是这个极限。完全非弹性碰撞，碰后共速，动能损失最大，损失量等于二分之一乘折合质量乘 v 零方。三大综合模型：子弹打木块——动量守恒求共速，f 乘打入深度等于生热；弹簧模型——压缩最短时两物体共速、弹性势能最大，恢复原长相当于一次弹性碰撞；人船模型——总动量为零，位移与质量成反比，m 一 s 一等于 m 二 s 二。">
+    <div class="slide-head"><span class="sec">3.5</span><h3>碰撞结论 + 三大综合模型</h3></div>
+    <div class="slide-body">
+      <table class="small">
+        <thead><tr><th>质量关系</th><th>弹性碰撞结果</th></tr></thead>
+        <tbody>
+          <tr><td>$m_1 = m_2$</td><td class="l"><strong>交换速度</strong>（牛顿摆）</td></tr>
+          <tr><td>$m_1 \gg m_2$</td><td class="l">$v_1 \approx v_0$，$v_2 \approx 2v_0$</td></tr>
+          <tr><td>$m_1 \ll m_2$</td><td class="l">$v_1 \approx -v_0$（原速弹回），$v_2 \approx 0$</td></tr>
+          <tr><td>完全非弹性</td><td class="l">共速 $v = \frac{m_1 v_0}{m_1+m_2}$，损失 $\Delta E = \frac{1}{2}\cdot\frac{m_1 m_2}{m_1+m_2}v_0^2$（最大）</td></tr>
+        </tbody>
+      </table>
+      <ul>
+        <li><strong>子弹打木块</strong>：动量守恒求共速；$fd = \Delta E_k = Q$（$d$ = 打入深度）</li>
+        <li><strong>弹簧模型</strong>：压到最短 → 共速、势能最大；恢复原长 ≡ 弹性碰撞</li>
+        <li><strong>人船模型</strong>：总动量为零 → $m_1 s_1 = m_2 s_2$，$s_船 = \frac{m_人}{m_人 + m_船}L$</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 32 模块六 分隔 -->
+  <section class="slide slide-divider" data-narration="第六部分，机械振动与机械波。这一模块概念多、图象多，但计算简单。抓住三个点：简谐运动的回复力判据，振动图象和波动图象的辨析，波的多解问题。">
+    <div class="num">模 块 六</div>
+    <h2>机械振动与机械波</h2>
+    <div class="en">3.6 简谐运动 · 单摆 · 波的图象 · 干涉衍射</div>
+  </section>
+
+  <!-- 33 简谐运动与单摆 -->
+  <section class="slide" data-narration="简谐运动的判据是回复力 F 等于负 k x——与位移成正比、方向相反。平衡位置速度最大、加速度为零；最大位移处反过来。周期与振幅无关，这是等时性。单摆周期公式的推导思路：小角度下 sin θ 约等于 θ 约等于 x 比 L，重力的切向分量就满足 F 等于负 k x 的形式，等效 k 等于 m g 比 L，代入得 T 等于 2 π 根号 L 比 g。两类等效要会：等效摆长——找真正的圆心，比如双线摆；等效重力加速度——电梯加速时 g 撇等于 g 加减 a，斜面上 g 撇等于 g sin θ。">
+    <div class="slide-head"><span class="sec">3.6</span><h3>简谐运动与单摆</h3></div>
+    <div class="slide-body">
+      <div class="formula formula-concl">$$F_回 = -kx \;\Rightarrow\; a = -\frac{k}{m}x \quad\text{（简谐运动判据）}$$</div>
+      <ul>
+        <li>平衡位置：$v$ 最大、$a = 0$；最大位移处：$a$ 最大、$v = 0$；$a$ 与 $x$ 永远反向</li>
+        <li>周期与振幅无关（等时性）：$T = 2\pi\sqrt{\dfrac{m}{k}}$</li>
+      </ul>
+      <p><strong>单摆</strong>（小角度 $\sin\theta \approx \theta \approx x/L$，回复力满足 $F = -kx$ 形式）：</p>
+      <div class="formula formula-concl">$$\boldsymbol{T = 2\pi\sqrt{\frac{L}{g}}}$$</div>
+      <div class="tip">等效摆长：找实际圆心（双线摆）；等效 $g'$：电梯中 $g' = g \pm a$，斜面上 $g' = g\sin\theta$</div>
+    </div>
+  </section>
+
+  <!-- 34 机械波 -->
+  <section class="slide" data-narration="机械波。各质点只振动不迁移，传播的是振动形式和能量；频率由波源决定，波速由介质决定，v 等于 λ f。振动图象和波动图象的辨析先看横轴：横轴是 t 是振动图，看一个质点；横轴是 x 是波形图，是一张照片。由波形图判断质点振动方向用上下坡法：沿传播方向，上坡向下振、下坡向上振。波的多解问题有三个来源：时间周期性、空间周期性、传播方向双向性——列通解公式后取 n 讨论，别漏解。干涉的条件是两列波频率相同；加强点波程差等于整数倍波长，减弱点等于半波长的奇数倍。">
+    <div class="slide-head"><span class="sec">3.6</span><h3>机械波：图象辨析与干涉</h3></div>
+    <div class="slide-body">
+      <div class="formula">$$\boldsymbol{v = \lambda f = \frac{\lambda}{T}} \quad\text{（}f\text{ 由波源定，}v\text{ 由介质定，质点只振动不迁移）}$$</div>
+      <ul>
+        <li><strong>图象辨析</strong>：横轴 t → 振动图（一个质点）；横轴 x → 波形图（一张照片）；判方向用<strong>上下坡法</strong></li>
+        <li><strong>多解三来源</strong>：时间周期性、空间周期性、传播方向双向性 → 列通解取 $n = 0,1,2,\dots$</li>
+        <li><strong>干涉</strong>（频率相同）：加强 $\Delta s = n\lambda$；减弱 $\Delta s = (2n{+}1)\frac{\lambda}{2}$；加强点振幅最大但位移仍变化</li>
+        <li><strong>多普勒</strong>：相互靠近频率变高，远离变低（波源频率本身不变）</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 35 总结 分隔 -->
+  <section class="slide slide-divider" data-narration="最后一部分，总结。力学三大观点的选用决策，十六个必推公式清单，还有力学十大易错点。">
+    <div class="num">总 结</div>
+    <h2>三大观点 · 必推清单 · 易错点</h2>
+    <div class="en">解题路径选择 · 推导清单 · 避坑指南</div>
+  </section>
+
+  <!-- 36 三大观点决策 -->
+  <section class="slide" data-narration="三大观点的选用决策，这是力学综合题的灵魂。求加速度、求瞬时力、求时间——用力的观点，牛顿第二定律加运动学。求速度、位移、高度，不问时间——用能量观点，先试动能定理。碰撞、爆炸、反冲、板块共速——用动量观点，动量守恒。压轴题标配：分段拆过程，每段选观点，衔接靠动量守恒，能量观点补缺口。先写会写的方程拿步骤分。">
+    <div class="slide-head"><span class="sec">总结</span><h3>三大观点：解题路径决策表</h3></div>
+    <div class="slide-body">
+      <table class="small">
+        <thead><tr><th>题目特征</th><th>首选观点</th><th>核心方程</th></tr></thead>
+        <tbody>
+          <tr><td class="l">求加速度、瞬时力、时间</td><td>力的观点</td><td class="l">$F_合 = ma$ + 运动学</td></tr>
+          <tr><td class="l">求速度、位移、高度（不问时间）</td><td>能量观点</td><td class="l">$W_合 = \Delta E_k$；$E_1 = E_2$</td></tr>
+          <tr><td class="l">碰撞、爆炸、反冲、共速</td><td>动量观点</td><td class="l">$p_1 + p_2 = p_1' + p_2'$</td></tr>
+          <tr><td class="l">碰撞求末速度/能量损失</td><td>动量 + 能量联立</td><td class="l">动量守恒 + 动能关系</td></tr>
+          <tr><td class="l">圆周某点的受力</td><td>能量定 v + 牛二定向心力</td><td class="l">动能定理 + $F_n = m\frac{v^2}{r}$</td></tr>
+        </tbody>
+      </table>
+      <div class="deep">压轴题心法：<strong>分段拆过程 → 每段选观点 → 动量守恒衔接 → 能量补缺口</strong>，先写会写的方程拿步骤分</div>
+    </div>
+  </section>
+
+  <!-- 37 必推公式清单 -->
+  <section class="slide" data-narration="十六个必推公式，请对照清单逐个过关：匀变速三公式三推论、连接体内力、超重失重视重、平抛偏角关系、绳杆模型临界、黄金代换、卫星规律、第一宇宙速度、双星周期、动能定理、摩擦生热、动量定理、弹性碰撞公式、完全非弹性能量损失、人船模型、单摆周期。每周过一遍，直到闭眼能写。">
+    <div class="slide-head"><span class="sec">总结</span><h3>力学 16 个必推公式清单</h3></div>
+    <div class="slide-body">
+      <table class="small">
+        <tbody>
+          <tr><td class="l">1. 匀变速三公式+三推论</td><td class="l">2. 连接体 $N=\frac{m_2}{m_1+m_2}F$</td><td class="l">3. 视重 $N = m(g\pm a)$</td></tr>
+          <tr><td class="l">4. 平抛 $\tan\alpha = 2\tan\theta$</td><td class="l">5. 绳模型 $v_{min}=\sqrt{gr}$、$v_低=\sqrt{5gr}$</td><td class="l">6. 黄金代换 $GM = gR^2$</td></tr>
+          <tr><td class="l">7. 卫星 $v=\sqrt{\frac{GM}{r}}$ 等</td><td class="l">8. 第一宇宙速度 $v_1 = \sqrt{gR}$</td><td class="l">9. 双星 $T = 2\pi\sqrt{\frac{L^3}{G(m_1+m_2)}}$</td></tr>
+          <tr><td class="l">10. 动能定理 $W_合 = \Delta E_k$</td><td class="l">11. 摩擦生热 $Q = f\cdot s_{相对}$</td><td class="l">12. 动量定理 $I_合 = \Delta p$</td></tr>
+          <tr><td class="l">13. 弹性碰撞速度公式</td><td class="l">14. 完全非弹性 $\Delta E = \frac{1}{2}\frac{m_1m_2}{m_1+m_2}v_0^2$</td><td class="l">15. 人船 $m_1s_1 = m_2s_2$</td></tr>
+          <tr><td class="l">16. 单摆 $T = 2\pi\sqrt{\frac{L}{g}}$</td><td colspan="2" class="l">⭐ 每周过一遍，直到闭眼能写</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 38 十大易错点 -->
+  <section class="slide" data-narration="力学十大易错点，逐条对照自查。摩擦力方向看相对运动趋势；作用力反作用力看是否同体；受力分析不画向心力；超重失重看 a 不看 v；变轨后高轨低速；摩擦力做功用对地位移、生热用相对位移；动能定理别漏力的功；动量守恒先判断三种情形；只有弹性碰撞动能才守恒；振动图波动图先看横轴。考前把这张表再过一遍。">
+    <div class="slide-head"><span class="sec">总结</span><h3>力学十大易错点</h3></div>
+    <div class="slide-body">
+      <table class="small">
+        <tbody>
+          <tr><td class="l">1. 摩擦力方向：看<strong>相对</strong>运动趋势</td><td class="l">2. 作用力反作用力 vs 平衡力：看是否<strong>同体</strong></td></tr>
+          <tr><td class="l">3. 受力分析不画"向心力"</td><td class="l">4. 超重失重：<strong>看 a 不看 v</strong></td></tr>
+          <tr><td class="l">5. 变轨：加速升轨，但高轨低速</td><td class="l">6. 做功用<strong>对地位移</strong>，生热用<strong>相对位移</strong></td></tr>
+          <tr><td class="l">7. 动能定理不漏任何一个力的功</td><td class="l">8. 动量守恒：先判断三种情形</td></tr>
+          <tr><td class="l">9. 只有<strong>弹性碰撞</strong>动能守恒</td><td class="l">10. 振动图/波形图：先看横轴是 t 还是 x</td></tr>
+        </tbody>
+      </table>
+      <div class="deep">错题按四类归因：概念错 / 受力错 / 观点选错 / 计算错——"观点选错"的题最值得重做</div>
+    </div>
+  </section>
+
+  <!-- 39 结束页 -->
+  <section class="slide slide-cover" data-narration="这一讲到这里就结束了。力学的复习清单：十六个推导逐个过关，八大模型卡片化，三大观点练成条件反射，十大易错点考前再扫一遍。真正的学习，发生在你停下来的那支笔上——推导一定要亲手写。加油！">
+    <div class="kicker">本 讲 结 束</div>
+    <h1>让推导成为本能</h1>
+    <div class="sub">力学是高中物理的操作系统，三大观点是打开 95+ 的钥匙</div>
+    <div class="divider"></div>
+    <div class="meta">
+      ☑ 16 个必推公式逐个过关<br>
+      ☑ 八大模型形成条件反射<br>
+      ☑ 三大观点拿到题先选路<br>
+      ☑ 十大易错点考前再扫一遍
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <div id="footer">
+    <span class="brand">力学总复习讲解</span>
+    <span id="pagenum">1 / 40</span>
+  </div>
+
+  <!-- 导航 -->
+  <div class="nav">
+    <button id="prev" title="上一页 (←)">‹</button>
+    <button id="next" title="下一页 (→ / 空格)">›</button>
+  </div>
+  <div id="hint">← → 翻页 · 空格下一页 · 点击左右半屏翻页</div>
+
+</div>
+
+<script>
+(function(){
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let idx = 0;
+
+  const params = new URLSearchParams(location.search);
+  const startSlide = parseInt(params.get('slide'), 10);
+  if (params.get('autohide') === '1') document.body.classList.add('autohide');
+  if (!isNaN(startSlide) && startSlide >= 1 && startSlide <= total) idx = startSlide - 1;
+
+  const progress = document.getElementById('progress');
+  const pagenum = document.getElementById('pagenum');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+
+  function render(){
+    slides.forEach((s,i)=> s.classList.toggle('active', i===idx));
+    progress.style.width = ((idx+1)/total*100) + '%';
+    pagenum.textContent = (idx+1) + ' / ' + total;
+    prevBtn.disabled = (idx===0);
+    nextBtn.disabled = (idx===total-1);
+  }
+  function go(n){ idx = Math.max(0, Math.min(total-1, n)); render(); }
+
+  prevBtn.addEventListener('click', e=>{ e.stopPropagation(); go(idx-1); });
+  nextBtn.addEventListener('click', e=>{ e.stopPropagation(); go(idx+1); });
+
+  document.addEventListener('keydown', e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){ e.preventDefault(); go(idx+1); }
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); go(idx-1); }
+    else if(e.key==='Home'){ go(0); }
+    else if(e.key==='End'){ go(total-1); }
+  });
+
+  document.getElementById('stage').addEventListener('click', e=>{
+    if(e.target.closest('.nav')) return;
+    const x = e.clientX;
+    if(x < window.innerWidth*0.5) go(idx-1); else go(idx+1);
+  });
+
+  function fit(){
+    const s = Math.min(window.innerWidth/1280, window.innerHeight/720);
+    const stage = document.getElementById('stage');
+    stage.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  fit();
+  render();
+})();
+</script>
+</body>
+</html>
