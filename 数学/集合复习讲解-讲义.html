@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>高中数学集合章节复习讲解</title>
+<style>
+:root {
+  --primary: #1a365d; --accent: #2f855a; --accent-light: #f0fff4;
+  --accent-border: #9ae6b4; --text: #2d3748; --muted: #718096;
+  --border: #e2e8f0; --bg-light: #f7fafc;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+               "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+  font-size: 15.5px; line-height: 1.75; color: var(--text);
+  background: #ffffff; max-width: 840px; margin: 0 auto; padding: 36px 28px 56px;
+}
+.cover { text-align: center; padding: 84px 0 56px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+.cover h1 { font-size: 2.1em; color: var(--primary); font-weight: 700; margin-bottom: 14px; letter-spacing: 2px; }
+.cover .subtitle { font-size: 1.05em; color: var(--muted); margin-bottom: 24px; }
+.cover .divider { width: 100px; height: 4px; background: var(--accent); margin: 0 auto 24px; border-radius: 2px; }
+.cover .meta { font-size: 0.95em; color: var(--muted); line-height: 2.1; }
+.scope {
+  background: var(--accent-light); border: 1px solid var(--accent-border);
+  border-radius: 8px; padding: 14px 18px; margin: 0 0 28px;
+  font-size: 0.95em; color: #2c5282;
+}
+.scope strong { color: var(--primary); }
+h2 { font-size: 1.5em; color: var(--primary); margin-top: 44px; margin-bottom: 14px;
+     padding-bottom: 6px; border-bottom: 3px solid var(--accent); display: inline-block;
+     padding-right: 18px; font-weight: 700; }
+h3 { font-size: 1.18em; color: var(--accent); margin-top: 26px; margin-bottom: 10px;
+     font-weight: 600; padding-left: 10px; border-left: 4px solid var(--accent); }
+h4 { font-size: 1.02em; color: var(--primary); margin-top: 18px; margin-bottom: 6px; font-weight: 600; }
+p { margin-bottom: 10px; text-align: justify; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 0.93em; }
+th { background: var(--accent); color: #fff; padding: 10px 12px; text-align: center;
+     font-weight: 600; border: 1px solid var(--accent); }
+td { padding: 8px 12px; border: 1px solid var(--border); text-align: center; vertical-align: middle; }
+tr:nth-child(even) td { background: var(--bg-light); }
+tr:hover td { background: var(--accent-light); }
+blockquote { background: var(--accent-light); border-left: 5px solid var(--accent);
+  padding: 12px 18px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #2c5282; }
+blockquote p { margin-bottom: 5px; }
+blockquote p:last-child { margin-bottom: 0; }
+blockquote strong { color: var(--primary); }
+blockquote ul, blockquote ol { margin: 6px 0 6px 20px; }
+ul, ol { margin: 8px 0 12px 22px; }
+li { margin-bottom: 4px; }
+li ul, li ol { margin-top: 3px; margin-bottom: 3px; }
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+pre { background: var(--bg-light); padding: 14px; border-radius: 8px; overflow-x: auto;
+      font-size: 0.88em; line-height: 1.5; margin: 12px 0; border: 1px solid var(--border); }
+code { background: var(--bg-light); padding: 2px 5px; border-radius: 4px; font-size: 0.9em;
+       font-family: "SF Mono", Menlo, Consolas, monospace; }
+pre code { padding: 0; background: none; }
+.diagram { background: var(--bg-light); border: 1px solid var(--border); border-radius: 8px;
+           padding: 14px 8px; margin: 14px 0; text-align: center; overflow-x: auto; }
+.diagram pre.mermaid { background: none; border: none; margin: 0; padding: 0; text-align: center; }
+.tags { margin-top: 44px; padding-top: 16px; border-top: 1px solid var(--border);
+        color: var(--muted); font-size: 0.88em; }
+.footer { text-align: center; color: var(--muted); font-size: 0.85em; margin-top: 32px; }
+.fig{display:block;margin:18px auto;max-width:100%;border:1px solid var(--border);border-radius:8px;background:#fff;padding:6px;}
+.resource{margin-top:36px;padding:18px 20px;background:var(--accent-light);border:1px solid var(--accent-border);border-radius:10px;}
+.resource h3{margin-top:0;border-left:none;color:var(--primary);padding-left:0;}
+.res-links{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0 0;}
+.res-links a{display:inline-block;padding:9px 14px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;font-size:.95em;}
+.res-links a:hover{filter:brightness(1.08);}
+@media print {
+  body { padding: 0; max-width: none; font-size: 14px; }
+  .cover { page-break-after: always; padding: 120px 0 0; }
+  h2, h3 { page-break-after: avoid; }
+  table, blockquote, pre, .diagram { page-break-inside: avoid; }
+}
+</style>
+<script>
+MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "displayMath": [["$$", "$$"], ["\\[", "\\]"]]}, "svg": {"fontCache": "global"}};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</head>
+<body>
+
+<div class="cover">
+  <h1>高中数学集合章节复习讲解</h1>
+  <div class="divider"></div>
+  <div class="subtitle">集合 · 概念与运算 · 充分必要条件</div>
+  <div class="meta">
+    <span>高中数学 · 集合专题讲义</span><br>
+    <span>适用：高一同步打底 / 高考一轮复习（云南 · 新高考）</span><br>
+    <span>配套：讲解视频 + 网页课件 + 本讲义</span>
+  </div>
+</div>
+
+
+<h2>一、集合是什么？——从生活到数学</h2><h3>1.1 生活中的"集合"</h3><p>在日常生活中，我们经常会遇到"把一些东西放在一起"的情况：</p><ul><li>你的所有课本：$\{\text{语文书}, \text{数学书}, \text{英语书}, \dots\}$</li><li>你们班的同学：$\{\text{小明}, \text{小红}, \text{小刚}, \dots\}$</li><li>小于10的正整数：$\{1, 2, 3, 4, 5, 6, 7, 8, 9\}$</li></ul><p><strong>数学中的集合</strong>，就是把具有某种<strong>共同特征</strong>的对象放在一起形成的整体。</p><h3>1.2 集合的定义与表示</h3><h4>列举法</h4><p>把集合中的元素一一列举出来，用花括号 $\{\}$ 包裹：</p><p>$$A = \{1, 2, 3, 4, 5\} \\B = \{\text{猫}, \text{狗}, \text{鸟}, \text{鱼}\}$$</p><h4>描述法</h4><p>用元素满足的条件来描述集合：</p><p>$$C = \{x \mid x \text{ 是小于10的正整数}\} \\D = \{x \mid x^2 - 4 = 0\}$$</p><p><strong>关键理解</strong>：描述法是一种"筛选器"，它定义了一个规则，只有符合规则的对象才能成为集合的元素。</p><h3>1.3 元素与集合的关系</h3><ul><li>如果 $a$ 是集合 $A$ 的元素，记为 $a \in A$（读作"a属于A"）</li><li>如果 $a$ 不是集合 $A$ 的元素，记为 $a \notin A$（读作"a不属于A"）</li></ul><p><strong>例题1</strong>：设 $A = \{1, 3, 5, 7\}$，判断下列关系：</p><ul><li>$1 \in A$ ✅</li><li>$2 \in A$ ❌</li><li>$7 \notin A$ ❌</li></ul><hr><h2>二、集合的基本性质</h2><h3>2.1 确定性</h3><p><strong>定义</strong>：一个对象要么是集合的元素，要么不是，没有中间状态。</p><p><strong>理解</strong>：集合就像一个有明确门禁的俱乐部，符合条件就能进，不符合就不能进，不存在"可能进"的情况。</p><p><strong>反例</strong>："高个子的人"不能构成集合，因为"高个子"没有明确标准。</p><h3>2.2 互异性</h3><p><strong>定义</strong>：集合中的元素互不相同。</p><p><strong>理解</strong>：集合是"去重"的，同一个元素不能出现两次。</p><p><strong>例题2</strong>：判断集合 $\{1, 2, 2, 3\}$ 是否正确？</p><ul><li>❌ 错误，正确写法应为 $\{1, 2, 3\}$</li></ul><h3>2.3 无序性</h3><p><strong>定义</strong>：集合中的元素没有顺序之分。</p><p><strong>理解</strong>：$\{1, 2, 3\}$ 和 $\{3, 2, 1\}$ 是同一个集合。</p><p><strong>思考</strong>：为什么集合要无序？→ 因为集合关注的是"包含哪些元素"，而不是"元素以什么顺序排列"。顺序是数列、列表等结构才关心的。</p><hr><h2>三、常用数集</h2><h3>3.1 基本数集</h3><table><thead><tr><th>符号</th><th>名称</th><th>包含元素</th></tr></thead><tbody><tr><td>$\mathbb{N}$</td><td>自然数集</td><td>$\{0, 1, 2, 3, \dots\}$</td></tr><tr><td>$\mathbb{N}^*$ 或 $\mathbb{N}_+$</td><td>正整数集</td><td>$\{1, 2, 3, \dots\}$</td></tr><tr><td>$\mathbb{Z}$</td><td>整数集</td><td>$\{\dots, -2, -1, 0, 1, 2, \dots\}$</td></tr><tr><td>$\mathbb{Q}$</td><td>有理数集</td><td>所有可以表示为两个整数之比的数</td></tr><tr><td>$\mathbb{R}$</td><td>实数集</td><td>所有有理数和无理数</td></tr></tbody></table><p><strong>记忆技巧</strong>：</p><ul><li><strong>N</strong>atural（自然的）→ 自然数</li><li><strong>Z</strong>heng（中文"整"的拼音首字母）→ 整数</li><li><strong>Q</strong>uotient（商）→ 有理数（可以表示为商）</li><li><strong>R</strong>eal（真实的）→ 实数</li></ul><h3>3.2 数集的关系</h3><div class="diagram"><pre class="mermaid">graph BT
+    N["N 自然数"] --&gt; N*["N* 正整数"]
+    Z["Z 整数"] --&gt; N["N 自然数"]
+    Q["Q 有理数"] --&gt; Z["Z 整数"]
+    R["R 实数"] --&gt; Q["Q 有理数"]</pre></div><p><strong>理解</strong>：这是一个"包含"关系，小集合是大集合的一部分。</p><ul><li>正整数 ⊂ 自然数 ⊂ 整数 ⊂ 有理数 ⊂ 实数</li></ul><hr><h2>四、集合间的关系</h2><h3>4.1 子集</h3><p><strong>定义</strong>：如果集合 $A$ 的所有元素都是集合 $B$ 的元素，那么 $A$ 是 $B$ 的子集，记为 $A \subseteq B$。</p><p><strong>理解</strong>：$A$ 是 $B$ 的"一部分"。</p><p><strong>例题3</strong>：设 $A = \{1, 2\}$，$B = \{1, 2, 3\}$，则 $A \subseteq B$。</p><h3>4.2 真子集</h3><p><strong>定义</strong>：如果 $A \subseteq B$ 且 $A \neq B$，那么 $A$ 是 $B$ 的真子集，记为 $A \subsetneq B$。</p><p><strong>理解</strong>：$A$ 是 $B$ 的"真部分"，$B$ 中至少有一个元素不在 $A$ 中。</p><p><strong>例题4</strong>：设 $A = \{1, 2\}$，$B = \{1, 2, 3\}$，则 $A \subsetneq B$。</p><h3>4.3 相等</h3><p><strong>定义</strong>：如果 $A \subseteq B$ 且 $B \subseteq A$，那么 $A = B$。</p><p><strong>理解</strong>：两个集合包含完全相同的元素。</p><p><strong>例题5</strong>：设 $A = \{x \mid x^2 - 4 = 0\}$，$B = \{-2, 2\}$，则 $A = B$。</p><h3>4.4 空集</h3><p><strong>定义</strong>：不含任何元素的集合称为空集，记为 $\emptyset$。</p><p><strong>重要性质</strong>：</p><ol><li>$\emptyset$ 是任何集合的子集：$\emptyset \subseteq A$（对任意集合A）</li><li>$\emptyset$ 是任何非空集合的真子集：$\emptyset \subsetneq A$（对任意非空集合A）</li></ol><p><strong>思考</strong>：为什么空集是任何集合的子集？→ 可以理解为："空集的所有元素都在A中"这个命题是<strong>vacuously true</strong>（空洞真），因为空集没有元素需要验证。</p><h3>4.5 子集的个数</h3><p><strong>定理</strong>：如果一个集合有 $n$ 个元素，那么它有 $2^n$ 个子集，$2^n - 1$ 个真子集。</p><p><strong>理解</strong>：每个元素都有两种选择——在子集中或不在子集中，所以总共有 $2 \times 2 \times \dots \times 2 = 2^n$ 种组合。</p><p><strong>例题6</strong>：求集合 $\{a, b, c\}$ 的所有子集：</p><ul><li>0个元素：$\emptyset$</li><li>1个元素：$\{a\}, \{b\}, \{c\}$</li><li>2个元素：$\{a, b\}, \{a, c\}, \{b, c\}$</li><li>3个元素：$\{a, b, c\}$</li><li>共8个子集，7个真子集</li></ul><hr><h2>五、集合的运算</h2><h3>5.1 交集</h3><p><strong>定义</strong>：由所有既属于 $A$ 又属于 $B$ 的元素组成的集合，记为 $A \cap B$。</p><p><strong>理解</strong>：两个集合的"公共部分"。</p><p><strong>例题7</strong>：设 $A = \{1, 2, 3, 4\}$，$B = \{3, 4, 5, 6\}$，则 $A \cap B = \{3, 4\}$。</p><p><strong>性质</strong>：</p><ul><li>$A \cap B = B \cap A$（交换律）</li><li>$A \cap A = A$（幂等律）</li><li>$A \cap \emptyset = \emptyset$</li></ul><h3>5.2 并集</h3><p><strong>定义</strong>：由所有属于 $A$ 或属于 $B$ 的元素组成的集合，记为 $A \cup B$。</p><p><strong>理解</strong>：两个集合的"合并"，注意去重。</p><p><strong>例题8</strong>：设 $A = \{1, 2, 3\}$，$B = \{3, 4, 5\}$，则 $A \cup B = \{1, 2, 3, 4, 5\}$。</p><p><strong>性质</strong>：</p><ul><li>$A \cup B = B \cup A$（交换律）</li><li>$A \cup A = A$（幂等律）</li><li>$A \cup \emptyset = A$</li></ul><h3>5.3 补集</h3><p><strong>定义</strong>：设 $U$ 是全集，由所有属于 $U$ 但不属于 $A$ 的元素组成的集合，记为 $\complement_U A$。</p><p><strong>理解</strong>："在全集中，去掉A剩下的部分"。</p><p><strong>例题9</strong>：设 $U = \{1, 2, 3, 4, 5\}$，$A = \{1, 3, 5\}$，则 $\complement_U A = \{2, 4\}$。</p><p><strong>性质</strong>：</p><ul><li>$\complement_U(\complement_U A) = A$（双重否定）</li><li>$A \cup \complement_U A = U$（排中律）</li><li>$A \cap \complement_U A = \emptyset$（矛盾律）</li></ul><h3>5.4 Venn图</h3><p>用图形直观表示集合关系和运算：</p><pre><code>\begin{document}
+\begin{tikzpicture}[fill opacity=0.5]
+  \draw[thick] (-2,-2) rectangle (4,4) node[below left] {$U$};
+  \draw[thick, fill=blue] (0,0) circle (1.5) node[below left] {$A$};
+  \draw[thick, fill=red] (2,0) circle (1.5) node[below right] {$B$};
+  \node at (1,1.2) {$A \cap B$};
+\end{tikzpicture}
+\end{document}</code></pre><p>上图展示了两个集合的Venn图，其中：</p><ul><li>蓝色圆形：集合 $A$</li><li>红色圆形：集合 $B$</li><li>重叠区域（紫色）：交集 $A \cap B$</li><li>矩形框：全集 $U$</li></ul><p><strong>绘制规则</strong>：</p><ul><li>用矩形表示全集 $U$</li><li>用圆形表示子集</li><li>重叠部分表示交集</li></ul><h3>5.5 德摩根定律</h3><p><strong>定律1</strong>：$\complement_U(A \cup B) = \complement_U A \cap \complement_U B$<strong>定律2</strong>：$\complement_U(A \cap B) = \complement_U A \cup \complement_U B$</p><p><strong>理解</strong>：</p><ul><li>"A或B的补集" = "A的补集且B的补集"</li><li>"A且B的补集" = "A的补集或B的补集"</li></ul><p><strong>证明思路</strong>：可以用Venn图直观验证，也可以用逻辑推理证明。</p><hr><h2>六、常用逻辑用语</h2><h3>6.1 命题与量词</h3><h4>全称量词</h4><p><strong>符号</strong>：$\forall$（读作"对任意"）<strong>表示</strong>：所有、每一个、任意</p><p><strong>例题10</strong>：$\forall x \in \mathbb{R}, x^2 \geq 0$（对任意实数x，x²大于等于0）</p><h4>存在量词</h4><p><strong>符号</strong>：$\exists$（读作"存在"）<strong>表示</strong>：存在、至少有一个</p><p><strong>例题11</strong>：$\exists x \in \mathbb{R}, x^2 = 4$（存在实数x，使得x²=4）</p><h3>6.2 充分条件与必要条件</h3><h4>定义</h4><p>设 $p$ 和 $q$ 是两个命题：</p><ul><li>如果 $p \Rightarrow q$（p推出q），则 $p$ 是 $q$ 的<strong>充分条件</strong>，$q$ 是 $p$ 的<strong>必要条件</strong></li><li>如果 $p \Leftrightarrow q$（p等价于q），则 $p$ 是 $q$ 的<strong>充要条件</strong></li></ul><p><strong>理解</strong>：</p><ul><li><strong>充分条件</strong>：有了p，一定有q（p是q的"充分保证"）</li><li><strong>必要条件</strong>：没有q，一定没有p（q是p的"必要前提"）</li><li><strong>充要条件</strong>：p和q等价，互为充分必要</li></ul><p><strong>例题12</strong>：</p><ul><li>$x &gt; 2$ 是 $x &gt; 1$ 的<strong>充分不必要条件</strong></li><li>$x^2 = 1$ 是 $x = 1$ 的<strong>必要不充分条件</strong></li><li>$x = 2$ 是 $x^2 = 4$ 的<strong>充分不必要条件</strong></li><li>$x &gt; 0$ 是 $x^2 &gt; 0$ 的<strong>充分不必要条件</strong></li></ul><h3>6.3 四种命题</h3><table><thead><tr><th>命题类型</th><th>形式</th><th>示例</th></tr></thead><tbody><tr><td>原命题</td><td>若p，则q</td><td>若$x &gt; 2$，则$x &gt; 1$</td></tr><tr><td>逆命题</td><td>若q，则p</td><td>若$x &gt; 1$，则$x &gt; 2$</td></tr><tr><td>否命题</td><td>若非p，则非q</td><td>若$x \leq 2$，则$x \leq 1$</td></tr><tr><td>逆否命题</td><td>若非q，则非p</td><td>若$x \leq 1$，则$x \leq 2$</td></tr></tbody></table><p><strong>重要结论</strong>：原命题与逆否命题<strong>同真同假</strong>。</p><hr><h2>七、数学思想深度解析</h2><h3>7.1 集合论的核心思想：分类与抽象</h3><p><strong>分类思想</strong>：</p><ul><li>把具有共同特征的对象归为一类</li><li>例如：所有三角形分为锐角三角形、直角三角形、钝角三角形</li></ul><p><strong>抽象思想</strong>：</p><ul><li>忽略对象的具体属性，只关注它们是否满足某种条件</li><li>例如：不管是苹果还是数字，只要满足条件就能成为集合的元素</li></ul><h3>7.2 集合运算与逻辑推理</h3><p>集合运算本质上是逻辑运算的直观表示：</p><table><thead><tr><th>集合运算</th><th>逻辑运算</th><th>自然语言</th></tr></thead><tbody><tr><td>$A \cap B$</td><td>$p \land q$</td><td>既...又...</td></tr><tr><td>$A \cup B$</td><td>$p \lor q$</td><td>或...或...</td></tr><tr><td>$\complement_U A$</td><td>$\neg p$</td><td>非...</td></tr></tbody></table><h3>7.3 从有限到无限</h3><p>集合论的伟大之处在于它统一了有限和无限：</p><ul><li>有限集合：元素个数是有限的，如 $\{1, 2, 3\}$</li><li>无限集合：元素个数是无限的，如 $\mathbb{N} = \{0, 1, 2, \dots\}$</li></ul><p><strong>思考</strong>：自然数集和正整数集哪个更大？→ 它们是"一样大"的，因为可以建立一一对应关系：</p><p>$$\begin{align*}\mathbb{N}: &amp;\quad 0 \quad 1 \quad 2 \quad 3 \quad 4 \quad \dots \\&amp;\quad \downarrow \quad \downarrow \quad \downarrow \quad \downarrow \quad \downarrow \\\mathbb{N}^*: &amp;\quad 1 \quad 2 \quad 3 \quad 4 \quad 5 \quad \dots\end{align*}$$</p><hr><h2>八、典型例题详解</h2><h3>例题13：集合的表示</h3><p><strong>题目</strong>：用列举法表示集合 $A = \{x \mid x \text{ 是小于10的质数}\}$</p><p><strong>解答</strong>：</p><ul><li>质数：大于1的自然数，除了1和自身外没有其他因数</li><li>小于10的质数：2, 3, 5, 7</li><li>所以 $A = \{2, 3, 5, 7\}$</li></ul><h3>例题14：子集个数</h3><p><strong>题目</strong>：已知集合 $A = \{a, b, c\}$，求：</p><ol><li>所有子集</li><li>所有真子集</li><li>所有非空子集</li></ol><p><strong>解答</strong>：</p><ol><li>子集：$\emptyset, \{a\}, \{b\}, \{c\}, \{a,b\}, \{a,c\}, \{b,c\}, \{a,b,c\}$（共8个）</li><li>真子集：去掉 $\{a,b,c\}$，共7个</li><li>非空子集：去掉 $\emptyset$，共7个</li></ol><h3>例题15：集合运算</h3><p><strong>题目</strong>：设 $U = \{1, 2, 3, 4, 5, 6\}$，$A = \{1, 3, 5\}$，$B = \{2, 3, 4\}$，求：</p><ol><li>$A \cap B$</li><li>$A \cup B$</li><li>$\complement_U A$</li><li>$\complement_U(A \cap B)$</li></ol><p><strong>解答</strong>：</p><ol><li>$A \cap B = \{3\}$</li><li>$A \cup B = \{1, 2, 3, 4, 5\}$</li><li>$\complement_U A = \{2, 4, 6\}$</li><li>$\complement_U(A \cap B) = \{1, 2, 4, 5, 6\}$</li></ol><h3>例题16：充分必要条件</h3><p><strong>题目</strong>：判断 $x = 1$ 是 $x^2 - 1 = 0$ 的什么条件？</p><p><strong>解答</strong>：</p><ul><li>若 $x = 1$，则 $x^2 - 1 = 0$，所以是<strong>充分条件</strong></li><li>若 $x^2 - 1 = 0$，则 $x = \pm 1$，不一定是1，所以<strong>不是必要条件</strong></li><li>结论：充分不必要条件</li></ul><h3>例题17：集合与不等式</h3><p><strong>题目</strong>：设集合 $A = \{x \mid -2 &lt; x &lt; 3\}$，$B = \{x \mid x &lt; -1 \text{ 或 } x &gt; 4\}$，求 $A \cap B$</p><p><strong>解答</strong>：</p><ul><li>画数轴分析：</li></ul><pre><code>  -3  -2  -1   0   1   2   3   4   5
+   |   |   |   |   |   |   |   |   |
+       ←───────┼───────────────→  A
+  ←───────┼               ──────→  B</code></pre><ul><li>交集：$\{x \mid -2 &lt; x &lt; -1\}$</li></ul><hr><h2>九、练习题</h2><h3>基础题</h3><ol><li>用列举法表示集合 $\{x \mid x^2 - 5x + 6 = 0\}$</li><li>判断下列关系是否正确：<ul><li>$0 \in \mathbb{N}$</li><li>$-1 \in \mathbb{Z}$</li><li>$\sqrt{2} \in \mathbb{Q}$</li><li>$\pi \in \mathbb{R}$</li></ul></li><li>设 $A = \{1, 2, 3\}$，$B = \{2, 3, 4\}$，求 $A \cap B$ 和 $A \cup B$</li><li>求集合 $\{a, b\}$ 的所有子集</li><li>判断 $x &gt; 0$ 是 $x^2 &gt; 0$ 的什么条件？</li></ol><h3>提高题</h3><ol><li>设全集 $U = \mathbb{R}$，$A = \{x \mid x \geq 0\}$，$B = \{x \mid x &lt; 2\}$，求：<ul><li>$A \cap B$</li><li>$A \cup B$</li><li>$\complement_U A$</li><li>$\complement_U(A \cup B)$</li></ul></li><li>已知集合 $A = \{x \mid -1 \leq x \leq 3\}$，$B = \{x \mid x &lt; a\}$，若 $A \subseteq B$，求实数 $a$ 的取值范围</li><li>证明德摩根定律：$\complement_U(A \cup B) = \complement_U A \cap \complement_U B$</li><li>设集合 $A = \{x \mid x^2 - 3x + 2 = 0\}$，$B = \{x \mid x^2 - 2x = 0\}$，求 $A \cup B$ 和 $A \cap B$</li><li>用Venn图表示 $(A \cup B) \cap C$</li></ol><h3>拓展题</h3><ol><li>设集合 $A = \{1, 2, 3, \dots, n\}$，求集合 $A$ 的所有子集的元素之和的总和</li><li>证明：空集是任何集合的子集</li><li>设 $A$ 和 $B$ 是两个集合，证明：$A \subseteq B$ 当且仅当 $A \cap B = A$</li></ol><hr><h2>十、练习题答案</h2><h3>基础题</h3><ol><li>$\{2, 3\}$</li><li>✅ ✅ ❌ ✅</li><li>$A \cap B = \{2, 3\}$，$A \cup B = \{1, 2, 3, 4\}$</li><li>$\emptyset, \{a\}, \{b\}, \{a, b\}$（共4个）</li><li>充分不必要条件</li></ol><h3>提高题</h3><ol><li><ul><li>$A \cap B = \{x \mid 0 \leq x &lt; 2\}$</li><li>$A \cup B = \mathbb{R}$</li><li>$\complement_U A = \{x \mid x &lt; 0\}$</li><li>$\complement_U(A \cup B) = \emptyset$</li></ul></li><li>$a &gt; 3$</li><li>提示：用元素法证明，任取元素 $x$，证明 $x \in \complement_U(A \cup B)$ 等价于 $x \in \complement_U A \cap \complement_U B$</li><li>$A = \{1, 2\}$，$B = \{0, 2\}$，所以 $A \cup B = \{0, 1, 2\}$，$A \cap B = \{2\}$</li><li>略（先画 $A \cup B$，再与 $C$ 取交集）</li></ol><h3>拓展题</h3><ol><li>每个元素在一半的子集中出现，共 $2^{n-1}$ 次，总和为 $(1+2+\dots+n) \times 2^{n-1} = \frac{n(n+1)}{2} \times 2^{n-1} = n(n+1) \times 2^{n-2}$</li><li>提示：证明 $\emptyset \subseteq A$ 即证明"对任意 $x$，若 $x \in \emptyset$ 则 $x \in A$"，因为前件为假，整个命题为真</li><li>提示：必要性：若 $A \subseteq B$，则 $A \cap B = A$；充分性：若 $A \cap B = A$，则 $A \subseteq B$</li></ol><hr><h2>十一、145+目标行动建议</h2><h3>11.1 集合在高考中的定位</h3><table><thead><tr><th>维度</th><th>说明</th></tr></thead><tbody><tr><td><strong>分值占比</strong></td><td>5-10分（约3%-7%），通常是选择题前3题或填空题第1题</td></tr><tr><td><strong>难度级别</strong></td><td>基础题或中档题，极少作为压轴题</td></tr><tr><td><strong>考查形式</strong></td><td>单一知识点考查或与不等式、函数定义域结合</td></tr></tbody></table><p><strong>核心结论</strong>：集合本身不是拉开分数差距的关键章节，145+的核心在于压轴题（导数、圆锥曲线）和中档题的稳定性。</p><h3>11.2 必做：巩固基础，确保不丢分</h3><ol><li><strong>限时训练</strong>：每天3-5道集合选择题，限时5分钟完成</li><li><strong>错题整理</strong>：记录易错点，如：<ul><li>空集的特殊性：$A \cap B = \emptyset$ 的情况</li><li>补集的全集设定：注意题目中的隐含全集</li><li>充分必要条件的判断："小范围推大范围"</li></ul></li></ol><h3>11.3 必做：强化集合与其他知识点的综合</h3><p><strong>高频综合题型</strong>：</p><ol><li><strong>集合与不等式</strong>：$$\text{设集合 } A = \{x \mid x^2 - 3x + 2 \leq 0\}, B = \{x \mid x &lt; a\}, \\\text{若 } A \subseteq B, \text{ 求实数 } a \text{ 的取值范围。}$$</li></ol><ol><li><strong>集合与函数</strong>：$$\text{设函数 } f(x) = \sqrt{x-1} + \sqrt{3-x}, \\\text{求函数的定义域（用集合表示）。}$$</li></ol><ol><li><strong>集合与逻辑</strong>：$$\text{已知 } p: x \in \{x \mid x^2 - 4x + 3 \leq 0\}, \\q: x \in \{x \mid 2 &lt; x &lt; 4\}, \\\text{判断 } p \text{ 是 } q \text{ 的什么条件？}$$</li></ol><h3>11.4 不必做：过度深入集合论</h3><p>以下内容<strong>高考不考</strong>，不必浪费时间：</p><ul><li>集合论的公理系统（ZFC公理）</li><li>无限集合的基数（可数集、不可数集）</li><li>集合的递归定义</li><li>模糊集合理论</li></ul><h3>11.5 时间分配建议</h3><table><thead><tr><th>阶段</th><th>时间</th><th>任务</th></tr></thead><tbody><tr><td>第1天</td><td>45分钟</td><td>通读材料，理解所有概念</td></tr><tr><td>第2天</td><td>60分钟</td><td>完成所有练习题，对照答案分析</td></tr><tr><td>第3天</td><td>30分钟</td><td>整理错题，总结易错点</td></tr><tr><td>后续</td><td>每天5分钟</td><td>限时练习3-5道集合题，保持熟练度</td></tr></tbody></table><h3>11.6 学习路径衔接</h3><p>完成集合章节后，立即进入<strong>函数章节</strong>学习，因为：</p><ol><li>集合是函数的基础（定义域、值域都是集合）</li><li>集合思想在函数中会大量用到</li><li>函数是高考数学的核心章节，分值占比最高</li></ol><hr><p>tags: #高考 #数学 #集合 #学习材料 #纳义阳</p>
+
+<div class="tags">关键词：集合 / 元素与集合 / 子集与真子集 / 交并补 / 德摩根定律 / 充分必要条件</div>
+<div class="footer">本讲义面向高中学生通用，可与讲解视频、网页课件配合使用；可直接打印或转发。</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'neutral',
+      securityLevel: 'loose',
+      themeVariables: { fontFamily: '"PingFang SC","Microsoft YaHei",sans-serif', fontSize: '14px' }
+    });
+  }
+</script>
+<div class="resource"><h3>配套资源</h3>
+<p class="res-links"><a href="https://www.bilibili.com/video/BV1CypM69ETp?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">▶ 观看讲解视频（B 站）</a><a href="https://nagu.cc/gk/%E6%95%B0%E5%AD%A6/%E9%9B%86%E5%90%88%E5%A4%8D%E4%B9%A0%E8%AE%B2%E8%A7%A3-%E8%AF%BE%E4%BB%B6.html" target="_blank" rel="noopener">📄 查看图文课件</a></p></div>
+</body>
+</html>

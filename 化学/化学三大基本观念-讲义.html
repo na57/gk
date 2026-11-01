@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>化学三大基本观念专题讲义</title>
+<style>
+:root {
+  --primary: #1a365d; --accent: #2f855a; --accent-light: #f0fff4;
+  --accent-border: #9ae6b4; --text: #2d3748; --muted: #718096;
+  --border: #e2e8f0; --bg-light: #f7fafc;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+               "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+  font-size: 15.5px; line-height: 1.75; color: var(--text);
+  background: #ffffff; max-width: 840px; margin: 0 auto; padding: 36px 28px 56px;
+}
+.cover { text-align: center; padding: 84px 0 56px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+.cover h1 { font-size: 2.1em; color: var(--primary); font-weight: 700; margin-bottom: 14px; letter-spacing: 2px; }
+.cover .subtitle { font-size: 1.05em; color: var(--muted); margin-bottom: 24px; }
+.cover .divider { width: 100px; height: 4px; background: var(--accent); margin: 0 auto 24px; border-radius: 2px; }
+.cover .meta { font-size: 0.95em; color: var(--muted); line-height: 2.1; }
+.scope {
+  background: var(--accent-light); border: 1px solid var(--accent-border);
+  border-radius: 8px; padding: 14px 18px; margin: 0 0 28px;
+  font-size: 0.95em; color: #2c5282;
+}
+.scope strong { color: var(--primary); }
+h2 { font-size: 1.5em; color: var(--primary); margin-top: 44px; margin-bottom: 14px;
+     padding-bottom: 6px; border-bottom: 3px solid var(--accent); display: inline-block;
+     padding-right: 18px; font-weight: 700; }
+h3 { font-size: 1.18em; color: var(--accent); margin-top: 26px; margin-bottom: 10px;
+     font-weight: 600; padding-left: 10px; border-left: 4px solid var(--accent); }
+h4 { font-size: 1.02em; color: var(--primary); margin-top: 18px; margin-bottom: 6px; font-weight: 600; }
+p { margin-bottom: 10px; text-align: justify; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 0.93em; }
+th { background: var(--accent); color: #fff; padding: 10px 12px; text-align: center;
+     font-weight: 600; border: 1px solid var(--accent); }
+td { padding: 8px 12px; border: 1px solid var(--border); text-align: center; vertical-align: middle; }
+tr:nth-child(even) td { background: var(--bg-light); }
+tr:hover td { background: var(--accent-light); }
+blockquote { background: var(--accent-light); border-left: 5px solid var(--accent);
+  padding: 12px 18px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #2c5282; }
+blockquote p { margin-bottom: 5px; }
+blockquote p:last-child { margin-bottom: 0; }
+blockquote strong { color: var(--primary); }
+blockquote ul, blockquote ol { margin: 6px 0 6px 20px; }
+ul, ol { margin: 8px 0 12px 22px; }
+li { margin-bottom: 4px; }
+li ul, li ol { margin-top: 3px; margin-bottom: 3px; }
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+pre { background: var(--bg-light); padding: 14px; border-radius: 8px; overflow-x: auto;
+      font-size: 0.88em; line-height: 1.5; margin: 12px 0; border: 1px solid var(--border); }
+code { background: var(--bg-light); padding: 2px 5px; border-radius: 4px; font-size: 0.9em;
+       font-family: "SF Mono", Menlo, Consolas, monospace; }
+pre code { padding: 0; background: none; }
+.diagram { background: var(--bg-light); border: 1px solid var(--border); border-radius: 8px;
+           padding: 14px 8px; margin: 14px 0; text-align: center; overflow-x: auto; }
+.diagram pre.mermaid { background: none; border: none; margin: 0; padding: 0; text-align: center; }
+.tags { margin-top: 44px; padding-top: 16px; border-top: 1px solid var(--border);
+        color: var(--muted); font-size: 0.88em; }
+.footer { text-align: center; color: var(--muted); font-size: 0.85em; margin-top: 32px; }
+.resource{margin-top:36px;padding:18px 20px;background:#f0fff4;border:1px solid #9ae6b4;border-radius:10px;}.resource h3{margin-top:0;color:#1a365d;}.res-links{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0 0;}.res-links a{display:inline-block;padding:9px 14px;border-radius:8px;background:#2f855a;color:#fff;text-decoration:none;font-weight:600;font-size:.95em;}.res-links a:hover{filter:brightness(1.08);}
+@media print {
+  body { padding: 0; max-width: none; font-size: 14px; }
+  .cover { page-break-after: always; padding: 120px 0 0; }
+  h2, h3 { page-break-after: avoid; }
+  table, blockquote, pre, .diagram { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>化学三大基本观念专题讲义</h1>
+  <div class="divider"></div>
+  <div class="subtitle">微粒观 · 守恒观 · 分类观</div>
+  <div class="meta">
+    <span>高中化学 · 通用专题讲义</span><br>
+    <span>适用：高中各年级（高一打底，高二高三回炉）</span><br>
+    <span>结构：观念 → 应用 → 专项练习 → 详解</span>
+  </div>
+</div>
+
+<div class="scope"><strong>适用对象</strong>：高中各年级通用。高一用来打底，高二高三用来回炉。全文按"观念 → 应用 → 练习"组织，不依赖某一版教材的章节顺序。</div>
+<h2>写在前面</h2><p>很多人对化学的印象是："不就是背方程式、记现象吗？" 其实不是。化学背后有<strong>三大核心观念</strong>——微粒观、守恒观、分类观，就像三根顶梁柱，撑着整个化学大厦。把这三根柱子立稳了，很多之前觉得"莫名其妙"的规则，都会变得"理所当然"。</p><p>那些最经典的困惑，比如：</p><ul><li>液态氯化氢不导电，为什么它的水溶液就能导电？</li><li>离子方程式两边相同的系数，为什么不能约分？</li><li>硫酸钡明明难溶，为什么还说它是强电解质？</li></ul><p>本质上都是这三大观念的问题。这份讲义不打算再堆一遍知识点，而是把三根柱子立起来，然后让你自己就能把上面这些问题讲明白。</p><hr><h2>第一大观念：微粒观</h2><h3>什么是微粒观？</h3><p><strong>微粒观就是：世界上所有的物质，都是由极其微小的粒子（分子、原子、离子等）构成的；物质的宏观性质和变化，都是这些微观粒子运动和相互作用的结果。</strong></p><p>简单说：<strong>看到宏观现象，要想到微观粒子在干什么。</strong></p><div class="diagram"><pre class="mermaid">graph TD
+    A[宏观世界 我们看得见的] --&gt;|对应| B[微观世界 粒子在行动]
+    C[水结冰] --&gt;|本质是| D[水分子排列从无序变有序]
+    E[铁生锈] --&gt;|本质是| F[铁原子和氧原子结合]
+    G[盐水导电] --&gt;|本质是| H[钠离子和氯离子自由移动]</pre></div><h3>微粒观的核心要点</h3><h4>1. 物质由什么微粒构成，决定了它的性质</h4><p>不同的物质，构成它的"基本粒子"不一样：</p><table><thead><tr><th>物质类别</th><th>构成粒子</th><th>举例</th></tr></thead><tbody><tr><td>由分子构成</td><td>分子</td><td>水(H₂O)、氧气(O₂)、氯化氢(HCl)、二氧化碳(CO₂)</td></tr><tr><td>由原子构成</td><td>原子</td><td>金属铁(Fe)、金刚石(C)、稀有气体(He)</td></tr><tr><td>由离子构成</td><td>阳离子 + 阴离子</td><td>氯化钠(Na⁺和Cl⁻)、氢氧化钠(Na⁺和OH⁻)</td></tr></tbody></table><blockquote><p>💡 <strong>关键认知</strong>：物质不是"一坨东西"，而是由特定的"小零件"组装起来的。零件不同，组装方式不同，性质就不同。</p></blockquote><h4>2. 条件改变时，粒子的存在形式可能改变</h4><p><strong>这是"液态HCl不导电、盐酸导电"的分水岭，也是微粒观最经典的一个考查点。</strong></p><p>让我们用HCl做个对比实验：</p><div class="diagram"><pre class="mermaid">graph TB
+    subgraph S1["液态HCl（纯净物）"]
+        L1["只有HCl分子&lt;br/&gt;没有自由移动的离子"] --&gt; L2["不能导电"]
+    end
+    subgraph S2["盐酸（HCl的水溶液）"]
+        W1["水分子把H-Cl共价键拆开&lt;br/&gt;电离出H⁺和Cl⁻"] --&gt; W2["有大量自由移动的离子&lt;br/&gt;能导电"]
+    end
+    S1 ==&gt;|"溶于水"| S2</pre></div><p><strong>核心逻辑链</strong>：</p><pre><code>HCl是共价化合物（分子构成）
+    ↓
+液态（纯净物熔融态）时：只有HCl分子，没有自由移动的离子
+    ↓
+导电需要"自由移动的带电粒子"
+    ↓
+所以液态HCl不能导电！
+    ↓
+但溶于水后：水分子"掰断"了H-Cl共价键，电离出H⁺和Cl⁻
+    ↓
+有了自由移动的离子
+    ↓
+所以盐酸（HCl水溶液）能导电！</code></pre><blockquote><p>🎯 <strong>特别提醒</strong>："液态HCl"和"盐酸"完全是两码事！</p><ul><li>液态HCl = 纯净的氯化氢液体（只有HCl分子）</li><li>盐酸 = 氯化氢的水溶液（有H⁺、Cl⁻、H₂O等）</li></ul><p>一字之差，天壤之别。这就是微粒观——状态不同，粒子存在形式不同，性质就不同。</p></blockquote><h4>3. 电离的条件因物质类别而异</h4><table><thead><tr><th>物质类型</th><th>构成</th><th>熔融态（液态纯净物）</th><th>水溶液</th></tr></thead><tbody><tr><td>离子化合物（如NaCl）</td><td>离子</td><td>能电离，能导电</td><td>能电离，能导电</td></tr><tr><td>共价化合物（如HCl）</td><td>分子</td><td>不能电离，不导电</td><td>能电离，能导电</td></tr></tbody></table><blockquote><p>💡 <strong>记忆窍门</strong>：离子化合物"天生"就是离子，熔融后离子自由了就能导电；共价化合物"天生"是分子，只有在水里被水分子"拆开"才会变成离子。</p></blockquote><h3>微粒观的应用：更多例子</h3><p><strong>为什么NaCl固体不能导电，熔融NaCl能导电？</strong></p><ul><li>固体NaCl中，Na⁺和Cl⁻被离子键牢牢束缚在晶格中，不能自由移动</li><li>熔融后，离子键被破坏，离子可以自由移动了 → 能导电</li></ul><p><strong>为什么蔗糖溶于水不导电？</strong></p><ul><li>蔗糖是共价化合物，溶于水后仍然是蔗糖分子，没有电离出离子</li><li>没有自由移动的带电粒子 → 不导电</li></ul><hr><h2>第二大观念：守恒观</h2><h3>什么是守恒观？</h3><p><strong>守恒观就是：化学反应的过程，本质上是原子的重新排列组合。在这个过程中，有些东西是永远不变的——这就是"守恒"。</strong></p><p>化学中最基本的守恒有两个：</p><ul><li><strong>原子守恒</strong>（质量守恒）：反应前后，原子的种类和数目不变</li><li><strong>电荷守恒</strong>：反应前后，体系的总电荷数不变</li></ul><div class="diagram"><pre class="mermaid">graph TD
+    A[化学反应] --&gt; B[原子重新组合]
+    A --&gt; C[电荷重新分配]
+    B --&gt; D[原子守恒 种类和数目不变]
+    D --&gt; E[质量守恒 总质量不变]
+    C --&gt; F[电荷守恒 总电荷数不变]</pre></div><h3>守恒观的核心要点</h3><h4>1. 原子守恒是化学的基石</h4><p>化学反应不是"无中生有"，也不是"凭空消失"，而是原子的"搬家"和"重组"。</p><div class="diagram"><pre class="mermaid">graph LR
+    subgraph 反应前
+        R1["2个H₂ + 1个O₂"] --&gt; R2["一共有：H原子4个、O原子2个"]
+    end
+    subgraph 反应后
+        P1["2个H₂O"] --&gt; P2["仍然是：H原子4个、O原子2个"]
+    end
+    R2 --&gt;|原子重新组合| P1</pre></div><p>所以我们写化学方程式时，必须配平！配平就是在体现原子守恒。</p><h4>2. 电荷守恒同样重要</h4><p>对于离子反应，除了原子要守恒，<strong>电荷也要守恒</strong>。</p><p>什么意思呢？就是反应前所有离子的电荷加起来，等于反应后所有离子的电荷加起来。</p><p><strong>举个例子</strong>：</p><p>锌和硫酸铜溶液反应：Zn + Cu²⁺ → Zn²⁺ + Cu</p><p>我们来检查电荷：</p><ul><li>反应前：Zn是0价（不带电），Cu²⁺带+2电荷 → 总电荷 = +2</li><li>反应后：Zn²⁺带+2电荷，Cu是0价（不带电） → 总电荷 = +2</li><li>✅ 电荷守恒！</li></ul><h3>守恒观的应用：离子方程式为什么不能部分约分？</h3><p><strong>这是第二个经典困惑——"系数到底能不能约分"的答案。</strong></p><p>我们来看一个经典例子：硫酸和氢氧化钡的反应。</p><p>完整的离子方程式：2H⁺ + SO₄²⁻ + Ba²⁺ + 2OH⁻ → BaSO₄↓ + 2H₂O</p><p><strong>有人可能会想</strong>：H⁺和OH⁻前面的系数都是2，可以约掉吗？变成：H⁺ + SO₄²⁻ + Ba²⁺ + OH⁻ → BaSO₄↓ + H₂O</p><p><strong>答案是：绝对不行！❌</strong></p><p>为什么？我们用守恒观来检验：</p><p><strong>① 先检查原子守恒</strong>：</p><ul><li>反应前：H = 1，O = 4+1 = 5，S = 1，Ba = 1</li><li>反应后：H = 2，O = 4+1 = 5，S = 1，Ba = 1</li><li>❌ H原子不守恒！（反应前1个H，反应后2个H）</li></ul><p><strong>② 再检查电荷守恒</strong>：</p><ul><li>反应前：H⁺(+1) + SO₄²⁻(-2) + Ba²⁺(+2) + OH⁻(-1) = +1 - 2 + 2 - 1 = 0</li><li>反应后：都是中性物质，总电荷 = 0</li><li>✅ 电荷居然守恒了……但原子不守恒啊！</li></ul><blockquote><p>🎯 <strong>特别提醒</strong>：离子方程式必须同时满足"原子守恒"和"电荷守恒"，缺一个都不行。部分约分可能碰巧电荷还守恒，但原子一定不守恒。</p></blockquote><p><strong>更深层的原因</strong>：</p><p>离子方程式的系数代表的是<strong>实际参与反应的离子个数比</strong>，不是随便写的数字。</p><p>在Ba(OH)₂和H₂SO₄的反应中：</p><ul><li>1个Ba²⁺需要和1个SO₄²⁻结合 → 1:1</li><li>1个Ba(OH)₂含有2个OH⁻ → 所以有2个OH⁻参与反应</li><li>1个H₂SO₄含有2个H⁺ → 所以有2个H⁺参与反应</li><li>2个OH⁻和2个H⁺生成2个H₂O → 1:1:2的关系</li></ul><p>所以正确的比例关系是：Ba²⁺ : SO₄²⁻ : OH⁻ : H⁺ = 1 : 1 : 2 : 2</p><p>这个比例是由<strong>物质的组成和反应的实际情况</strong>决定的，不是数学上想约就约的！</p><blockquote><p>💡 <strong>记忆窍门</strong>：离子方程式的系数就像 recipe（食谱），2个鸡蛋配1杯面粉做蛋糕，你不能把"2个鸡蛋"约分成"1个鸡蛋"——那样蛋糕就做不成了！化学方程式的系数代表的是"配料比"，是由物质组成决定的，不能随便约。</p></blockquote><h3>守恒观的解题威力</h3><p>掌握了守恒观，很多难题迎刃而解。来看一个例子：</p><p><strong>题目</strong>：某溶液中含有Na⁺、Mg²⁺、Cl⁻、SO₄²⁻四种离子，其中Na⁺有0.2 mol，Mg²⁺有0.25 mol，Cl⁻有0.4 mol，则SO₄²⁻有多少摩尔？</p><p><strong>用守恒观来解</strong>：溶液是电中性的，所以正电荷总数 = 负电荷总数</p><p>正电荷：Na⁺带+1 × 0.2 mol + Mg²⁺带+2 × 0.25 mol = 0.2 + 0.5 = 0.7 mol负电荷：Cl⁻带-1 × 0.4 mol + SO₄²⁻带-2 × x mol = 0.4 + 2x</p><p>正电荷 = 负电荷：0.7 = 0.4 + 2x2x = 0.3x = 0.15 mol</p><p>答案：SO₄²⁻有0.15 mol ✅</p><hr><h2>第三大观念：分类观</h2><h3>什么是分类观？</h3><p><strong>分类观就是：世界上的物质千千万万，化学反应无穷无尽，我们不可能一个一个去记。但是，我们可以按照一定的标准把它们分类，同一类物质有相似的性质，同一类反应有相似的规律。</strong></p><p>简单说：<strong>学会分类，举一反三，事半功倍。</strong></p><div class="diagram"><pre class="mermaid">mindmap
+  root((物质分类))
+    按组成分
+      纯净物
+        单质
+          金属单质
+          非金属单质
+        化合物
+          氧化物
+          酸
+          碱
+          盐
+      混合物
+    按导电性分
+      电解质
+      非电解质
+    按化学键分
+      离子化合物
+      共价化合物</pre></div><h3>分类观的核心要点</h3><h4>1. 分类标准不同，结果不同</h4><p>同一种物质，按不同标准分类，可以属于不同类别。</p><p>比如NaCl：</p><ul><li>按组成分：纯净物 → 化合物 → 盐</li><li>按导电性分：电解质</li><li>按化学键分：离子化合物</li></ul><p>这就像人一样：按性别分有男有女，按年龄分有老有少，按职业分有老师学生……</p><h4>2. 同类物质具有相似的性质</h4><p>这是分类的最大价值——<strong>从"记一个"变成"会一类"</strong>。</p><p>比如，你知道HCl是酸，酸能和碱发生中和反应。那么遇到H₂SO₄、HNO₃、H₂CO₃……你不用重新记，因为它们都是酸，都能和碱中和。</p><p><strong>酸的通性</strong>（5条）：</p><ol><li>使酸碱指示剂变色</li><li>与活泼金属反应生成盐和氢气</li><li>与金属氧化物反应生成盐和水</li><li>与碱反应生成盐和水（中和反应）</li><li>与某些盐反应生成新酸和新盐</li></ol><p><strong>碱的通性</strong>（4条）：</p><ol><li>使酸碱指示剂变色</li><li>与非金属氧化物反应生成盐和水</li><li>与酸反应生成盐和水（中和反应）</li><li>与某些盐反应生成新碱和新盐</li></ol><blockquote><p>💡 <strong>学习方法</strong>：学化学不是背100个反应方程式，而是掌握10类反应的规律，然后自己就能推导100个方程式。</p></blockquote><h4>3. 分类帮助我们预测未知物质的性质</h4><p>看到一个新物质，先分类，再根据它的类别预测性质。</p><p><strong>例子</strong>：看到"氢氧化锶 Sr(OH)₂"，你可能从来没见过。但是——</p><ul><li>它的名字是"氢氧化某" → 属于碱类</li><li>碱有通性 → 你就能预测它能和酸反应、能和非金属氧化物反应、能使酚酞变红……</li></ul><h3>分类观的应用：电解质 vs 非电解质</h3><p>这是高中化学第一个重要的分类概念，也是很多同学的"重灾区"。</p><div class="diagram"><pre class="mermaid">graph TD
+    A[化合物] --&gt; B[电解质]
+    A --&gt; C[非电解质]
+    B --&gt; B1[在水溶液中或熔融状态下能导电]
+    B --&gt; B2[包括 酸 碱 盐 活泼金属氧化物 水]
+    C --&gt; C1[在水溶液中和熔融状态下都不能导电]
+    C --&gt; C2[包括 蔗糖 酒精 大多数有机物 非金属氧化物]</pre></div><p><strong>常见误区澄清</strong>：</p><table><thead><tr><th>误区</th><th>正确理解</th></tr></thead><tbody><tr><td>"能导电的就是电解质"</td><td>❌ 金属能导电，但金属是单质，不是电解质。电解质必须是化合物。</td></tr><tr><td>"液态HCl不导电，所以HCl不是电解质"</td><td>❌ 电解质的定义是"在水溶液中<strong>或</strong>熔融状态下能导电"，满足一个条件就行。HCl溶于水能导电，所以是电解质。</td></tr><tr><td>"NaCl溶液能导电，所以NaCl溶液是电解质"</td><td>❌ 电解质必须是化合物（纯净物），溶液是混合物。应该说"NaCl是电解质"。</td></tr><tr><td>"BaSO₄难溶于水，所以是非电解质"</td><td>❌ 难溶不等于不溶，溶解的那一点点完全电离；而且熔融状态下能导电。所以BaSO₄是电解质，而且是强电解质。</td></tr><tr><td>"CO₂溶于水能导电，所以CO₂是电解质"</td><td>❌ CO₂溶于水生成H₂CO₃，是H₂CO₃电离出离子导电，不是CO₂本身电离。所以CO₂是非电解质。</td></tr></tbody></table><blockquote><p>🎯 <strong>特别提醒</strong>：判断电解质的关键是——<strong>物质本身能否电离出离子</strong>。</p><ul><li>自己能电离 → 电解质</li><li>自己不能电离，和水反应后产物能电离 → 非电解质</li></ul></blockquote><hr><h2>三大观念之间的联系</h2><p>微粒观、守恒观、分类观不是孤立的，它们是一个整体：</p><div class="diagram"><pre class="mermaid">graph LR
+    A[微粒观] --&gt;|解释本质| B[为什么会这样？]
+    C[分类观] --&gt;|归纳规律| D[有什么共性？]
+    E[守恒观] --&gt;|定量分析| F[数量关系如何？]
+    B --&gt; G[学好化学]
+    D --&gt; G
+    F --&gt; G</pre></div><ul><li><strong>微粒观</strong>回答"为什么"：从微观粒子的角度解释物质的性质和变化</li><li><strong>分类观</strong>回答"是什么"：把物质和反应归类，掌握规律</li><li><strong>守恒观</strong>回答"有多少"：定量分析反应中的数量关系</li></ul><p>三者结合，就是化学的完整思维方式！</p><hr><h2>三大观念在高中三年的"延长线"</h2><p>这三根柱子不是学完就扔，高中三年会反复用到，只是难度逐级加码：</p><table><thead><tr><th>观念</th><th>高一（必修）</th><th>高二（选择性必修）</th><th>高三（总复习）</th></tr></thead><tbody><tr><td>微粒观</td><td>构成物质的微粒、电解质与电离、离子反应</td><td>速率与平衡中的微粒碰撞、电离平衡、盐类水解</td><td>微观反应图像题、粒子浓度大小比较、晶胞计算</td></tr><tr><td>守恒观</td><td>化学方程式配平、离子方程式电荷守恒</td><td>氧化还原的电子守恒、热化学方程式、平衡三段式</td><td>守恒法速解（电子守恒、电荷守恒、元素守恒、物料守恒）</td></tr><tr><td>分类观</td><td>物质分类、离子反应类型、氧化还原反应</td><td>官能团与有机物分类、化学平衡类型</td><td>题型模板化、陌生信息题归类</td></tr></tbody></table><p>一句话：<strong>这三根柱子高一没立稳，高二高三就只能在题海里打补丁。</strong></p><hr><h2>针对性练习题</h2><h3>微粒观专项练习</h3><p><strong>1. 选择题</strong>：下列物质中，不能导电的是（　）</p><p>A. 石墨　　B. 稀硫酸　　C. 液态氯化钠　　D. 液态氯化氢</p><p><strong>2. 选择题</strong>：下列说法正确的是（　）</p><p>A. NaCl固体中没有离子，所以不能导电B. 盐酸能导电，所以盐酸是电解质C. 液态HCl中只有HCl分子，不能导电D. 铜能导电，所以铜是电解质</p><p><strong>3. 填空题</strong>：在下列物质中：①NaCl晶体 ②液态SO₂ ③液态醋酸 ④汞 ⑤BaSO₄固体 ⑥蔗糖 ⑦酒精 ⑧熔融KNO₃ ⑨稀硫酸 ⑩NaOH固体</p><ul><li>以上物质能导电的是______（填序号，下同）</li><li>以上物质属于电解质的是______</li><li>以上物质属于非电解质的是______</li><li>以上物质溶于水后形成的水溶液能导电的是______</li></ul><h3>守恒观专项练习</h3><p><strong>4. 选择题</strong>：下列离子方程式书写正确的是（　）</p><p>A. 铁和稀硫酸反应：2Fe + 6H⁺ → 2Fe³⁺ + 3H₂↑B. 碳酸钙和稀盐酸反应：CO₃²⁻ + 2H⁺ → CO₂↑ + H₂OC. 氢氧化钡和稀硫酸反应：Ba²⁺ + OH⁻ + H⁺ + SO₄²⁻ → BaSO₄↓ + H₂OD. 铜和硝酸银溶液反应：Cu + 2Ag⁺ → Cu²⁺ + 2Ag</p><p><strong>5. 填空题</strong>：某溶液中含有K⁺、Al³⁺、NO₃⁻、SO₄²⁻四种离子。已知K⁺有0.1 mol，Al³⁺有0.15 mol，NO₃⁻有0.2 mol，则SO₄²⁻的物质的量为______mol。</p><p><strong>6. 判断题</strong>：判断下列离子方程式是否正确，若不正确请说明原因并改正。</p><ul><li>（1）钠和水反应：Na + H₂O → Na⁺ + OH⁻ + H₂↑</li><li>（2）氯气和水反应：Cl₂ + H₂O → 2H⁺ + Cl⁻ + ClO⁻</li><li>（3）氯化铁和铜反应：Fe³⁺ + Cu → Fe²⁺ + Cu²⁺</li></ul><h3>分类观专项练习</h3><p><strong>7. 选择题</strong>：下列物质按纯净物、混合物、电解质、非电解质顺序排列的是（　）</p><p>A. 盐酸、空气、醋酸、干冰B. 冰醋酸、海水、硫酸钠、乙醇C. 蛋白质、油脂、苛性钾、碳酸钙D. 胆矾、漂白粉、氯化钾、硫酸钡</p><p><strong>8. 选择题</strong>：下列说法正确的是（　）</p><p>A. 强电解质溶液的导电能力一定比弱电解质溶液强B. 因为BaSO₄难溶于水，所以BaSO₄是弱电解质C. SO₃溶于水后得到的溶液能导电，但SO₃是非电解质D. 强电解质都是离子化合物，弱电解质都是共价化合物</p><p><strong>9. 填空题</strong>：有下列物质：①H₂SO₄ ②NaOH ③NaCl ④CO₂ ⑤Na₂O ⑥H₂ ⑦NH₃·H₂O ⑧蔗糖 ⑨CH₃COOH ⑩BaSO₄</p><ul><li>属于强电解质的是______</li><li>属于弱电解质的是______</li><li>属于非电解质的是______</li></ul><h3>综合应用题</h3><p><strong>10. 简答题</strong>：请用三大化学基本观念（微粒观、守恒观、分类观）解释"为什么醋酸是弱酸，盐酸是强酸？"（提示：从物质分类、微观电离、溶液中离子数量等角度分析）</p><hr><h2>答案与解析</h2><h3>微粒观专项练习</h3><p><strong>1. 答案：D</strong></p><p>解析：</p><ul><li>A. 石墨中有自由电子，能导电</li><li>B. 稀硫酸中有H⁺和SO₄²⁻，能导电</li><li>C. 液态氯化钠（熔融态）中有Na⁺和Cl⁻，能导电</li><li>D. 液态氯化氢是纯净物，只有HCl分子，没有自由离子，不能导电 ✅</li></ul><p><strong>2. 答案：C</strong></p><p>解析：</p><ul><li>A. ❌ NaCl固体中有Na⁺和Cl⁻，但被离子键束缚不能自由移动，所以不能导电</li><li>B. ❌ 盐酸是混合物（HCl水溶液），电解质必须是化合物。正确说法是"HCl是电解质"</li><li>C. ✅ 液态HCl只有分子，不能导电</li><li>D. ❌ 铜是单质，既不是电解质也不是非电解质</li></ul><p><strong>3. 答案：</strong></p><ul><li>能导电的是：<strong>④⑧⑨</strong>（汞有自由电子；熔融KNO₃有自由离子；稀硫酸有自由离子）</li><li>属于电解质的是：<strong>①③⑤⑧⑩</strong>（酸、碱、盐都是电解质，注意②液态SO₂不是，⑥⑦不是）</li><li>属于非电解质的是：<strong>②⑥⑦</strong>（SO₂、蔗糖、酒精都是非电解质）</li><li>溶于水后水溶液能导电的是：<strong>①②③⑧⑨⑩</strong>（①③⑧⑩本身就是电解质，溶于水后电离出离子；②SO₂与水反应生成H₂SO₃，导电的是H₂SO₃电离出的离子，不是SO₂本身；⑨稀硫酸本身就是溶液。⑤BaSO₄难溶，水溶液中离子浓度极低，一般不视为"能导电"）</li></ul><blockquote><p>注意：⑨稀硫酸是混合物，既不是电解质也不是非电解质，但它本身就是溶液能导电，也能溶于水（其实就是加水稀释）。</p></blockquote><h3>守恒观专项练习</h3><p><strong>4. 答案：D</strong></p><p>解析：</p><ul><li>A. ❌ 铁和稀硫酸反应生成Fe²⁺不是Fe³⁺，正确：Fe + 2H⁺ → Fe²⁺ + H₂↑</li><li>B. ❌ 碳酸钙是难溶物，不能拆成离子，正确：CaCO₃ + 2H⁺ → Ca²⁺ + CO₂↑ + H₂O</li><li>C. ❌ OH⁻和H⁺的系数应该是2，不能部分约分，正确：Ba²⁺ + 2OH⁻ + 2H⁺ + SO₄²⁻ → BaSO₄↓ + 2H₂O</li><li>D. ✅ 原子守恒，电荷守恒，正确</li></ul><p><strong>5. 答案：0.175</strong></p><p>解析：用电荷守恒正电荷：K⁺(+1)×0.1 + Al³⁺(+3)×0.15 = 0.1 + 0.45 = 0.55 mol负电荷：NO₃⁻(-1)×0.2 + SO₄²⁻(-2)×x = 0.2 + 2x</p><p>正电荷 = 负电荷：0.55 = 0.2 + 2x2x = 0.35x = 0.175 mol</p><p><strong>6. 答案：</strong></p><p>（1）<strong>不正确</strong>。原子不守恒（反应前 H 为 2、O 为 1；反应后 H 为 3、O 为 1）。注意这个式子的陷阱在于：两边电荷恰好都是 0，属于"电荷守恒但原子不守恒"的典型情形——所以单看电荷会误判成正确。改正：2Na + 2H₂O → 2Na⁺ + 2OH⁻ + H₂↑</p><p>（2）<strong>不正确</strong>。HClO是弱酸，不能拆成离子形式。改正：Cl₂ + H₂O ⇌ H⁺ + Cl⁻ + HClO</p><p>（3）<strong>不正确</strong>。电荷不守恒（左边+3，右边+2+2=+4）。改正：2Fe³⁺ + Cu → 2Fe²⁺ + Cu²⁺</p><h3>分类观专项练习</h3><p><strong>7. 答案：B</strong></p><p>解析：</p><ul><li>A. 盐酸是混合物（HCl水溶液），不是纯净物 ❌</li><li>B. 冰醋酸（纯净醋酸）是纯净物；海水是混合物；硫酸钠是电解质；乙醇是非电解质 ✅</li><li>C. 蛋白质是混合物（高分子）；碳酸钙是电解质不是非电解质 ❌</li><li>D. 硫酸钡是电解质不是非电解质 ❌</li></ul><p><strong>8. 答案：C</strong></p><p>解析：</p><ul><li>A. ❌ 导电能力取决于离子浓度和离子电荷，与强弱电解质无必然关系。极稀的强电解质溶液导电能力可能很弱。</li><li>B. ❌ BaSO₄虽然难溶，但溶解的部分完全电离，而且熔融状态能导电，是强电解质。</li><li>C. ✅ SO₃溶于水生成H₂SO₄，是H₂SO₄电离导电，不是SO₃本身电离，所以SO₃是非电解质。</li><li>D. ❌ HCl是共价化合物但是强电解质；强弱电解质的区别在于电离程度，不是化学键类型。</li></ul><p><strong>9. 答案：</strong></p><ul><li>强电解质：<strong>①②③⑤⑩</strong>（H₂SO₄强酸、NaOH强碱、NaCl盐、Na₂O活泼金属氧化物、BaSO₄盐）</li><li>弱电解质：<strong>⑦⑨</strong>（NH₃·H₂O弱碱、CH₃COOH弱酸）</li><li>非电解质：<strong>④⑧</strong>（CO₂非金属氧化物、蔗糖有机物）</li></ul><blockquote><p>注意：⑥H₂是单质，既不是电解质也不是非电解质。</p></blockquote><h3>综合应用题</h3><p><strong>10. 参考答案：</strong></p><p>（1）<strong>从分类观看</strong>：醋酸和盐酸都是酸，都属于电解质。但盐酸是强酸（强电解质），醋酸是弱酸（弱电解质）。</p><p>（2）<strong>从微粒观看</strong>：</p><ul><li>盐酸（HCl）：在水中完全电离，HCl → H⁺ + Cl⁻，溶液中主要是H⁺和Cl⁻，几乎没有HCl分子。</li><li>醋酸（CH₃COOH）：在水中部分电离，CH₃COOH ⇌ CH₃COO⁻ + H⁺，溶液中大部分是醋酸分子，只有少量电离成离子。</li></ul><p>（3）<strong>从守恒观看</strong>：</p><ul><li>相同浓度的盐酸和醋酸，盐酸中H⁺浓度大（完全电离），醋酸中H⁺浓度小（部分电离）。</li><li>但如果都和足量NaOH反应，相同物质的量的盐酸和醋酸最终能提供的H⁺总量是一样的（醋酸会随着反应进行不断电离，最终完全反应）。</li></ul><hr><h2>学习建议</h2><p>这份讲义建议这样用：</p><ol><li><strong>先通读一遍</strong>：理解三大观念是什么，不要求背下来，有个印象就行</li><li><strong>做练习题</strong>：盖住答案自己做，做错的标出来</li><li><strong>对照解析</strong>：特别关注错题的原因，是哪个观念没掌握好</li><li><strong>定期回顾</strong>：每周花10分钟翻一翻，把这些观念内化成本能</li></ol><p>学化学就像学开车，一开始要想着"踩离合、挂挡、松手刹"，熟练了以后根本不用想，手脚自动就动了。三大观念就是化学的"肌肉记忆"，建立起来以后，你看任何化学问题都会觉得"哦，原来是这么回事"！</p><p>加油！🚀</p>
+
+<div class="tags">关键词：微粒观 / 守恒观 / 分类观 · 电解质 · 离子方程式 · 电荷守恒</div>
+<div class="footer">本讲义面向高中各年级通用，可直接打印或转发使用。</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'neutral',
+      securityLevel: 'loose',
+      themeVariables: { fontFamily: '"PingFang SC","Microsoft YaHei",sans-serif', fontSize: '14px' }
+    });
+  }
+</script>
+<div class="resource"><h3>配套资源</h3>
+<p class="res-links"><a href="https://www.bilibili.com/video/BV1E6Hj6iE6D?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">▶ 观看讲解视频（B 站）</a><a href="https://nagu.cc/gk/%E5%8C%96%E5%AD%A6/%E5%8C%96%E5%AD%A6%E4%B8%89%E5%A4%A7%E5%9F%BA%E6%9C%AC%E8%A7%82%E5%BF%B5-%E8%AF%BE%E4%BB%B6.html" target="_blank" rel="noopener">📄 查看图文课件</a></p></div>
+</body>
+</html>

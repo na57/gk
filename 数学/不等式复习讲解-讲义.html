@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>高中数学不等式章节复习讲解</title>
+<style>
+:root {
+  --primary: #1a365d; --accent: #2f855a; --accent-light: #f0fff4;
+  --accent-border: #9ae6b4; --text: #2d3748; --muted: #718096;
+  --border: #e2e8f0; --bg-light: #f7fafc;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+               "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+  font-size: 15.5px; line-height: 1.75; color: var(--text);
+  background: #ffffff; max-width: 840px; margin: 0 auto; padding: 36px 28px 56px;
+}
+.cover { text-align: center; padding: 84px 0 56px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+.cover h1 { font-size: 2.1em; color: var(--primary); font-weight: 700; margin-bottom: 14px; letter-spacing: 2px; }
+.cover .subtitle { font-size: 1.05em; color: var(--muted); margin-bottom: 24px; }
+.cover .divider { width: 100px; height: 4px; background: var(--accent); margin: 0 auto 24px; border-radius: 2px; }
+.cover .meta { font-size: 0.95em; color: var(--muted); line-height: 2.1; }
+.scope {
+  background: var(--accent-light); border: 1px solid var(--accent-border);
+  border-radius: 8px; padding: 14px 18px; margin: 0 0 28px;
+  font-size: 0.95em; color: #2c5282;
+}
+.scope strong { color: var(--primary); }
+h2 { font-size: 1.5em; color: var(--primary); margin-top: 44px; margin-bottom: 14px;
+     padding-bottom: 6px; border-bottom: 3px solid var(--accent); display: inline-block;
+     padding-right: 18px; font-weight: 700; }
+h3 { font-size: 1.18em; color: var(--accent); margin-top: 26px; margin-bottom: 10px;
+     font-weight: 600; padding-left: 10px; border-left: 4px solid var(--accent); }
+h4 { font-size: 1.02em; color: var(--primary); margin-top: 18px; margin-bottom: 6px; font-weight: 600; }
+p { margin-bottom: 10px; text-align: justify; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 0.93em; }
+th { background: var(--accent); color: #fff; padding: 10px 12px; text-align: center;
+     font-weight: 600; border: 1px solid var(--accent); }
+td { padding: 8px 12px; border: 1px solid var(--border); text-align: center; vertical-align: middle; }
+tr:nth-child(even) td { background: var(--bg-light); }
+tr:hover td { background: var(--accent-light); }
+blockquote { background: var(--accent-light); border-left: 5px solid var(--accent);
+  padding: 12px 18px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #2c5282; }
+blockquote p { margin-bottom: 5px; }
+blockquote p:last-child { margin-bottom: 0; }
+blockquote strong { color: var(--primary); }
+blockquote ul, blockquote ol { margin: 6px 0 6px 20px; }
+ul, ol { margin: 8px 0 12px 22px; }
+li { margin-bottom: 4px; }
+li ul, li ol { margin-top: 3px; margin-bottom: 3px; }
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+pre { background: var(--bg-light); padding: 14px; border-radius: 8px; overflow-x: auto;
+      font-size: 0.88em; line-height: 1.5; margin: 12px 0; border: 1px solid var(--border); }
+code { background: var(--bg-light); padding: 2px 5px; border-radius: 4px; font-size: 0.9em;
+       font-family: "SF Mono", Menlo, Consolas, monospace; }
+pre code { padding: 0; background: none; }
+.diagram { background: var(--bg-light); border: 1px solid var(--border); border-radius: 8px;
+           padding: 14px 8px; margin: 14px 0; text-align: center; overflow-x: auto; }
+.diagram pre.mermaid { background: none; border: none; margin: 0; padding: 0; text-align: center; }
+.tags { margin-top: 44px; padding-top: 16px; border-top: 1px solid var(--border);
+        color: var(--muted); font-size: 0.88em; }
+.footer { text-align: center; color: var(--muted); font-size: 0.85em; margin-top: 32px; }
+.fig{display:block;margin:18px auto;max-width:100%;border:1px solid var(--border);border-radius:8px;background:#fff;padding:6px;}
+.resource{margin-top:36px;padding:18px 20px;background:var(--accent-light);border:1px solid var(--accent-border);border-radius:10px;}
+.resource h3{margin-top:0;border-left:none;color:var(--primary);padding-left:0;}
+.res-links{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0 0;}
+.res-links a{display:inline-block;padding:9px 14px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;font-size:.95em;}
+.res-links a:hover{filter:brightness(1.08);}
+@media print {
+  body { padding: 0; max-width: none; font-size: 14px; }
+  .cover { page-break-after: always; padding: 120px 0 0; }
+  h2, h3 { page-break-after: avoid; }
+  table, blockquote, pre, .diagram { page-break-inside: avoid; }
+}
+</style>
+<script>
+MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "displayMath": [["$$", "$$"], ["\\[", "\\]"]]}, "svg": {"fontCache": "global"}};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</head>
+<body>
+
+<div class="cover">
+  <h1>高中数学不等式章节复习讲解</h1>
+  <div class="divider"></div>
+  <div class="subtitle">不等式 · 性质与解法 · 基本不等式</div>
+  <div class="meta">
+    <span>高中数学 · 不等式专题讲义</span><br>
+    <span>适用：高一同步打底 / 高考一轮复习（云南 · 新高考）</span><br>
+    <span>配套：讲解视频 + 网页课件 + 本讲义</span>
+  </div>
+</div>
+
+
+<h2>一、不等式是什么？——从等式的"亲戚"说起</h2><h3>1.1 从等式到不等式</h3><p>小学和初中，我们花了大量时间研究<strong>等式</strong>和<strong>方程</strong>，它们的核心是"等于"。但真实世界里，数量之间并不总是"恰好相等"，更多时候是"谁比谁多、谁比谁少"——这就是<strong>不等式</strong>。</p><table><thead><tr><th>语言描述</th><th>数学表达</th></tr></thead><tbody><tr><td>$a$ 大于 $b$</td><td>$a &gt; b$</td></tr><tr><td>$a$ 大于或等于 $b$</td><td>$a \geq b$</td></tr><tr><td>$a$ 小于 $b$</td><td>$a &lt; b$</td></tr><tr><td>$a$ 小于或等于 $b$</td><td>$a \leq b$</td></tr><tr><td>$a$ 不等于 $b$</td><td>$a \neq b$</td></tr></tbody></table><p><strong>关键理解</strong>：方程求的是"某一个确定的值"，而不等式求的往往是"一整个范围"。例如：</p><ul><li>方程 $x + 3 = 5$，解是 $x = 2$（一个数）</li><li>不等式 $x + 3 &gt; 5$，解是 $x &gt; 2$（无穷多个数）</li></ul><h3>1.2 不等式在整个高中数学中的位置</h3><p>不等式不是孤立的章节，它是贯穿三年的一条"暗线"：定义域、值域、最值、恒成立、参数范围……几乎处处都要用到。先看一张全景地图：</p><div class="diagram"><pre class="mermaid">mindmap
+  root((不等式))
+    不等式性质
+      传递性 / 可加性
+      可乘性（注意符号）
+      同向相加 / 相乘
+    三个二次
+      二次函数
+      一元二次方程
+      一元二次不等式
+    基本不等式
+      a²+b² ≥ 2ab
+      均值不等式
+      求最值
+    拓展专题
+      绝对值不等式
+      分式不等式
+      高次不等式（穿针引线）
+      柯西不等式</pre></div><hr><h2>二、不等式的性质——一切推理的地基</h2><h3>2.1 八大核心性质</h3><p>设 $a, b, c, d$ 为实数：</p><p>$$1.\ \text{对称性：} a &gt; b \Longleftrightarrow b &lt; a$$</p><p>$$2.\ \text{传递性：} a &gt; b,\ b &gt; c \Rightarrow a &gt; c$$</p><p>$$3.\ \text{可加性：} a &gt; b \Rightarrow a + c &gt; b + c$$</p><p>$$4.\ \text{可乘性：} a &gt; b,\ c &gt; 0 \Rightarrow ac &gt; bc;\quad a &gt; b,\ c &lt; 0 \Rightarrow ac &lt; bc$$</p><p>$$5.\ \text{同向相加：} a &gt; b,\ c &gt; d \Rightarrow a + c &gt; b + d$$</p><p>$$6.\ \text{同向相乘：} a &gt; b &gt; 0,\ c &gt; d &gt; 0 \Rightarrow ac &gt; bd$$</p><p>$$7.\ \text{乘方：} a &gt; b &gt; 0,\ n \in \mathbb{N}^* \Rightarrow a^n &gt; b^n$$</p><p>$$8.\ \text{开方：} a &gt; b &gt; 0,\ n \in \mathbb{N}^* \Rightarrow \sqrt[n]{a} &gt; \sqrt[n]{b}$$</p><h3>2.2 ⚠️ 三大易错点（务必背下）</h3><ol><li><strong>乘（除）负数必须变号</strong>：$a &gt; b \Rightarrow ac &lt; bc\ (c &lt; 0)$。这也是解不等式时最容易翻车的地方。</li><li><strong>同向相乘要求"都是正数"</strong>：$a &gt; b,\ c &gt; d$ 但 $a,b,c,d$ 有负数时，不能直接相乘。</li><li><strong>倒数不等式要变号</strong>：若 $a &gt; b &gt; 0$，则 $\dfrac{1}{a} &lt; \dfrac{1}{b}$。分母越大，倒数越小。</li></ol><h3>2.3 比较大小的"万能钥匙"：作差比较法</h3><p>判断 $A$ 与 $B$ 的大小，核心思路是看 $A - B$ 的符号：</p><p>$$\begin{cases}A - B &gt; 0 \Rightarrow A &gt; B \\A - B = 0 \Rightarrow A = B \\A - B &lt; 0 \Rightarrow A &lt; B\end{cases}$$</p><p><strong>例题1</strong>：比较 $(a + 3)(a - 5)$ 与 $(a + 2)(a - 4)$ 的大小。</p><p><strong>解</strong>：作差</p><p>$$(a+3)(a-5) - (a+2)(a-4) = (a^2 - 2a - 15) - (a^2 - 2a - 8) = -7 &lt; 0$$</p><p>所以 $(a+3)(a-5) &lt; (a+2)(a-4)$。</p><blockquote><p><strong>小结</strong>：任何不等式证明，理论上都可以化为"作差——判断符号"，这是最本质的方法。</p></blockquote><hr><h2>三、一元二次不等式——"三个二次"的合体</h2><p>这是高一上学期第一个真正的重点，也是高考的常考点。它的秘诀只有一句话：<strong>把不等式"翻译"成函数图像来看。</strong></p><h3>3.1 三个二次的关系</h3><p>所谓"三个二次"，指<strong>二次函数、一元二次方程、一元二次不等式</strong>，它们本质上是同一件事的三个侧面：</p><p><img class="fig" src="images/不等式图0-三个二次关系.svg" alt="不等式图0-三个二次关系.svg"></p><ul><li><strong>方程的解</strong>就是抛物线与 $x$ 轴交点的横坐标；</li><li><strong>不等式 $&gt;0$</strong> 就是抛物线在 $x$ 轴上方的部分对应的 $x$ 范围；</li><li><strong>不等式 $&lt;0$</strong> 就是抛物线在 $x$ 轴下方的部分对应的 $x$ 范围。</li></ul><h3>3.2 图像法解一元二次不等式</h3><p>以 $a &gt; 0$（开口向上）为例，设方程 $ax^2 + bx + c = 0$ 的判别式 $\Delta = b^2 - 4ac$：</p><table><thead><tr><th>判别式</th><th>图像位置</th><th>$ax^2+bx+c&gt;0$ 的解</th><th>$ax^2+bx+c&lt;0$ 的解</th></tr></thead><tbody><tr><td>$\Delta &gt; 0$，两根 $x_1 &lt; x_2$</td><td>与 $x$ 轴交于两点</td><td>$x &lt; x_1$ 或 $x &gt; x_2$</td><td>$x_1 &lt; x &lt; x_2$</td></tr><tr><td>$\Delta = 0$，一根 $x_0$</td><td>与 $x$ 轴相切</td><td>$x \neq x_0$</td><td>无解（$\emptyset$）</td></tr><tr><td>$\Delta &lt; 0$，无实根</td><td>完全在 $x$ 轴上方</td><td>全体实数 $\mathbb{R}$</td><td>无解（$\emptyset$）</td></tr></tbody></table><p><strong>一句话口诀</strong>（前提 $a&gt;0$）：</p><blockquote><p><strong>"大于取两边，小于取中间。"</strong></p></blockquote><p>这里的"两边/中间"都是相对方程的两个根而言。</p><blockquote><p><strong>数形结合</strong>：下面三幅图把上面的判别式表"翻译"成抛物线，一眼看清"大于取两边、小于取中间"（前提 $a&gt;0$，开口向上）。</p></blockquote><p><img class="fig" src="images/不等式图1-一元二次图像法-v2.svg" alt="不等式图1-一元二次图像法-v2.svg"></p><p><strong>解题标准流程</strong>：</p><p><img class="fig" src="images/不等式图5-解题标准流程.svg" alt="不等式图5-解题标准流程.svg"></p><p><strong>例题2</strong>：解不等式 $x^2 - 3x - 4 &gt; 0$。</p><p><strong>解</strong>：</p><p>$$x^2 - 3x - 4 = (x - 4)(x + 1)$$</p><p>两根为 $x_1 = -1,\ x_2 = 4$，$a = 1 &gt; 0$，开口向上，大于取两边：</p><p>$$x &lt; -1 \ \text{或}\ x &gt; 4$$</p><p>解集为 $(-\infty, -1) \cup (4, +\infty)$。</p><p><strong>例题3</strong>：解不等式 $-2x^2 + 3x + 2 \leq 0$。</p><p><strong>解</strong>：先把 $a$ 化正——两边同乘 $-1$ <strong>（注意变号！）</strong>：</p><p>$$2x^2 - 3x - 2 \geq 0$$</p><p>因式分解：$(2x + 1)(x - 2) \geq 0$，两根为 $x_1 = -\dfrac12,\ x_2 = 2$，取两边：</p><p>$$x \leq -\frac12 \ \text{或}\ x \geq 2$$</p><p>解集为 $\left(-\infty, -\dfrac12\right] \cup [2, +\infty)$。</p><h3>3.3 恒成立问题（求参数范围）</h3><p>这类题是"三个二次"的高级玩法，方法固定：</p><ul><li>$ax^2 + bx + c &gt; 0$ <strong>恒成立</strong> $\Longleftrightarrow a &gt; 0$ 且 $\Delta &lt; 0$；</li><li>$ax^2 + bx + c &lt; 0$ <strong>恒成立</strong> $\Longleftrightarrow a &lt; 0$ 且 $\Delta &lt; 0$。</li></ul><p><strong>例题4</strong>：若不等式 $x^2 - 2x + k &gt; 0$ 对任意 $x \in \mathbb{R}$ 恒成立，求 $k$ 的取值范围。</p><p><strong>解</strong>：$a = 1 &gt; 0$，只需 $\Delta &lt; 0$：</p><p>$$\Delta = (-2)^2 - 4 \cdot 1 \cdot k = 4 - 4k &lt; 0 \Rightarrow k &gt; 1$$</p><p>所以 $k \in (1, +\infty)$。</p><blockquote><p><strong>易错提醒</strong>：当二次项系数含参数（如 $mx^2+2x+1&gt;0$）时，要<strong>分类讨论</strong> $m = 0$（退化为一次）与 $m \neq 0$ 两种情况，不能漏。</p></blockquote><hr><h2>四、基本不等式——求最值的第一神器</h2><h3>4.1 从平方非负出发</h3><p>因为任何实数的平方都 $\geq 0$：</p><p>$$(a - b)^2 \geq 0 \Rightarrow a^2 - 2ab + b^2 \geq 0 \Rightarrow \boxed{a^2 + b^2 \geq 2ab}\ (a, b \in \mathbb{R})$$</p><p>当且仅当 $a = b$ 时等号成立。这是<strong>一切的起点</strong>。</p><h3>4.2 均值不等式（基本不等式）</h3><p>若 $a, b &gt; 0$，在上式中把 $a, b$ 换成 $\sqrt{a}, \sqrt{b}$，就得到：</p><p>$$\boxed{\frac{a + b}{2} \geq \sqrt{ab}}\quad (a, b &gt; 0)$$</p><p>读作：<strong>两个正数的算术平均数不小于它们的几何平均数。</strong> 当且仅当 $a = b$ 时等号成立。</p><p><strong>常用等价变形</strong>（务必熟练）：</p><p>$$a + b \geq 2\sqrt{ab},\qquad ab \leq \left(\frac{a+b}{2}\right)^2,\qquad ab \leq \frac{a^2+b^2}{2}$$</p><h3>4.3 几何意义（数形结合记忆）</h3><p>在一条线段 $AB = a + b$ 上取分点 $C$，使 $AC = a,\ CB = b$；再以 $AB$ 为直径作半圆，圆心记为 $O$（即 $AB$ 的中点），过 $C$ 作 $AB$ 的垂线，交半圆于 $D$：</p><p><img class="fig" src="images/不等式图2-基本不等式几何意义-v6.svg" alt="不等式图2-基本不等式几何意义-v6.svg"></p><ul><li><strong>半径</strong> $OD = OA = OB = \dfrac{a+b}{2}$（算术平均数）</li><li><strong>垂线段</strong> $CD = \sqrt{ab}$（几何平均数）</li></ul><p><strong>为什么 $CD$ 正好等于 $\sqrt{ab}$？</strong> 由圆周角定理，直径所对的圆周角 $\angle ADB = 90°$，所以 $\triangle ADB$ 是直角三角形，$CD$ 正是它斜边 $AB$ 上的高。由射影定理：</p><p>$$CD^2 = AC \cdot CB = a \cdot b \quad\Longrightarrow\quad CD = \sqrt{ab}$$</p><p>再看直角三角形 $OCD$：$OD$ 是半径（斜边），$CD$ 是一条直角边。<strong>斜边不小于直角边</strong>，于是：</p><p>$$OD \geq CD \quad\Longrightarrow\quad \frac{a+b}{2} \geq \sqrt{ab}$$</p><p>"一样长"（等号成立）当且仅当 $C$ 与 $O$ 重合，也就是 $a = b$ 时发生。</p><h3>4.4 应用三字诀："一正、二定、三相等"</h3><p>用基本不等式求最值，必须同时满足三个条件，缺一不可：</p><ol><li><strong>一正</strong>：参与的两个数必须都是正数（涉负数要先提取负号处理）；</li><li><strong>二定</strong>：要么"和为定值求积的最大值"，要么"积为定值求和的最小值"；</li><li><strong>三相等</strong>：等号能否取到（即让两数相等），否则最值不能取到。</li></ol><p><strong>例题5（积定和最小）</strong>：已知 $x &gt; 0$，求 $x + \dfrac{1}{x}$ 的最小值。</p><p><strong>解</strong>：</p><p>$$x + \frac{1}{x} \geq 2\sqrt{x \cdot \frac{1}{x}} = 2$$</p><p>当且仅当 $x = \dfrac1x$，即 $x = 1$ 时等号成立，最小值为 $2$。</p><p><strong>例题6（和定积最大）</strong>：已知 $0 &lt; x &lt; 1$，求 $x(1-x)$ 的最大值。</p><p><strong>解</strong>：$x &gt; 0,\ 1 - x &gt; 0$，且 $x + (1-x) = 1$ 为定值：</p><p>$$x(1-x) \leq \left(\frac{x + (1-x)}{2}\right)^2 = \left(\frac12\right)^2 = \frac14$$</p><p>当且仅当 $x = 1 - x$，即 $x = \dfrac12$ 时等号成立，最大值为 $\dfrac14$。</p><h3>4.5 技巧一："1"的代换</h3><p>当条件是"和等于定值"（如 $x + y = 1$）、目标是"分式之和"时，把目标式乘上一个"1"，巧妙搭桥。</p><p><strong>例题7</strong>：已知 $x, y &gt; 0$，$x + y = 1$，求 $\dfrac{1}{x} + \dfrac{4}{y}$ 的最小值。</p><p><strong>解</strong>：</p><p>$$\frac1x + \frac4y = \left(\frac1x + \frac4y\right)(x + y) = 1 + \frac{y}{x} + \frac{4x}{y} + 4 = 5 + \frac{y}{x} + \frac{4x}{y}$$</p><p>由基本不等式：</p><p>$$\frac{y}{x} + \frac{4x}{y} \geq 2\sqrt{\frac{y}{x}\cdot\frac{4x}{y}} = 4$$</p><p>所以原式 $\geq 5 + 4 = 9$。当且仅当 $\dfrac{y}{x} = \dfrac{4x}{y}$（即 $y = 2x$）且 $x + y = 1$，解得 $x = \dfrac13,\ y = \dfrac23$ 时取到最小值 $9$。</p><h3>4.6 技巧二：配凑固定结构</h3><p>目标式不是现成的"和为定/积为定"时，先配凑。</p><p><strong>例题8</strong>：已知 $x &gt; 1$，求 $y = x + \dfrac{1}{x - 1}$ 的最小值。</p><p><strong>解</strong>：凑出"积为定值"的结构：</p><p>$$y = (x - 1) + \frac{1}{x - 1} + 1 \geq 2\sqrt{(x-1)\cdot\frac{1}{x-1}} + 1 = 3$$</p><p>当且仅当 $x - 1 = \dfrac{1}{x-1}$，即 $x = 2$ 时等号成立，最小值为 $3$。</p><hr><h2>五、拓展不等式专题</h2><h3>5.1 绝对值不等式</h3><p>绝对值表示"到原点的距离"，所以：</p><p>$$</p><table><thead><tr><th>x</th><th>&lt; a \Longleftrightarrow -a &lt; x &lt; a\quad(a&gt;0);\qquad</th><th>x</th><th>&gt; a \Longleftrightarrow x &lt; -a\ \text{或}\ x &gt; a</th></tr></thead><tbody></tbody></table><p>$$</p><blockquote><p><strong>数形结合</strong>：$|x|$ 就是数轴上点 $x$ 到原点的距离——</p></blockquote><p><img class="fig" src="images/不等式图3-绝对值距离-v2.svg" alt="不等式图3-绝对值距离-v2.svg"></p><p><strong>三角不等式</strong>（重要性质）：</p><p>$$</p><table><thead><tr><th>a</th><th>-</th><th>b</th><th></th><th>\leq</th><th>a \pm b</th><th>\leq</th><th>a</th><th>+</th><th>b</th></tr></thead><tbody></tbody></table><p>$$</p><p><strong>例题9</strong>：解不等式 $|2x - 1| \leq 3$。</p><p><strong>解</strong>：</p><p>$$-3 \leq 2x - 1 \leq 3 \Rightarrow -2 \leq 2x \leq 4 \Rightarrow -1 \leq x \leq 2$$</p><p>解集为 $[-1, 2]$。</p><p><strong>例题10</strong>：解不等式 $|x - 1| + |x + 3| \geq 4$。</p><p><strong>解</strong>：用"零点分段法"。两个零点为 $x = -3$ 和 $x = 1$：</p><ul><li>$x &lt; -3$：$-(x-1) - (x+3) \geq 4 \Rightarrow -2x - 2 \geq 4 \Rightarrow x \leq -3$（结合 $x &lt; -3$ 取 $x \leq -3$）</li><li>$-3 \leq x &lt; 1$：$-(x-1) + (x+3) \geq 4 \Rightarrow 4 \geq 4$，恒成立</li><li>$x \geq 1$：$(x-1) + (x+3) \geq 4 \Rightarrow 2x + 2 \geq 4 \Rightarrow x \geq 1$</li></ul><p>综上，解集为 $\mathbb{R}$。</p><h3>5.2 分式不等式</h3><p>核心思想：<strong>化分式为整式</strong>。注意分母不能为 0。</p><p>$$\frac{x-a}{x-b} &gt; 0 \Longleftrightarrow (x-a)(x-b) &gt; 0\ \text{且}\ x \neq b$$</p><p><strong>例题11</strong>：解不等式 $\dfrac{x-2}{x+1} \leq 0$。</p><p><strong>解</strong>：等价于</p><p>$$\begin{cases}(x-2)(x+1) \leq 0 \\x + 1 \neq 0\end{cases}\Rightarrow -1 &lt; x \leq 2$$</p><p>解集为 $(-1, 2]$。</p><h3>5.3 高次不等式（穿针引线法）</h3><p>对 $(x-x_1)(x-x_2)\cdots(x-x_n) &gt; 0$ 这类高次不等式，用<strong>数轴标根、奇穿偶回</strong>：</p><ol><li>把每个因式的根按从小到大标在数轴上；</li><li>从<strong>最右上方</strong>开始，自右向左"穿针"；</li><li>遇<strong>奇次因式</strong>的根（如 $x-a$）"穿过去"，遇<strong>偶次因式</strong>的根（如 $(x-a)^2$）"折回"；</li><li>数轴上方区间对应 $&gt;0$，下方对应 $&lt;0$。</li></ol><blockquote><p><strong>数形结合</strong>：以 $(x-1)(x+2)(x-3)&gt;0$ 为例，把"奇穿偶回"画成图——</p></blockquote><p><img class="fig" src="images/不等式图4-穿针引线-v2.svg" alt="不等式图4-穿针引线-v2.svg"></p><p><strong>例题12</strong>：解不等式 $(x-1)(x+2)(x-3) &gt; 0$。</p><p><strong>解</strong>：三个根 $-2,\ 1,\ 3$，自右上向左依次穿过，$&gt;0$ 取数轴上方：</p><p>$$x \in (-2, 1) \cup (3, +\infty)$$</p><h3>5.4 柯西不等式（高维利器）</h3><p>二维形式：</p><p>$$(a^2 + b^2)(c^2 + d^2) \geq (ac + bd)^2$$</p><p>当且仅当 $\dfrac{a}{c} = \dfrac{b}{d}$ 时等号成立。它在"知条件求分式最值"时威力巨大。</p><blockquote><p><strong>衔接提示</strong>：本专题另有专门的《柯西不等式求最值——通用解题方法》笔记，里面整理了直接配凑法、权方和、待定系数法等四大套路，学完本章后可配套阅读。</p></blockquote><hr><h2>六、数学思想深度解析</h2><h3>6.1 数形结合思想</h3><p>不等式是"数形结合"最经典的舞台：一元二次不等式翻译成抛物线，均值不等式翻译成半圆，绝对值不等式翻译成数轴距离。<strong>看到代数式，先在脑中画出它的"几何画像"。</strong></p><h3>6.2 转化与化归思想</h3><p>高中数学的解题主线就是"转化"：</p><ul><li>分式不等式 $\to$ 整式不等式</li><li>高次不等式 $\to$ 数轴穿针</li><li>绝对值含多个零点 $\to$ 分段讨论</li><li>求最值 $\to$ 构造"定值"结构再套基本不等式</li></ul><p><strong>解题的本质，是把没见过的题，变成见过的题。</strong></p><h3>6.3 分类讨论思想</h3><p>当参数不确定（如二次项系数、判别式符号、绝对值区间）时，必须分类讨论。核心纪律是：<strong>"不重不漏"</strong>，每一类的结论最后要合并。</p><h3>6.4 函数与方程思想</h3><p>一元二次不等式为什么能用图像解？因为它本质上是研究"二次函数值与 0 的大小关系"。<strong>不等式的问题，常常可以挂靠到函数图像上解决。</strong></p><hr><h2>七、典型例题详解</h2><h3>例题13：含参一元二次不等式</h3><p><strong>题目</strong>：解关于 $x$ 的不等式 $x^2 - (a+1)x + a \leq 0$。</p><p><strong>解</strong>：因式分解：</p><p>$$x^2 - (a+1)x + a = (x-1)(x-a) \leq 0$$</p><p>要"取中间"，需确定两根 $1$ 与 $a$ 的大小：</p><ul><li>$a &gt; 1$：解集为 $[1, a]$；</li><li>$a = 1$：原式为 $(x-1)^2 \leq 0$，解集为 $\{1\}$；</li><li>$a &lt; 1$：解集为 $[a, 1]$。</li></ul><h3>例题14：基本不等式求最值（综合）</h3><p><strong>题目</strong>：已知 $x &gt; 0,\ y &gt; 0$，且 $2x + y = 2$，求 $\dfrac{1}{x} + \dfrac{1}{y}$ 的最小值。</p><p><strong>解</strong>：</p><p>$$\frac1x + \frac1y = \left(\frac1x + \frac1y\right)\cdot\frac{2x+y}{2} = \frac12\left(3 + \frac{y}{x} + \frac{2x}{y}\right)$$</p><p>由基本不等式 $\dfrac{y}{x} + \dfrac{2x}{y} \geq 2\sqrt{2}$：</p><p>$$\frac1x + \frac1y \geq \frac12(3 + 2\sqrt2)$$</p><p>当且仅当 $\dfrac{y}{x} = \dfrac{2x}{y}$ 即 $y = \sqrt2 x$，结合 $2x + y = 2$ 时取等号。最小值为 $\dfrac{3 + 2\sqrt2}{2}$。</p><h3>例题15：恒成立求参数</h3><p><strong>题目</strong>：若 $x \in [0, 1]$ 时，$x^2 + ax + 1 \geq 0$ 恒成立，求 $a$ 的取值范围。</p><p><strong>解</strong>：分离参数（$x \neq 0$ 时）：</p><p>$$a \geq -\left(x + \frac1x\right)$$</p><p>由基本不等式，$x + \dfrac1x \geq 2$（当 $x=1$ 取等），所以 $-(x+\dfrac1x) \leq -2$。要 $a \geq -(x+\dfrac1x)$ 对一切 $x \in (0,1]$ 恒成立，只需 $a \geq \left[-(x+\dfrac1x)\right]_{\max} = -2$；再检查 $x=0$ 时原式 $1 \geq 0$ 恒成立。故 $a \geq -2$。</p><hr><h2>八、练习题</h2><h3>基础题</h3><ol><li>解不等式 $x^2 - 5x + 6 &lt; 0$</li><li>解不等式 $|x - 2| &lt; 3$</li><li>已知 $x &gt; 0$，求 $x + \dfrac{9}{x}$ 的最小值</li><li>解不等式 $\dfrac{x+1}{x-2} &gt; 0$</li><li>判断：若 $a &gt; b$，则 $a^2 &gt; b^2$ 是否一定成立？为什么？</li></ol><h3>提高题</h3><ol><li>解不等式 $-x^2 + 4x - 3 \geq 0$</li><li>解不等式 $(x-1)(x+2)(x-3)^2 \leq 0$</li><li>已知 $x &gt; 0,\ y &gt; 0$，$x + y = 1$，求 $xy$ 的最大值</li><li>若 $x^2 - 2x + k - 3 \geq 0$ 对任意 $x \in \mathbb{R}$ 恒成立，求 $k$ 的取值范围</li><li>解关于 $x$ 的不等式 $x^2 - ax - 2a^2 &lt; 0$（$a \in \mathbb{R}$）</li></ol><h3>拓展题</h3><ol><li>已知 $x &gt; 1$，求 $y = 2x + \dfrac{2}{x-1}$ 的最小值</li><li>用基本不等式证明：若 $a, b &gt; 0$，则 $\dfrac{a}{b} + \dfrac{b}{a} \geq 2$</li><li>若 $x \in [0, 2]$ 时，$x^2 - 2x + m \geq 0$ 恒成立，求 $m$ 的取值范围</li></ol><hr><h2>九、练习题答案</h2><h3>基础题</h3><ol><li>$(x-2)(x-3) &lt; 0 \Rightarrow 2 &lt; x &lt; 3$，解集 $(2, 3)$</li><li>$-3 &lt; x - 2 &lt; 3 \Rightarrow -1 &lt; x &lt; 5$，解集 $(-1, 5)$</li><li>$x + \dfrac9x \geq 2\sqrt{x\cdot\dfrac9x} = 6$，当 $x = 3$ 时取等，最小值为 $6$</li><li>等价于 $(x+1)(x-2) &gt; 0$ 且 $x \neq 2$，解集 $(-\infty, -1) \cup (2, +\infty)$</li><li>不一定。反例：$a = -1,\ b = -2$，有 $a &gt; b$ 但 $a^2 = 1 &lt; 4 = b^2$。原因是乘方性质要求 $a &gt; b &gt; 0$（都为正数）</li></ol><h3>提高题</h3><ol><li>两边乘 $-1$ 变号：$x^2 - 4x + 3 \leq 0 \Rightarrow (x-1)(x-3) \leq 0 \Rightarrow 1 \leq x \leq 3$</li><li>因式 $(x-3)^2$ 为偶次因式（根 $x=3$ 处"折回"），穿针后 $\leq 0$ 取数轴下方与根点：解集 $(-\infty, -2] \cup [1, 3]$</li><li>$xy \leq \left(\dfrac{x+y}{2}\right)^2 = \dfrac14$，当 $x=y=\dfrac12$ 时取等，最大值为 $\dfrac14$</li><li>需 $\Delta \leq 0$：$(-2)^2 - 4(k-3) \leq 0 \Rightarrow 4 - 4k + 12 \leq 0 \Rightarrow k \geq 4$</li><li>因式分解：$(x - 2a)(x + a) &lt; 0$，两根 $2a$ 与 $-a$。当 $a &gt; 0$：$(-a, 2a)$；当 $a &lt; 0$：$(2a, -a)$；当 $a = 0$：$x^2 &lt; 0$ 无解</li></ol><h3>拓展题</h3><ol><li>$y = 2x + \dfrac{2}{x-1} = 2(x-1) + \dfrac{2}{x-1} + 2 \geq 2\sqrt{2(x-1)\cdot\dfrac{2}{x-1}} + 2 = 4 + 2 = 6$，当 $2(x-1) = \dfrac{2}{x-1}$ 即 $x = 2$ 时取等，最小值为 $6$</li><li>$\dfrac{a}{b} + \dfrac{b}{a} \geq 2\sqrt{\dfrac{a}{b}\cdot\dfrac{b}{a}} = 2$，当 $a = b$ 时取等</li><li>$y = x^2 - 2x + m = (x-1)^2 + m - 1$，在 $[0,2]$ 上最小值为 $m - 1$（在 $x=1$ 取到），故需 $m - 1 \geq 0 \Rightarrow m \geq 1$</li></ol><hr><h2>十、145+目标行动建议</h2><h3>10.1 不等式在高考中的定位</h3><table><thead><tr><th>维度</th><th>说明</th></tr></thead><tbody><tr><td><strong>分值占比</strong></td><td>主要以"融合题"出现，直接或间接涉及约 15-20 分</td></tr><tr><td><strong>难度级别</strong></td><td>基础题到压轴题都有，是"得分基本盘 + 拉分点"兼具的章节</td></tr><tr><td><strong>考查形式</strong></td><td>选择题、填空题（解不等式、求最值）、解答题（恒成立、参数范围）</td></tr></tbody></table><p><strong>核心结论</strong>：不等式几乎不单独出大题，却"埋伏"在函数、数列、解析几何、导数压轴题里。<strong>它是决定你是否能稳定中档、冲击压轴的地基。</strong></p><h3>10.2 必做：夯实三个"地基"</h3><ol><li><strong>不等式性质</strong>：把 2.2 的三大易错点背成条件反射（尤其"乘负变号"）；</li><li><strong>三个二次</strong>：图像法滚瓜烂熟，"大于取两边、小于取中间"形成肌肉记忆；</li><li><strong>基本不等式</strong>：把"一正二定三相等"内化，典型结构（$x+\dfrac1x$、$\dfrac1x+\dfrac4y$、"1代换"）做到一眼识别。</li></ol><h3>10.3 必做：打通"不等式 ↔ 函数"的通道</h3><p>高频综合题型：</p><ol><li><strong>定义域</strong>：解 $f(x)=\sqrt{x-1}+\dfrac{1}{x-2}$ 的定义域 $\Rightarrow$ 解不等式组；</li><li><strong>恒成立</strong>：$f(x) \geq 0$ 恒成立 $\Rightarrow$ 转化为最值 / 判别式；</li><li><strong>求最值</strong>：函数最值 $\Rightarrow$ 基本不等式定值配凑。</li></ol><h3>10.4 时间分配建议（暑期预习 + 高一跟进）</h3><table><thead><tr><th>阶段</th><th>时间</th><th>任务</th></tr></thead><tbody><tr><td>第 1 天</td><td>60 分钟</td><td>通读本章，重点吃透"三个二次"与图像法</td></tr><tr><td>第 2 天</td><td>60 分钟</td><td>主攻基本不等式与"一正二定三相等"</td></tr><tr><td>第 3 天</td><td>45 分钟</td><td>完成基础题 + 提高题，对照答案订正</td></tr><tr><td>第 4 天</td><td>30 分钟</td><td>错题复盘，整理易错点（乘负变号、等号取等条件）</td></tr><tr><td>后续</td><td>每天 10 分钟</td><td>限时做 3-5 道不等式题保持手感</td></tr></tbody></table><h3>10.5 学习路径衔接</h3><p>完成本章后，建议按序推进：</p><ol><li>与本专题配套的 <strong>《柯西不等式求最值——通用解题方法》</strong> 笔记；</li><li>进入 <strong>函数章节</strong>（不等式求定义域、值域、最值会反复用到）；</li><li>后续可回看 <strong>《函数与不等式章节深度学习材料》</strong> 中的绝对值、柯西拓展，形成"不等式能力闭环"。</li></ol><hr><p>tags: #高考 #数学 #不等式 #学习材料</p>
+
+<div class="tags">关键词：不等式 / 八大性质 / 三个二次 / 基本不等式 / 穿针引线 / 绝对值 / 柯西</div>
+<div class="footer">本讲义面向高中学生通用，可与讲解视频、网页课件配合使用；可直接打印或转发。</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'neutral',
+      securityLevel: 'loose',
+      themeVariables: { fontFamily: '"PingFang SC","Microsoft YaHei",sans-serif', fontSize: '14px' }
+    });
+  }
+</script>
+<div class="resource"><h3>配套资源</h3>
+<p class="res-links"><a href="https://www.bilibili.com/video/BV19Gpi6JEEh?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">▶ 观看讲解视频（B 站）</a><a href="https://nagu.cc/gk/%E6%95%B0%E5%AD%A6/%E4%B8%8D%E7%AD%89%E5%BC%8F%E5%A4%8D%E4%B9%A0%E8%AE%B2%E8%A7%A3-%E8%AF%BE%E4%BB%B6.html" target="_blank" rel="noopener">📄 查看图文课件</a></p></div>
+</body>
+</html>

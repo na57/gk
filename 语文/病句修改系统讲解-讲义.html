@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>病句修改系统讲义（高一衔接版）</title>
+<style>
+:root {
+  --primary: #1a365d; --accent: #2f855a; --accent-light: #f0fff4;
+  --accent-border: #9ae6b4; --text: #2d3748; --muted: #718096;
+  --border: #e2e8f0; --bg-light: #f7fafc;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+               "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+  font-size: 15.5px; line-height: 1.75; color: var(--text);
+  background: #ffffff; max-width: 840px; margin: 0 auto; padding: 36px 28px 56px;
+}
+.cover { text-align: center; padding: 84px 0 56px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+.cover h1 { font-size: 2.1em; color: var(--primary); font-weight: 700; margin-bottom: 14px; letter-spacing: 2px; }
+.cover .subtitle { font-size: 1.05em; color: var(--muted); margin-bottom: 24px; }
+.cover .divider { width: 100px; height: 4px; background: var(--accent); margin: 0 auto 24px; border-radius: 2px; }
+.cover .meta { font-size: 0.95em; color: var(--muted); line-height: 2.1; }
+.scope {
+  background: var(--accent-light); border: 1px solid var(--accent-border);
+  border-radius: 8px; padding: 14px 18px; margin: 0 0 28px;
+  font-size: 0.95em; color: #2c5282;
+}
+.scope strong { color: var(--primary); }
+h2 { font-size: 1.5em; color: var(--primary); margin-top: 44px; margin-bottom: 14px;
+     padding-bottom: 6px; border-bottom: 3px solid var(--accent); display: inline-block;
+     padding-right: 18px; font-weight: 700; }
+h3 { font-size: 1.18em; color: var(--accent); margin-top: 26px; margin-bottom: 10px;
+     font-weight: 600; padding-left: 10px; border-left: 4px solid var(--accent); }
+h4 { font-size: 1.02em; color: var(--primary); margin-top: 18px; margin-bottom: 6px; font-weight: 600; }
+p { margin-bottom: 10px; text-align: justify; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 0.93em; }
+th { background: var(--accent); color: #fff; padding: 10px 12px; text-align: center;
+     font-weight: 600; border: 1px solid var(--accent); }
+td { padding: 8px 12px; border: 1px solid var(--border); text-align: center; vertical-align: middle; }
+tr:nth-child(even) td { background: var(--bg-light); }
+tr:hover td { background: var(--accent-light); }
+blockquote { background: var(--accent-light); border-left: 5px solid var(--accent);
+  padding: 12px 18px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #2c5282; }
+blockquote p { margin-bottom: 5px; }
+blockquote p:last-child { margin-bottom: 0; }
+blockquote strong { color: var(--primary); }
+blockquote ul, blockquote ol { margin: 6px 0 6px 20px; }
+ul, ol { margin: 8px 0 12px 22px; }
+li { margin-bottom: 4px; }
+li ul, li ol { margin-top: 3px; margin-bottom: 3px; }
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+pre { background: var(--bg-light); padding: 14px; border-radius: 8px; overflow-x: auto;
+      font-size: 0.88em; line-height: 1.5; margin: 12px 0; border: 1px solid var(--border); }
+code { background: var(--bg-light); padding: 2px 5px; border-radius: 4px; font-size: 0.9em;
+       font-family: "SF Mono", Menlo, Consolas, monospace; }
+pre code { padding: 0; background: none; }
+.diagram { background: var(--bg-light); border: 1px solid var(--border); border-radius: 8px;
+           padding: 14px 8px; margin: 14px 0; text-align: center; overflow-x: auto; }
+.diagram pre.mermaid { background: none; border: none; margin: 0; padding: 0; text-align: center; }
+.tags { margin-top: 44px; padding-top: 16px; border-top: 1px solid var(--border);
+        color: var(--muted); font-size: 0.88em; }
+.footer { text-align: center; color: var(--muted); font-size: 0.85em; margin-top: 32px; }
+.resource{margin-top:36px;padding:18px 20px;background:#f0fff4;border:1px solid #9ae6b4;border-radius:10px;}.resource h3{margin-top:0;color:#1a365d;}.res-links{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0 0;}.res-links a{display:inline-block;padding:9px 14px;border-radius:8px;background:#2f855a;color:#fff;text-decoration:none;font-weight:600;font-size:.95em;}.res-links a:hover{filter:brightness(1.08);}
+@media print {
+  body { padding: 0; max-width: none; font-size: 14px; }
+  .cover { page-break-after: always; padding: 120px 0 0; }
+  h2, h3 { page-break-after: avoid; }
+  table, blockquote, pre, .diagram { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>病句修改系统讲义（高一衔接版）</h1>
+  <div class="divider"></div>
+  <div class="subtitle">系统为主 · 语感兜底</div>
+  <div class="meta">
+    <span>高中语文 · 通用备考讲义</span><br>
+    <span>适用：云南省新高考 II 卷 · 语言文字运用</span><br>
+    <span>结构：认知 → 地基 → 六类型 → 速查卡 → 流程 → 训练 → 方法论</span>
+  </div>
+</div>
+
+<div class="scope">适用：云南省新高考 II 卷 · 语文「语言文字运用」板块<br>定位：高一可消化，框架逐步衔接高考；不追求压轴难度，先把底盘打稳<br>用法：先读「讲」建立框架，再做「练」固化；错题必须归回六大类型，否则练了也白练</div>
+<hr><h2>使用说明：怎么用这份材料最有效</h2><p>这份讲义<strong>不是用来"从头读到尾"的</strong>。最有效的路径是 <strong>「建框架 → 马上练 → 归类 → 间隔重做」</strong>，步骤如下：</p><ol><li><strong>第 1 遍只扫框架</strong>：读第二章「六大类型」和第三章「十看速查卡」，知道有哪几类病、看见什么标志要报警即可，<strong>不要深抠每个例子</strong>。</li><li><strong>立刻小试</strong>：做第五章「训练 A」的前两类（语序不当、搭配不当），做完马上翻第七章答案自查，验证框架是否真懂。</li><li><strong>贴近高考练</strong>：做第五章「训练 C」语段改病句，这就是新高考 II 卷的真实考法（指出序号并修改）。</li><li><strong>错题必标注</strong>（最关键一步）：每道错题在题号旁写一句——<strong>「这是六大型里的哪一类 + 触发了哪个标志」</strong>。语感就在这归类里长出来；不归类＝白练。</li><li><strong>间隔重做</strong>：按第六章方法，第 1 天做 → 第 3 天重做错题 → 第 10 天再做一遍。比连刷三遍当场题有效得多。</li><li><strong>朗读改后句</strong>：把正确答案出声读出来，让耳朵记住"对"长什么样。</li></ol><blockquote><p>💡 高一阶段目标：把六大类型刻进肌肉记忆，不追求题量碾压。到高二高三，语段改病句那几分会非常稳。</p></blockquote><hr><h2>〇、先立一个认知：语感是结果，不是方法</h2><p>常见困惑：「改病句是不是全凭语感？」</p><p>答：<strong>语感好的人，本质是大脑里已经内化了语法规则和搭配习惯，只是说不清为什么。</strong> 但它不可传授、不稳定——同一道题，今天语感在线改对了，明天疲劳就放过了。</p><p>所以正确姿态是 <strong>「系统为主、语感兜底」</strong>：</p><ul><li><strong>系统</strong> = 句子成分 + 六大类型 + 标志词 + 四步流程。这是骨架，能覆盖高考 90% 以上的病句。</li><li><strong>语感</strong> = 最后一道校验。读着拗口就标出来，回头用系统法复核。</li></ul><p><strong>关于「多练能不能长语感」</strong>——能，但有个前提：<strong>乱练不如归类练。</strong> 每改错一道，必须把它归回「六大类型」里的某一类、指出触发了哪个「标志」，语感才会被固化。第六章专门讲怎么练才高效。</p><hr><h2>一、底层地基：句子成分（5 分钟搞懂）</h2><p>改病句最基本的工具是<strong>提主干</strong>。先搞清六个成分：</p><table><thead><tr><th>成分</th><th>回答的问题</th><th>典型标志</th><th>例子</th></tr></thead><tbody><tr><td>主语</td><td>谁 / 什么</td><td>——</td><td>（他）吃饭</td></tr><tr><td>谓语</td><td>干什么 / 怎么样</td><td>——</td><td>他（吃）饭</td></tr><tr><td>宾语</td><td>动作的对象</td><td>——</td><td>他吃（饭）</td></tr><tr><td>定语</td><td>什么样的（名词）</td><td>的</td><td>（红）花、（勤奋的）同学</td></tr><tr><td>状语</td><td>怎样地（动/形）</td><td>地</td><td>（认真）地写</td></tr><tr><td>补语</td><td>结果 / 程度</td><td>得</td><td>写（得好）、跑（得快）</td></tr></tbody></table><p><strong>主干 = 主语 + 谓语 +（宾语）。</strong> 枝叶 = 定状补。</p><p><strong>提主干的做法</strong>：把定状补全部砍掉，只看剩下的主谓宾能不能独立成立、搭不搭。绝大多数「残缺」「搭配不当」一砍就现形。</p><h3>💡 地基小测（答案见第七章）</h3><p><strong>练 1</strong>　划出下面句子的主干：</p><blockquote><p>蔚蓝的天空中飘着朵朵洁白的云。</p></blockquote><p><strong>练 2</strong>　划出主干：</p><blockquote><p>勤奋的同学们认真地完成了老师布置的作业。</p></blockquote><p><strong>练 3</strong>　下面句子主干有问题吗？说出问题：</p><blockquote><p>通过这次社会实践活动，使同学们增强了社会责任感。</p></blockquote><hr><h2>二、六大病句类型（讲 + 例 + 改 + 即时小练）</h2><p>高考病句就这六类。每类先给「是什么、典型错例、怎么改」，再配 2 道即时小练。</p><h3>类型 1　语序不当</h3><p><strong>是什么</strong>：词语或分句的先后顺序不对，逻辑或习惯上说不通。</p><p><strong>常见情形</strong></p><ul><li>多重定语 / 状语顺序乱（领属 → 数量 → 动词短语 → 形容词 → 名词）</li><li>关联词位置错（主语一致时，关联词放主语后）</li><li>并列分句逻辑顺序错（应先「提出」再「发现」再「解决」）</li></ul><p><strong>错例</strong></p><ul><li>① 许多附近的同学都来参加了活动。→ 附近的许多同学……（处所应在数量前）</li><li>② 不但他学习好，而且品德也好。→ 他不但学习好，而且品德也好。</li></ul><p><strong>即时小练</strong></p><ul><li><strong>练 4</strong>　修改：博物馆里展出了两千多年前新出土的文物。</li><li><strong>练 5</strong>　修改：我们认真讨论并听取了班长的报告。（提示：逻辑顺序）</li></ul><hr><h3>类型 2　搭配不当</h3><p><strong>是什么</strong>：句子成分之间不能搭配——主谓不搭、动宾不搭、主宾不搭、一面两面不搭、关联词不搭。</p><p><strong>错例</strong></p><ul><li>① 春风吹来，树枝摇曳，月光和树影一齐晃动起来，发出沙沙的声响。→ 「月光、树影发出声响」不搭，应是「树枝发出声响」。（主谓搭配）</li><li>② 我们要扩大学校的知名度。→ 提高知名度。（动宾搭配：知名度只能「提高」，不能「扩大」）</li><li>③ 能否考好，取决于你努力不努力。→ 两面对两面，正确；若改成「能否考好，取决于你努力」就错（两面对一面）。</li></ul><p><strong>即时小练</strong></p><ul><li><strong>练 6</strong>　修改：他那崇高的革命品质，经常浮现在我的脑海中。（提示：品质能浮现吗？）</li><li><strong>练 7</strong>　修改：不管气候条件极端不利，登山队员仍然克服了困难。（提示：关联词搭配）</li></ul><hr><h3>类型 3　成分残缺或赘余</h3><p><strong>是什么</strong>：该有的成分没了（残缺），或不该有的重复了（赘余）。</p><p><strong>错例</strong></p><ul><li>① 通过这次活动，使同学们受到了教育。→ 删「通过」或删「使」，主语残缺。</li><li>② 他从小就养成了饭前洗手。→ 缺宾语，应是「饭前洗手的习惯」。</li><li>③ 大约过了一个小时左右。→ 「大约」与「左右」重复，删其一。</li><li>④ 许多莘莘学子。「莘莘」本就指众多，前面不能再加「许多」。</li></ul><p><strong>即时小练</strong></p><ul><li><strong>练 8</strong>　修改：在老师的帮助下，使我的成绩有了明显提高。</li><li><strong>练 9</strong>　修改：这句话的后面，包含了多么丰富的无声的潜台词。（提示：无声 = 潜台词？）</li></ul><hr><h3>类型 4　结构混乱</h3><p><strong>是什么</strong>：一句话硬把两种句式揉在一起（句式杂糅），或前半句主语没说完就换了主语（中途易辙）。</p><p><strong>高频杂糅结构</strong>（背下来）</p><ul><li>原因是……造成的 → 原因是…… / 是……造成的</li><li>本着……为原则 → 本着……原则 / 以……为原则</li><li>深受……所欢迎 → 深受……欢迎 / 为……所欢迎</li><li>是由于……的结果 → 是由于…… / 是……的结果</li></ul><p><strong>错例</strong></p><ul><li>① 这部小说深受广大读者所喜爱。→ 去掉「所」。</li><li>② 中国人民自从接受了马列主义，中国革命就焕然一新了。→ 「中国人民」没说完就换了主语，应改为「自从中国人民接受了……，中国革命就……」。</li></ul><p><strong>即时小练</strong></p><ul><li><strong>练 10</strong>　修改：这本杂志的对象，主要是面向中小学语文教师。</li><li><strong>练 11</strong>　修改：他参加工作后，坚持自学，从而提高了业务水平，取得了显著成绩，这难道能否认他不是个上进的青年吗？（提示：多重否定 + 反问）</li></ul><hr><h3>类型 5　表意不明</h3><p><strong>是什么</strong>：句子语法没错，但意思含糊、有歧义或指代不清。</p><p><strong>错例</strong></p><ul><li>① 小李和小王一起吃饭，他给了她一张优惠券。→ 谁给谁？指代不明。</li><li>② 三个学校的校长参加了会议。→ 三所学校的校长？还是学校的三位校长？</li><li>③ 咬死猎人的狗。→ 狗咬死了猎人？还是（被）咬死的是猎人的狗？</li></ul><p><strong>即时小练</strong></p><ul><li><strong>练 12</strong>　修改：桌上放着许多朋友送的礼物。（提示：是朋友送的许多礼物，还是许多朋友送的礼物？）</li><li><strong>练 13</strong>　修改：妹妹找不到妈妈心里很着急。（提示：停顿不同意思不同）</li></ul><hr><h3>类型 6　不合逻辑</h3><p><strong>是什么</strong>：事理上说不通——自相矛盾、分类不当、主客颠倒、否定失当。</p><p><strong>错例</strong></p><ul><li>① 他是多少个死难者中幸免的一个。→ 「死难者」与「幸免」矛盾。</li><li>② 商店里摆满了葡萄、苹果、梨和水果。→ 水果包含前三者，种属不能并列。</li><li>③ 数学对我很感兴趣。→ 主客颠倒，应是「我对数学很感兴趣」。</li><li>④ 为了防止这类事故不再发生，我们加强了管理。→ 「防止」已有否定意，再加「不」变成要让它发生，应改「不再」为「再次」。</li></ul><p><strong>即时小练</strong></p><ul><li><strong>练 14</strong>　修改：万里无云，繁星满天，我站在阳台上仰望星空。</li><li><strong>练 15</strong>　修改：谁也不能否认，地球不是绕着太阳转的。（提示：三重否定）</li></ul><hr><h2>三、标志词速查卡（十看）</h2><p>看见下面这些「标志」，立刻亮红灯，按对应类型排查：</p><table><thead><tr><th>看到</th><th>警惕的病句类型</th><th>典型例子</th></tr></thead><tbody><tr><td><strong>并列词</strong>（和 / 与 / 及 / 并）</td><td>搭配不当、并列不当、语序</td><td>提高……吸引力和知名度（知名只能提）</td></tr><tr><td><strong>关联词</strong>（因为…所以 / 不仅…而且 / 不管…都）</td><td>搭配 / 语序 / 残缺</td><td>「不管」配「都」，不配「仍然」</td></tr><tr><td><strong>否定词</strong>（不 / 无 / 否认 / 避免 / 防止）</td><td>否定失当（多否变肯）</td><td>防止…不再发生 / 避免不要犯错</td></tr><tr><td><strong>数量词</strong>（约 / 左右 / 超过 / 至少）</td><td>约数重复、倍数误用</td><td>超过两千多年 / 大约…左右</td></tr><tr><td><strong>两面词</strong>（是否 / 能否 / 优劣 / 成败）</td><td>两面对一面</td><td>能否成功，取决于努力</td></tr><tr><td><strong>介词开头</strong>（通过 / 由于 / 对于 / 在）</td><td>主语残缺、主客颠倒</td><td>通过…使…（缺主语）</td></tr><tr><td><strong>代词</strong>（这 / 其 / 他 / 她）</td><td>指代不明</td><td>小李和小王…他给了她</td></tr><tr><td><strong>助词</strong>（着 / 了 / 过）</td><td>时态自相矛盾</td><td>删「了」或「过」</td></tr><tr><td><strong>固定结构</strong>（原因是…造成的 / 本着…为原则）</td><td>句式杂糅</td><td>深受…所欢迎</td></tr><tr><td><strong>程度/范围副词叠加</strong>（十分 / 非常 / 最 + 本身绝对的词）</td><td>不合逻辑</td><td>十分悬殊 / 最佼佼者</td></tr></tbody></table><blockquote><p>💡 这张卡建议抄成小纸条，做题前扫一遍。高考病句 90% 带着标志，看见就报警，比语感可靠。</p></blockquote><hr><h2>四、四步解题流程</h2><p>拿到一个句子或语段，按这个顺序走，<strong>不要一上来就凭感觉改</strong>：</p><ol><li><strong>语感初筛</strong>：通读，把读着拗口、别扭的地方标出来。</li><li><strong>提主干</strong>：砍定状补，查主语残缺、主谓/动宾搭配。</li><li><strong>扫标志</strong>：用第三章「十看」逐条过，定位类型。</li><li><strong>逻辑复核</strong>：语法都对，再查事理、前后、句间关系通不通。</li></ol><p><strong>口诀</strong>：一读二砍三看标志四逻辑，四类病根跑不掉。</p><blockquote><p>改的时候记住铁律：<strong>可增删少量词语，但不得改变原意。</strong> 高考改病句题明确要求这一点，别把句子改写了。</p></blockquote><hr><h2>五、实战训练（大量）</h2><blockquote><p>训练前先看一眼第三章「标志词速查卡」。做完遮住第七章答案自查。每错一道，在题号旁标注：<strong>这是六大型里的哪一类 + 触发了哪个标志</strong>。这是把语感固化的关键一步。</p></blockquote><h3>训练 A　单句分类型（每类 4 题，共 24 题）</h3><p><strong>【语序不当】</strong></p><ul><li><strong>A1</strong>　我们学校开展了「书香校园」，同学们阅读热情高涨。</li><li><strong>A2</strong>　他不仅能用英语交流，而且能用英语写作。（提示：递进顺序）</li><li><strong>A3</strong>　各类商品琳琅满目，摆放在货架上整齐地。</li><li><strong>A4</strong>　我们要善于解决问题、发现问题、提出问题。</li></ul><p><strong>【搭配不当】</strong></p><ul><li><strong>A5</strong>　春天的昆明，是一个美丽的季节。</li><li><strong>A6</strong>　他的写作水平明显改进了。</li><li><strong>A7</strong>　能否坚持锻炼，是身体健康的保证。</li><li><strong>A8</strong>　这篇小说塑造了一个优秀的人民教师的精神品质。</li></ul><p><strong>【成分残缺或赘余】</strong></p><ul><li><strong>A9</strong>　由于天下大雨，只好取消今天的运动会。</li><li><strong>A10</strong>　他出生在农民家庭，从小就养成了吃苦耐劳。</li><li><strong>A11</strong>　这句话表达了同学们对老师的无比热爱和崇敬之情。（提示：无比 + 崇敬？看是否重复）★ 本题为「无病句」，用于练眼力</li><li><strong>A12</strong>　截至目前，已有大约 200 人左右报名。</li></ul><p><strong>【结构混乱】</strong></p><ul><li><strong>A13</strong>　止咳祛痰片，它里面的主要成分是远志、桔梗等配制而成的。</li><li><strong>A14</strong>　这家工厂由于生产抓得紧，因而各项经济指标上升，但是仍不能满足社会需要，这是因为技术力量薄弱的原因。</li><li><strong>A15</strong>　游客来到这个景区，可以看到各种花卉和古朴的民居建筑，还有当地居民表演的民俗节目，这深受游客所喜欢。</li><li><strong>A16</strong>　本着方便群众为原则，社区开设了多个服务窗口。</li></ul><p><strong>【表意不明】</strong></p><ul><li><strong>A17</strong>　几个工厂的领导参加了这次座谈会。</li><li><strong>A18</strong>　他背着总经理和副总经理偷偷把这笔钱存入了银行。（提示：和 = 与？还是 = 连同？）</li><li><strong>A19</strong>　天亮了，我要炒肉丝了，你看着办吧。（提示：「炒肉丝」是菜名还是动作？）</li><li><strong>A20</strong>　我看见小张扶着一位老人走下车来，手里提着一个红包。（提示：谁提红包？）</li></ul><p><strong>【不合逻辑】</strong></p><ul><li><strong>A21</strong>　他是多少个死难者中幸免的一个。</li><li><strong>A22</strong>　我每次向他借书，他都不假思索地答应了，这难道能否认他不是个热情的人吗？</li><li><strong>A23</strong>　厨房里飘出的饭菜香味和锅碗瓢盆的碰撞声，让人感到温馨。</li><li><strong>A24</strong>　全班同学基本上都完成了作业。（提示：基本上 + 都？）</li></ul><h3>训练 C　语段改病句（仿新高考 II 卷，指出序号并修改）</h3><blockquote><p>形式说明：每段文字标了序号，请找出表述不当处，写出序号并修改，使语言准确流畅、逻辑严密。每处 3–4 分。</p></blockquote><p><strong>语段 1</strong></p><blockquote><p>①很多人认为，只要多读书就一定能写好作文。②其实，阅读不仅要有数量，更要有质量。③通过大量的经典阅读，使我们的语言积累更加丰富。④只有把读和写结合起来，才能逐步提高写作水平。</p></blockquote><p><strong>语段 2</strong></p><blockquote><p>①为了迎接校运会，各班都积极地准备着。②运动员们不怕苦、不怕累，坚持每天清晨训练。③由于天气的原因，所以运动会的开幕式推迟了。④我们相信，本次运动会将是一届圆满成功的大会。</p></blockquote><p><strong>语段 3</strong></p><blockquote><p>①智能手机的普及，给人们的生活带来了便利。②然而，不少青少年沉迷于手机游戏，导致视力不断下降的结果。③这一问题，已经引起了学校和家长的普遍关注。④只有家庭、学校、社会三方面共同合作，就能解决这个难题。</p></blockquote><p><strong>语段 4</strong></p><blockquote><p>①云南的气候条件十分适宜多种植物生长。②走进西双版纳的热带雨林，到处可以看到珍稀的植物和听到鸟儿的鸣叫。③这里的生物多样性，是世界上少数几个保存完好的地区之一。④保护好这片绿洲，是我们每一个人的责任。</p></blockquote><p><strong>语段 5</strong></p><blockquote><p>①学习文言文，关键在于积累。②能否静下心来背诵，是学好文言文的前提。③通过每天坚持阅读，使我们的文言语感不断增强。④只要方法对头，就一定能领略到古典文学的魅力。</p></blockquote><hr><h2>六、怎么练才长语感（训练方法论）</h2><p>你问「多练能不能提高语感」——<strong>能，但只有「对的练法」才长语感。</strong> 三种无效练法：① 只做题对答案不归类；② 一次性刷一堆从不复习；③ 只背术语不实战。下面是对的做法。</p><h3>1. 间隔重提取（Spaced Retrieval）</h3><ul><li>第 1 天做训练 A / C → 第 3 天重做<strong>错题</strong> → 第 10 天再做一遍。</li><li>原理：记忆在「快忘时提取」一次，固化最深。比连刷三遍当场题有效得多。</li><li>高一不必每天练，每周 15 分钟微训练即可。</li></ul><h3>2. 错题归类型（最重要）</h3><p>每道错题，强迫自己写一句话：</p><blockquote><p>「这是 <strong>搭配不当 / 结构混乱 / …</strong> 类，触发了 <strong>并列词 / 介词开头 / 固定结构</strong> 标志。」</p></blockquote><p>坚持一个月，你会发现自己错的集中在 1–2 类，针对性补那一类，语感就在这归类里长出来。</p><h3>3. 朗读「改后句」</h3><p>把正确句子<strong>出声读</strong>出来，让耳朵记住「对」长什么样。语感很大程度是「听觉记忆」——你读多了正确的，再读到错的会自动别扭。</p><h3>4. 高一阶段目标</h3><ul><li>本学期：建立六大类型框架 + 背熟标志词卡 + 完成训练 A、C 一遍。</li><li>不追求题量碾压，追求「每错必归类」。</li><li>到高二高三，这套框架会让你在语段改病句题上几乎不丢分。</li></ul><hr><h2>七、答案与解析</h2><h3>地基小测</h3><ul><li><strong>练 1</strong>　主干：天空中飘着云。（或：天空飘云）　*砍掉「蔚蓝的」「朵朵洁白的」*</li><li><strong>练 2</strong>　主干：同学们完成了作业。　*砍掉「勤奋的」「认真地」「老师布置的」*</li><li><strong>练 3</strong>　主干缺失主语。「通过……」是介词状语，「使……」又让「同学们」做了宾语，全句无主语。改法：删「通过」（同学们增强了……）或删「使」（这次活动使同学们……）。</li></ul><h3>各类型即时小练</h3><ul><li><strong>练 4</strong>　定语顺序乱。「两千多年前新出土的」应改为「新出土的两千多年前的」。</li><li><strong>练 5</strong>　逻辑顺序错。应先「听取」再「讨论」，改为「听取并讨论」。</li><li><strong>练 6</strong>　主谓搭配不当。「品质」不能「浮现」，可改为「他那崇高的革命形象，经常浮现在我的脑海中」。</li><li><strong>练 7</strong>　关联词搭配不当。「不管」表条件，应配「都 / 也」，不与「仍然」搭配；可改为「尽管气候条件极端不利，登山队员仍然……」。</li><li><strong>练 8</strong>　主语残缺。删「在……下」或删「使」。</li><li><strong>练 9</strong>　成分赘余。「潜台词」本就指不出声的言外之意，「无声的」多余，删去。</li><li><strong>练 10</strong>　句式杂糅。「对象是……」与「面向……」杂糅，删「的对象，」或删「面向」。</li><li><strong>练 11</strong>　否定失当 + 反问。「难道能否认他不是……吗」= 三重否定变否定，意为「他不是上进青年」，与原意相反。改：删「不」，或改「否认」为「认为」。</li><li><strong>练 12</strong>　歧义。可改为「桌上放着朋友送的许多礼物」或「桌上放着许多朋友送的礼物」，视原意而定。</li><li><strong>练 13</strong>　停顿歧义。可断为「妹妹找不到妈妈，心里很着急」（妹妹急）或「妹妹找不到，妈妈心里很着急」（妈妈急），需补明主语。</li><li><strong>练 14</strong>　自相矛盾。「万里无云」与「繁星满天」不能同时成立（晴夜无云才可能见星，但「万里无云」与「繁星满天」在表述上冲突，常作逻辑矛盾题）。改：删去其一，如「繁星满天，我站在阳台上仰望星空」。</li><li><strong>练 15</strong>　三重否定错误。「不能否认」= 承认，「难道……不是……吗」= 是，合起来变成「地球不是绕着太阳转」，错。改：删「不」，改为「谁也不能否认，地球是绕着太阳转的」。</li></ul><h3>训练 A</h3><ul><li><strong>A1</strong>　搭配不当（动宾）。「开展」缺宾语，句末加「活动」，或改「开展」为「营造」。</li><li><strong>A2</strong>　语序不当（递进）。应先「写作」后「交流」程度更高？实际递进应为「不仅能用英语写作，而且能用英语流畅交流」；原题若强调能力递进，按逻辑调整顺序即可。改：他不仅能用英语写作，而且能用英语交流。</li><li><strong>A3</strong>　语序不当（状语位置）。「整齐地摆放在货架上」。</li><li><strong>A4</strong>　语序不当（并列逻辑）。应为「提出、发现、解决」。</li><li><strong>A5</strong>　搭配不当（主宾）。「昆明是季节」不搭，改「春天的昆明，是一个美丽的地方」或「昆明的春天，是一个美丽的季节」。</li><li><strong>A6</strong>　搭配不当（主谓/动宾）。「水平」不能「改进」，应「提高」。</li><li><strong>A7</strong>　搭配不当（两面对一面）。删「能否」，或后句加「是否」。</li><li><strong>A8</strong>　搭配不当（动宾）。「塑造」不能配「精神品质」，改「塑造了……形象」或「表现了……精神品质」。</li><li><strong>A9</strong>　成分残缺（主语残缺）。删「由于」，或改「只好」为「我们只好」。</li><li><strong>A10</strong>　成分残缺（缺宾语）。句末加「的习惯」。</li><li><strong>A11</strong>　<strong>无病句</strong>（用于练眼力）。「无比热爱和崇敬之情」搭配正常，不重复。</li><li><strong>A12</strong>　成分赘余（约数重复）。删「大约」或删「左右」。</li><li><strong>A13</strong>　结构混乱（杂糅）。「主要成分是……」与「由……配制而成」杂糅，删「配制而成的」或改「成分是」为「由」。</li><li><strong>A14</strong>　结构混乱（杂糅）。「这是因为技术力量薄弱的原因」杂糅，删「的原因」。</li><li><strong>A15</strong>　结构混乱（杂糅）。「深受游客所喜欢」→「深受游客喜欢」或「为游客所喜欢」。</li><li><strong>A16</strong>　结构混乱（杂糅）。「本着……为原则」→「本着……原则」或「以……为原则」。</li><li><strong>A17</strong>　表意不明（歧义）。「几个工厂的领导」= 几家工厂的领导 / 工厂的几名领导。</li><li><strong>A18</strong>　表意不明（歧义）。「和」可理解为连词「与」（背着两人）或介词「连同」（只背着总经理，和副总一起）。需改写明确。</li><li><strong>A19</strong>　表意不明（歧义）。「炒肉丝」可指菜名（ noun）或「炒 + 肉丝」动作。</li><li><strong>A20</strong>　表意不明（指代不明）。「手里提着红包」的主语不清，是「我」还是「老人」？</li><li><strong>A21</strong>　不合逻辑（自相矛盾）。「死难者」与「幸免」矛盾，删「死难者中」或改「幸免」为「幸存」。</li><li><strong>A22</strong>　不合逻辑（否定失当）。「难道能否认他不是……吗」三重否定意为「他不是热情的人」，反了。删「不」。</li><li><strong>A23</strong>　不合逻辑（搭配/事理）。「听到……碰撞声」可，「闻到……碰撞声」不搭，应「闻到饭菜香味，听到碰撞声」。</li><li><strong>A24</strong>　不合逻辑（自相矛盾）。「基本上」与「都」冲突，删其一。</li></ul><h3>训练 C（语段）</h3><ul><li><strong>语段 1</strong><ul><li>③ 结构混乱 / 主语残缺。「通过……使……」删「通过」或「使」。</li></ul></li><li><strong>语段 2</strong><ul><li>③ 成分赘余 / 关联词多余。「由于……所以」连用赘余，删「所以」（或删「由于」）。</li></ul></li><li><strong>语段 3</strong><ul><li>② 结构混乱（杂糅）。「导致……的结果」杂糅，删「的结果」或改「导致」为「是」。</li><li>④ 搭配不当（关联词）。「只有……就」不搭，改「就」为「才」。</li></ul></li><li><strong>语段 4</strong><ul><li>② 搭配不当（动宾）。「看到……植物和听到……鸣叫」中「看到鸣叫」不搭，拆为「看到珍稀植物，听到鸟儿鸣叫」。</li><li>③ 搭配不当（主宾）。「生物多样性是……地区之一」不搭，改「云南是世界上生物多样性保存完好的少数地区之一」。</li></ul></li><li><strong>语段 5</strong><ul><li>② 搭配不当（两面对一面）。「能否……是前提」不搭，删「能否」或后加「是否」。</li><li>③ 成分残缺（主语残缺）。「通过……使……」删「通过」或「使」。</li></ul></li></ul><hr><blockquote><p>本文档为通用备考讲义，去掉了个人化称呼，可直接进 Obsidian 复用。后续若要做配套练习卷、HTML 版或讲解视频，再单独说。</p></blockquote>
+
+  <div class="tags">关键词：句子成分 / 六大类型 / 标志词十看 / 语段改病句 / 间隔重做</div>
+  <div class="footer">本讲义为高中语文通用版，可直接打印或转发使用。</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'neutral',
+      securityLevel: 'loose',
+      themeVariables: { fontFamily: '"PingFang SC","Microsoft YaHei",sans-serif', fontSize: '14px' }
+    });
+  }
+</script>
+<div class="resource"><h3>配套资源</h3>
+<p class="res-links"><a href="https://www.bilibili.com/video/BV19Gpi6JEGk?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">▶ 观看讲解视频（B 站）</a><a href="https://nagu.cc/gk/%E8%AF%AD%E6%96%87/%E7%97%85%E5%8F%A5%E4%BF%AE%E6%94%B9%E7%B3%BB%E7%BB%9F%E8%AE%B2%E8%A7%A3-%E8%AF%BE%E4%BB%B6.html" target="_blank" rel="noopener">📄 查看图文课件</a></p></div>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>物理竞赛入门指南（CPhO）</title>
+<style>
+:root {
+  --primary: #1a365d; --accent: #2f855a; --accent-light: #f0fff4;
+  --accent-border: #9ae6b4; --text: #2d3748; --muted: #718096;
+  --border: #e2e8f0; --bg-light: #f7fafc;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+               "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+  font-size: 15.5px; line-height: 1.75; color: var(--text);
+  background: #ffffff; max-width: 840px; margin: 0 auto; padding: 36px 28px 56px;
+}
+.cover { text-align: center; padding: 84px 0 56px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+.cover h1 { font-size: 2.1em; color: var(--primary); font-weight: 700; margin-bottom: 14px; letter-spacing: 2px; }
+.cover .subtitle { font-size: 1.05em; color: var(--muted); margin-bottom: 24px; }
+.cover .divider { width: 100px; height: 4px; background: var(--accent); margin: 0 auto 24px; border-radius: 2px; }
+.cover .meta { font-size: 0.95em; color: var(--muted); line-height: 2.1; }
+.scope {
+  background: var(--accent-light); border: 1px solid var(--accent-border);
+  border-radius: 8px; padding: 14px 18px; margin: 0 0 28px;
+  font-size: 0.95em; color: #2c5282;
+}
+.scope strong { color: var(--primary); }
+h2 { font-size: 1.5em; color: var(--primary); margin-top: 44px; margin-bottom: 14px;
+     padding-bottom: 6px; border-bottom: 3px solid var(--accent); display: inline-block;
+     padding-right: 18px; font-weight: 700; }
+h3 { font-size: 1.18em; color: var(--accent); margin-top: 26px; margin-bottom: 10px;
+     font-weight: 600; padding-left: 10px; border-left: 4px solid var(--accent); }
+h4 { font-size: 1.02em; color: var(--primary); margin-top: 18px; margin-bottom: 6px; font-weight: 600; }
+p { margin-bottom: 10px; text-align: justify; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 0.93em; }
+th { background: var(--accent); color: #fff; padding: 10px 12px; text-align: center;
+     font-weight: 600; border: 1px solid var(--accent); }
+td { padding: 8px 12px; border: 1px solid var(--border); text-align: center; vertical-align: middle; }
+tr:nth-child(even) td { background: var(--bg-light); }
+tr:hover td { background: var(--accent-light); }
+blockquote { background: var(--accent-light); border-left: 5px solid var(--accent);
+  padding: 12px 18px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #2c5282; }
+blockquote p { margin-bottom: 5px; }
+blockquote p:last-child { margin-bottom: 0; }
+blockquote strong { color: var(--primary); }
+blockquote ul, blockquote ol { margin: 6px 0 6px 20px; }
+ul, ol { margin: 8px 0 12px 22px; }
+li { margin-bottom: 4px; }
+li ul, li ol { margin-top: 3px; margin-bottom: 3px; }
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+pre { background: var(--bg-light); padding: 14px; border-radius: 8px; overflow-x: auto;
+      font-size: 0.88em; line-height: 1.5; margin: 12px 0; border: 1px solid var(--border); }
+code { background: var(--bg-light); padding: 2px 5px; border-radius: 4px; font-size: 0.9em;
+       font-family: "SF Mono", Menlo, Consolas, monospace; }
+pre code { padding: 0; background: none; }
+.diagram { background: var(--bg-light); border: 1px solid var(--border); border-radius: 8px;
+           padding: 14px 8px; margin: 14px 0; text-align: center; overflow-x: auto; }
+.diagram pre.mermaid { background: none; border: none; margin: 0; padding: 0; text-align: center; }
+.tags { margin-top: 44px; padding-top: 16px; border-top: 1px solid var(--border);
+        color: var(--muted); font-size: 0.88em; }
+.footer { text-align: center; color: var(--muted); font-size: 0.85em; margin-top: 32px; }
+.fig{display:block;margin:18px auto;max-width:100%;border:1px solid var(--border);border-radius:8px;background:#fff;padding:6px;}
+.resource{margin-top:36px;padding:18px 20px;background:var(--accent-light);border:1px solid var(--accent-border);border-radius:10px;}
+.resource h3{margin-top:0;border-left:none;color:var(--primary);padding-left:0;}
+.res-links{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0 0;}
+.res-links a{display:inline-block;padding:9px 14px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;font-size:.95em;}
+.res-links a:hover{filter:brightness(1.08);}
+@media print {
+  body { padding: 0; max-width: none; font-size: 14px; }
+  .cover { page-break-after: always; padding: 120px 0 0; }
+  h2, h3 { page-break-after: avoid; }
+  table, blockquote, pre, .diagram { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>物理竞赛入门指南（CPhO）</h1>
+  <div class="divider"></div>
+  <div class="subtitle">赛制 · 考纲 · 路线 · 书单</div>
+  <div class="meta">
+    <span>高中物理 · 竞赛入门讲义</span><br>
+    <span>适用：对物理竞赛感兴趣的高中生与家长</span><br>
+    <span>配套：讲解视频 + 网页课件 + 本讲义</span>
+  </div>
+</div>
+
+<div class="scope">整理时间：2026 年 10 月。赛制信息以第 43 届（2026 年）全国中学生物理竞赛通知为准，后续年份以当年官方通知为准。</div>
+<hr><h2>一、这项比赛是什么</h2><p>全国中学生物理竞赛（CPhO），由中国物理学会主办，是五大学科竞赛之一，也是国内中学物理最高规格的赛事。层层选拔后，国家集训队前 5 名左右将代表中国参加国际物理奥林匹克（IPhO）或亚洲物理奥林匹克（APhO）。</p><p><strong>参赛条件</strong>：在校在籍的普通高中学生，经学校审核同意后报名，不接受个人单独报名，全程不收取任何费用。</p><h2>二、赛制流程（以第 43 届·2026 年为例）</h2><table><thead><tr><th>阶段</th><th>时间</th><th>形式</th><th>说明</th></tr></thead><tbody><tr><td>报名</td><td>约每年 3–6 月（各省不同）</td><td>学校统一报名</td><td>留意学校/省物理学会通知，逾期不补</td></tr><tr><td>预赛</td><td>2026-09-05 上午 9:00–12:00</td><td>理论笔试，3 小时，满分 400</td><td>全国统一命题；难度略高于高考；决定复赛资格</td></tr><tr><td>复赛·理论</td><td>2026-09-19 上午 9:00–12:00</td><td>理论笔试，3 小时，满分 320</td><td>全国统一命题</td></tr><tr><td>复赛·实验</td><td>2026-09-19 下午 14:00–15:00</td><td>实验<strong>笔试</strong>，1 小时，满分 80</td><td>⚠️ 2025 年起改革：全国统一命题、全体复赛考生必考、与理论同一天</td></tr><tr><td>决赛</td><td>2026-10-29 至 11-04，广州</td><td>理论 + 实验</td><td>全国约 360 人参加，决出金银铜牌</td></tr></tbody></table><p><strong>奖项与升学的关系</strong>：</p><ul><li><strong>省一/省二/省三</strong>：依据复赛成绩评定（省一须计入实验成绩），是竞赛路上的第一道硬通货，对强基计划报名、综合评价有帮助。</li><li><strong>金牌、银牌（国一、国二）</strong>：可作为二类考生<strong>破格入围强基计划</strong>，直接进校测。</li><li><strong>国家集训队（决赛前约 50 名）</strong>：获得<strong>保送资格</strong>（清北任选专业方向基本没问题）。</li></ul><h2>三、考什么（竞赛 vs 高考详细对照）</h2><p>理论范围依据《全国中学生物理竞赛内容提要（2015 年修订版）》，上限是<strong>大学普通物理</strong>。核心结论先说：<strong>高考内容是竞赛的子集和地基</strong>——竞赛没有全新领域，而是把每个领域挖到大学深度，并用更硬的数学工具重新描述。</p><h3>3.1 力学（竞赛第一大头，约占理论题 40%）</h3><table><thead><tr><th>主题</th><th>高考要求</th><th>竞赛加深/新增</th></tr></thead><tbody><tr><td>运动学</td><td>匀变速直线运动、平抛、圆周</td><td>矢量与微积分描述（位置矢量、瞬时量求导/积分互求）、相对运动与牵连速度、曲线运动的自然坐标系（切向/法向加速度）</td></tr><tr><td>牛顿定律</td><td>一维受力、连接体</td><td><strong>非惯性系与惯性力</strong>（加速参考系、离心/科氏力概念）、变力问题（微元法、简单微分方程思想）、质点系与质心运动定理</td></tr><tr><td>动量与能量</td><td>一维守恒、简单碰撞</td><td>二维碰撞、质心系中的碰撞、变质量问题（火箭）初步、保守力与势能曲线、约束条件下多物体的能量综合</td></tr><tr><td>天体运动</td><td>开普勒定律识记、圆轨道计算</td><td>椭圆轨道能量与角动量、变轨问题、宇宙速度的严格推导</td></tr><tr><td>刚体与角动量</td><td>不考</td><td><strong>转动定律、转动惯量、角动量守恒、平面平行运动（纯滚动）</strong>——高考完全没有，竞赛必考</td></tr><tr><td>振动与波</td><td>简谐振动公式、波的概念</td><td>振动能量与合成、阻尼/受迫振动概念、<strong>波的叠加、干涉、驻波</strong>定量</td></tr><tr><td>流体</td><td>不考（初中讲过压强浮力）</td><td>流体静力学、帕斯卡/阿基米德原理的竞赛级综合题、伯努利方程概念</td></tr></tbody></table><h3>3.2 热学</h3><table><thead><tr><th>主题</th><th>高考要求</th><th>竞赛加深/新增</th></tr></thead><tbody><tr><td>分子动理论</td><td>定性识记</td><td>麦克斯韦速率分布的物理图像、平均自由程概念</td></tr><tr><td>气体</td><td>三个实验定律、简单状态变化</td><td><strong>热力学第一定律的定量运用</strong>、等温/等压/等容/<strong>绝热过程</strong>的功与内能计算、<strong>循环过程与热机效率（卡诺循环）</strong></td></tr><tr><td>物态变化</td><td>识记</td><td>饱和汽、湿度、表面张力的定量初步</td></tr><tr><td>熵</td><td>不考</td><td>热力学第二定律与熵增的概念性理解（常考概念判断）</td></tr></tbody></table><h3>3.3 电磁学（竞赛第二大头，约 30–35%）</h3><table><thead><tr><th>主题</th><th>高考要求</th><th>竞赛加深/新增</th></tr></thead><tbody><tr><td>静电场</td><td>点电荷场强、电势差、匀强场</td><td>电势的严格计算与叠加、高斯定理思想（对称场速算）、<strong>导体静电平衡、电容与电容器网络</strong>、电场能量</td></tr><tr><td>恒定电流</td><td>串并联、闭合电路欧姆定律</td><td><strong>基尔霍夫定律解任意复杂电路</strong>、电桥、含源电路、电表改装与测量误差、电阻网络的对称性与等效变换</td></tr><tr><td>磁场</td><td>洛伦兹力、圆周运动</td><td>复合场（电+磁+重力）中的复杂轨迹、<strong>霍尔效应</strong>、安培力矩与磁矩、磁介质概念</td></tr><tr><td>电磁感应</td><td>楞次定律、单棒切割</td><td>感生电场、<strong>电磁感应与力学/能量的综合大题</strong>（竞赛压轴高发区）、自感互感、涡流概念</td></tr><tr><td>交流电</td><td>识记为主</td><td>交流有效值与相位、<strong>LC/RC/RL 暂态过程</strong>初步、电磁振荡</td></tr></tbody></table><h3>3.4 光学</h3><table><thead><tr><th>主题</th><th>高考要求</th><th>竞赛加深/新增</th></tr></thead><tbody><tr><td>几何光学</td><td>折射定律、全反射</td><td><strong>球面镜/薄透镜成像公式的系统运用与符号规则</strong>、透镜组、光学仪器（显微镜/望远镜放大率）、视场与光阑概念</td></tr><tr><td>波动光学</td><td>双缝干涉公式、衍射偏振概念</td><td>光程与光程差、<strong>薄膜干涉（等倾/等厚、牛顿环）</strong>、单缝衍射与光栅的定量、偏振的马吕斯定律</td></tr><tr><td>光的粒子性</td><td>光电效应</td><td>光电效应定量、<strong>康普顿效应</strong>、波粒二象性综合</td></tr></tbody></table><h3>3.5 近代物理</h3><table><thead><tr><th>主题</th><th>高考要求</th><th>竞赛加深/新增</th></tr></thead><tbody><tr><td>相对论</td><td>只考概念</td><td><strong>狭义相对论初步定量</strong>：同时的相对性、时间膨胀、尺缩效应、相对论能量与质能关系</td></tr><tr><td>原子物理</td><td>能级跃迁识记</td><td>玻尔模型的定量计算、类氢离子、跃迁与光谱系</td></tr><tr><td>核物理</td><td>核反应方程配平</td><td>衰变规律定量（半衰期计算）、结合能与质量亏损计算、核反应中的动量能量守恒</td></tr><tr><td>粒子与宇宙</td><td>不考</td><td>基本概念判断题（夸克、四种相互作用等，考识记）</td></tr></tbody></table><h3>3.6 实验（复赛 80 分，全体必考）</h3><p>以实验<strong>理论笔试</strong>考查：误差与不确定度、有效数字、实验方案设计、器材选择、数据表格与图像法处理、对教材经典实验（打点计时器、伏安法、测折射率等）的变形与改进。2025 年起全国统一命题，刷近年真题是最直接的准备方式。</p><h3>3.7 数学工具清单（先于竞赛内容补齐）</h3><ol><li><strong>三角函数</strong>：和差倍半、正余弦定理（力学矢量合成天天用）。</li><li><strong>向量</strong>：加减、点积（做功）、叉积概念（力矩、角动量、洛伦兹力方向）。</li><li><strong>解析几何</strong>：圆锥曲线基本性质（天体轨道、抛体包络）。</li><li><strong>一元微积分</strong>：极限思想、求导（瞬时变化率、极值问题）、定积分（变力做功、微元求和）——这是与高考最大的工具鸿沟，务必先补。</li></ol><h3>3.8 三个结构性区别（比知识点清单更重要）</h3><ol><li><strong>题目结构</strong>：高考题是"一个情境考一个点"，竞赛题是<strong>多过程、多物体、多知识点耦合</strong>——一道力学大题常需同时做受力分析、动量守恒、能量守恒和几何约束，建模占解题时间的一半。高考练"快而准"，竞赛练"深而全"。</li><li><strong>思维方式</strong>：高考回避微积分，所有问题都被设计成套公式；竞赛默认你能<strong>自己建立模型、自己选坐标系、自己列方程</strong>，很多题没有现成公式可套。</li><li><strong>备考逻辑</strong>：高考是"把会做的做对"；竞赛是"把学过的模块变成随时能调用的工具"——每学完一个模块必须立刻用真题检验，否则看书觉得会、做题全不对。</li></ol><h2>四、学习路线与书单</h2><p>书单没有唯一标准答案，下面是教练圈公认度较高的组合，按阶段选用即可，不必全买。</p><h3>阶段 0：衔接（初三暑假～高一上）</h3><ol><li>先把<strong>高中物理必修 + 选择性必修</strong>学完并做熟高考中档题——竞赛不是空中楼阁。</li><li>数学：自学<strong>一元微积分</strong>（极限、导数、定积分的基本运算和物理意义）。</li></ol><h3>阶段 1：一轮打基础（高一）</h3><ul><li><strong>程稼夫《中学奥林匹克物理·力学篇》《电磁学篇》</strong>（中科大出版社）——经典中的经典，绝大多数人的一轮主教材。</li><li>范小辉《新编高中物理奥赛指导》《新编高中物理奥赛实用题典》（俗称"黑白皮"）——讲解+刷题配套，适合自学。</li><li>赵凯华《新概念物理教程》（力学/电磁学）——当大学普物参考，建立物理图像。</li><li>热学、光学、近代物理：可用崔宏滨/科大系普物教材或竞赛讲义补全。</li></ul><h3>阶段 2：二轮提高（高一暑假～高二）</h3><ul><li>《物理学难题集萃》（舒幼生等）——大部头题库，挑题做，不必全刷。</li><li>江四喜《奥林匹克物理一题一议》——思维方法讲得很透。</li><li>沈晨《更高更妙的物理》（"高妙"）——冲刺省一、决赛的常用书。</li><li><strong>历年真题</strong>：预赛、复赛、决赛真题汇编是最重要的材料，高二开始要限时整套做。</li></ul><h3>阶段 3：决赛冲刺（高二暑假后）</h3><ul><li>《国际物理奥赛的培训与选拔》（郑永令，俗称"国培"）——决赛及以上难度。</li><li>实验理论：专门练习实验设计、误差分析、不确定度计算的讲义和真题。</li></ul><h2>五、给同学的几条实话</h2><ol><li><strong>节奏比努力重要</strong>：标准节奏是高一学完一轮、高二出成绩（复赛拿省一/进决赛）。高二才开始系统学，基本只能冲省二省三，所以起步阶段要抓紧。</li><li><strong>真题是唯一指挥棒</strong>：每学完一个模块，立刻做对应真题检验，别沉浸在"看书都会"的错觉里。</li><li><strong>实验别偏科</strong>：2025 年起实验全体必考且占 80/400，理论和实验要一起抓。</li><li><strong>跟紧竞赛班老师</strong>：不同省份复赛竞争激烈程度差别很大（湖南、浙江、上海、北京等都是强省），教练的省内信息比任何书单都值钱。</li><li><strong>与生物竞赛双线并行的提醒</strong>：物理竞赛对数学和整块时间要求高，生物竞赛偏记忆+理解、可以见缝插针学。双线作战是可行的，但<strong>必须分主次</strong>——建议以物理为主线（投入 60–70% 的竞赛时间），生物利用碎片时间和寒暑假推进，开学后根据两门课的成绩再决定是否收缩。</li></ol><h2>六、关键资源</h2><ul><li>官方信息：中国物理学会及本省物理学会网站（报名、大纲、名单公示）。</li><li>本笔记的姊妹篇：[[生物竞赛入门指南]]</li></ul>
+
+<div class="tags">关键词：物理竞赛 / CPhO / 赛制 / 考纲 / 强基计划 / 书单</div>
+<div class="footer">本讲义面向对物理竞赛感兴趣的高中生与家长，可直接打印或转发。</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'neutral',
+      securityLevel: 'loose',
+      themeVariables: { fontFamily: '"PingFang SC","Microsoft YaHei",sans-serif', fontSize: '14px' }
+    });
+  }
+</script>
+<div class="resource"><h3>配套资源</h3>
+<p class="res-links"><a href="https://www.bilibili.com/video/BV18qxk6MEqc?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">▶ 观看讲解视频（B 站）</a><a href="https://nagu.cc/gk/%E5%AD%A6%E7%A7%91%E7%AB%9E%E8%B5%9B/%E7%89%A9%E7%90%86%E7%AB%9E%E8%B5%9B%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97%EF%BC%88HTML%E7%89%88%EF%BC%89.html" target="_blank" rel="noopener">📄 查看图文课件</a></p></div>
+</body>
+</html>
