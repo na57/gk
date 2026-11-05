@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>12 近代物理与实验 · 物理竞赛入门</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<nav class="chap-nav">高考备考 · 物理 · 竞赛专题 ｜ 12-近代物理与实验-深度学习材料.html</nav>
+<header class="chap-head">
+  <h1>12 近代物理与实验</h1>
+  <p class="chap-meta">竞赛专题第 12 章（收官章） ｜ 狭义相对论初步 · 原子与光子 · 实验误差与数据处理 ｜ 适用：高一竞赛入门（目标：预赛 → 复赛） ｜ 学生：小兵</p>
+</header>
+<p class="chap-intro">欢迎来到竞赛系列的最后一章！这一章的气质和前面不太一样：相对论会颠覆你对"时间"和"长度"的直觉，原子物理会告诉你"光是一颗一颗的"，而实验数据处理会教你"让数据说话"的严谨功夫。别担心——预赛和复赛入门阶段，相对论只考一个因子 $\gamma$ 的运用，实验题只考一套清晰的规则。跟着本章一步步走，你会发现：近代物理不是玄学，是有套路的新大陆。</p>
+
+<div class="toc">
+  <div class="toc-label">本章导览</div>
+  <div class="toc-links">
+    <a href="#s1">一、知识全景</a>
+    <a href="#s2">二、核心概念</a>
+    <a href="#s3">三、竞赛专属·高考不考</a>
+    <a href="#s4">四、例题精讲</a>
+    <a href="#s5">五、易错点</a>
+    <a href="#s6">六、自检清单</a>
+  </div>
+</div>
+
+<h2 id="s1">一、知识全景</h2>
+
+<div class="map">
+  <div class="row"><div class="node root">近代物理与实验</div></div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node">狭义相对论初步<br><small>时空观升级</small></div>
+    <div class="node">原子与光子<br><small>量子观入门</small></div>
+    <div class="node">实验数据处理<br><small>竞赛实验基本功</small></div>
+  </div>
+  <div class="row">
+    <div class="node leaf">两条基本假设<br>同时的相对性</div>
+    <div class="node leaf">光电效应<br>爱因斯坦方程</div>
+    <div class="node leaf">系统误差 vs 偶然误差<br>有效数字</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">时间膨胀 Δt=γτ<br>长度收缩 L=L₀/γ</div>
+    <div class="node leaf">玻尔模型与能级跃迁<br>物质波 λ=h/p</div>
+    <div class="node leaf">不确定度传递<br>逐差法 · 作图法</div>
+  </div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node view">γ 一把尺<br><small>先找固有时/固有长</small></div>
+    <div class="node view">光子观点<br><small>能量一颗一颗地给</small></div>
+    <div class="node view">让数据说话<br><small>每个数字带不确定度</small></div>
+  </div>
+</div>
+
+<p>三块内容对应三种"思维升级"：</p>
+
+<table>
+  <thead>
+    <tr><th>板块</th><th>颠覆什么直觉</th><th>竞赛考什么</th><th>入门钥匙</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="l"><strong>狭义相对论</strong></td>
+      <td class="l">"时间对所有人都一样"——错，运动的钟变慢</td>
+      <td class="l">用 $\gamma$ 算时间膨胀、长度收缩（预赛~复赛入门）</td>
+      <td class="l">会算 $\gamma$，会认"固有时、固有长"</td>
+    </tr>
+    <tr>
+      <td class="l"><strong>原子与光子</strong></td>
+      <td class="l">"光只是波、能量连续"——错，光是一颗颗光子</td>
+      <td class="l">光电效应定量计算、能级跃迁求波长（预赛高频）</td>
+      <td class="l">光子能量 $E=h\nu$，记一个换算 $hc\approx1240\ \mathrm{eV\cdot nm}$</td>
+    </tr>
+    <tr>
+      <td class="l"><strong>实验数据处理</strong></td>
+      <td class="l">"测得准就是数字对"——错，每个数字都有不确定度</td>
+      <td class="l">有效数字、不确定度传递、逐差法（实验题必考）</td>
+      <td class="l">两套规则：修约规则 + 方和根传递</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2 id="s2">二、核心概念</h2>
+
+<h3>2.1 狭义相对论初步：只多一个因子 $\gamma$</h3>
+
+<h4>两条基本假设</h4>
+<ol>
+  <li><strong>相对性原理</strong>：所有惯性系中物理规律相同——在匀速行驶的封闭船舱里做任何力学（乃至电磁学）实验，都无法判断船是否在动。</li>
+  <li><strong>光速不变原理</strong>：真空中光速 $c=3.00\times10^{8}\ \mathrm{m/s}$，与光源、观察者的运动无关。这违背了日常的速度叠加直觉，却是无数实验（迈克尔逊-莫雷实验等）的结论。</li>
+</ol>
+
+<blockquote>
+  <p><strong>深度理解</strong>：第二条假设是"炸药引信"。既然光速对谁都一样，那么"光走多远、花多少时间"在不同参考系里讲不通同一套故事——唯一出路是：<strong>时间和长度本身随参考系改变</strong>。时间膨胀和长度收缩不是幻觉，是让光速不变成立的必然代价。</p>
+</blockquote>
+
+<h4>洛伦兹因子 $\gamma$（本章唯一的"新武器"）</h4>
+
+$$\boldsymbol{\gamma = \frac{1}{\sqrt{1-\dfrac{v^{2}}{c^{2}}}}}$$
+
+<ul>
+  <li>$v$ 是两个参考系（或物体与实验室）之间的相对速率；$v\ll c$ 时 $\gamma\approx1$，回到经典力学。</li>
+  <li>$\gamma\ge1$ 恒成立，$v\to c$ 时 $\gamma\to\infty$——这就是"有静止质量的物体永远达不到光速"的数学表达。</li>
+</ul>
+
+<p>竞赛题最爱给几组"好算"的速度，先把它们的 $\gamma$ 背下来：</p>
+
+<table>
+  <thead>
+    <tr><th>速率 $v$</th><th>$v^{2}/c^{2}$</th><th>$\sqrt{1-v^{2}/c^{2}}$</th><th>$\gamma$</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>$0.5c$</td><td>$0.25$</td><td>$0.866$</td><td>$1.15$</td></tr>
+    <tr><td>$0.6c$</td><td>$0.36$</td><td>$0.8$</td><td><strong>$1.25$（$=5/4$）</strong></td></tr>
+    <tr><td>$0.8c$</td><td>$0.64$</td><td>$0.6$</td><td><strong>$5/3\approx1.67$</strong></td></tr>
+    <tr><td>$\dfrac{\sqrt{3}}{2}c\approx0.866c$</td><td>$3/4$</td><td>$1/2$</td><td><strong>$2$</strong></td></tr>
+    <tr><td>$\dfrac{\sqrt{8}}{3}c\approx0.943c$</td><td>$8/9$</td><td>$1/3$</td><td><strong>$3$</strong></td></tr>
+    <tr><td>$0.98c$</td><td>$0.9604$</td><td>$0.199$</td><td>$\approx5$</td></tr>
+    <tr><td>$0.995c$</td><td>$0.990$</td><td>$0.0999$</td><td>$\approx10$</td></tr>
+  </tbody>
+</table>
+
+<h4>同时的相对性（定性，但预赛爱考概念）</h4>
+
+<p>经典画面：一列火车以 $v$ 高速通过站台，车厢正中央有一盏灯闪了一下。车上的人认为光<strong>同时</strong>到达车头和车尾（光向前向后各走半个车厢，速率都是 $c$）。但站台上的人认为：光闪后车尾<strong>迎着光</strong>运动、车头<strong>远离光</strong>运动，而光速对站台也是 $c$，所以光<strong>先到达车尾、后到达车头</strong>。</p>
+
+<div class="key-point">
+  <strong>结论</strong>："同时"是相对的——在一个参考系中不同地点同时发生的两件事，在另一个相对运动的参考系中看<strong>不同时</strong>。不存在凌驾于一切参考系的"统一时间"。这正是时间膨胀、长度收缩的概念源头。
+</div>
+
+<h4>时间膨胀：运动的钟变慢</h4>
+
+$$\boldsymbol{\Delta t = \gamma\,\Delta\tau}$$
+
+<ul>
+  <li>$\Delta\tau$ 叫<strong>固有时</strong>（原时）：在与被研究对象<strong>相对静止</strong>的参考系中、<strong>同一地点</strong>先后发生的两事件之间的时间间隔。例如：不稳定粒子"出生"和"衰变"都发生在它自己的参考系原点，粒子自带的寿命就是固有时。</li>
+  <li>$\Delta t$ 叫<strong>坐标时</strong>：实验室（相对粒子运动）测得的同一对事件的时间间隔。$\gamma&gt;1$，所以 $\Delta t&gt;\Delta\tau$——实验室看运动的粒子"活得久"。</li>
+</ul>
+
+<blockquote>
+  <p><strong>真实故事</strong>：宇宙射线在大气顶层（约 10 km 高空）产生 μ 子，μ 子固有寿命只有 $2.2\ \mu\mathrm{s}$，按经典算法即使以光速飞也只能飞 $c\tau\approx660\ \mathrm{m}$，根本到不了地面。但 μ 子速率高达 $0.998c$（$\gamma\approx15.8$），实验室寿命膨胀为 $15.8\times2.2\ \mu\mathrm{s}\approx35\ \mu\mathrm{s}$，飞行距离 $\approx0.998c\times35\ \mu\mathrm{s}\approx10.4\ \mathrm{km}$——所以地面上到处都能探测到 μ 子。这是时间膨胀最漂亮的实验证据。</p>
+</blockquote>
+
+<h4>长度收缩：运动的尺变短</h4>
+
+$$\boldsymbol{L = \frac{L_{0}}{\gamma}}$$
+
+<ul>
+  <li>$L_{0}$ 叫<strong>固有长度</strong>（静长）：尺子相对观察者静止时测得的长度。</li>
+  <li>$L$：尺子以速率 $v$ 相对观察者运动时，观察者<strong>同时</strong>标记尺两端位置所得的长度。</li>
+  <li>收缩<strong>只发生在运动方向上</strong>，垂直运动方向的长度不变。</li>
+</ul>
+
+<div class="deep">
+  <strong>解题三步法（相对论定量题通杀）</strong>：① 找对象——被研究的是"一只钟/一个粒子的寿命"（用时间膨胀）还是"一把尺/一段距离"（用长度收缩）；② 认固有——哪个参考系与该对象相对静止，那个系测的就是 $\tau$ 或 $L_{0}$；③ 套公式——$\Delta t=\gamma\tau$、$L=L_{0}/\gamma$，其中 $\gamma$ 用两系相对速率算。同一件事往往能用两种方法做（实验室系用时间膨胀，随动系用长度收缩），<strong>两种答案必须一致</strong>，可用来自检。
+</div>
+
+<hr>
+
+<h3>2.2 原子与光子：能量是一颗一颗的</h3>
+
+<h4>光子与爱因斯坦光电效应方程</h4>
+
+<p>光的能量不是连续的水流，而是一颗颗"光子"。频率为 $\nu$ 的光，每个光子携带能量：</p>
+
+$$\boldsymbol{E = h\nu = \frac{hc}{\lambda}} \qquad (h=6.63\times10^{-34}\ \mathrm{J\cdot s})$$
+
+<p>光照射金属，电子吸收<strong>一个</strong>光子的全部能量，一部分用于挣脱金属束缚（逸出功 $W_{0}$），剩下的成为飞出时的最大初动能：</p>
+
+$$\boldsymbol{E_{\mathrm{k}} = h\nu - W_{0}}$$
+
+<ul>
+  <li><strong>极限（截止）频率</strong>：$\nu_{0}=\dfrac{W_{0}}{h}$。$\nu&lt;\nu_{0}$ 时无论光多强都打不出电子——一个光子的能量不够，电子不会"攒"两个光子。</li>
+  <li><strong>遏止电压</strong>：加反向电压把最快的光电子也拦住时，$eU_{c}=E_{\mathrm{k}}$，即 $\boldsymbol{U_{c}=\dfrac{h}{e}\nu-\dfrac{W_{0}}{e}}$。$U_{c}$ 只由 $\nu$ 决定，与光强无关。</li>
+  <li><strong>光强的角色</strong>：光强 $\propto$ 单位时间到达的光子数，只决定单位时间逸出的光电子数（饱和光电流大小），<strong>不改变</strong>每个电子的初动能。</li>
+  <li><strong>瞬时性</strong>：只要 $\nu&gt;\nu_{0}$，电子吸一个光子就飞出，几乎不需要时间积累（$&lt;10^{-9}\ \mathrm{s}$）——这是波动说解释不了、光子说一击命中的关键证据。</li>
+</ul>
+
+<div class="key-point">
+  <strong>超好用的换算</strong>：$hc\approx1240\ \mathrm{eV\cdot nm}$。波长 $\lambda$（nm）的光子能量 $E=\dfrac{1240}{\lambda}\ \mathrm{eV}$。例：$\lambda=400\ \mathrm{nm}$ 紫光的光子能量 $=1240/400=3.10\ \mathrm{eV}$，心算即得。
+</div>
+
+<figure style="text-align:center; margin:16px 0;">
+<svg width="420" height="240" viewBox="0 0 420 240" xmlns="http://www.w3.org/2000/svg" style="background:#fff; border:1px solid #e4e7eb; border-radius:8px;">
+  <line x1="60" y1="30" x2="60" y2="200" stroke="#1f2933" stroke-width="1.5"/>
+  <line x1="60" y1="120" x2="390" y2="120" stroke="#1f2933" stroke-width="1.5"/>
+  <polygon points="60,26 56,36 64,36" fill="#1f2933"/>
+  <polygon points="394,120 384,116 384,124" fill="#1f2933"/>
+  <text x="36" y="40" font-size="13" fill="#1f2933">Uc</text>
+  <text x="372" y="140" font-size="13" fill="#1f2933">ν</text>
+  <line x1="150" y1="120" x2="360" y2="45" stroke="#2b6cb0" stroke-width="2.5"/>
+  <line x1="150" y1="120" x2="60" y2="186" stroke="#2b6cb0" stroke-width="2.5" stroke-dasharray="5,4"/>
+  <text x="140" y="140" font-size="13" fill="#b91c1c">ν₀</text>
+  <text x="64" y="196" font-size="13" fill="#b91c1c">−W₀/e</text>
+  <text x="240" y="70" font-size="13" fill="#2b6cb0">斜率 = h/e</text>
+</svg>
+<figcaption style="font-size:13px; color:#52606d; margin-top:6px;">图：$U_{c}-\nu$ 图线——测斜率得 $h$，横轴截距是极限频率 $\nu_{0}$</figcaption>
+</figure>
+
+<h4>玻尔模型：氢原子的"楼梯"</h4>
+
+<p>玻尔规定氢原子中的电子只能待在一系列分立的轨道上，能量只能取：</p>
+
+$$\boldsymbol{E_{n} = \frac{E_{1}}{n^{2}}} \qquad E_{1}=-13.6\ \mathrm{eV},\quad n=1,2,3,\dots$$
+
+<p>电子在能级间跃迁时吸收或放出<strong>一个光子</strong>，能量恰好等于两能级之差：</p>
+
+$$\boldsymbol{h\nu = E_{m}-E_{n}} \quad(m&gt;n\ \text{发光};\ m&lt;n\ \text{吸光})$$
+
+<figure style="text-align:center; margin:16px 0;">
+<svg width="460" height="230" viewBox="0 0 460 230" xmlns="http://www.w3.org/2000/svg" style="background:#fff; border:1px solid #e4e7eb; border-radius:8px;">
+  <line x1="90" y1="30" x2="330" y2="30" stroke="#52606d" stroke-width="1.5"/>
+  <line x1="90" y1="70" x2="330" y2="70" stroke="#2b6cb0" stroke-width="2"/>
+  <line x1="90" y1="105" x2="330" y2="105" stroke="#2b6cb0" stroke-width="2"/>
+  <line x1="90" y1="150" x2="330" y2="150" stroke="#2b6cb0" stroke-width="2"/>
+  <line x1="90" y1="200" x2="330" y2="200" stroke="#1a365d" stroke-width="3"/>
+  <text x="40" y="34" font-size="13" fill="#52606d">n=∞</text>
+  <text x="340" y="34" font-size="13" fill="#52606d">0 eV</text>
+  <text x="40" y="74" font-size="13" fill="#2b6cb0">n=4</text>
+  <text x="340" y="74" font-size="13" fill="#2b6cb0">−0.85 eV</text>
+  <text x="40" y="109" font-size="13" fill="#2b6cb0">n=3</text>
+  <text x="340" y="109" font-size="13" fill="#2b6cb0">−1.51 eV</text>
+  <text x="40" y="154" font-size="13" fill="#2b6cb0">n=2</text>
+  <text x="340" y="154" font-size="13" fill="#2b6cb0">−3.40 eV</text>
+  <text x="40" y="204" font-size="13" fill="#1a365d">n=1</text>
+  <text x="340" y="204" font-size="13" fill="#1a365d">−13.6 eV</text>
+  <line x1="200" y1="105" x2="200" y2="192" stroke="#b45309" stroke-width="2"/>
+  <polygon points="200,198 195,188 205,188" fill="#b45309"/>
+  <text x="206" y="160" font-size="12" fill="#b45309">12.09 eV</text>
+  <line x1="160" y1="105" x2="160" y2="143" stroke="#047857" stroke-width="2"/>
+  <polygon points="160,149 155,139 165,139" fill="#047857"/>
+  <text x="120" y="132" font-size="12" fill="#047857">1.89 eV</text>
+  <line x1="250" y1="150" x2="250" y2="192" stroke="#6d28d9" stroke-width="2"/>
+  <polygon points="250,198 245,188 255,188" fill="#6d28d9"/>
+  <text x="256" y="178" font-size="12" fill="#6d28d9">10.2 eV</text>
+</svg>
+<figcaption style="font-size:13px; color:#52606d; margin-top:6px;">图：氢原子能级与从 n=3 出发的三种跃迁（能量为能级差）</figcaption>
+</figure>
+
+<ul>
+  <li><strong>常用能级差</strong>（来自 $E_{m}-E_{n}=13.6\left(\dfrac{1}{n^{2}}-\dfrac{1}{m^{2}}\right)\mathrm{eV}$）：
+    $E_{2}-E_{1}=10.2\ \mathrm{eV}$，$E_{3}-E_{1}=12.09\ \mathrm{eV}$，$E_{4}-E_{1}=12.75\ \mathrm{eV}$，$E_{3}-E_{2}=1.89\ \mathrm{eV}$（对应著名的红色 H$\alpha$ 线，$\lambda\approx656\ \mathrm{nm}$），$E_{\infty}-E_{1}=13.6\ \mathrm{eV}$（电离能）。</li>
+  <li><strong>发光种数</strong>：<strong>大量</strong>氢原子从 $n$ 激发后向低能级跃迁，最多可发出 $\mathrm{C}_{n}^{2}=\dfrac{n(n-1)}{2}$ 种不同频率的光；<strong>一个</strong>氢原子只有一条跃迁路径，最多发出 $(n-1)$ 种光子。这一字之差是预赛经典陷阱（见易错点）。</li>
+  <li><strong>两种激发方式</strong>：光子激发——光子能量必须<strong>恰好</strong>等于某能级差（或 $\ge13.6\ \mathrm{eV}$ 直接电离），否则不被吸收；电子碰撞激发——电子是实物粒子，碰撞后可以只交出部分动能，因此只要入射电子动能 $\ge$ 能级差即可激发。这个区别在复赛入门题里常考（见例 6）。</li>
+</ul>
+
+<h4>物质波（德布罗意波）</h4>
+
+<p>不光有粒子性，实物粒子也有波动性。动量为 $p$ 的粒子对应波长：</p>
+
+$$\boldsymbol{\lambda = \frac{h}{p}}$$
+
+<ul>
+  <li>低速粒子（$v\ll c$）：$p=mv=\sqrt{2mE_{\mathrm{k}}}$，$\lambda=\dfrac{h}{\sqrt{2mE_{\mathrm{k}}}}$。</li>
+  <li>电子经电压 $U$ 加速：$eU=\dfrac{1}{2}mv^{2}$，代入得 $\lambda=\dfrac{h}{\sqrt{2meU}}\approx\dfrac{1.227}{\sqrt{U}}\ \mathrm{nm}$（$U$ 以伏特为单位）。例：$U=150\ \mathrm{V}$ 时 $\lambda\approx0.10\ \mathrm{nm}$，恰好是原子间距量级——所以电子束能在晶体上打出衍射图样，直接证实了物质波。</li>
+  <li>宏观物体的 $\lambda$ 小到荒唐（一颗子弹约 $10^{-34}\ \mathrm{m}$），所以日常世界看不到波动现象——量子效应只在微观尺度显现。</li>
+</ul>
+
+<hr>
+
+<h3>2.3 实验误差与有效数字：竞赛实验的"通用货币"</h3>
+
+<h4>系统误差 vs 偶然误差</h4>
+
+<table>
+  <thead>
+    <tr><th></th><th>系统误差</th><th>偶然误差（随机误差）</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="l">来源</td><td class="l">仪器零偏、刻度不准、方法本身缺陷（如伏安法内接/外接）、环境恒定偏离</td><td class="l">读数时的估计波动、打点抖动、视差等不可控小扰动</td></tr>
+    <tr><td class="l">特点</td><td class="l">总是偏向同一方向，重复测量<strong>不减小</strong></td><td class="l">有正有负、大小随机，多次测量后<strong>平均可减小</strong></td></tr>
+    <tr><td class="l">对付办法</td><td class="l">校准仪器、改进原理（换接法）、理论修正</td><td class="l">多次测量取平均、作图法、逐差法</td></tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>最常考的判断</strong>："多次测量取平均"只能压偶然误差，对系统误差<strong>无能为力</strong>——电表有零偏，测一万次平均值还是带着零偏。
+</div>
+
+<h4>有效数字：每个数字都在"报信"</h4>
+
+<ul>
+  <li><strong>定义</strong>：从左边第一个非零数字起，到最末一位（含估读位）为止的全部数字。$2.50\ \mathrm{cm}$ 是 3 位，$0.00350\ \mathrm{m}$ 也是 3 位（前面的 0 只是定位），$3.50\times10^{2}$ 是 3 位。</li>
+  <li><strong>为什么位数神圣</strong>：末位是估读位，位数直接暴露仪器精度。写 $2.5\ \mathrm{cm}$ 和 $2.50\ \mathrm{cm}$ 是在声明两把不同的尺子——实验题多写少写都算错。</li>
+  <li><strong>修约规则</strong>：
+    <ul>
+      <li><strong>加减</strong>：结果的小数位数与<strong>小数位最少</strong>的量对齐。$12.35+0.6=12.95\to13.0$（0.6 只有一位小数）。</li>
+      <li><strong>乘除</strong>：结果的有效数字位数与<strong>位数最少</strong>的量对齐。$2.50\times3.2=8.00\to8.0$（3.2 只有 2 位）。</li>
+      <li><strong>乘方、开方</strong>：与底数位数相同。常数（$\pi$、2、$\sqrt{2}$ 等）位数不限，不影响修约。</li>
+      <li><strong>中间步骤</strong>：多保留 1~2 位再算，最后一步修约，避免"越修越歪"。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>不确定度入门：给结果配一个"误差条"</h4>
+
+<p>竞赛实验报告的标准写法是 $x=\bar{x}\pm u$（同时注明单位）。入门阶段只需掌握：</p>
+
+<ul>
+  <li><strong>直接测量的不确定度</strong>：多次测量用平均值的标准偏差（A 类）；单次测量按仪器最小分度的一半或仪器说明书允差估计（B 类）。高中竞赛常简化成"估计一个合理的 $u$"。</li>
+  <li><strong>相对不确定度</strong>：$\dfrac{u}{|x|}$，常用百分数表示，是比较精度高低的公平尺子。</li>
+</ul>
+
+<p><strong>不确定度传递（方和根合成，独立随机误差适用）</strong>：</p>
+
+<table>
+  <thead>
+    <tr><th>运算</th><th>传递公式</th><th>记忆</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="l">$y=A\pm B$（加减）</td><td class="l">$u_{y}=\sqrt{u_{A}^{2}+u_{B}^{2}}$</td><td class="l">绝对不确定度平方和开根</td></tr>
+    <tr><td class="l">$y=AB$ 或 $y=A/B$（乘除）</td><td class="l">$\dfrac{u_{y}}{|y|}=\sqrt{\left(\dfrac{u_{A}}{A}\right)^{2}+\left(\dfrac{u_{B}}{B}\right)^{2}}$</td><td class="l">相对不确定度平方和开根</td></tr>
+    <tr><td class="l">$y=A^{n}$（幂）</td><td class="l">$\dfrac{u_{y}}{|y|}=|n|\,\dfrac{u_{A}}{|A|}$</td><td class="l">相对不确定度放大 $|n|$ 倍</td></tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p><strong>物理直觉</strong>：方和根合成的结果是——<strong>相对不确定度最大的那个量"统治"全局</strong>。所以改进实验时，优先提升精度最差、幂次最高的那个测量（例 7 会看到 $T^{2}$ 让计时误差翻倍），其余量凑合就行。</p>
+</blockquote>
+
+<h4>逐差法与作图法：两种"榨干数据"的技术</h4>
+
+<p><strong>逐差法</strong>（打点计时器求加速度的标准操作）：匀加速直线运动中，相邻相等时间间隔 $T$ 的位移满足 $\Delta s=aT^{2}$。纸带取 6 段 $s_{1}\sim s_{6}$，把数据分成前后两半对应相减：</p>
+
+$$s_{4}-s_{1}=3aT^{2},\qquad s_{5}-s_{2}=3aT^{2},\qquad s_{6}-s_{3}=3aT^{2}$$
+
+$$\boldsymbol{a=\frac{(s_{4}+s_{5}+s_{6})-(s_{1}+s_{2}+s_{3})}{9T^{2}}}$$
+
+<div class="key-point">
+  <strong>为什么不用相邻差？</strong>若用 $a=\dfrac{(s_{2}-s_{1})+(s_{3}-s_{2})+\cdots+(s_{6}-s_{5})}{5T^{2}}$，展开后中间项全部抵消，只剩 $\dfrac{s_{6}-s_{1}}{5T^{2}}$——等于只用了首尾两个数据，中间四个白测了。分组逐差让<strong>每个数据都参与运算</strong>，等效于把基线拉长 3 倍，偶然误差大幅压低。
+</div>
+
+<p><strong>小练习（先看数再对答案）</strong>：$T=0.1\ \mathrm{s}$，六段位移（cm）：$s_{1}=2.10,\ s_{2}=2.90,\ s_{3}=3.72,\ s_{4}=4.51,\ s_{5}=5.32,\ s_{6}=6.11$。则 $s_{4}-s_{1}=2.41$，$s_{5}-s_{2}=2.42$，$s_{6}-s_{3}=2.39$（cm），</p>
+$$a=\frac{(2.41+2.42+2.39)\times10^{-2}}{9\times(0.1)^{2}}=\frac{7.22\times10^{-2}}{0.09}\approx0.80\ \mathrm{m/s^{2}}$$
+
+<p><strong>作图法</strong>：把非线性关系<strong>线性化</strong>（如 $T^{2}-L$ 图测 $g$：$T^{2}=\dfrac{4\pi^{2}}{g}L$，斜率 $k=\dfrac{4\pi^{2}}{g}$），用直尺拟合直线取斜率。直线综合了所有数据点的信息，等效于"图形化的多次平均"，还能一眼揪出离群的坏数据。</p>
+
+<hr>
+
+<h2 id="s3">三、竞赛专属·高考不考：时间膨胀定量计算、不确定度传递与逐差法</h2>
+
+<p>以下三块内容超出高考考纲，但正是预赛拉开差距、复赛实验题立生死的地方。高考不考不代表难——它们都是"规则明确、练三遍就会"的技术活。</p>
+
+<h3>3.1 时间膨胀与长度收缩的定量运用（竞赛专属）</h3>
+
+<ul>
+  <li><strong>题型特征</strong>：给粒子的固有寿命 $\tau$（或固有长度 $L_{0}$）和速率 $v$，问实验室系中的寿命、飞行距离、观察到的长度。</li>
+  <li><strong>标准动作</strong>：先由 $v$ 算 $\gamma$（查本章 2.1 的常用表，竞赛题几乎都从表里出），再认清楚题目给的是固有时还是坐标时、固有长还是收缩长，最后套 $\Delta t=\gamma\tau$ 或 $L=L_{0}/\gamma$。</li>
+  <li><strong>高阶动作（复赛入门）</strong>：换参考系重做一遍——介子问题在介子系中就是"大气层以 $0.995c$ 迎面扑来，厚度收缩为 $L_{0}/\gamma$"。两系答案一致才放心。</li>
+  <li><strong>不要求</strong>：洛伦兹变换公式、速度合成、相对论动力学（能量动量）在复赛入门阶段不作要求，别给自己加戏。</li>
+</ul>
+
+<h3>3.2 不确定度传递与实验报告规范（竞赛专属）</h3>
+
+<ul>
+  <li>结果必须写成 $x\pm u$ 并带单位，$u$ 通常只取 1~2 位有效数字，$\bar{x}$ 的末位与 $u$ 的末位对齐（如 $g=(9.8\pm0.1)\ \mathrm{m/s^{2}}$，不能写 $9.77\pm0.098$）。</li>
+  <li>传递一律用<strong>方和根</strong>（前提是各量独立、随机）；只有估计"最坏情况"或处理系统误差限时才允许线性相加。两者混用是实验卷最常见的扣分点（见易错点 8）。</li>
+  <li>会用传递公式反推"该改进哪个量"：比较各项 $\left(n_{i}\dfrac{u_{i}}{x_{i}}\right)^{2}$ 的贡献，谁大就先压谁。</li>
+</ul>
+
+<h3>3.3 逐差法与作图法的竞赛用法（竞赛专属）</h3>
+
+<ul>
+  <li>逐差法公式 $a=\dfrac{(s_{4}+s_{5}+s_{6})-(s_{1}+s_{2}+s_{3})}{9T^{2}}$ 要会<strong>推</strong>：$s_{n+3}-s_{n}=3aT^{2}$，三条方程取平均即得。数据段数为 $2N$ 时，分母是 $N^{2}T^{2}$。</li>
+  <li>作图法进阶：线性化能力是灵魂——$y=kx^{2}$ 就画 $y-x^{2}$ 图；$T=2\pi\sqrt{L/g}$ 就画 $T^{2}-L$ 图。斜率、截距都要能翻译回物理量。</li>
+  <li>有效数字贯穿始终：读数按仪器精度写（游标卡尺不估读、螺旋测微器估到 0.001 mm），中间量多留一位，结果严格修约。</li>
+</ul>
+
+<hr>
+
+<h2 id="s4">四、例题精讲</h2>
+
+<h3>例 1（基础 · 时间膨胀）：不稳定粒子的飞行距离</h3>
+
+<p>某种不稳定粒子在自身参考系中的平均寿命为 $\tau_{0}=2.0\times10^{-6}\ \mathrm{s}$。在实验室中，它以 $v=0.8c$ 的速度飞行。求：（1）实验室测得的平均寿命；（2）它在衰变前平均能飞多远？</p>
+
+<div class="deep">
+  <p><strong>思路起点</strong>：粒子"出生→衰变"两事件在粒子系中同一地点发生，所以 $\tau_{0}$ 是<strong>固有时</strong>；实验室看粒子在动，测得的是坐标时，用 $\Delta t=\gamma\tau_{0}$。飞行距离 = 实验室速率 × 实验室寿命（同一参考系内做运动学，经典公式照用）。</p>
+  <p><strong>解析</strong>：</p>
+  <p>（1）$v=0.8c$，$\gamma=\dfrac{1}{\sqrt{1-0.64}}=\dfrac{1}{0.6}=\dfrac{5}{3}$。</p>
+  $$\Delta t=\gamma\tau_{0}=\frac{5}{3}\times2.0\times10^{-6}\approx3.3\times10^{-6}\ \mathrm{s}$$
+  <p>（2）实验室中速率 $v=0.8\times3.0\times10^{8}=2.4\times10^{8}\ \mathrm{m/s}$，</p>
+  $$s=v\Delta t=2.4\times10^{8}\times3.3\times10^{-6}\approx8.0\times10^{2}\ \mathrm{m}$$
+  <p><strong>答案</strong>：实验室寿命约 $3.3\times10^{-6}\ \mathrm{s}$（是固有寿命的 $5/3$ 倍），飞行距离约 $800\ \mathrm{m}$。若不会相对论按经典算只有 $480\ \mathrm{m}$，差的就是那个 $\gamma$。</p>
+</div>
+
+<h3>例 2（基础 · 长度收缩）：飞船与地面互相"看扁"</h3>
+
+<p>一艘固有长度 $L_{0}=100\ \mathrm{m}$ 的飞船以 $0.6c$ 匀速掠过地面观测站。（1）地面测得飞船的长度是多少？（2）宇航员回头测量地面上一段固有长度为 $100\ \mathrm{m}$ 的跑道，测得是多少？</p>
+
+<div class="deep">
+  <p><strong>思路起点</strong>：谁相对谁在动，谁的长度就被对方测短——长度收缩是<strong>相互</strong>的。两问中固有长度都是 $100\ \mathrm{m}$，相对速率都是 $0.6c$，方向相反不影响结果。</p>
+  <p><strong>解析</strong>：$v=0.6c$，$\gamma=\dfrac{1}{\sqrt{1-0.36}}=\dfrac{1}{0.8}=1.25$。</p>
+  <p>（1）地面看飞船（飞船在动）：</p>
+  $$L=\frac{L_{0}}{\gamma}=\frac{100}{1.25}=80\ \mathrm{m}$$
+  <p>（2）宇航员看跑道（跑道在动）：运动是相对的，同样收缩：</p>
+  $$L'=\frac{100}{1.25}=80\ \mathrm{m}$$
+  <p><strong>答案</strong>：都是 $80\ \mathrm{m}$。注意不是"视觉上的变扁"，而是"在同一时刻标记两端位置"的<strong>测量结果</strong>——各自的测量都严谨，结论都正确，这就是相对论的脾气。</p>
+</div>
+
+<h3>例 3【预赛难度】：π 介子能否到达探测器？（一题两解）</h3>
+
+<p>在距地面探测器 $30\ \mathrm{m}$ 的高空产生一个 π 介子，速度 $v=0.995c$（对应 $\gamma\approx10$），方向竖直向下。π 介子的固有寿命 $\tau_{0}=2.6\times10^{-8}\ \mathrm{s}$。按平均寿命估算：它能否在衰变前到达探测器？</p>
+
+<div class="deep">
+  <p><strong>思路起点</strong>：经典算法 $s=0.995c\tau_{0}\approx7.8\ \mathrm{m}&lt;30\ \mathrm{m}$，看似到不了。但题给 $\gamma=10$ 不是摆设——用两种参考系各算一遍，互相印证。</p>
+  <p><strong>解法一（实验室系 · 时间膨胀）</strong>：实验室测 π 介子寿命膨胀为</p>
+  $$\Delta t=\gamma\tau_{0}=10\times2.6\times10^{-8}=2.6\times10^{-7}\ \mathrm{s}$$
+  <p>飞行距离</p>
+  $$s=v\Delta t=0.995\times3.0\times10^{8}\times2.6\times10^{-7}\approx78\ \mathrm{m}>30\ \mathrm{m}$$
+  <p>能到达，而且还有富余。</p>
+  <p><strong>解法二（π 介子系 · 长度收缩）</strong>：在 π 介子看来，是大气层与地面以 $0.995c$ 迎面扑来，$30\ \mathrm{m}$ 的距离（地面系的固有长度）收缩为</p>
+  $$L=\frac{L_{0}}{\gamma}=\frac{30}{10}=3.0\ \mathrm{m}$$
+  <p>地面"撞"到 π 介子所需时间</p>
+  $$\Delta t'=\frac{L}{v}=\frac{3.0}{0.995\times3.0\times10^{8}}\approx1.0\times10^{-8}\ \mathrm{s}&lt;\tau_{0}=2.6\times10^{-8}\ \mathrm{s}$$
+  <p>地面在 π 介子衰变前就"到"了——与解法一结论一致。</p>
+  <p><strong>答案</strong>：能到达。<strong>点评</strong>：同一事实，实验室系解释为"钟变慢"，π 介子系解释为"尺变短"。两种说法都对，也必须一致——这就是竞赛阅卷想看到的自洽性检查。</p>
+</div>
+
+<h3>例 4（基础 · 光电效应）：钠金属的三连问</h3>
+
+<p>钠的逸出功 $W_{0}=2.29\ \mathrm{eV}$。用波长 $\lambda=400\ \mathrm{nm}$ 的紫光照射钠表面。（1）光电子的最大初动能是多少？（2）遏止电压是多少？（3）钠的极限波长是多少？（取 $hc=1240\ \mathrm{eV\cdot nm}$）</p>
+
+<div class="deep">
+  <p><strong>思路起点</strong>：先用 $E=\dfrac{1240}{\lambda}$ 把波长换成光子能量（eV 单位最省心），再套爱因斯坦方程 $E_{\mathrm{k}}=h\nu-W_{0}$；遏止电压由 $eU_{c}=E_{\mathrm{k}}$ 给出——$E_{\mathrm{k}}$ 以 eV 为单位时，数值上就等于 $U_{c}$ 的伏特数。</p>
+  <p><strong>解析</strong>：</p>
+  <p>（1）光子能量 $E=\dfrac{1240}{400}=3.10\ \mathrm{eV}$，</p>
+  $$E_{\mathrm{k}}=3.10-2.29=0.81\ \mathrm{eV}$$
+  <p>（2）$eU_{c}=E_{\mathrm{k}}\Rightarrow U_{c}=0.81\ \mathrm{V}$。</p>
+  <p>（3）极限波长对应 $h\nu_{0}=W_{0}$：</p>
+  $$\lambda_{0}=\frac{1240}{W_{0}}=\frac{1240}{2.29}\approx5.4\times10^{2}\ \mathrm{nm}$$
+  <p><strong>答案</strong>：$E_{\mathrm{k}}=0.81\ \mathrm{eV}$；$U_{c}=0.81\ \mathrm{V}$；$\lambda_{0}\approx542\ \mathrm{nm}$（比它长的光一律打不出电子，再强也没用）。</p>
+</div>
+
+<h3>例 5【预赛难度】：用遏止电压"称"出普朗克常量</h3>
+
+<p>用两种单色光分别照射某金属，测得遏止电压如下：$\nu_{1}=6.0\times10^{14}\ \mathrm{Hz}$ 时 $U_{c1}=0.59\ \mathrm{V}$；$\nu_{2}=8.0\times10^{14}\ \mathrm{Hz}$ 时 $U_{c2}=1.42\ \mathrm{V}$。求：（1）普朗克常量 $h$；（2）该金属的逸出功 $W_{0}$。（$e=1.6\times10^{-19}\ \mathrm{C}$）</p>
+
+<div class="deep">
+  <p><strong>思路起点</strong>：$U_{c}=\dfrac{h}{e}\nu-\dfrac{W_{0}}{e}$ 是 $\nu$ 的一次函数。两组数据定一条直线：两式相减消去 $W_{0}$ 得斜率 $\dfrac{h}{e}$，回代任一式得 $W_{0}$。这正是 2.2 节那张 $U_{c}-\nu$ 图的定量玩法。</p>
+  <p><strong>解析</strong>：</p>
+  <p>（1）两式相减：$e(U_{c2}-U_{c1})=h(\nu_{2}-\nu_{1})$，</p>
+  $$h=\frac{e(U_{c2}-U_{c1})}{\nu_{2}-\nu_{1}}=\frac{1.6\times10^{-19}\times(1.42-0.59)}{8.0\times10^{14}-6.0\times10^{14}}=\frac{1.6\times10^{-19}\times0.83}{2.0\times10^{14}}$$
+  $$h\approx6.6\times10^{-34}\ \mathrm{J\cdot s}$$
+  <p>与公认值 $6.63\times10^{-34}\ \mathrm{J\cdot s}$ 吻合。</p>
+  <p>（2）回代第一组：$W_{0}=h\nu_{1}-eU_{c1}$，</p>
+  $$W_{0}=6.6\times10^{-34}\times6.0\times10^{14}-1.6\times10^{-19}\times0.59=3.96\times10^{-19}-0.94\times10^{-19}=3.0\times10^{-19}\ \mathrm{J}\approx1.9\ \mathrm{eV}$$
+  <p><strong>答案</strong>：$h\approx6.6\times10^{-34}\ \mathrm{J\cdot s}$；$W_{0}\approx1.9\ \mathrm{eV}$。<strong>点评</strong>：用第二组数据回代会得同样的 $W_{0}$（$5.28\times10^{-19}-2.27\times10^{-19}\approx3.0\times10^{-19}\ \mathrm{J}$）——做完随手验一组，是竞赛考生的好习惯。</p>
+</div>
+
+<h3>例 6【复赛难度】：12.5 eV 的电子撞氢原子——能点亮几条谱线？</h3>
+
+<p>用动能为 $12.5\ \mathrm{eV}$ 的电子束轰击处于基态的氢原子。（1）氢原子最高能被激发到第几能级？（2）这些受激的氢原子向低能级跃迁，最多能发出几种不同频率的光子？波长各是多少？（3）若改用能量为 $12.5\ \mathrm{eV}$ 的光子照射基态氢原子，能激发它吗？（氢原子能级 $E_{n}=-13.6/n^{2}\ \mathrm{eV}$，$hc=1240\ \mathrm{eV\cdot nm}$）</p>
+
+<div class="deep">
+  <p><strong>思路起点</strong>：电子是实物粒子，碰撞时可以把动能的<strong>一部分</strong>交给氢原子，所以"动能 $\ge$ 能级差"就能激发；光子则不同，必须整颗能量恰好等于能级差才被吸收。先算各能级差，逐档比较。</p>
+  <p><strong>解析</strong>：</p>
+  <p>（1）从基态 $n=1$ 出发的激发能：</p>
+  $$E_{2}-E_{1}=13.6\left(1-\tfrac{1}{4}\right)=10.2\ \mathrm{eV}$$
+  $$E_{3}-E_{1}=13.6\left(1-\tfrac{1}{9}\right)=12.09\ \mathrm{eV}$$
+  $$E_{4}-E_{1}=13.6\left(1-\tfrac{1}{16}\right)=12.75\ \mathrm{eV}$$
+  <p>$12.5\ \mathrm{eV}\ge12.09\ \mathrm{eV}$ 但 $&lt;12.75\ \mathrm{eV}$，故最高激发到 <strong>$n=3$</strong>（剩余约 $0.4\ \mathrm{eV}$ 由电子带走）。</p>
+  <p>（2）大量氢原子处于 $n=3$ 后，可能的跃迁有 $3\to1$、$3\to2$、$2\to1$ 共 <strong>3 种</strong>：</p>
+  <p>$3\to1$：$E=12.09\ \mathrm{eV}$，$\lambda=\dfrac{1240}{12.09}\approx103\ \mathrm{nm}$（紫外，赖曼系）</p>
+  <p>$2\to1$：$E=10.2\ \mathrm{eV}$，$\lambda=\dfrac{1240}{10.2}\approx122\ \mathrm{nm}$（紫外，赖曼系）</p>
+  <p>$3\to2$：$E=1.89\ \mathrm{eV}$，$\lambda=\dfrac{1240}{1.89}\approx656\ \mathrm{nm}$（红光，巴耳末系 H$\alpha$）</p>
+  <p>（3）不能。$12.5\ \mathrm{eV}$ 的光子不等于任何能级差（$10.2$、$12.09$、$12.75\ \mathrm{eV}$ 都对不上），也不足 $13.6\ \mathrm{eV}$ 无法电离氢原子，只能整颗"路过"。</p>
+  <p><strong>答案</strong>：（1）$n=3$；（2）3 种，波长约 $103\ \mathrm{nm}$、$122\ \mathrm{nm}$、$656\ \mathrm{nm}$；（3）不能。<strong>点评</strong>："电子碰撞可交部分能量、光子吸收必须整颗恰好"——这是复赛入门的高频区分点，记牢。</p>
+</div>
+
+<h3>例 7【复赛难度】：单摆测 g——结果该怎么写，误差该怪谁？</h3>
+
+<p>某同学用单摆测重力加速度：摆长 $L=(100.0\pm0.2)\ \mathrm{cm}$，周期 $T=(2.01\pm0.01)\ \mathrm{s}$（各量不确定度已按仪器与多次测量估计）。由 $g=\dfrac{4\pi^{2}L}{T^{2}}$，求：（1）$g$ 的最佳值；（2）$g$ 的不确定度与相对不确定度；（3）若想提高精度，最该改进哪个量的测量？</p>
+
+<div class="deep">
+  <p><strong>思路起点</strong>：$g$ 是 $L$ 与 $T$ 的"乘除幂组合"，用相对不确定度的方和根传递；注意 $T$ 带平方，它的贡献要乘 2——通常这就是误差大户。</p>
+  <p><strong>解析</strong>：</p>
+  <p>（1）$L=1.000\ \mathrm{m}$，$T^{2}=4.0401\ \mathrm{s^{2}}$，</p>
+  $$g=\frac{4\pi^{2}\times1.000}{4.0401}=\frac{39.48}{4.0401}\approx9.77\ \mathrm{m/s^{2}}$$
+  <p>（2）传递公式：</p>
+  $$\frac{u_{g}}{g}=\sqrt{\left(\frac{u_{L}}{L}\right)^{2}+\left(2\,\frac{u_{T}}{T}\right)^{2}}$$
+  <p>代入：$\dfrac{u_{L}}{L}=\dfrac{0.2}{100.0}=0.2\%$，$2\dfrac{u_{T}}{T}=2\times\dfrac{0.01}{2.01}\approx1.0\%$。</p>
+  $$\frac{u_{g}}{g}=\sqrt{(0.002)^{2}+(0.00995)^{2}}\approx1.0\%\quad\Rightarrow\quad u_{g}\approx9.77\times1.0\%\approx0.1\ \mathrm{m/s^{2}}$$
+  <p>规范写法（$u$ 取 1 位，末位对齐）：$\boldsymbol{g=(9.8\pm0.1)\ \mathrm{m/s^{2}}}$。</p>
+  <p>（3）贡献对比：$T$ 项 $(1.0\%)^{2}=1.0\times10^{-4}$，$L$ 项 $(0.2\%)^{2}=4\times10^{-6}$——$T$ 的贡献是 $L$ 的 25 倍！应优先改进计时：用秒表连续测 50 次全振动再除以 50（$u_{T}$ 缩小约 50 倍），或换光电门自动计时。摆长再怎么精调都于事无补。</p>
+  <p><strong>点评</strong>：这道题是竞赛实验卷的标准缩影——算结果只是入场券，<strong>指出误差大户并给出改进方案</strong>才是得分点。</p>
+</div>
+
+<hr>
+
+<h2 id="s5">五、易错点</h2>
+
+<div class="warn">
+  <strong>易错点 1 ｜ 固有时与坐标时张冠李戴</strong>：看到"寿命 $2.6\times10^{-8}\ \mathrm{s}$"就当实验室时间直接乘速度。固有时必须是"在随对象静止的系中、同一地点发生的两事件"的间隔——粒子自带寿命、钟自带的读数间隔才是 $\tau$；题目给实验室时间间隔时反而要除以 $\gamma$ 求固有时。动笔前先问自己："这对事件在哪个系里同地发生？"
+</div>
+
+<div class="warn">
+  <strong>易错点 2 ｜ 长度收缩公式记反 + 方向乱用</strong>：$\gamma&gt;1$，运动方向的长度只会变<strong>短</strong>：$L=L_{0}/\gamma$。写成 $L=\gamma L_{0}$ 飞船越飞越长的同学不在少数。另外两点常丢分：① 收缩只沿运动方向，飞船的"高度"不变；② 收缩是"同时测量两端"的结果，不是眼睛看到的视觉形象。
+</div>
+
+<div class="warn">
+  <strong>易错点 3 ｜ 死抱"绝对同时"</strong>："两件事明明同时发生，换辆车看怎么能不同时？"——日常直觉在这里完全失效。只要两事件<strong>异地</strong>，它们的同时性就依赖参考系。概念辨析题里凡是"所有惯性系看来都同时"的选项一律是错的。
+</div>
+
+<div class="warn">
+  <strong>易错点 4 ｜ 光电效应中频率与光强的角色互换</strong>：$\nu$ 管"能不能打出电子、初动能多大"（一个光子的能量）；光强管"单位时间打出多少个"（光子个数）。"增大光强使原来打不出电子的光打出电子"是绝对错误的——频率不够，一颗光子能量就不够，电子不会攒着等下一颗。
+</div>
+
+<div class="warn">
+  <strong>易错点 5 ｜ 遏止电压的两个误会</strong>：① 以为 $U_{c}$ 随光强增大——错，$eU_{c}=E_{\mathrm{k}}=h\nu-W_{0}$ 只含 $\nu$，与光强无关；② 单位换算翻车——$E_{\mathrm{k}}$ 以 eV 为单位时数值恰等于 $U_{c}$ 的伏特数（$0.81\ \mathrm{eV}\leftrightarrow0.81\ \mathrm{V}$），换成焦耳再除以 $e$ 绕晕自己的纯属多余操作。
+</div>
+
+<div class="warn">
+  <strong>易错点 6 ｜ "一个原子"与"大量原子"的发光种数</strong>：大量氢原子从 $n=3$ 跃迁可发 $\mathrm{C}_{3}^{2}=3$ 种光；但<strong>一个</strong>氢原子只能沿一条路径走：要么 $3\to1$（1 种），要么 $3\to2\to1$（2 种），最多 2 种。题目里那个"一"字就是故意埋的雷，圈出来再答。
+</div>
+
+<div class="warn">
+  <strong>易错点 7 ｜ 物质波公式张冠李戴</strong>：$\lambda=\dfrac{h}{p}$ 对一切粒子成立，但 $p$ 与能量的关系分两派——低速实物粒子 $p=\sqrt{2mE_{\mathrm{k}}}$，光子才是 $p=E/c$。给电子动能就套 $p=E/c$，波长直接错出数量级。判断依据：有静质量（电子、质子、子弹）走 $\sqrt{2mE_{\mathrm{k}}}$，无静质量（光子）走 $E/c$。
+</div>
+
+<div class="warn">
+  <strong>易错点 8 ｜ 误差合成两公式混用 + 修约规则错配</strong>：独立的<strong>随机</strong>不确定度用方和根 $\sqrt{u_{A}^{2}+u_{B}^{2}}$；线性相加 $u_{A}+u_{B}$ 只用于"最大可能误差"或系统误差限的保守估计——把方和根该用的场合线性加，结果虚胖近一倍，报告直接判错。配套的修约也别记反：加减看<strong>小数位</strong>（与最少的对齐），乘除看<strong>有效数字位数</strong>（与最少的对齐）。最后提醒：逐差法用相邻段相减等于只用首尾两个数据，必须分组大跨度相减。
+</div>
+
+<hr>
+
+<h2 id="s6">六、自检清单</h2>
+
+<ul class="checklist">
+  <li>能默写 $\gamma=\dfrac{1}{\sqrt{1-v^{2}/c^{2}}}$，并不查表算出 $0.6c$、$0.8c$、$\frac{\sqrt{3}}{2}c$ 对应的 $\gamma$（$1.25$、$5/3$、$2$）。</li>
+  <li>拿到一对事件，能判断哪个参考系测得的是固有时（提示：找"同一地点"）。</li>
+  <li>能用两种方法（实验室系时间膨胀、随动系长度收缩）解介子飞行问题，并验证两答案一致。</li>
+  <li>能说清"为什么光速不变会逼出时间膨胀"，并能复述火车闪光实验中两系对同时性的不同结论。</li>
+  <li>能写出 $E_{\mathrm{k}}=h\nu-W_{0}$ 并逐项解释，包括极限频率 $\nu_{0}=W_{0}/h$ 与遏止电压 $eU_{c}=E_{\mathrm{k}}$ 的由来。</li>
+  <li>能解释"频率决定初动能、光强决定光电流"，并指出"增强光强使低于极限频率的光打出电子"错在哪。</li>
+  <li>会用 $U_{c}-\nu$ 图：斜率求 $h$、横截距求 $\nu_{0}$、纵截距求 $W_{0}$，并能处理两组数据求 $h$ 的计算题。</li>
+  <li>能默写 $E_{n}=-13.6/n^{2}\ \mathrm{eV}$，用 $hc=1240\ \mathrm{eV\cdot nm}$ 在 30 秒内心算出任两能级间光子的波长。</li>
+  <li>能区分"一个氢原子"与"大量氢原子"从 $n=4$ 跃迁的发光种数（最多 3 种 vs 6 种）。</li>
+  <li>会算电子经电压 $U$ 加速后的德布罗意波长（$\lambda=\dfrac{1.227}{\sqrt{U}}\ \mathrm{nm}$），并说明为什么宏观物体不显波动性。</li>
+  <li>能判断给定数字的有效数字位数（$2.50$、$0.00350$、$3.50\times10^{2}$ 各是几位），并按加减/乘除规则正确修约。</li>
+  <li>会用方和根完成加减与乘除（含幂次）的不确定度传递，并能从贡献大小指出该优先改进的测量量。</li>
+  <li>会推逐差法公式 $a=\dfrac{(s_{4}+s_{5}+s_{6})-(s_{1}+s_{2}+s_{3})}{9T^{2}}$，并能解释为什么相邻段相减是错误的。</li>
+</ul>
+
+<blockquote>
+  <p><strong>小兵结语</strong>：十二章到此收官。本章给你的其实是三把新钥匙：$\gamma$ 让你有资格谈论"高速世界"，光子观点让你读懂微观世界的"一口价"，而不确定度让你在实验台前说的每个数字都有底气。竞赛的路很长，但你已经站在了正确的起跑线上——把易错点再过一遍，去做题吧，祝小兵预赛顺利！</p>
+</blockquote>
+
+<hr>
+
+<p style="text-align: center; color: var(--ink-soft); font-size: 0.9em;">
+  tags: #物理 #竞赛 #近代物理 #相对论 #光电效应 #实验误差 #深度学习
+</p>
+
+</body>
+</html>

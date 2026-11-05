@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>05 动量与角动量 · 物理竞赛入门</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<nav class="chap-nav">高考备考 · 物理 · 竞赛专题 ｜ 05-动量与角动量-深度学习材料.html</nav>
+<header class="chap-head">
+  <h1>05 动量与角动量</h1>
+  <p class="chap-meta">物理竞赛入门专题（碰撞分类 · 质心运动定理 · 角动量守恒） ｜ 目标：全国中学生物理竞赛 预赛 → 复赛入门 ｜ 适用：高一竞赛入门（同步拔高 &amp; 2029 云南高考储备） ｜ 学生：小兵</p>
+  <p class="chap-intro">如果说能量是高中物理的"第一把钥匙"，那么<strong>动量就是第二把</strong>——碰撞、爆炸、反冲这些"看不清过程"的问题，动量观点常常一招制胜。本章还会带你认识一位高考只闻其名、竞赛天天见面的新朋友：<strong>角动量</strong>。学完之后，你不仅能秒杀高考压轴碰撞题，还能真正看懂"行星为什么绕太阳转而不掉进去"。别怕公式多，每一个我们都从头推，慢慢来，比较快。</p>
+</header>
+
+<nav class="toc">
+  <div class="toc-label">本章导航</div>
+  <div class="toc-links">
+    <a href="#s1">一、知识全景</a>
+    <a href="#s2">二、核心概念</a>
+    <a href="#s3">三、竞赛专属·高考不考</a>
+    <a href="#s4">四、例题精讲</a>
+    <a href="#s5">五、易错点</a>
+    <a href="#s6">六、自检清单</a>
+  </div>
+</nav>
+
+<!-- 一、知识全景 -->
+<h2 id="s1">一、知识全景</h2>
+
+<div class="map">
+  <div class="row"><div class="node root">动量与角动量</div></div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node">冲量 · 动量定理<br><small>2.1</small></div>
+    <div class="node">动量守恒定律<br><small>2.2</small></div>
+    <div class="node">碰撞三分类<br>恢复系数<br><small>2.3</small></div>
+    <div class="node">质心运动定理<br><small>2.4</small></div>
+    <div class="node">角动量守恒<br><small>2.5</small></div>
+  </div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node leaf">$\vec p=m\vec v$<br>$\vec I=\Delta\vec p$</div>
+    <div class="node leaf">合外力为零<br>单方向也可守恒</div>
+    <div class="node leaf">弹性 $e=1$<br>完全非弹性 $e=0$</div>
+    <div class="node leaf">人船模型<br>内力不动质心</div>
+    <div class="node leaf">$L=rmv\sin\theta$<br>开普勒第二定律</div>
+  </div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node view">动量 + 能量联立<br><small>压轴标配</small></div>
+    <div class="node view">竞赛升级<br><small>$\vec L=\vec r\times\vec p$ · 柯尼希定理</small></div>
+  </div>
+</div>
+
+<p>本章的逻辑主线只有一句话：<strong>当"力随时间变化的过程"看不清时，用守恒量绕过过程</strong>。碰撞时间极短、力极大且变化复杂，牛顿第二定律逐瞬积分几乎不可能；但只要系统合外力为零，总动量就不变——这就是动量观点的威力。角动量则是"转动版"的动量：行星绕太阳、绳系小球收缩半径，都是它的主场。</p>
+
+<!-- 二、核心概念 -->
+<h2 id="s2">二、核心概念</h2>
+
+<h3>2.1 动量与冲量：矢量性是灵魂</h3>
+
+<p><strong>动量</strong>：$\vec p=m\vec v$，单位 $\mathrm{kg\cdot m/s}$。它是<strong>矢量</strong>，方向与速度相同。</p>
+
+<p><strong>冲量</strong>：$\vec I=\vec F\,\Delta t$（变力时 $\vec I=\int \vec F\,\mathrm dt$），单位 $\mathrm{N\cdot s}$，与 $\mathrm{kg\cdot m/s}$ 等价。</p>
+
+<p><strong>动量定理</strong>：合外力的冲量等于动量的变化量：</p>
+
+$$\vec I_{合}=\vec F_{合}\,\Delta t=\Delta \vec p=m\vec v_2-m\vec v_1$$
+
+<blockquote>
+  <p><strong>为什么竞赛和高考都爱它？</strong></p>
+  <ul>
+    <li>它把"力 × 时间"翻译成"动量变化"，<strong>不需要知道力随时间的细节</strong>。踢球、撞锤、缓冲垫，统统适用。</li>
+    <li>动量定理是<strong>矢量方程</strong>：一维问题先规定正方向，用正负号代替方向；二维问题要分量使用或画矢量图。</li>
+    <li>平均作用力 $\bar F=\dfrac{\Delta p}{\Delta t}$：撞击时间越短，平均力越大——这就是玻璃杯掉地毯上不易碎的原因。</li>
+  </ul>
+</blockquote>
+
+<h3>2.2 动量守恒定律：条件比结论更重要</h3>
+
+<p><strong>定律</strong>：一个系统<strong>所受合外力为零</strong>时，系统的总动量保持不变：</p>
+
+$$m_1\vec v_1+m_2\vec v_2+\cdots=\text{常矢量}$$
+
+<p>三种常见情形都能用，记住"由严到宽"：</p>
+
+<ol>
+  <li><strong>严格守恒</strong>：系统合外力为零（如光滑水平面上的碰撞）。</li>
+  <li><strong>近似守恒</strong>：内力远大于外力（碰撞、爆炸瞬间）。碰撞时间 $\Delta t$ 极短，重力、摩擦力等外力的冲量 $F_{外}\Delta t$ 可忽略——这是竞赛里最重要的近似。</li>
+  <li><strong>单方向守恒</strong>：某方向合外力为零，则该方向动量分量守恒。比如光滑地面上小车与车的货物：水平方向守恒，竖直方向不守恒（有支持力、重力参与）。</li>
+</ol>
+
+<h3>2.3 碰撞三分类与恢复系数</h3>
+
+<p>碰撞是本章的核心战场。两球一维碰撞，动量总是守恒（近似），差别在<strong>机械能</strong>：</p>
+
+<table>
+  <thead>
+    <tr><th>类型</th><th>恢复系数 $e$</th><th>动量</th><th>机械能</th><th>特征与例子</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="l"><strong>弹性碰撞</strong></td>
+      <td>$e=1$</td>
+      <td class="l">守恒</td>
+      <td class="l"><strong>守恒</strong></td>
+      <td class="l">形变完全恢复；理想钢球、分子间碰撞</td>
+    </tr>
+    <tr>
+      <td class="l"><strong>非弹性碰撞</strong></td>
+      <td>$0&lt;e&lt;1$</td>
+      <td class="l">守恒</td>
+      <td class="l">有损失</td>
+      <td class="l">形变部分恢复；现实中的大多数碰撞</td>
+    </tr>
+    <tr>
+      <td class="l"><strong>完全非弹性碰撞</strong></td>
+      <td>$e=0$</td>
+      <td class="l">守恒</td>
+      <td class="l"><strong>损失最大</strong></td>
+      <td class="l">碰后粘在一起、共同运动；子弹打入木块</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>恢复系数</strong>（牛顿碰撞公式）：碰后分离速度与碰前接近速度之比</p>
+
+$$e=\frac{v_2'-v_1'}{v_1-v_2}\quad(\text{一维，}v_1&gt;v_2\text{ 为接近})$$
+
+<p>动量守恒 + $e$ 的定义，两个方程解两个未知速度，这就是一切一维碰撞问题的通法。</p>
+
+<div class="key-point">
+  <p><strong>一维弹性碰撞的两条成品公式</strong>（$m_2$ 初速 $v_2$，$m_1$ 初速 $v_1$）：</p>
+  <p style="text-align:center;">$v_1'=\dfrac{(m_1-m_2)v_1+2m_2v_2}{m_1+m_2},\qquad v_2'=\dfrac{(m_2-m_1)v_2+2m_1v_1}{m_1+m_2}$</p>
+  <p>特例背下来，考场上能省 5 分钟：$m_1=m_2$ 时<strong>交换速度</strong>；$m_1\ll m_2$ 时 $v_1'\approx -v_1$（原速反弹）；$m_1\gg m_2$ 且 $v_2=0$ 时 $v_2'\approx 2v_1$。</p>
+</div>
+
+<p><strong>碰撞损失的能量</strong>有一个极美的公式（推导见第三节柯尼希定理）：</p>
+
+$$\Delta E=\tfrac12\,\mu\, v_{相对}^2\,(1-e^2),\qquad \mu=\frac{m_1m_2}{m_1+m_2}\ \text{（约化质量）}$$
+
+<p>完全非弹性碰撞 $e=0$，损失 $\Delta E=\frac12\mu v_{相对}^2$，这是给定初动量下<strong>可能损失的最大值</strong>。</p>
+
+<h3>2.4 质心与质心运动定理</h3>
+
+<p><strong>质心</strong>是系统质量的"加权平均位置"：</p>
+
+$$\vec r_C=\frac{m_1\vec r_1+m_2\vec r_2+\cdots}{m_1+m_2+\cdots}=\frac{\sum m_i\vec r_i}{M}$$
+
+<p>对定义式求时间导数，依次得到质心速度与加速度：</p>
+
+$$M\vec v_C=\sum m_i\vec v_i=\vec p_{总},\qquad M\vec a_C=\vec F_{合外}$$
+
+<p>第二式就是<strong>质心运动定理</strong>：系统质心的运动，等效于把全部质量集中在质心、全部外力作用在质心上的一个质点的运动。<strong>内力再复杂也改变不了质心的运动</strong>——爆炸的炮弹碎片乱飞，质心仍沿原抛物线走。</p>
+
+<blockquote>
+  <p><strong>两个直接推论（竞赛天天用）：</strong></p>
+  <ul>
+    <li>合外力为零 $\Rightarrow$ 质心速度不变。若初始静止，则<strong>质心位置不动</strong>——这就是"人船模型"的全部原理。</li>
+    <li>系统总动量 $\vec p_{总}=M\vec v_C$：求总动量只需盯住房心（质心）这一个点。</li>
+  </ul>
+</blockquote>
+
+<h3>2.5 角动量与角动量守恒：转动世界的守恒量</h3>
+
+<p>质点对<strong>某一固定参考点 $O$</strong> 的角动量定义为</p>
+
+$$L=r\,mv\sin\theta$$
+
+<p>其中 $r$ 是质点到 $O$ 的距离，$\theta$ 是位矢 $\vec r$ 与速度 $\vec v$ 的夹角。单位 $\mathrm{kg\cdot m^2/s}$。当 $\vec r\perp\vec v$（圆周运动、近日点/远日点）时，简化为 $L=rmv$。</p>
+
+<p><strong>角动量定理与守恒</strong>：对参考点 $O$ 的合外力矩 $\tau=Fr_\perp$（力 × 力臂）等于角动量的变化率；<strong>当合外力矩为零时，角动量守恒</strong>。最典型的情形是<strong>有心力场</strong>——力的作用线始终通过 $O$（力臂为零，力矩为零），例如行星受的太阳引力始终指向太阳：</p>
+
+$$L=rmv\sin\theta=\text{常量}$$
+
+<div class="key-point">
+  <p><strong>开普勒第二定律的角动量解释</strong>：行星与太阳的连线在相等时间内扫过相等面积。因为 $\Delta t$ 内扫过的面积 $\Delta S=\frac12 rv\sin\theta\,\Delta t$，所以面积速度</p>
+  <p style="text-align:center;">$\dfrac{\Delta S}{\Delta t}=\dfrac12 rv\sin\theta=\dfrac{L}{2m}=\text{常量}$</p>
+  <p>角动量守恒 $\Leftrightarrow$ 面积速度恒定。于是行星在近日点（$r$ 小）跑得快、远日点（$r$ 大）跑得慢——这不是巧合，是守恒律的必然。</p>
+</div>
+
+<!-- 三、竞赛专属·高考不考 -->
+<h2 id="s3">三、竞赛专属·高考不考</h2>
+
+<p>下面三块内容高考明确不考，但预赛几乎年年出现、复赛是基本功。高一入门阶段先建立图景，会算一维、二维的典型题即可。</p>
+
+<h3>3.1 角动量的矢量定义：$\vec L=\vec r\times\vec p$</h3>
+
+<p>完整定义是<strong>矢量叉乘</strong>：</p>
+
+$$\vec L=\vec r\times\vec p,\qquad |\vec L|=rp\sin\theta=rmv\sin\theta$$
+
+<p>方向由<strong>右手螺旋定则</strong>确定：四指从 $\vec r$ 转向 $\vec p$，拇指即 $\vec L$ 方向。圆周运动的角动量垂直于轨道平面。相应的角动量定理写作</p>
+
+$$\vec\tau=\vec r\times\vec F=\frac{\mathrm d\vec L}{\mathrm dt}$$
+
+<p>参考点 $O$ 必须是<strong>惯性系中的固定点</strong>（或系统的质心），否则公式要加修正项——这是竞赛阅卷中最常见的扣分点之一（见易错点 3）。</p>
+
+<h3>3.2 恢复系数的一般情形</h3>
+
+<p>高考只认"弹性/完全非弹性"两个极端，竞赛则要处理一般的 $0&lt;e&lt;1$，甚至<strong>斜碰（二维碰撞）</strong>：</p>
+
+<ul>
+  <li><strong>一般一维碰撞</strong>：动量守恒 + $e=\dfrac{v_2'-v_1'}{v_1-v_2}$，两方程两未知数，通解一切。能量损失用 $\Delta E=\frac12\mu v_{相对}^2(1-e^2)$ 秒算。</li>
+  <li><strong>斜碰处理套路</strong>：沿碰撞接触面的<strong>法向</strong>用恢复系数，<strong>切向</strong>因无冲量（光滑）各自速度分量不变。例如小球以 $45°$ 角、速率 $v_0$ 撞光滑墙面，$e=0.5$：法向分量碰后反向且减半为 $0.5v_0\sin45°$，切向分量不变仍为 $v_0\cos45°$。</li>
+  <li><strong>多次碰撞 / 反复弹跳</strong>：每碰一次相对速度乘 $e$、竖直反弹高度乘 $e^2$，于是形成等比数列，求和得总路程总时间（例 3 就是这类题）。</li>
+</ul>
+
+<h3>3.3 质心系与柯尼希定理</h3>
+
+<p><strong>柯尼希定理</strong>：系统的总动能 = 质心动能 + 各质点相对质心的动能：</p>
+
+$$E_k=\tfrac12 Mv_C^2+E_k',\qquad E_k'=\sum\tfrac12 m_i v_i'^2$$
+
+<p>两体问题中 $E_k'=\frac12\mu v_{相对}^2$。由此立刻读懂碰撞的能量账：动量守恒锁定了质心动能 $\frac12Mv_C^2$（<strong>碰不没的</strong>），碰撞最多只能把相对质心的那部分动能 $E_k'$ 全部耗掉——这就是"完全非弹性碰撞损失最大"的真正原因，也是 $\Delta E=\frac12\mu v_{相对}^2(1-e^2)$ 的来历。</p>
+
+<blockquote>
+  <p><strong>拓展一瞥（选读）</strong>：火箭是<strong>变质量</strong>问题，对"火箭 + 喷出燃气"系统用动量守恒可得齐奥尔科夫斯基公式 $v=u\ln\dfrac{M_0}{M}$（$u$ 为喷气相对速度）。复赛以上才需要定量，现在知道"火箭靠扔东西前进、不需要空气反推"就够了。</p>
+</blockquote>
+
+<!-- 四、例题精讲 -->
+<h2 id="s4">四、例题精讲</h2>
+
+<h3>例 1【衔接高考 · 基础】完全非弹性碰撞的能量账</h3>
+
+<p>光滑水平面上，质量 $m_1=2\,\mathrm{kg}$ 的滑块以 $v_1=3\,\mathrm{m/s}$ 撞上静止的质量 $m_2=1\,\mathrm{kg}$ 的滑块，两滑块粘在一起运动。求：(1) 共同速度；(2) 碰撞损失的机械能及其占初动能的比例。</p>
+
+<div class="deep">
+  <p><strong>思路起点</strong>：碰撞时间极短、内力远大于外力（光滑面本来也无水平外力）→ 动量守恒；"粘在一起" = 完全非弹性，$e=0$ → 机械能有损失，<strong>不能</strong>对碰撞过程用机械能守恒。能量损失既可直接算前后动能差，也可用 $\Delta E=\frac12\mu v_{相对}^2$ 验算。</p>
+</div>
+
+<p><strong>解</strong>：(1) 动量守恒（取向右为正）：</p>
+
+$$m_1v_1=(m_1+m_2)v_{共}\ \Rightarrow\ v_{共}=\frac{2\times3}{2+1}=2\,\mathrm{m/s}$$
+
+<p>(2) 初动能 $E_{k0}=\frac12\times2\times3^2=9\,\mathrm J$；末动能 $E_k=\frac12\times3\times2^2=6\,\mathrm J$。</p>
+
+$$\Delta E=9-6=3\,\mathrm J,\qquad \frac{\Delta E}{E_{k0}}=\frac{3}{9}=\frac13$$
+
+<p>用公式验算：$\mu=\dfrac{2\times1}{2+1}=\dfrac23\,\mathrm{kg}$，$\Delta E=\dfrac12\times\dfrac23\times3^2\times(1-0^2)=3\,\mathrm J$ ✓。</p>
+
+<blockquote><p><strong>点评</strong>：损失比例 $\dfrac{m_2}{m_1+m_2}=\dfrac13$，恰等于"相对质心动能"占比。这种"对答案"的复算习惯，从第一道题就养成。</p></blockquote>
+
+<h3>例 2【预赛难度】一维弹性碰撞的通解与特例</h3>
+
+<p>质量 $m_1=2\,\mathrm{kg}$ 的小球以 $v_0=4\,\mathrm{m/s}$ 与静止的质量 $m_2=1\,\mathrm{kg}$ 的小球发生一维弹性碰撞。求碰后两球速度，并讨论 $m_1=m_2$、$m_1\gg m_2$、$m_1\ll m_2$ 三种极限。</p>
+
+<div class="deep">
+  <p><strong>思路起点</strong>：弹性碰撞 = 动量守恒 + 机械能守恒（或 $e=1$，即 $v_2'-v_1'=v_1-v_2$，相对速度大小不变、方向反转）。用 $e=1$ 配合动量守恒是<strong>纯代数</strong>，比代动能守恒的二次方程快得多，预赛考场首选。</p>
+</div>
+
+<p><strong>解</strong>：列方程组</p>
+
+$$\begin{cases}m_1v_0=m_1v_1'+m_2v_2'\\[2pt] v_2'-v_1'=v_0\end{cases}$$
+
+<p>由第二式 $v_2'=v_1'+v_0$，代入第一式：</p>
+
+$$m_1v_0=m_1v_1'+m_2(v_1'+v_0)\ \Rightarrow\ v_1'=\frac{(m_1-m_2)v_0}{m_1+m_2}=\frac{(2-1)\times4}{3}=\frac43\,\mathrm{m/s}$$
+
+$$v_2'=v_1'+v_0=\frac43+4=\frac{16}{3}\,\mathrm{m/s}$$
+
+<p><strong>验证</strong>：动量 $2\times\frac43+1\times\frac{16}{3}=8=m_1v_0$ ✓；动能 $\frac12\times2\times\frac{16}{9}+\frac12\times1\times\frac{256}{9}=\frac{16+128}{9}=16\,\mathrm J=\frac12\times2\times4^2$ ✓。</p>
+
+<p><strong>极限讨论</strong>（成品公式的三个特例）：</p>
+<ul>
+  <li>$m_1=m_2$：$v_1'=0,\ v_2'=v_0$——<strong>交换速度</strong>，台球正碰定格；</li>
+  <li>$m_1\gg m_2$：$v_1'\approx v_0,\ v_2'\approx2v_0$——重球几乎不受影响，轻球以两倍速度飞出；</li>
+  <li>$m_1\ll m_2$：$v_1'\approx -v_0,\ v_2'\approx0$——乒乓球撞墙式<strong>原速反弹</strong>。</li>
+</ul>
+
+<h3>例 3【预赛难度】恢复系数与等比数列：小球的无穷次弹跳</h3>
+
+<p>小球从 $h_0=5\,\mathrm m$ 高处由静止落向水平地面，每次与地面的碰撞恢复系数 $e=0.6$，取 $g=10\,\mathrm{m/s^2}$。求：(1) 第一次反弹高度 $h_1$；(2) 小球运动的总路程；(3) 总时间。</p>
+
+<div class="deep">
+  <p><strong>思路起点</strong>：每次碰地瞬间，碰前速率 $v$、碰后速率 $ev$ → 反弹高度 $h=\dfrac{(ev)^2}{2g}=e^2h_{前}$，高度成<strong>公比 $e^2$</strong> 的等比数列；每段"上抛 + 下落"时间 $t_n=\dfrac{2e^nv_0}{g}$，时间成<strong>公比 $e$</strong> 的等比数列。无穷等比求和即得总量。注意第一次只有下落、没有上升。</p>
+</div>
+
+<p><strong>解</strong>：(1) 落地速率 $v_0=\sqrt{2gh_0}=\sqrt{2\times10\times5}=10\,\mathrm{m/s}$；反弹速率 $v_1=ev_0=6\,\mathrm{m/s}$，</p>
+
+$$h_1=\frac{v_1^2}{2g}=\frac{36}{20}=1.8\,\mathrm m\quad(=e^2h_0=0.36\times5\ ✓)$$
+
+<p>(2) 总路程 = 首段下落 + 之后每段的"上 + 下"：</p>
+
+$$S=h_0+2h_0\bigl(e^2+e^4+\cdots\bigr)=h_0+\frac{2h_0e^2}{1-e^2}=5+\frac{2\times5\times0.36}{1-0.36}=5+5.625=10.625\,\mathrm m$$
+
+<p>(3) 首段下落时间 $t_0=\dfrac{v_0}{g}=1\,\mathrm s$；第 $n$ 次碰后空中时间 $\dfrac{2v_n}{g}=\dfrac{2e^nv_0}{g}$，故</p>
+
+$$t=t_0+\frac{2v_0}{g}\bigl(e+e^2+\cdots\bigr)=1+2\times\frac{0.6}{1-0.6}=1+3=4\,\mathrm s$$
+
+<p>也可写成紧凑公式 $t=\sqrt{\dfrac{2h_0}{g}}\cdot\dfrac{1+e}{1-e}=1\times\dfrac{1.6}{0.4}=4\,\mathrm s$ ✓。</p>
+
+<blockquote><p><strong>点评</strong>："无穷次碰撞、有限总时间"——小球在 $4\,\mathrm s$ 后就停在地面上，这在数学上是无穷过程，物理上毫无矛盾。这类题是预赛最爱的"物理 + 数列"杂交。</p></blockquote>
+
+<h3>例 4【复赛难度】人船模型：质心不动原理</h3>
+
+<p>质量 $M=120\,\mathrm{kg}$ 的小船静止在水面上，船长 $L=3\,\mathrm m$。质量 $m=60\,\mathrm{kg}$ 的人从船头走到船尾。不计水的阻力，求船移动的距离和人相对地面移动的距离。</p>
+
+<div class="deep">
+  <p><strong>思路起点</strong>：人 + 船系统在水平方向不受外力，且初始静止 → <strong>质心位置不动</strong>。人相对船走 $L$ 时，船反向移动 $x$，人相对地面只走了 $L-x$。用"质心不动"列一个方程即可，根本不需要管人走快走慢——这正是质心观点的潇洒之处。</p>
+</div>
+
+<p><strong>解</strong>：设船向船头方向移动 $x$，则人相对地面向船尾方向移动 $L-x$。质心不动：</p>
+
+$$Mx=m(L-x)\ \Rightarrow\ x=\frac{mL}{M+m}=\frac{60\times3}{180}=1\,\mathrm m$$
+
+<p>人相对地面移动 $L-x=2\,\mathrm m$。</p>
+
+<p><strong>验证</strong>：两者之和 $1+2=3\,\mathrm m=L$ ✓；位移与质量成反比 $\dfrac{x_{船}}{x_{人}}=\dfrac{m}{M}=\dfrac12$ ✓。</p>
+
+<blockquote><p><strong>点评</strong>：同一原理秒杀一类题：人在悬空气球下的软梯上爬、导弹爆炸后两块碎片的速度比、冰面上两人互推……见到"初始静止 + 无外力 + 内部相对运动"，先想质心不动。</p></blockquote>
+
+<h3>例 5【复赛难度】彗星近日点与远日点：角动量守恒</h3>
+
+<p>某彗星绕太阳运行，近日点距离 $r_1=8.0\times10^{10}\,\mathrm m$，速率 $v_1=5.0\times10^{4}\,\mathrm{m/s}$；远日点距离 $r_2=1.6\times10^{12}\,\mathrm m$。求远日点速率 $v_2$ 与彗星绕日运动的面积速度。</p>
+
+<div class="deep">
+  <p><strong>思路起点</strong>：太阳引力是有心力（作用线过太阳）→ 对太阳的力矩为零 → 角动量守恒。近日点、远日点处速度恰好与位矢<strong>垂直</strong>（该处是轨道上离日最近/最远的点，径向速度为零），所以 $L=rmv$ 直接成立，连 $\sin\theta$ 都不用处理。</p>
+</div>
+
+<p><strong>解</strong>：角动量守恒 $r_1mv_1=r_2mv_2$：</p>
+
+$$v_2=\frac{r_1v_1}{r_2}=\frac{8.0\times10^{10}\times5.0\times10^{4}}{1.6\times10^{12}}=2.5\times10^{3}\,\mathrm{m/s}$$
+
+<p>面积速度（开普勒第二定律）：</p>
+
+$$\frac{\Delta S}{\Delta t}=\frac{L}{2m}=\frac12r_1v_1=\frac12\times8.0\times10^{10}\times5.0\times10^{4}=2.0\times10^{15}\,\mathrm{m^2/s}$$
+
+<p>用远日点验算：$\frac12r_2v_2=\frac12\times1.6\times10^{12}\times2.5\times10^{3}=2.0\times10^{15}\,\mathrm{m^2/s}$ ✓。</p>
+
+<blockquote><p><strong>点评</strong>：本题只用了一个守恒律就解出答案。注意 $m$ 被约掉了——角动量守恒给的是"单位质量的角动量 $rv\sin\theta$ 守恒"，这正是面积速度的物理本质。</p></blockquote>
+
+<h3>例 6【复赛难度】绳穿小孔：有心力场中的角动量守恒</h3>
+
+<p>光滑水平桌面上，质量 $m=0.5\,\mathrm{kg}$ 的小球系在轻绳一端，绳另一端穿过桌面中心的小孔。小球起初在桌面上以 $r_0=0.4\,\mathrm m$ 的半径做圆周运动，速率 $v_0=2\,\mathrm{m/s}$。现缓慢下拉绳端，使小球轨道半径变为 $r=0.2\,\mathrm m$。求：(1) 新速率 $v$；(2) 此过程中拉力对小球做的功。</p>
+
+<div class="deep">
+  <p><strong>思路起点</strong>：绳的拉力沿绳指向小孔，对小孔（固定点）力臂为零 → 有心力 → 角动量守恒，$r$ 减半则 $v$ 加倍。但<strong>动能不守恒</strong>：手拉绳对系统做了功，多出来的动能正是拉力的功，用动能定理求。</p>
+</div>
+
+<p><strong>解</strong>：(1) 角动量守恒（圆周运动中 $\vec r\perp\vec v$，$L=rmv$）：</p>
+
+$$r_0mv_0=rmv\ \Rightarrow\ v=\frac{r_0}{r}v_0=\frac{0.4}{0.2}\times2=4\,\mathrm{m/s}$$
+
+<p>验证角动量：初 $L_0=0.5\times2\times0.4=0.4\,\mathrm{kg\cdot m^2/s}$；末 $L=0.5\times4\times0.2=0.4\,\mathrm{kg\cdot m^2/s}$ ✓。</p>
+
+<p>(2) 动能定理：</p>
+
+$$W=\Delta E_k=\tfrac12 mv^2-\tfrac12 mv_0^2=\tfrac12\times0.5\times(16-4)=3\,\mathrm J$$
+
+<p>即 $W=\dfrac32mv_0^2=\dfrac32\times0.5\times4=3\,\mathrm J$ ✓。</p>
+
+<blockquote><p><strong>点评</strong>：角动量守恒 ≠ 机械能守恒！拉绳过程动能从 $1\,\mathrm J$ 涨到 $4\,\mathrm J$。花样滑冰运动员收臂转快、体操运动员团身加速翻转，都是同一个物理：$L$ 守恒，转动半径缩小，角速度/线速度变大，能量来自肌肉做的功。</p></blockquote>
+
+<h3>例 7【基础巩固】冲击摆：碰撞用动量、摆动用能量</h3>
+
+<p>质量 $m=10\,\mathrm g$ 的子弹以 $v=500\,\mathrm{m/s}$ 水平射入静止悬挂着的质量 $M=2\,\mathrm{kg}$ 的木块并留在其中。求：(1) 木块（含子弹）上升的最大高度（$g=10\,\mathrm{m/s^2}$）；(2) 碰撞过程保留的动能占子弹初动能的比例。</p>
+
+<div class="deep">
+  <p><strong>思路起点</strong>：这是典型的<strong>两段式</strong>问题，千万别一把梭——第一段"子弹射入"：时间极短，摆线还来不及偏，水平动量守恒，但完全非弹性、机械能大损；第二段"整体摆动上升"：只有重力做功，机械能守恒。<strong>两个过程用两条不同的守恒律</strong>，接口就是碰后瞬间的共同速度。</p>
+</div>
+
+<p><strong>解</strong>：(1) 第一段动量守恒：</p>
+
+$$mv=(M+m)u\ \Rightarrow\ u=\frac{0.01\times500}{2.01}=\frac{5}{2.01}\approx2.49\,\mathrm{m/s}$$
+
+<p>第二段机械能守恒 $\frac12(M+m)u^2=(M+m)gh$：</p>
+
+$$h=\frac{u^2}{2g}=\frac{2.49^2}{20}\approx0.31\,\mathrm m$$
+
+<p>(2) 碰后动能与碰前动能之比：</p>
+
+$$\frac{\frac12(M+m)u^2}{\frac12mv^2}=\frac{m}{M+m}=\frac{0.01}{2.01}\approx0.5\%$$
+
+<p>即约 $99.5\%$ 的动能在子弹挤进木块的过程中转化为内能。</p>
+
+<blockquote><p><strong>点评</strong>：冲击摆是"用容易测的 $h$ 反推难测的子弹速度"的经典装置（$v=\frac{M+m}{m}\sqrt{2gh}$）。记住它的方法论：<strong>分段守恒</strong>——哪段守恒什么，由那段的过程性质决定。</p></blockquote>
+
+<!-- 五、易错点 -->
+<h2 id="s5">五、易错点</h2>
+
+<div class="warn">
+  <p><strong>易错点 1：忘记动量是矢量，正负号乱飞。</strong>一维问题必须先规定正方向，反弹后的速度要带负号代入；二维问题（如斜碰、爆炸成两片）必须画矢量三角形或分解到 $x,y$ 两个方向分别守恒。把 $mv_2-mv_1$ 当成标量相减，是动量题最低级也最常见的错误。</p>
+</div>
+
+<div class="warn">
+  <p><strong>易错点 2：不看守恒条件就用动量守恒。</strong>动量守恒的前提是"系统合外力为零"（或内力远大于外力的碰撞瞬间）。竖直方向有重力、支持力参与时常<strong>只有水平方向守恒</strong>；子弹打入木块并压缩弹簧的全过程，若地面粗糙或墙在推，就不能全程守恒。<strong>先圈系统、再查外力，最后才写守恒式。</strong></p>
+</div>
+
+<div class="warn">
+  <p><strong>易错点 3：角动量的参考点随便取。</strong>$L=rmv\sin\theta$ 中的 $r$ 是到<strong>你选定的参考点</strong>的距离，参考点不同，$L$ 的值和是否守恒都不同。守恒判据（合外力矩为零）也必须对<strong>同一个点</strong>判断。竞赛中安全的选择：惯性系中的固定点（如小孔、太阳中心），或系统的质心。对加速运动的点随便取矩，"守恒"是假的。</p>
+</div>
+
+<div class="warn">
+  <p><strong>易错点 4：把恢复系数当成能量比。</strong>$e$ 是<strong>速度</strong>之比（分离速度/接近速度），不是动能之比、也不是高度之比。反弹高度比是 $e^2$，动能保留比例也是 $e^2$（对撞固定靶而言）。用 $e=0.6$ 直接乘高度，答案立刻错。</p>
+</div>
+
+<div class="warn">
+  <p><strong>易错点 5：以为"完全非弹性碰撞 = 动能全损失"。</strong>动量守恒锁定了质心动能 $\frac12Mv_C^2$，这部分碰不掉；损失最大的只是<strong>相对质心的动能</strong> $\frac12\mu v_{相对}^2$。只有被碰物体无穷重（如撞固定墙）且 $e=0$ 时才会"全部损失"。例 1 中损失比例 $\frac13$ 而不是 $100\%$，原因在此。</p>
+</div>
+
+<div class="warn">
+  <p><strong>易错点 6：碰撞与碰撞后混用守恒律。</strong>碰撞瞬间：动量守恒（近似），机械能一般不守恒；碰后运动（摆动、滑行、上抛）：机械能可能守恒，动量一般不守恒（有重力等外力）。像例 7 那样<strong>分段</strong>，每段先问"这段什么守恒"，是压轴大题的保命习惯。</p>
+</div>
+
+<div class="warn">
+  <p><strong>易错点 7：开普勒第二定律乱套条件。</strong>"$r_1v_1=r_2v_2$"只在速度垂直于位矢的点（近日点、远日点、圆周运动）能直接用；一般位置必须带 $\sin\theta$：$r_1v_1\sin\theta_1=r_2v_2\sin\theta_2$。另外它只对<strong>有心力</strong>成立——带电粒子在匀强电场中运动，可没有面积速度守恒。</p>
+</div>
+
+<!-- 六、自检清单 -->
+<h2 id="s6">六、自检清单</h2>
+
+<ul class="checklist">
+  <li>能默写动量定理 $\vec I=\Delta\vec p$，并说出它为什么在处理"碰撞、冲击"时优于牛顿第二定律。</li>
+  <li>能独立推导一维弹性碰撞的两条成品公式（用动量守恒 + $e=1$，不走二次方程）。</li>
+  <li>看到"粘在一起""留在其中"能立刻反应：完全非弹性碰撞、$e=0$、机械能损失最大。</li>
+  <li>会用 $\Delta E=\frac12\mu v_{相对}^2(1-e^2)$ 估算碰撞能量损失，并解释 $\mu$ 的含义。</li>
+  <li>能说出恢复系数 $e$ 的定义式，以及 $e=1$、$e=0$ 两个极端各自对应的物理图像。</li>
+  <li>做碰撞题时会先规定正方向、画碰前碰后速度矢量图，再列方程。</li>
+  <li>会计算两体（或离散多质点）系统的质心位置，并能用"质心不动"独立解出人船模型的位移。</li>
+  <li>能对指定参考点写出 $L=rmv\sin\theta$，说清 $\theta$ 是哪两条线的夹角，并判断该点是否满足角动量守恒条件。</li>
+  <li>能用角动量守恒（面积速度恒定）定性解释：为什么行星近日点快、远日点慢；为什么滑冰运动员收臂会转快。</li>
+  <li>能准确划分多过程问题的"阶段"，逐段判断动量、机械能各自是否守恒（如冲击摆两段式）。</li>
+  <li>做完题有"复算三连"的习惯：动量账对一遍、能量账对一遍、量纲对一遍（动量 $\mathrm{kg\cdot m/s}$，角动量 $\mathrm{kg\cdot m^2/s}$）。</li>
+  <li>能向同学讲清一个观念：角动量守恒 <strong>不蕴含</strong> 机械能守恒（绳穿小孔收绳的例子），反之亦然。</li>
+</ul>
+
+<blockquote>
+  <p><strong>写给小兵</strong>：动量这一章，是"守恒律思维"真正立起来的一章。碰撞题看似千变万化，其实就三句话：先圈系统查外力，动量守恒列第一式；再看弹不弹，决定 $e$ 取几；最后算能量账复算。角动量是个新朋友，但它守信的样子和动量一模一样。把 7 道例题独立重做一遍——是"重做"，不是"重看"——你就已经超过绝大多数高一同学了。继续加油，我们下一章《刚体与静力学》见。</p>
+</blockquote>
+
+</body>
+</html>

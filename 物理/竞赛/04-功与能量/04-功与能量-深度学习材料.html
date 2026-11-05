@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>04 功与能量 · 物理竞赛入门</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+/* 例题块 */
+.ex { background: var(--c-example-bg); border: 1px solid #ddd6fe; border-radius: var(--r-card); padding: 16px 22px; margin: 18px 0; page-break-inside: avoid; }
+.ex-tag { display: inline-block; font-size: 12.5px; font-weight: 700; color: #fff; background: var(--c-example); border-radius: var(--r-pill); padding: 2px 12px; margin-bottom: 6px; letter-spacing: .05em; }
+.ex-tag.hard { background: #b91c1c; }
+.ex-tag.mid { background: #b45309; }
+.fig { text-align: center; margin: 12px 0; }
+.fig svg { max-width: 100%; height: auto; }
+.fig-cap { font-size: 12.5px; color: var(--ink-soft); text-align: center; margin-top: 2px; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point, .ex { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<nav class="chap-nav">高考备考 · 物理 · 竞赛专题 ｜ 04-功与能量-深度学习材料.html</nav>
+<header class="chap-head">
+  <h1>功与能量</h1>
+  <p class="chap-meta">物理竞赛专题 · 第 04 章 ｜ 内容：变力做功 · 势能与保守力 · 质心系下的能量 ｜ 适用：高一竞赛入门（目标：预赛 → 复赛入门）｜ 学生：小兵</p>
+  <p class="chap-intro">小兵，如果说上一章的牛顿定律是"盯着每一瞬的力"，这一章就是<strong>换一种更省事的记账方式</strong>：不管中间过程多曲折，只问"能量从哪来、到哪去"。竞赛在这里给你加了三件高考不常考的装备：<strong>变力做功的积分处理</strong>、<strong>引力势能 $-\dfrac{GMm}{r}$ 的定量运用</strong>、<strong>质心系下的能量拆分（柯尼希定理）</strong>。它们一旦上手，一大批"看着没法算"的题会突然变得温顺。慢慢来，每一步我们都走扎实。</p>
+</header>
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-label">本 章 导 航</div>
+  <div class="toc-links">
+    <a href="#s1">一、知识全景</a>
+    <a href="#s2">二、核心概念</a>
+    <a href="#s3">三、竞赛专属·高考不考</a>
+    <a href="#s4">四、例题精讲</a>
+    <a href="#s5">五、易错点</a>
+    <a href="#s6">六、自检清单</a>
+  </div>
+</div>
+
+<!-- 一、知识全景 -->
+<h2 id="s1">一、知识全景</h2>
+
+<p>本章围绕一条主线展开：<strong>功是能量转移的"收据"，能量是系统状态的"存折"</strong>。高考里你主要处理恒力、直线、单一物体；竞赛把这三个限制逐个拆掉——力可以变（积分伺候）、势能可以是引力的（$r$ 从地心量起）、系统可以整体在动（质心系里再算一遍）。</p>
+
+<div class="map">
+  <div class="row"><div class="node root">功与能量（竞赛篇）</div></div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node">① 变力做功<br><small>面积 · 微元 · 积分</small></div>
+    <div class="node">② 势能与保守力<br><small>势能零点约定</small></div>
+    <div class="node">③ 质心系下的能量<br><small>柯尼希定理</small></div>
+  </div>
+  <div class="row">
+    <div class="node leaf">$W=\int F\,\mathrm{d}x$</div>
+    <div class="node leaf">弹簧：$\frac12 kx^2$</div>
+    <div class="node leaf">引力：$-\dfrac{GMm}{r}$</div>
+    <div class="node leaf">$E_k=\frac12Mv_c^2+E_k'$</div>
+    <div class="node leaf">两体：$E_k'=\frac12\mu v_{相}^2$</div>
+  </div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node view">动能定理<br><small>$W_{合}=\Delta E_k$</small></div>
+    <div class="node view">机械能守恒<br><small>只有保守力做功</small></div>
+    <div class="node view">功能关系<br><small>一对力一类账</small></div>
+    <div class="node view">资用能<br><small>可转化能量的上限</small></div>
+  </div>
+</div>
+
+<blockquote>
+  <p><strong>一句话地图</strong>：恒力做功用 $W=Fs\cos\theta$，变力做功用面积与积分；保守力的功可以存进"势能账户"（$W_{保}=-\Delta E_p$），非保守力的功只能改变机械能；而当整个系统边跑边动时，用柯尼希定理把动能拆成"跟着质心走的"和"质心系里真正可用的"。能量观点的威力，全在这几张账户之间的转账记录里。</p>
+</blockquote>
+
+<hr>
+
+<!-- 二、核心概念 -->
+<h2 id="s2">二、核心概念</h2>
+
+<h3>2.1 功与功率：竞赛级的再认识</h3>
+
+<p>功的定义式你早就会背，竞赛只强调三件容易被忽略的事：</p>
+
+<ul>
+  <li><strong>位移是"力的作用点"的位移</strong>。恒力做功 $W = Fs\cos\theta$ 中的 $s$，严格说是力作用点的位移。多数题目里两者一致，但"板块模型"中摩擦力作用在滑块上、位移却要对滑块和木板<strong>分别取</strong>——这正是例 5 能量账的关键。</li>
+  <li><strong>正功负功看夹角，不看心情</strong>。$\theta &lt; 90^\circ$ 做正功，$\theta &gt; 90^\circ$ 做负功。变力问题里力的方向可能随位置翻转（比如弹簧先拉后压），<strong>每一段单独判断符号</strong>，不能用首尾状态笼统估计。</li>
+  <li><strong>瞬时功率 $P = Fv\cos\theta$</strong> 里的 $v$ 是瞬时速率。汽车恒定功率启动时 $v$ 增 $F$ 减，加速度越来越小——这类"定性分析"在预赛选择题里出现频率很高。</li>
+</ul>
+
+<h3>2.2 变力做功：面积、微元与积分思想</h3>
+
+<p>力随位置变化时，$W=Fs$ 不再适用。竞赛标准武器有三件，按出场顺序：</p>
+
+<h4>第一招：F–x 图像的面积</h4>
+
+<p>把力 $F$（沿位移方向的分量）对位置 $x$ 作图，<strong>图线与 $x$ 轴围成的"代数面积"就是功</strong>：</p>
+
+$$W = \int_{x_1}^{x_2} F(x)\,\mathrm{d}x \;\hat{=}\; \text{F–x 图线下方面积（上方为正、下方为负）}$$
+
+<p>力随 $x$ <strong>线性</strong>变化时（弹簧、均匀绳的自重提拉等），面积是梯形，立刻得到"平均力 × 位移"：</p>
+
+$$W = \frac{F_1 + F_2}{2}\,(x_2 - x_1) \qquad \text{（仅限 }F\text{ 随 }x\text{ 线性变化！）}$$
+
+<div class="warn">
+  <strong>警钟</strong>："平均力 $= \dfrac{F_{初}+F_{末}}{2}$"只对<strong>线性力</strong>成立。若 $F \propto x^2$ 或 $F \propto 1/r^2$（如万有引力），首尾平均会给出错误答案，必须回到面积或积分（见 3.3）。
+</div>
+
+<h4>第二招：微元求和（积分思想）</h4>
+
+<p>以弹簧为例完整走一遍推导——这是竞赛要求你<strong>会推</strong>而不是会背的第一条公式。弹簧从原长被缓慢拉长 $x$，拉力 $F = kx$（胡克定律）。把拉伸过程切成无数小段 $\mathrm{d}x$，每段内力近似不变，做功 $\mathrm{d}W = kx\,\mathrm{d}x$，求和即积分：</p>
+
+$$W = \int_0^{x} kx'\,\mathrm{d}x' = \frac{1}{2}kx^2$$
+
+<p>这就是弹性势能 $\frac12 kx^2$ 的来源：<strong>外力克服弹力所做的功，存进了弹簧</strong>。注意 $x$ 是<strong>形变量</strong>（相对原长），不是弹簧长度——这条易错点 3 还会再敲一次。</p>
+
+<h4>第三招：动能定理反求</h4>
+
+<p>变力太复杂、积分不会算？别忘了能量是"不问过程"的：只要能从状态求出 $\Delta E_k$，就有 $W_{变} = \Delta E_k - W_{其他}$。例 3 的链条、例 4 的引力上抛都会用这一招兜底。</p>
+
+<div class="key-point">
+  <strong>方法提炼</strong>：变力做功三招的优先级——能画图算<strong>面积</strong>先画图；规律复杂就写<strong>微元积分</strong>；两头都堵死就用<strong>动能定理反求</strong>。竞赛题里三招经常要在同一道题里互相验证。
+</div>
+
+<h3>2.3 动能定理与功能关系：一张总账表</h3>
+
+<p>动能定理 $W_{合} = \Delta E_k$ 是本章的"中央银行"。竞赛里真正拉开差距的是<strong>功能关系</strong>：每一种力的功对应一种能量账户的变动，记错对应关系是预赛最常见的暗坑。</p>
+
+<table>
+  <thead>
+    <tr><th>做功的力</th><th>对应能量账户</th><th>关系式</th><th>备注</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="l">合外力</td>
+      <td class="l">动能 $E_k$</td>
+      <td class="l">$W_{合} = \Delta E_k$</td>
+      <td class="l">永远成立，无需任何条件</td>
+    </tr>
+    <tr>
+      <td class="l">重力</td>
+      <td class="l">重力势能 $E_p = mgh$</td>
+      <td class="l">$W_{重} = -\Delta E_p$</td>
+      <td class="l">保守力通式：$W_{保} = -\Delta E_p$</td>
+    </tr>
+    <tr>
+      <td class="l">弹簧弹力</td>
+      <td class="l">弹性势能 $\frac12 kx^2$</td>
+      <td class="l">$W_{弹} = -\Delta E_p$</td>
+      <td class="l">$x$ 为形变量，零点在原长</td>
+    </tr>
+    <tr>
+      <td class="l">万有引力</td>
+      <td class="l">引力势能 $-\dfrac{GMm}{r}$</td>
+      <td class="l">$W_{引} = -\Delta E_p$</td>
+      <td class="l">零点在无穷远（3.1 节详解）</td>
+    </tr>
+    <tr>
+      <td class="l">除重力、弹力外的其他力</td>
+      <td class="l">机械能 $E = E_k + E_p$</td>
+      <td class="l">$W_{其他} = \Delta E$</td>
+      <td class="l">机械能守恒的判据来源</td>
+    </tr>
+    <tr>
+      <td class="l">一对滑动摩擦力（系统内）</td>
+      <td class="l">内能（发热）</td>
+      <td class="l">$Q = f\cdot s_{相对}$</td>
+      <td class="l">注意是<strong>相对位移</strong>，例 5 用</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p><strong>深度思考</strong>：为什么保守力的功带负号存进势能？因为"保守力帮你做的功"等于"势能替你付的账"——重力做正功，势能就减少。一句话记忆：<strong>保守力做功，势能反向变化</strong>。这条符号规则在引力势能（负值变得更负还是不负？）里特别容易翻车，易错点 2 专门收它。</p>
+</blockquote>
+
+<h3>2.4 势能与保守力：三种势能与零点约定</h3>
+
+<p><strong>保守力</strong>的定义：做功只与初末位置有关、与路径无关（等价说法：沿任意闭合路径一周做功为零）。重力、弹簧弹力、万有引力、静电力都是保守力；<strong>摩擦力、空气阻力不是</strong>——它们做功与路径长短有关，所以不存在"摩擦势能"这种东西。</p>
+
+<table>
+  <thead>
+    <tr><th>势能</th><th>表达式</th><th>零点约定</th><th>竞赛提醒</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="l">重力势能</td>
+      <td class="l">$E_p = mgh$</td>
+      <td class="l"><strong>任意选取</strong>（地面、桌面均可），只取差值</td>
+      <td class="l">$h$ 是相对零点的竖直高度；零点附近正负都可能</td>
+    </tr>
+    <tr>
+      <td class="l">弹性势能</td>
+      <td class="l">$E_p = \dfrac12 kx^2$</td>
+      <td class="l"><strong>天然固定在原长</strong>，不能乱挪</td>
+      <td class="l">$x$ 是形变量；弹簧挂重物时零点仍在原长而非平衡位置</td>
+    </tr>
+    <tr>
+      <td class="l">引力势能</td>
+      <td class="l">$E_p = -\dfrac{GMm}{r}$</td>
+      <td class="l"><strong>约定在无穷远为零</strong>，于是有限距离处恒为负</td>
+      <td class="l">$r$ 从<strong>地心</strong>量起，不是距地表高度；负号不许丢</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="key-point">
+  <strong>零点约定三句话</strong>：① 重力势能的零点随你挑，因为它只以差值出现；② 弹性势能的零点被"原长"锁死，因为公式 $\frac12 kx^2$ 只对从原长量起的 $x$ 成立；③ 引力势能的零点被"无穷远"锁死，因为 $-\dfrac{GMm}{r}$ 是从无穷远积分积出来的（推导见 3.1）。<strong>同一道题里不许中途换零点</strong>——换了就要从头重算，这是易错点 1。
+</div>
+
+<p>由势能还可以反出力：<strong>力是势能的负导数</strong>（一维情形）</p>
+
+$$F(x) = -\frac{\mathrm{d}E_p}{\mathrm{d}x}$$
+
+<p>检验：$E_p = \frac12 kx^2 \Rightarrow F = -kx$（弹力，指向原长 ✓）；$E_p = -\dfrac{GMm}{r} \Rightarrow F = -\dfrac{GMm}{r^2}$（负号表示指向地心 ✓）。这条关系在复赛里用来判断"平衡位置"（$E_p$ 取极值处）与"稳定与否"，入门阶段先混个脸熟。</p>
+
+<h3>2.5 质心系下的能量：柯尼希定理入门</h3>
+
+<p>两个（或多个）物体组成的系统整体在运动，各部分之间又有相对运动（比如中间连着弹簧）——总动能怎么算？直接对地面系逐个算 $\frac12 m_i v_i^2$ 当然行，但竞赛给你一把更锋利的刀。</p>
+
+<h4>质心与柯尼希定理</h4>
+
+<p>质心位置与速度（一维）：</p>
+
+$$x_c = \frac{m_1x_1 + m_2x_2}{m_1+m_2}, \qquad v_c = \frac{m_1v_1 + m_2v_2}{m_1+m_2} = \frac{p_{总}}{M}$$
+
+<p><strong>柯尼希定理</strong>：系统的总动能 = 全部质量集中在质心上的动能（<strong>质心动能</strong>）+ 各物体相对质心运动的动能之和（<strong>相对动能</strong>，也叫质心系动能）：</p>
+
+$$E_k = \underbrace{\frac12 M v_c^2}_{\text{质心动能}} + \underbrace{E_k'}_{\text{相对质心的动能}}, \qquad M = m_1 + m_2$$
+
+<h4>两体情形的最简形式（资用能）</h4>
+
+<p>对两个质点，相对动能可以改写成极其好用的形式：</p>
+
+$$E_k' = \frac12\,\mu\, v_{相}^2, \qquad \mu = \frac{m_1m_2}{m_1+m_2}\ (\text{约化质量}), \qquad v_{相} = |v_1 - v_2|$$
+
+<p><strong>推导</strong>（不跳步）：取质心系，两物体速度为 $v_1' = v_1 - v_c$、$v_2' = v_2 - v_c$。由质心定义 $m_1v_1' + m_2v_2' = 0$（质心系中总动量为零），解出 $v_1' = \dfrac{m_2}{M}v_{相}$、$v_2' = -\dfrac{m_1}{M}v_{相}$（一维带符号）。于是</p>
+
+$$E_k' = \frac12 m_1 v_1'^2 + \frac12 m_2 v_2'^2 = \frac12\left(\frac{m_1m_2^2 + m_2m_1^2}{M^2}\right)v_{相}^2 = \frac12\,\frac{m_1m_2(m_1+m_2)}{M^2}\,v_{相}^2 = \frac12\,\mu\, v_{相}^2$$
+
+<div class="deep">
+  <strong>为什么这玩意儿值钱</strong>：动量守恒的系统里 $v_c$ 不变 ⇒ <strong>质心动能 $\frac12 Mv_c^2$ 是"冻结资产"，谁也动不了</strong>；只有相对动能 $E_k'$（资用能）可以转化成弹性势能、内能等其他形式。于是——
+  <ul>
+    <li>弹簧最大压缩量：$E_k'$ 全部变弹性势能（例 6）；</li>
+    <li>完全非弹性碰撞的损失上限：$E_k'$ 全部变内能（例 5）；</li>
+    <li>两星相互靠近的加速能源：引力势能变成 $E_k'$（例 7）。</li>
+  </ul>
+  一句话：<strong>先扣掉质心动能，剩下的才是真正"可用"的能量</strong>。
+</div>
+
+<hr>
+
+<!-- 三、竞赛专属·高考不考 -->
+<h2 id="s3">三、竞赛专属·高考不考：引力势能的定量运用与柯尼希定理的实战</h2>
+
+<p>高考只要求你定性知道"卫星越高机械能越大"；竞赛要求你<strong>定量算账</strong>。下面三节是把本章变成竞赛武器的关键三节，例 4～例 7 全部从这里取弹药。</p>
+
+<h3>3.1 引力势能 $E_p = -\dfrac{GMm}{r}$：推导、符号与运用</h3>
+
+<h4>推导：从无穷远把物体"搬"回来</h4>
+
+<p>万有引力 $F = \dfrac{GMm}{r^2}$ 随距离变化，是标准的变力。把质量 $m$ 从无穷远缓慢移到距地心 $r$ 处，引力做功（引力与位移同向，做正功）：</p>
+
+$$W_{引} = \int_{\infty}^{r} \left(-\frac{GMm}{r'^2}\right)\mathrm{d}r' = \left[\frac{GMm}{r'}\right]_{\infty}^{r} = \frac{GMm}{r}$$
+
+<p>（积分沿径向向内取，$\mathrm{d}r' &lt; 0$，与引力同向。）由 $W_{引} = -\Delta E_p = -(E_p(r) - E_p(\infty))$，并<strong>约定无穷远处 $E_p(\infty) = 0$</strong>，得：</p>
+
+$$E_p(r) = -\frac{GMm}{r}$$
+
+<div class="warn">
+  <strong>负号的物理含义</strong>：引力势能处处为负，表示物体被引力"拴在"势阱里——要逃出去必须注入正能量。<strong>势能越大（越不负）位置越高</strong>：$-5$ J 比 $-10$ J <em>大</em>，对应离地球更远。比较负值大小时别按绝对值来，这是预赛选择题的经典陷阱。
+</div>
+
+<h4>近地近似：它必须能退回 $mgh$</h4>
+
+<p>好公式的体检标准：在 $r = R + h$（$h \ll R$）处应退回熟悉的结果。令 $h$ 从地表量起：</p>
+
+$$E_p(R+h) - E_p(R) = -\frac{GMm}{R+h} + \frac{GMm}{R} = GMm\cdot\frac{h}{R(R+h)} \approx \frac{GM}{R^2}\,m\,h = mgh$$
+
+<p>其中用了 $\dfrac{1}{R(R+h)} \approx \dfrac{1}{R^2}$（$h \ll R$）与黄金代换 $GM = gR^2$。完美退回 ✓——同时说明 $mgh$ 只是"紧贴地面"的近似，高度达到几千千米时必须用 $-\dfrac{GMm}{r}$，例 4 会让你看到两者差出一倍。</p>
+
+<h4>卫星的能量账</h4>
+
+<p>圆轨道卫星由引力提供向心力：$\dfrac{GMm}{r^2} = \dfrac{mv^2}{r}$，于是动能</p>
+
+$$E_k = \frac12 mv^2 = \frac{GMm}{2r}$$
+
+<p>总机械能（动能 + 引力势能）：</p>
+
+$$E = \frac{GMm}{2r} + \left(-\frac{GMm}{r}\right) = \boldsymbol{-\frac{GMm}{2r}}$$
+
+<ul>
+  <li>总能量为负（被束缚），$r$ 越大 $E$ 越大（越不负）——"高轨高能"的定量版；</li>
+  <li>动能是 $|E|$，势能是 $-2|E|$：升高轨道时<strong>动能反而减小、势能增大两倍</strong>，净增一份。这个"$1 : -2 : -1$"的比例关系是预赛常客；</li>
+  <li><strong>逃逸速度</strong>：恰好逃到无穷远（总能量 $= 0$）：$\dfrac12 mv_2^2 - \dfrac{GMm}{R} = 0 \Rightarrow v_2 = \sqrt{\dfrac{2GM}{R}} = \sqrt{2gR} = \sqrt2\,v_1 \approx 11.2\ \mathrm{km/s}$（$v_1 = \sqrt{gR} \approx 7.9\ \mathrm{km/s}$）。</li>
+</ul>
+
+<h3>3.2 柯尼希定理的实战：资用能与"能损失的上限"</h3>
+
+<p>2.5 节给出了公式，这里说清楚竞赛怎么用它。对动量守恒的两体系统：</p>
+
+<table>
+  <thead>
+    <tr><th>量</th><th>表达式</th><th>竞赛用途</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="l">质心动能（冻结）</td>
+      <td class="l">$E_{kc} = \dfrac12 M v_c^2 = \dfrac{p_{总}^2}{2M}$</td>
+      <td class="l">动量守恒 ⇒ 碰撞前后不变，任何过程都动不了它</td>
+    </tr>
+    <tr>
+      <td class="l">相对动能（资用能）</td>
+      <td class="l">$E_k' = \dfrac12 \mu v_{相}^2$</td>
+      <td class="l">唯一可以被"花掉"的能量：变弹性势能（最大压缩）、变内能（完全非弹性）</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="key-point">
+  <strong>两条秒杀结论</strong>：
+  <ol style="margin: 6px 0 0 20px;">
+    <li><strong>弹簧类最大压缩/伸长</strong>：最大形变时两物体相对速度为零（$v_{相} = 0$，即共速 $v_c$），资用能全部转为弹性势能：$\dfrac12\mu v_{相}^2 = \dfrac12 k x_m^2$。</li>
+    <li><strong>完全非弹性碰撞的能量损失上限</strong>：$\Delta E_{损} = \dfrac12\mu v_{相}^2 = \dfrac{m_2}{m_1+m_2}\cdot\dfrac12 m_1 v_1^2$（$m_2$ 初始静止时）——损失占比 $\dfrac{m_2}{M}$。子弹打木块中 $m_2 \gg m_1$ 时几乎全部动能变热，这正是例 5 算出 99% 的原因。</li>
+  </ol>
+</div>
+
+<p>入门阶段不需要会证"柯尼希定理在任意参考系都成立"，但要知道：<strong>动能定理在质心系中照样适用</strong>（质心系是惯性系，只要系统合外力……小心，质心加速时质心系非惯性，本章只处理合外力为零或质心匀速的情形——这恰好覆盖绝大多数碰撞与弹簧题）。</p>
+
+<h3>3.3 变力做功的积分进阶：平方反比力</h3>
+
+<p>万有引力 $F = \dfrac{GMm}{r^2}$ 与弹簧力是竞赛中最高频的两种变力。弹簧用 $\frac12 kx^2$，引力用现成的结论（本质上就是 3.1 的积分）：物体从 $r_1$ 移到 $r_2$，引力做功</p>
+
+$$W_{引} = \frac{GMm}{r_2} - \frac{GMm}{r_1} = -\Delta E_p$$
+
+<p>靠近（$r_2 &lt; r_1$）做正功、远离做负功，符号自动正确——这就是定义好势能零点（无穷远）的好处：<strong>从此引力做功只看首末距离，不用再碰积分</strong>。例 4、例 7 都是直接套这一条的训练。</p>
+
+<hr>
+
+<!-- 四、例题精讲 -->
+<h2 id="s4">四、例题精讲</h2>
+
+<p>七道题，从图像面积一直打到双星问题。每道题先给<strong>思路起点</strong>——第一笔怎么落，然后是不跳步的完整解析。建议先盖住解析自己动手，卡住再看提示。</p>
+
+<h3>例 1　F–x 图像：梯形面积就是功【课内衔接】</h3>
+
+<div class="ex">
+  <span class="ex-tag">课内衔接 · 基础</span>
+  <div class="fig">
+    <svg viewBox="0 0 300 190" width="300" xmlns="http://www.w3.org/2000/svg">
+      <line x1="45" y1="150" x2="285" y2="150" stroke="#1f2933" stroke-width="2" marker-end="url(#ax)"/>
+      <line x1="45" y1="150" x2="45" y2="12" stroke="#1f2933" stroke-width="2" marker-end="url(#ax)"/>
+      <defs><marker id="ax" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f2933"/></marker></defs>
+      <polygon points="45,110 245,30 245,150 45,150" fill="#ebf8ff" opacity="0.85"/>
+      <line x1="45" y1="110" x2="245" y2="30" stroke="#2b6cb0" stroke-width="2.5"/>
+      <line x1="245" y1="30" x2="245" y2="150" stroke="#9aa5b1" stroke-width="1.2" stroke-dasharray="4 3"/>
+      <line x1="45" y1="110" x2="245" y2="110" stroke="#9aa5b1" stroke-width="1" stroke-dasharray="3 3"/>
+      <text x="30" y="114" font-size="12" fill="#1f2933">10</text>
+      <text x="30" y="34" font-size="12" fill="#1f2933">30</text>
+      <text x="240" y="166" font-size="12" fill="#1f2933">4</text>
+      <text x="272" y="166" font-size="13" fill="#1f2933">x/m</text>
+      <text x="14" y="18" font-size="13" fill="#1f2933">F/N</text>
+      <text x="128" y="135" font-size="12.5" fill="#2b6cb0" text-anchor="middle">W = 阴影面积</text>
+    </svg>
+    <div class="fig-cap">图 1　$F = 10 + 5x$ 的 F–x 图：梯形面积 $=\dfrac{10+30}{2}\times 4 = 80$ J</div>
+  </div>
+  <p><strong>题目</strong>：一物体在变力 $F = (10 + 5x)\ \mathrm{N}$ 作用下沿 $x$ 轴正方向从 $x = 0$ 运动到 $x = 4\ \mathrm{m}$，力的方向始终与位移相同。求此过程力所做的功。</p>
+
+  <blockquote>
+    <p><strong>思路起点</strong>：$F$ 随 $x$ <strong>线性</strong>变化 ⇒ 图像是直线，功 = 梯形面积；也可以用平均力 $\bar F = \dfrac{F_1 + F_2}{2}$（线性力专属）。顺手用积分验证一次。</p>
+  </blockquote>
+
+  <p><strong>解析</strong></p>
+  <p>首末力值：$F_1 = F(0) = 10\ \mathrm{N}$，$F_2 = F(4) = 10 + 5\times4 = 30\ \mathrm{N}$。</p>
+  <p><strong>法一（面积）</strong>：F–x 图为梯形（图 1），</p>
+  $$W = \frac{F_1 + F_2}{2}\times(x_2 - x_1) = \frac{10 + 30}{2}\times 4 = \boldsymbol{80\ \mathrm{J}}$$
+  <p><strong>法二（积分验证）</strong>：</p>
+  $$W = \int_0^4 (10 + 5x)\,\mathrm{d}x = \left[10x + \frac52 x^2\right]_0^4 = 40 + 5\times\frac{16}{2} = 40 + 40 = \boldsymbol{80\ \mathrm{J}}\ \checkmark$$
+  <p>两法一致。注意：本题若 $F$ 改为 $F = 10 + 5x^2$，平均力法立即失效（$W = \int_0^4(10+5x^2)\mathrm{d}x = 40 + \dfrac{5\times 64}{3} \approx 147\ \mathrm{J} \neq \dfrac{10+90}{2}\times 4 = 200\ \mathrm{J}$）——再次提醒"首尾平均"是线性力的特权。</p>
+</div>
+
+<h3>例 2　弹簧做功：$\frac12 kx^2$ 第一次上手【竞赛入门】</h3>
+
+<div class="ex">
+  <span class="ex-tag">竞赛入门 · 变力积分</span>
+  <p><strong>题目</strong>：劲度系数 $k = 200\ \mathrm{N/m}$ 的轻弹簧水平放置，一端固定，用外力缓慢拉另一端（"缓慢" ⇒ 动能始终为零，外力处处等于弹力 $kx$）。<br>
+  (1) 从原长拉到伸长 $x_1 = 0.1\ \mathrm{m}$，外力做功多少？<br>
+  (2) 再从 $0.1\ \mathrm{m}$ 继续拉到 $0.2\ \mathrm{m}$，这一阶段外力又做功多少？<br>
+  (3) 比较两阶段的功，解释为什么第二阶段不是第一阶段的 2 倍而是 3 倍。</p>
+
+  <blockquote>
+    <p><strong>思路起点</strong>：外力 $= kx$ 随位置线性变化 ⇒ 每阶段用"平均力 × 位移"，或直接套 $W = \frac12 k(x_末^2 - x_初^2)$（它来自积分 $\int kx\,\mathrm{d}x$，不是背出来的结论）。</p>
+  </blockquote>
+
+  <p><strong>解析</strong></p>
+  <p>(1) 从原长拉到 $x_1 = 0.1\ \mathrm{m}$：</p>
+  $$W_1 = \int_0^{0.1} kx\,\mathrm{d}x = \frac12 kx_1^2 = \frac12\times 200\times 0.1^2 = \boldsymbol{1\ \mathrm{J}}$$
+  <p>(2) 从 $x_1 = 0.1\ \mathrm{m}$ 拉到 $x_2 = 0.2\ \mathrm{m}$（注意：弹性势能的零点在原长，公式要对原长量起）：</p>
+  $$W_2 = \frac12 kx_2^2 - \frac12 kx_1^2 = \frac12\times 200\times(0.2^2 - 0.1^2) = 100\times(0.04 - 0.01) = \boldsymbol{3\ \mathrm{J}}$$
+  <p>用平均力复核：本阶段初力 $F_1 = kx_1 = 20\ \mathrm{N}$，末力 $F_2 = kx_2 = 40\ \mathrm{N}$，位移 $0.1\ \mathrm{m}$：</p>
+  $$W_2 = \frac{20 + 40}{2}\times 0.1 = 30\times 0.1 = 3\ \mathrm{J}\ \checkmark$$
+  <p>(3) 位移同为 $0.1\ \mathrm{m}$，但第二阶段的力整体更大（$20 \sim 40\ \mathrm{N}$ vs $0 \sim 20\ \mathrm{N}$）。平均力分别是 $10\ \mathrm{N}$ 与 $30\ \mathrm{N}$，功自然是 $1 : 3$。<strong>功看的是"力在位移上的积累"，不是位移的等分</strong>——这也是 $E_p = \frac12 kx^2$ 关于 $x$ 是平方而非线性的直观解释。</p>
+
+  <div class="deep">
+    <strong>收获</strong>：以后凡遇弹簧，先确认两件事——$x$ 从原长量了吗？问的是哪一段（要取 $\frac12 kx_末^2 - \frac12 kx_初^2$ 的差）？这两个问题答对，弹簧题就拿下一半。
+  </div>
+</div>
+
+<h3>例 3　均匀链条滑下桌面：重力势能的"质心速算"【预赛难度】</h3>
+
+<div class="ex">
+  <span class="ex-tag mid">预赛难度</span>
+  <div class="fig">
+    <svg viewBox="0 0 300 170" width="300" xmlns="http://www.w3.org/2000/svg">
+      <rect x="30" y="60" width="200" height="10" fill="#f7f8fa" stroke="#1f2933" stroke-width="2"/>
+      <line x1="230" y1="70" x2="230" y2="150" stroke="#9aa5b1" stroke-width="1" stroke-dasharray="4 3"/>
+      <path d="M 60 55 L 210 55 Q 226 55 226 71 L 226 118" fill="none" stroke="#2b6cb0" stroke-width="4" stroke-linecap="round"/>
+      <text x="120" y="45" font-size="12" fill="#2b6cb0" text-anchor="middle">桌上 3L/4</text>
+      <text x="248" y="92" font-size="12" fill="#2b6cb0">垂下 L/4</text>
+      <line x1="20" y1="65" x2="20" y2="150" stroke="#52606d" stroke-width="1.2"/>
+      <text x="30" y="145" font-size="11.5" fill="#52606d">桌面为势能零点</text>
+      <text x="150" y="166" font-size="11" fill="#52606d" text-anchor="middle">L = 1 m · m = 2 kg · 桌面光滑 · g = 10 m/s²</text>
+    </svg>
+    <div class="fig-cap">图 2　链条初始状态：$\frac14$ 垂在桌边，由静止释放</div>
+  </div>
+  <p><strong>题目</strong>：均匀链条长 $L = 1\ \mathrm{m}$、质量 $m = 2\ \mathrm{kg}$，放在光滑水平桌面上，长度 $L/4$ 的一段垂在桌边。由静止释放后链条沿桌边滑下，桌面摩擦不计，$g = 10\ \mathrm{m/s^2}$。求链条<strong>恰好全部离开桌面瞬间</strong>的速度 $v$。</p>
+
+  <blockquote>
+    <p><strong>思路起点</strong>：桌面光滑 ⇒ 只有重力做功，机械能守恒。难点：链条各部分下降高度不同——两招破之：① 用<strong>整体质心的下降高度</strong>算 $\Delta E_p = mg\Delta h_c$；② 或者把垂下部分的长度 $x$ 当变量写微元积分。两招都做一遍互查。</p>
+  </blockquote>
+
+  <p><strong>解析</strong></p>
+  <p><strong>法一：质心高度法（推荐）</strong>。取桌面为势能零点，链条线密度 $\lambda = m/L$。</p>
+  <p>初态：桌上 $\frac34 m$ 的质心在零点；垂下部分质量 $\frac14 m = 0.5\ \mathrm{kg}$，其质心在桌面下 $\dfrac{L/4}{2} = \dfrac{L}{8} = 0.125\ \mathrm{m}$ 处。整体质心高度：</p>
+  $$h_{c1} = \frac{\frac34 m \times 0 + \frac14 m \times(-\frac{L}{8})}{m} = -\frac{L}{32} = -0.03125\ \mathrm{m}$$
+  <p>末态：整条链竖直垂下，质心在桌面下 $\dfrac{L}{2} = 0.5\ \mathrm{m}$ 处，$h_{c2} = -\dfrac{L}{2}$。</p>
+  <p>质心下降高度：</p>
+  $$\Delta h_c = h_{c1} - h_{c2} = -\frac{L}{32} - \left(-\frac{L}{2}\right) = \frac{15L}{32} = \frac{15}{32}\ \mathrm{m}$$
+  <p>机械能守恒（初动能为零，末态整链同速率 $v$）：</p>
+  $$mg\,\Delta h_c = \frac12 mv^2 \;\Rightarrow\; v = \sqrt{2g\cdot\frac{15L}{32}} = \sqrt{\frac{15gL}{16}}$$
+  $$v = \sqrt{\frac{15\times 10\times 1}{16}} = \sqrt{\frac{75}{8}} = \frac{5\sqrt6}{4} \approx \boldsymbol{3.1\ \mathrm{m/s}}$$
+
+  <p><strong>法二：微元积分验证</strong>。设某时刻垂下长度为 $x$（$x$ 从 $L/4$ 增至 $L$），该段重力为 $\lambda x g$，链条再滑下 $\mathrm{d}x$ 时重力做功 $\mathrm{d}W = \lambda g x\,\mathrm{d}x$：</p>
+  $$W = \int_{L/4}^{L} \lambda g x\,\mathrm{d}x = \frac{\lambda g}{2}\left(L^2 - \frac{L^2}{16}\right) = \frac{m}{L}\cdot\frac{g}{2}\cdot\frac{15L^2}{16} = \frac{15}{32}mgL$$
+  <p>由动能定理 $\frac12 mv^2 = W = \dfrac{15}{32}mgL$，得同一结果 ✓。数值复核：$W = \dfrac{15}{32}\times 2\times 10\times 1 = 9.375\ \mathrm{J}$，$v = \sqrt{2W/m} = \sqrt{9.375} \approx 3.06\ \mathrm{m/s}$ ✓。</p>
+
+  <div class="deep">
+    <strong>收获</strong>：连续分布物体（链条、绳、水柱）的重力势能变化，<strong>用质心高度差 × 总重力一步出</strong>，不必逐段积分；但积分法是兜底本领，质心不好找时（如弯折、堆叠）必须会写。
+  </div>
+</div>
+
+<h3>例 4　竖直上抛 8 km/s：$mgh$ 失效的现场【预赛难度】</h3>
+
+<div class="ex">
+  <span class="ex-tag mid">预赛难度</span>
+  <p><strong>题目</strong>：从地面竖直上抛一物体，初速度 $v_0 = 8.0\ \mathrm{km/s}$。不计空气阻力与地球自转，取地球半径 $R = 6.4\times 10^6\ \mathrm{m}$、地面重力加速度 $g = 10\ \mathrm{m/s^2}$（即黄金代换 $GM = gR^2$）。<br>
+  (1) 求物体上升的最大高度 $h$（引力不可再视为恒力）；<br>
+  (2) 若错误地把 $g$ 当常量用 $h' = \dfrac{v_0^2}{2g}$，会得到什么结果？误差说明了什么？</p>
+
+  <blockquote>
+    <p><strong>思路起点</strong>：$8\ \mathrm{km/s}$ 已经是宇宙速度量级，$g$ 随高度明显变化 ⇒ 必须用引力势能 $-\dfrac{GMm}{r}$ 写能量守恒，首末状态：地面（动能 + 势能）↔ 最高点（速度为零，只剩势能）。$GM$ 不会给，用 $GM = gR^2$ 换掉。</p>
+  </blockquote>
+
+  <p><strong>解析</strong></p>
+  <p>(1) 地面处（$r_1 = R$）与最高点（$r_2 = R + h$，速度为零）机械能守恒：</p>
+  $$\frac12 mv_0^2 - \frac{GMm}{R} = 0 - \frac{GMm}{R+h}$$
+  <p>约去 $m$，代入 $GM = gR^2$：</p>
+  $$\frac12 v_0^2 - gR = -\frac{gR^2}{R+h} \;\Rightarrow\; \frac{gR^2}{R+h} = gR - \frac12 v_0^2$$
+  <p>代数字：$gR = 10\times 6.4\times 10^6 = 6.4\times 10^7\ \mathrm{m^2/s^2}$；$\dfrac12 v_0^2 = \dfrac12\times (8\times10^3)^2 = 3.2\times 10^7\ \mathrm{m^2/s^2}$。右边 $= 6.4\times10^7 - 3.2\times10^7 = 3.2\times10^7\ \mathrm{m^2/s^2}$。</p>
+  $$R + h = \frac{gR^2}{3.2\times10^7} = \frac{10\times(6.4\times10^6)^2}{3.2\times10^7} = \frac{4.096\times10^{14}}{3.2\times10^7} = 1.28\times10^7\ \mathrm{m} = 2R$$
+  $$\boldsymbol{h = R = 6.4\times 10^6\ \mathrm{m} = 6400\ \mathrm{km}}$$
+  <p>(2) 若误用恒定 $g$：</p>
+  $$h' = \frac{v_0^2}{2g} = \frac{6.4\times10^7}{20} = 3.2\times10^6\ \mathrm{m} = 3200\ \mathrm{km}$$
+  <p>只有真实值的一半！原因：飞得越高引力越弱，同样的动能能"撑"到更高的位置。当高度与 $R$ 可比拟时，$mgh$ 完全失效，必须用 $-\dfrac{GMm}{r}$。</p>
+
+  <div class="deep">
+    <strong>体检与延伸</strong>：① 量纲：$gR$ 与 $v_0^2$ 同为 $\mathrm{m^2/s^2}$ ✓；② 本题的 $v_0 = \sqrt{gR}$ 恰好等于第一宇宙速度 $v_1 \approx 8\ \mathrm{km/s}$（本题近似值），物体最高到 $2R$ 处即返回——注意它<strong>不是</strong>轨道运动，只是直上直下；③ 若 $v_0 \geq \sqrt{2gR} \approx 11.3\ \mathrm{km/s}$（逃逸速度），右边 $gR - \frac12 v_0^2 \leq 0$，方程无解——物理含义：再也回不来。
+  </div>
+</div>
+
+<h3>例 5　子弹打木块：资用能算出 99% 的发热【预赛难度】</h3>
+
+<div class="ex">
+  <span class="ex-tag mid">预赛难度</span>
+  <p><strong>题目</strong>：光滑水平面上静止着质量 $M = 0.99\ \mathrm{kg}$ 的木块，质量 $m = 0.01\ \mathrm{kg}$ 的子弹以 $v_0 = 500\ \mathrm{m/s}$ 水平射入并嵌在其中。求：<br>
+  (1) 共同速度 $v$；(2) 系统损失的机械能（即产生的热量）$Q$；(3) 用柯尼希定理的资用能公式直接写出 $Q$，并对照。</p>
+
+  <blockquote>
+    <p><strong>思路起点</strong>：水平面光滑 ⇒ 动量守恒求共速；能量损失 = 初动能 − 末动能。第 (3) 问是重点：完全非弹性碰撞中，<strong>质心动能冻结、资用能全部变热</strong>，一行出答案。</p>
+  </blockquote>
+
+  <p><strong>解析</strong></p>
+  <p>(1) 动量守恒：</p>
+  $$mv_0 = (m+M)v \;\Rightarrow\; v = \frac{0.01\times 500}{1.00} = \boldsymbol{5\ \mathrm{m/s}}$$
+  <p>(2) 初动能 $E_{k1} = \dfrac12\times 0.01\times 500^2 = 1250\ \mathrm{J}$；末动能 $E_{k2} = \dfrac12\times 1.00\times 5^2 = 12.5\ \mathrm{J}$。</p>
+  $$Q = E_{k1} - E_{k2} = 1250 - 12.5 = \boldsymbol{1237.5\ \mathrm{J}}$$
+  <p>占初动能的 $\dfrac{1237.5}{1250} = 99\%$。</p>
+  <p>(3) 柯尼希拆分：质心速度 $v_c = v = 5\ \mathrm{m/s}$（动量守恒，碰撞前后不变）。</p>
+  <p>质心动能（冻结）：$E_{kc} = \dfrac12(m+M)v_c^2 = \dfrac12\times 1.00\times 25 = 12.5\ \mathrm{J}$——正是末动能 ✓；</p>
+  <p>资用能（可转化部分）：约化质量 $\mu = \dfrac{mM}{m+M} = \dfrac{0.01\times 0.99}{1.00} = 9.9\times10^{-3}\ \mathrm{kg}$，相对速度 $v_{相} = 500\ \mathrm{m/s}$：</p>
+  $$E_k' = \frac12\mu v_{相}^2 = \frac12\times 9.9\times10^{-3}\times 500^2 = \boldsymbol{1237.5\ \mathrm{J}} = Q\ \checkmark$$
+  <p>子弹嵌入后两者共速 ⇒ 相对动能归零，资用能全部转化为内能。损失占比公式 $\dfrac{M}{m+M} = \dfrac{0.99}{1} = 99\%$ 与此一致 ✓。</p>
+
+  <div class="warn">
+    <strong>本题暗坑</strong>：若题目改问"子弹克服阻力做功多少"，那是 $W_f = \dfrac12 m v_0^2 - \dfrac12 m v^2 = 1250 - 0.125 = 1249.875\ \mathrm{J} \neq Q$！子弹的位移比木块深（相对位移才是弹孔深度），<strong>单个摩擦力的功 ≠ 系统发热</strong>，$Q = f\cdot s_{相对}$ 用的是相对位移。
+  </div>
+</div>
+
+<h3>例 6　弹簧最大压缩量：资用能一行秒【复赛难度】</h3>
+
+<div class="ex">
+  <span class="ex-tag hard">复赛难度</span>
+  <p><strong>题目</strong>：光滑水平面上，质量 $m_2 = 2\ \mathrm{kg}$ 的物体静止，前端固连一轻弹簧（$k = 600\ \mathrm{N/m}$，原长足够）。质量 $m_1 = 1\ \mathrm{kg}$ 的物体以 $v_0 = 6\ \mathrm{m/s}$ 冲向弹簧。求碰撞过程中弹簧的<strong>最大压缩量</strong> $x_m$。</p>
+
+  <blockquote>
+    <p><strong>思路起点</strong>：弹簧压缩到最大时两物体<strong>无相对速度</strong>（共速 $v_c$）——此刻资用能 $\frac12\mu v_0^2$ 全部变成弹性势能 $\frac12 kx_m^2$。动量守恒求 $v_c$，柯尼希定理管能量。</p>
+  </blockquote>
+
+  <p><strong>解析</strong></p>
+  <p><strong>第一步：动量守恒求质心速度</strong>（$v_c$ 全程不变）：</p>
+  $$v_c = \frac{m_1v_0}{m_1+m_2} = \frac{1\times 6}{3} = 2\ \mathrm{m/s}$$
+  <p><strong>第二步：能量分配（柯尼希定理）</strong>。初态总动能：</p>
+  $$E_{k总} = \frac12 m_1v_0^2 = \frac12\times 1\times 36 = 18\ \mathrm{J}$$
+  <p>其中质心动能（冻结，谁都动不了）：</p>
+  $$E_{kc} = \frac12(m_1+m_2)v_c^2 = \frac12\times 3\times 2^2 = 6\ \mathrm{J}$$
+  <p>资用能（可转化部分）：</p>
+  $$E_k' = E_{k总} - E_{kc} = 18 - 6 = 12\ \mathrm{J}$$
+  <p>最大压缩时相对动能归零，资用能全部转为弹性势能：</p>
+  $$\frac12 k x_m^2 = E_k' = 12 \;\Rightarrow\; x_m = \sqrt{\frac{2\times 12}{600}} = \sqrt{0.04} = \boldsymbol{0.2\ \mathrm{m}}$$
+
+  <p><strong>约化质量直写（一行版）</strong>：$\mu = \dfrac{m_1m_2}{m_1+m_2} = \dfrac{1\times2}{3} = \dfrac23\ \mathrm{kg}$，</p>
+  $$\frac12\mu v_0^2 = \frac12 kx_m^2 \;\Rightarrow\; x_m = v_0\sqrt{\frac{\mu}{k}} = 6\times\sqrt{\frac{2/3}{600}} = 6\times\sqrt{\frac{1}{900}} = \frac{6}{30} = 0.2\ \mathrm{m}\ \checkmark$$
+
+  <p><strong>验证（能量守恒全程版）</strong>：最大压缩瞬间系统能量 $= E_{kc} + E_p = 6 + 12 = 18\ \mathrm{J} = E_{k总}$ ✓。</p>
+
+  <div class="deep">
+    <strong>极限体检</strong>：$m_2 \to \infty$（墙）时 $\mu \to m_1$，$x_m \to v_0\sqrt{m_1/k}$——退回"小球撞墙弹簧"的熟悉结论 ✓；$m_2 \to 0$ 时 $\mu \to 0$，$x_m \to 0$——弹簧那头没有质量可推，当然压不动 ✓。两个极限都对，答案可信。
+  </div>
+</div>
+
+<h3>例 7　双星相互靠近：约化质量 + 引力势能【复赛难度】</h3>
+
+<div class="ex">
+  <span class="ex-tag hard">复赛难度</span>
+  <p><strong>题目</strong>：太空中两颗质量均为 $m$ 的星球，初始相距 $d$、均静止。在相互引力作用下靠近。当间距缩小为 $d/2$ 时，求每颗星球速率 $v$ 与相对速率 $v_{相}$（用 $G$、$m$、$d$ 表示）。</p>
+
+  <blockquote>
+    <p><strong>思路起点</strong>：初始总动量为零 ⇒ 质心永远静止，两星始终关于质心对称（等质量 ⇒ 速率始终相等）。能量守恒：引力势能的增加（变得不那么负）= 动能。既可以用柯尼希 + 约化质量速算，也可以直接对称性 + 能量守恒。</p>
+  </blockquote>
+
+  <p><strong>解析</strong></p>
+  <p><strong>能量守恒</strong>（初态动能为零）：</p>
+  $$-\frac{Gm\cdot m}{d} = 2\times\frac12 mv^2 + \left(-\frac{Gm\cdot m}{d/2}\right)$$
+  <p>即释放出的引力势能：</p>
+  $$\Delta E_{p释} = \left(-\frac{Gm^2}{d}\right) - \left(-\frac{Gm^2}{d/2}\right) = -\frac{Gm^2}{d} + \frac{2Gm^2}{d} = \frac{Gm^2}{d}$$
+  <p>全部转为动能：</p>
+  $$2\times\frac12 mv^2 = \frac{Gm^2}{d} \;\Rightarrow\; v^2 = \frac{Gm}{d} \;\Rightarrow\; \boldsymbol{v = \sqrt{\frac{Gm}{d}}}$$
+  <p>两星相向而行、速率相等：</p>
+  $$v_{相} = 2v = \boldsymbol{2\sqrt{\frac{Gm}{d}}}$$
+
+  <p><strong>柯尼希复核</strong>：质心静止 ⇒ 质心动能为零，全部动能都是相对动能。约化质量 $\mu = \dfrac{m\cdot m}{2m} = \dfrac{m}{2}$：</p>
+  $$\frac12\mu v_{相}^2 = \frac{Gm^2}{d} \;\Rightarrow\; \frac12\times\frac{m}{2}\times v_{相}^2 = \frac{Gm^2}{d} \;\Rightarrow\; v_{相}^2 = \frac{4Gm}{d}\ \checkmark$$
+  <p>与直接法完全一致。</p>
+
+  <div class="deep">
+    <strong>数量级感受</strong>：取 $m = 2\times10^{30}\ \mathrm{kg}$（约一个太阳质量）、$d = 10^{11}\ \mathrm{m}$，则 $v = \sqrt{\dfrac{6.67\times10^{-11}\times 2\times10^{30}}{10^{11}}} = \sqrt{1.33\times10^{9}} \approx 3.7\times10^{4}\ \mathrm{m/s} \approx 37\ \mathrm{km/s}$——星际尺度下引力加速十分可观。<strong>方法收获</strong>：两体问题先问"质心动不动"，质心不动时约化质量形式 $E = \frac12\mu v_{相}^2 - \dfrac{Gm_1m_2}{r}$ 把两个物体压缩成"一个假想粒子"，这是复赛处理两体问题的标准起手式。
+  </div>
+</div>
+
+<hr>
+
+<!-- 五、易错点 -->
+<h2 id="s5">五、易错点（竞赛版）</h2>
+
+<p>以下每条都在真实赛卷里反复收割分数，请逐条对照自己的习惯。</p>
+
+<div class="warn">
+  <strong>易错 1：同一道题里混用或中途更换势能零点</strong>。重力势能取了地面为零点，引力势能又默认无穷远为零点，然后写在同一个能量守恒式里直接相加——账全乱。纪律：<strong>每种势能各守各的零点没关系，但同一种势能全程只能用一个零点</strong>；更稳妥的做法是只写"差值"（$\Delta E_p$ 与零点无关），如例 4 其实只用到了首末势能之差。
+</div>
+
+<div class="warn">
+  <strong>易错 2：引力势能丢负号，或比较势能大小时按绝对值比</strong>。$E_p = -\dfrac{GMm}{r}$ 处处为负；"$r$ 越大势能越大"意味着 $-5 &gt; -10$。卫星升轨：势能增大（少负）、动能减小、总能量增大——若记成"越高越快"就与动能减小的结论打架，见 3.1 的 $1:-2:-1$ 比例。
+</div>
+
+<div class="warn">
+  <strong>易错 3：弹性势能里的 $x$ 取成弹簧长度或从平衡位置量起</strong>。$\frac12 kx^2$ 的 $x$ 是<strong>相对原长的形变量</strong>。竖直悬挂弹簧下端挂重物时，平衡位置已伸长 $x_0 = mg/k$——此时弹性势能是 $\frac12 kx_0^2$ 而不是零；从平衡位置再下拉 $\Delta x$，势能增量是 $\frac12 k(x_0+\Delta x)^2 - \frac12 kx_0^2$，含交叉项 $kx_0\Delta x = mg\Delta x$，恰好与重力势能变化相消——想不明白就老老实实从原长量。
+</div>
+
+<div class="warn">
+  <strong>易错 4：变力做功滥用 $W = Fs$ 或滥用首尾平均力</strong>。两条件缺一不可：$W = Fs\cos\theta$ 只适用恒力；$\bar F = \dfrac{F_1+F_2}{2}$ 只适用<strong>随位移线性变化</strong>的力。$F \propto x^2$、$F \propto 1/r^2$ 都必须画图算面积或写积分（例 1 末尾的反例差了 50 J）。
+</div>
+
+<div class="warn">
+  <strong>易错 5：变力做功不看方向，符号一刀切</strong>。力随位置变化时方向也可能翻转：弹簧从压缩 $0.1\ \mathrm{m}$ 恢复到伸长 $0.1\ \mathrm{m}$，全过程弹力做功 $= \frac12 k(0.1)^2 - \frac12 k(0.1)^2 = 0$（先正后负抵消），绝不是"力 × 总路程"。分段判号、或干脆用势能差（$W_{弹} = -\Delta E_p$）自动带符号。
+</div>
+
+<div class="warn">
+  <strong>易错 6：机械能守恒的判据记成"合外力为零"</strong>。守恒条件是<strong>只有重力（及系统内弹力）做功</strong>，与合外力无关。匀速下落的降落伞合外力为零，机械能却一直在减（阻力做负功）；反之子弹打木块合外力为零（系统）但机械能不守恒。判断时逐个点名："除了重力和弹簧弹力，还有谁在做功？"
+</div>
+
+<div class="warn">
+  <strong>易错 7：质心系与地面系混着用</strong>。典型症状：在质心系里算相对动能 $\frac12\mu v_{相}^2$，却又用地面系的位移去配它；或者把质心动能 $\frac12 Mv_c^2$ 也当成"可以转化成热"的能量。纪律：<strong>动能可以换系折算，但折算要用柯尼希定理完整搬</strong>；动量守恒时质心动能是冻结资产，能花掉的只有资用能（例 5、例 6）。
+</div>
+
+<div class="warn">
+  <strong>易错 8：一对摩擦力的功与系统发热混为一谈</strong>。滑动摩擦力对单个物体的功用<strong>该物体对地位移</strong>；系统发热 $Q = f\cdot s_{相对}$ 用<strong>相对位移</strong>。板块模型里两个位移一般不相等，见例 5 暗坑：子弹克服阻力做功 1249.875 J，但系统发热只有 1237.5 J，差值 12.375 J 正是木块获得的动能（$\frac12\times0.99\times25 = 12.375$ J ✓）。
+</div>
+
+<hr>
+
+<!-- 六、自检清单 -->
+<h2 id="s6">六、自检清单</h2>
+
+<p>以下每条都能独立做到，才算本章过关。做不到的，回到对应小节再啃一遍。</p>
+
+<ul class="checklist">
+  <li>看到 F–x 图像，我能立刻反应"面积即功"，并记得曲线下方取负值（力与位移反向时）的代数规则。</li>
+  <li>我能用积分独立推出 $W_{弹} = \frac12 kx^2$，并说清 $x$ 必须从原长量起、以及"平均力 × 位移"只适用于线性力。</li>
+  <li>面对链条、绳、水柱等连续分布物体，我会用"总重力 × 质心高度差"速算重力势能变化（例 3），质心不好找时会写微元积分兜底。</li>
+  <li>我能默写功能关系总账：$W_{合} = \Delta E_k$、$W_{保} = -\Delta E_p$、$W_{其他} = \Delta E_{机}$、$Q = fs_{相对}$，并各举一个使用场景。</li>
+  <li>三种势能（$mgh$、$\frac12 kx^2$、$-\dfrac{GMm}{r}$）我都能说出零点约定及其原因，并保证同一题中不中途换零点。</li>
+  <li>我会用 $E_p(R+h) - E_p(R) \approx mgh$ 的推导说明 $mgh$ 是近地近似，并能指出它在什么尺度上失效（例 4 的 6400 km 对比 3200 km）。</li>
+  <li>卫星圆轨道的三笔账我能随手推：$E_k = \dfrac{GMm}{2r}$、$E_p = -\dfrac{GMm}{r}$、$E = -\dfrac{GMm}{2r}$，并解释"升轨动能反而减小"。</li>
+  <li>逃逸速度 $v_2 = \sqrt{2gR}$ 我能从"恰好到达无穷远"的能量条件推出，并知道它与第一宇宙速度差一个 $\sqrt2$。</li>
+  <li>柯尼希定理 $E_k = \frac12 Mv_c^2 + \frac12\mu v_{相}^2$ 我能对两体质点完整推导（含约化质量的化简过程），不跳步。</li>
+  <li>我能一句话说清"资用能"：动量守恒时质心动能冻结，只有 $\frac12\mu v_{相}^2$ 可被转化；并能用它一行写出弹簧最大压缩量（例 6）与完全非弹性碰撞的能量损失上限（例 5）。</li>
+  <li>例 7 的双星问题我能两种方法（直接能量守恒、约化质量）各做一遍并互相验证。</li>
+  <li>收尾习惯：每道能量题我都会做量纲核对（如 $GM/r$ 与 $v^2$ 同量纲）和极限体检（$M\to\infty$、$\mu\to0$ 等退回熟悉结论）。</li>
+</ul>
+
+<blockquote>
+  <p><strong>小兵，写在最后</strong>：这一章你把"能量"从高考的一个解题技巧，升级成了竞赛的一套<strong>记账系统</strong>——变力的功用面积和积分收进账里，保守力的功存进势能账户，质心系的拆分告诉你哪些能量能动、哪些是冻结的。下一章《动量与角动量》会和本章合体，诞生竞赛力学最强的组合拳："动量守恒 + 资用能"。例 6、例 7 如果第一遍做得吃力，别慌，把它们收进错题本隔周重做——能独立重做出来那天，你就摸到复赛的门框了。</p>
+</blockquote>
+
+<hr>
+
+<p style="text-align: center; color: var(--muted); font-size: 0.9em;">
+  tags: #物理竞赛 #功与能量 #变力做功 #引力势能 #柯尼希定理 #资用能 #小兵
+</p>
+
+</body>
+</html>

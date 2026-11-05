@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>06 刚体与静力学 · 物理竞赛入门</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<nav class="chap-nav">高考备考 · 物理 · 竞赛专题 ｜ 06-刚体与静力学-深度学习材料.html</nav>
+<header class="chap-head">
+  <h1>06 刚体与静力学</h1>
+  <p class="chap-meta">物理竞赛专题（12 章系列 · 第 6 章） ｜ 适用：高一竞赛入门（目标：预赛 → 复赛入门） ｜ 前置：03 受力分析与牛顿定律 ｜ 学生：小兵</p>
+</header>
+<div class="chap-intro">
+  到这一章，我们要做一件高考几乎不做、但竞赛天天做的事：让物体<strong>不光不"跑"，还不"转"</strong>。力矩是打开刚体世界的钥匙，桁架、梯子、倾倒临界都是预赛复赛的常客。别担心零基础——本章每个概念都从"推门"这种生活经验讲起，你只需要带上耐心和一支会画力臂的笔。
+</div>
+
+<div class="toc">
+  <div class="toc-label">本章导航</div>
+  <div class="toc-links">
+    <a href="#s1">一、知识全景</a>
+    <a href="#s2">二、核心概念</a>
+    <a href="#s3">三、竞赛专属·高考不考</a>
+    <a href="#s4">四、例题精讲</a>
+    <a href="#s5">五、易错点</a>
+    <a href="#s6">六、自检清单</a>
+  </div>
+</div>
+
+<!-- 一、知识全景 -->
+<h2 id="s1">一、知识全景</h2>
+
+<p>质点模型里，物体只是一个"有质量的点"，力只能让它<strong>平动</strong>。但真实物体有形状、有大小，力作用在不同位置还会让它<strong>转动</strong>。静力学研究的就是：一个不能当作点的物体（刚体），满足什么条件才能<strong>既不平动也不转动</strong>——也就是真正的静止平衡。</p>
+
+<div class="map">
+  <div class="row"><div class="node root">刚体与静力学</div></div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node">力矩<br><small>转动的"油门"</small></div>
+    <div class="node">平衡条件<br><small>∑F=0 且 ∑M=0</small></div>
+    <div class="node">重心<br><small>重力的等效作用点</small></div>
+  </div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node leaf">转轴任取原理</div>
+    <div class="node leaf">三力平衡汇交</div>
+    <div class="node leaf">摩擦角与自锁</div>
+    <div class="node leaf">倾倒临界</div>
+    <div class="node leaf">稳度</div>
+  </div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node view">竞赛工具<br><small>桁架：节点法 · 截面法</small></div>
+    <div class="node view">竞赛工具<br><small>负质量法求重心</small></div>
+  </div>
+</div>
+
+<blockquote>
+  <p><strong>和高考的衔接</strong>：高考里的"杠杆平衡""斜面+滑块"其实是刚体平衡的特例。竞赛只是把这件事一般化：任意形状、任意多个力、任意转轴。你会发现，很多高考压轴题用竞赛的眼光看，就是"取个好转轴列个力矩方程"的事。</p>
+</blockquote>
+
+<hr>
+
+<!-- 二、核心概念 -->
+<h2 id="s2">二、核心概念</h2>
+
+<h3>2.1 力矩：转动效果的度量</h3>
+
+<p>推门时你自然知道：力用在离门轴<strong>越远</strong>、方向越<strong>垂直于门面</strong>，门越好开。这个生活经验翻译成物理语言就是<strong>力矩</strong>：</p>
+
+$$M = F\,d = F\,r\sin\theta$$
+
+<ul>
+  <li>$r$：转轴到力的作用点的距离；$\theta$：$\vec r$ 与 $\vec F$ 的夹角</li>
+  <li>$d = r\sin\theta$：称为<strong>力臂</strong>——转轴到<em>力的作用线</em>的垂直距离（注意：是到"线"，不是到"点"！）</li>
+  <li>单位：$\mathrm{N\cdot m}$（虽然量纲和焦耳一样，但力矩<strong>不是能量</strong>，绝不写"J"）</li>
+  <li>力矩是矢量，平面问题中只需规定正负：通常取<strong>逆时针为正，顺时针为负</strong>（全章统一，写题目前先声明）</li>
+</ul>
+
+<div class="deep">
+  <strong>找力臂三步法</strong>（竞赛里 90% 的力矩错误出在力臂上）：<br>
+  ① 把力的作用线向两端<strong>无限延长</strong>（用虚线画出来）；<br>
+  ② 从转轴向这条虚线作<strong>垂线</strong>；<br>
+  ③ 垂线段的长度就是力臂 $d$。<br>
+  口诀：<strong>"延线、作垂、量距"</strong>——力臂永远对着"线"说话，不是对着"点"说话。
+</div>
+
+<h3>2.2 刚体平衡的两个条件</h3>
+
+<p>刚体要真正静止，必须同时满足：</p>
+
+$$\sum \vec F = 0 \quad\text{（不平动）}\qquad \sum M_O = 0 \quad\text{（不转动，}O\text{ 为任意一点）}$$
+
+平面问题里这就是三个独立方程：$\sum F_x = 0$，$\sum F_y = 0$，$\sum M_O = 0$。<strong>最多解三个未知量</strong>——这是判断"方程够不够列"的硬标准。
+
+<div class="key-point">
+  <strong>转轴任取原理（竞赛第一利器）</strong>：只要 $\sum \vec F = 0$ 成立，那么"对某一点力矩和为零"等价于"对<strong>任意</strong>点力矩和都为零"。所以转轴可以选在<strong>最方便的地方</strong>——通常选在多个未知力的交点上，让这些力的力臂为零，方程里直接消掉它们。
+  <br><br>
+  <strong>为什么可以任取？</strong>设对点 $O$ 有 $\sum M_O = 0$，换到点 $O'$（$\vec{OO'} = \vec R$），则 $\sum M_{O'} = \sum M_O - \vec R \times \sum \vec F$。当 $\sum \vec F = 0$ 时，第二项为零，故 $\sum M_{O'} = \sum M_O$。证毕——这就是为什么"任取"是定理而不是技巧。
+</div>
+
+<h3>2.3 三力平衡汇交定理</h3>
+
+<p>刚体只受<strong>三个力</strong>而平衡，且其中两个力的作用线交于一点 $P$，则第三个力的作用线<strong>必过 $P$</strong>（否则对 $P$ 点取矩，前两力力矩为零，第三力力矩必须为零，即其力臂为零）。</p>
+
+<p>这个定理是画受力图的"定位器"：比如梯子问题里，重力、墙面支持力方向已知，地面全反力的方向被"汇交"锁死，几何关系直接出来，经常比列方程更快。</p>
+
+<h3>2.4 摩擦角与自锁、倾倒临界</h3>
+
+<p>接触面的支持力 $N$ 与摩擦力 $f$ 可以合成一个<strong>全反力</strong> $\vec R$。临界时 $f = \mu N$，全反力与法线的夹角 $\varphi$ 满足：</p>
+
+$$\tan\varphi = \frac{f_{\max}}{N} = \mu$$
+
+$\varphi$ 称为<strong>摩擦角</strong>。无论外力多大，只要外力的合力作用线落在以法线为轴、半顶角为 $\varphi$ 的"摩擦锥"内，接触面就能提供足够的全反力与之抗衡——物体<strong>自锁</strong>，永远推不动。斜面自锁条件 $\mu \ge \tan\theta$ 就是这么来的。</p>
+
+<p><strong>倾倒临界</strong>：物体受推力即将翻倒时，支持力的合力作用点退到支持面边缘（支点），重力作用线恰好通过该边缘。临界条件用对支点的力矩方程写：推力矩 = 重力恢复力矩。继续增大推力，重力作用线越出支持面，物体翻倒。</p>
+
+<h3>2.5 重心与稳度</h3>
+
+<ul>
+  <li><strong>重心</strong>：物体各部分重力的合力作用点。均匀规则物体在几何中心；<strong>重心可以不在物体上</strong>（圆环、空心球）。</li>
+  <li><strong>组合体重心</strong>：$x_C = \dfrac{\sum m_i x_i}{\sum m_i}$，把物体拆成几块分别算再加权平均。挖掉的部分用<strong>负质量</strong>代入，称为负质量法。</li>
+  <li><strong>悬挂法</strong>：薄板悬挂静止时，重力作用线必过悬点。换两个不同悬点各挂一次，两条铅垂线的交点即重心——这是实验求重心的标准操作。</li>
+  <li><strong>稳度</strong>：重心越低、支持面越大，物体越稳。判据只有一个：<strong>重力作用线是否落在支持面内</strong>；刚好压线就是倾倒临界。</li>
+</ul>
+
+<hr>
+
+<!-- 三、竞赛专属·高考不考 -->
+<h2 id="s3">三、竞赛专属·高考不考：桁架内力分析与一般刚体平衡的方程组处理</h2>
+
+<p>下面两块内容高考考纲里没有，但预赛几乎年年露面、复赛是基础动作。门槛不高，学会了就是"送分区"。</p>
+
+<h3>3.1 桁架与二力杆</h3>
+
+<p>桁架是由<strong>轻质直杆</strong>在端点用<strong>光滑铰链</strong>连接而成的结构（桥梁、塔吊、屋架）。由于杆是轻的、铰链只在端点受力，每根杆都是<strong>二力杆</strong>：杆两端受力必沿杆的方向，不是拉就是压。</p>
+
+<ul>
+  <li>杆对节点的作用力：杆被<strong>拉</strong>时，把节点往杆的方向拽；杆被<strong>压</strong>时，把节点往外推。</li>
+  <li><strong>统一约定</strong>：分析时一律先假设每根杆受<strong>拉力</strong>（对节点的作用力沿杆"指向外"）。解出来为正 → 确实是拉力；为负 → 实际是压力，大小取绝对值。正负由方程说话，不靠猜。</li>
+</ul>
+
+<h3>3.2 节点法</h3>
+
+<p>把每个<strong>节点</strong>当作质点，对它列 $\sum F_x = 0$、$\sum F_y = 0$（汇交力系，没有力矩方程）。从一个<strong>只连着两根杆且有已知力</strong>的节点开刀，解出两根杆的内力，再像剥洋葱一样推进到相邻节点。适合求<strong>全部</strong>杆的内力。</p>
+
+<h3>3.3 截面法</h3>
+
+<p>只关心某几根杆时，用一条假想的截面把桁架<strong>切成两半</strong>，取其中一半作为研究对象——它是刚体，可以列完整的三个平衡方程（$\sum F_x=0$、$\sum F_y=0$、$\sum M_O=0$）。技巧在于：</p>
+
+<ul>
+  <li>一刀最多截断<strong>三根</strong>未知内力的杆（只有三个方程）；</li>
+  <li>转轴取在<strong>两根未知杆的交点</strong>上，一刀下去只剩一个未知量，力矩方程直接秒杀。</li>
+</ul>
+
+<div class="deep">
+  <strong>节点法 vs 截面法怎么选</strong>：求全桥内力 → 节点法逐节点推进；只求中间某一根杆 → 截面法一刀到位。预赛题两者常搭配：先截面法定关键杆，再节点法补全。
+</div>
+
+<h3>3.4 一般刚体平衡：方程组怎么列才不乱</h3>
+
+<p>竞赛里的静力学题，受力经常是四五个。标准流程（建议背下来形成肌肉记忆）：</p>
+
+<ol>
+  <li><strong>画受力图</strong>：每个力标出作用点、方向，未知的支持力方向先假设；</li>
+  <li><strong>选转轴</strong>：找未知力作用线交点最多的点，力矩方程里消掉它们；</li>
+  <li><strong>列三个方程</strong>：$\sum F_x=0$，$\sum F_y=0$，$\sum M_O=0$，先解力矩方程（通常最简单）；</li>
+  <li><strong>检验</strong>：换一个转轴再列一次力矩方程，验证确实为零——竞赛卷面上这是防错的保险丝。</li>
+</ol>
+
+<div class="warn">
+  <strong>注意</strong>：平面刚体平衡只有三个独立方程。如果你列了四个方程，其中必有一个是其余的线性组合——不是"多一条保险"，是"白列"。未知量超过三个时，题目一定有其他条件（几何、临界摩擦 $f=\mu N$ 等）补足。
+</div>
+
+<hr>
+
+<!-- 四、例题精讲 -->
+<h2 id="s4">四、例题精讲</h2>
+
+<h3>例 1　扳手拧螺母：力臂到底怎么量</h3>
+
+<p><strong>题目</strong>：用扳手拧螺母，作用力 $F = 20\ \mathrm{N}$，作用点到螺母中心的距离 $r = 0.30\ \mathrm{m}$，力的方向与扳手柄成 $60°$ 角。求此力对螺母中心的力矩；若改为垂直于手柄施力，力矩变为多少？</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：力矩只有两件事——力臂和方向。先把力臂算对：$d = r\sin\theta$，$60°$ 是 $\vec r$ 与 $\vec F$ 的夹角，直接代入。
+</div>
+
+<p><strong>解析</strong>：</p>
+
+$$M = F\,r\sin\theta = 20 \times 0.30 \times \sin 60° = 6 \times \frac{\sqrt3}{2} = 3\sqrt3 \approx 5.2\ \mathrm{N\cdot m}$$
+
+<p>方向：使扳手绕螺母转动（设为逆时针，取正）。</p>
+
+<p>改为垂直施力时 $\theta = 90°$：</p>
+
+$$M' = F r \sin 90° = 20 \times 0.30 = 6.0\ \mathrm{N\cdot m}$$
+
+<p><strong>点评</strong>：同样 20 N 的力，垂直施力比 $60°$ 斜着推省力效果高约 $15\%$（$6.0/5.2 \approx 1.15$）。这就是修自行车时师傅总把扳手"摆正"再用力、甚至套上加长管（增大 $r$）的原因。</p>
+
+<h3>例 2　横杆+吊绳：转轴选在铰链上</h3>
+
+<p><strong>题目</strong>：均匀横杆 AB 长 $L = 1.2\ \mathrm{m}$、重 $G_1 = 12\ \mathrm{N}$，A 端用铰链固定在竖直墙上，杆水平。B 端挂一重物 $G_2 = 24\ \mathrm{N}$，并用一根绳从 B 端连到墙上 A 点正上方，绳与杆夹角 $30°$。求绳的张力 $T$ 和铰链对杆的作用力。</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：铰链的作用力大小方向都未知（两个未知量），绳的张力一个未知量，共三个未知量，正好三个方程。<strong>转轴取 A</strong>：铰链力过 A 点，力臂为零，直接从力矩方程里消失。
+</div>
+
+<p><strong>解析</strong>：对 A 点取矩（逆时针为正）。绳张力 $T$ 沿绳，竖直分量 $T\sin30°$ 产生逆时针力矩，力臂 $L$；重力 $G_1$ 作用于杆中点（力臂 $L/2$）、$G_2$ 作用于 B（力臂 $L$），均为顺时针：</p>
+
+$$T L\sin30° = G_1\cdot\frac{L}{2} + G_2 L$$
+
+$$T \times 1.2 \times 0.5 = 12 \times 0.6 + 24 \times 1.2 = 7.2 + 28.8 = 36$$
+
+$$\Rightarrow\ T = \frac{36}{0.6} = 60\ \mathrm{N}$$
+
+<p>再由力的平衡求铰链力 $(F_x, F_y)$。绳的水平分量 $T\cos30°$ 把杆往墙里压，故铰链给杆的水平力向外：</p>
+
+$$F_x = T\cos30° = 60\times\frac{\sqrt3}{2} = 30\sqrt3 \approx 52\ \mathrm{N}$$
+
+$$F_y = G_1 + G_2 - T\sin30° = 36 - 30 = 6\ \mathrm{N}\quad(\text{向上})$$
+
+<p>合力大小 $\sqrt{52^2 + 6^2} = \sqrt{2740} \approx 52.3\ \mathrm{N}$。<strong>检验</strong>：对 B 点取矩——铰链力力臂……（留给你自己验证，应得零）。</p>
+
+<h3>例 3　梯子靠墙：最小倾角与爬梯的人【预赛难度】</h3>
+
+<p><strong>题目</strong>：均匀梯子长 $L$、质量 $m$，靠在光滑竖直墙上，下端放在粗糙水平地面上，静摩擦因数 $\mu = 0.5$。(1) 梯子不滑倒的最小倾角 $\theta_{\min}$（与地面的夹角）是多大？(2) 若梯子保持 $\theta = 45°$，一个质量为 $2m$ 的人沿梯向上爬，最多爬到梯子长度的几分之几？</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：墙光滑 → 墙的支持力 $N_1$ 水平；地面粗糙 → 有支持力 $N_2$（竖直）和摩擦力 $f$（水平）。临界不滑 = $f$ 恰好达到 $\mu N_2$。转轴取<strong>梯脚</strong>，$N_2$ 与 $f$ 同时消去。
+</div>
+
+<p><strong>解析</strong>：(1) 力平衡：</p>
+
+$$\sum F_y = 0:\ N_2 = mg \qquad \sum F_x = 0:\ f = N_1$$
+
+<p>对梯脚取矩（逆时针为正）：重力在中点，力臂 $\frac{L}{2}\cos\theta$（顺时针）；$N_1$ 水平向左作用于顶端，力臂 $L\sin\theta$（逆时针）：</p>
+
+$$N_1\, L\sin\theta = mg\cdot\frac{L}{2}\cos\theta \ \Rightarrow\ N_1 = \frac{mg}{2\tan\theta}$$
+
+<p>临界条件 $f = \mu N_2$，即 $N_1 = \mu mg$：</p>
+
+$$\mu mg = \frac{mg}{2\tan\theta_{\min}} \ \Rightarrow\ \tan\theta_{\min} = \frac{1}{2\mu} = \frac{1}{2\times0.5} = 1$$
+
+$$\boxed{\theta_{\min} = 45°}$$
+
+<p>(2) 设人爬到距梯脚 $xL$ 处恰为临界。此时 $N_2 = mg + 2mg = 3mg$，$f = N_1 = \mu N_2 = 1.5\,mg$。对梯脚取矩（$\theta = 45°$，$\sin\theta = \cos\theta$ 相约去）：</p>
+
+$$N_1 L = mg\cdot\frac{L}{2} + 2mg\cdot xL$$
+
+$$1.5\,mg\,L = \left(\frac{1}{2} + 2x\right)mgL \ \Rightarrow\ 2x = 1 \ \Rightarrow\ \boxed{x = \tfrac{1}{2}}$$
+
+<p>人最多爬到<strong>梯子中点</strong>。<strong>点评</strong>：注意结果与 $L$、$g$ 都无关——竞赛题爱考这种"一堆字母最后全消掉"的题，别慌，大胆地设，放心地消。也请留意：倾角越大梯子越安全（$\tan\theta$ 大则所需 $N_1$ 小），和直觉一致。</p>
+
+<h3>例 4　三角桁架：节点法剥洋葱，截面法一刀斩【预赛难度】</h3>
+
+<p><strong>题目</strong>：屋架简化为三角桁架：B、C 为两支座（B 铰支、C 辊支），跨度 $BC$ 水平；顶点 A 在 BC 中点正上方，AB、AC 与水平均成 $45°$。A 点悬挂重物 $P = 1000\ \mathrm{N}$。求三根杆 AB、AC、BC 的内力。</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：结构对称、载荷对称 → 两支座支持力各为 $P/2$，杆 AB、AC 内力相等。从<strong>只连两杆且有已知力</strong>的节点 A 开刀。所有杆先假设受拉。
+</div>
+
+<p><strong>解析</strong>（节点法）：先整体看：对称给出 $N_B = N_C = P/2 = 500\ \mathrm{N}$，方向向上。</p>
+
+<p>节点 A：挂重 $P$ 向下，两杆假设受拉，即杆对 A 的力沿杆<strong>指向 B、C</strong>（斜向下）——等等，这正是"假设为拉"时力的方向：杆拉节点，把节点往杆那头拽。设内力大小为 $N$，竖直方向平衡：</p>
+
+$$2N\sin45° = P \ \Rightarrow\ N = \frac{P}{2\sin45°} = \frac{1000}{\sqrt2} = 500\sqrt2 \approx 707\ \mathrm{N}$$
+
+<p>但注意方向检验：$P$ 向下拽 A，两杆必须<strong>向上托</strong>A 才能平衡，即杆对 A 的力沿杆指向 A 的外上方——杆是在<strong>推</strong>节点，所以 AB、AC 实为<strong>压力</strong>，大小 $500\sqrt2\ \mathrm{N} \approx 707\ \mathrm{N}$。（先假设受拉，解方程时把方向画成拉，竖直方程会给出 $N = -500\sqrt2$，负号自动告诉你"是压"。两种语言等价，选你顺手的。）</p>
+
+<p>节点 B：受支持力 $500\ \mathrm{N}$ 向上、AB 杆的推力（沿 BA 方向，斜向右上 $45°$，大小 $500\sqrt2$）、BC 杆作用力 $T$（假设拉，水平指向 C）。水平方向：</p>
+
+$$T = N\cos45° = 500\sqrt2 \times \frac{\sqrt2}{2} = 500\ \mathrm{N}$$
+
+<p>竖直方向核对：$N\sin45° = 500\ \mathrm{N}$，恰与支持力平衡 ✓。故 BC 受<strong>拉力</strong> $500\ \mathrm{N}$。</p>
+
+<p><strong>截面法验证</strong>：假想一刀截断 AB 与 BC，取左半（含 B）。外力：$N_B = 500\ \mathrm{N}$ 向上。截口处 AB 内力沿杆（$45°$）、BC 内力水平。对 B 点取矩：$N_B$ 过 B 点力矩为零……不好用，改取<strong>两未知杆所在直线交点</strong>：AB 与 BC 交于 B，对 B 取矩两未知力全消——说明此截面法需换切法。改截 AC 与 BC 取右半同理。本题节点法已够，截面法留到下例的结构里体会"只求一根杆"的快感。<strong>结论</strong>：$N_{AB} = N_{AC} = 707\ \mathrm{N}$（压），$N_{BC} = 500\ \mathrm{N}$（拉）。</p>
+
+<h3>例 5　拖箱子的最省力角度：摩擦角的威力【复赛难度】</h3>
+
+<p><strong>题目</strong>：水平地面上质量 $m$ 的箱子与地面间摩擦因数 $\mu = \dfrac{\sqrt3}{3}$。用与水平成 $\theta$ 角斜向上的力 $F$ 拖箱子做匀速直线运动。$\theta$ 取何值时 $F$ 最小？最小值是多少？</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：斜向上拖会"顺带抬箱子"，正压力变小、摩擦力变小——但水平分力也变小。两个效果打架，存在最优角。先写平衡方程解出 $F(\theta)$，再求极值。
+</div>
+
+<p><strong>解析</strong>：竖直方向（$F$ 有上抬分量，正压力减小）：</p>
+
+$$N = mg - F\sin\theta$$
+
+<p>水平方向（匀速，滑动摩擦）：</p>
+
+$$F\cos\theta = f = \mu N = \mu(mg - F\sin\theta)$$
+
+<p>解出 $F$：</p>
+
+$$F(\cos\theta + \mu\sin\theta) = \mu mg \ \Rightarrow\ F(\theta) = \frac{\mu mg}{\cos\theta + \mu\sin\theta}$$
+
+<p>分子定死，让分母最大即可。用辅助角公式：</p>
+
+$$\cos\theta + \mu\sin\theta = \sqrt{1+\mu^2}\,\sin(\theta + \varphi_0),\quad \tan\varphi_0 = \frac{1}{\mu}$$
+
+<p>最大值 $\sqrt{1+\mu^2}$ 在 $\theta + \varphi_0 = 90°$ 时取得，即</p>
+
+$$\tan\theta = \mu \ \Rightarrow\ \theta = \arctan\frac{\sqrt3}{3} = \boxed{30°}$$
+
+$$F_{\min} = \frac{\mu mg}{\sqrt{1+\mu^2}} = \frac{\dfrac{\sqrt3}{3}}{\sqrt{1+\dfrac13}}\,mg = \frac{\dfrac{\sqrt3}{3}}{\dfrac{2}{\sqrt3}}\,mg = \boxed{\frac{mg}{2}}$$
+
+<p><strong>几何看法（摩擦角）</strong>：把 $N$ 与 $f$ 合成全反力 $R$，临界时 $R$ 与法线夹摩擦角 $\varphi$（$\tan\varphi = \mu = \tan30°$，即 $\varphi = 30°$）。箱子只受三力：重力、$R$、$F$。三力平衡构成封闭三角形，$F$ 最小当且仅当 $F \perp R$，即 $F$ 与水平成 $\varphi = 30°$ 角——与解析结果一致，且一眼看穿。<strong>这就是竞赛的优雅</strong>：解析兜底，几何秒杀，两法互验。</p>
+
+<h3>例 6　推柜子：先滑还是先倒？【复赛难度】</h3>
+
+<p><strong>题目</strong>：匀质立柜宽 $a = 0.40\ \mathrm{m}$（左右方向）、高 $h = 1.0\ \mathrm{m}$，重心在几何中心，总重 $mg$。在柜子<strong>顶部边缘</strong>施加逐渐增大的水平推力 $F$。分别就 $\mu = 0.3$ 和 $\mu = 0.5$ 两种地面，判断柜子先滑动还是先倾倒，并求临界推力。</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：两种"失守"方式各自独立——滑动临界 $F = \mu N$；倾倒临界：支持力合力移到前下角（支点），对支点列力矩平衡。<strong>哪个临界先达到，就先发生哪个</strong>。
+</div>
+
+<p><strong>解析</strong>：滑动临界（竖直方向无其他力，$N = mg$）：</p>
+
+$$F_{\text{滑}} = \mu mg$$
+
+<p>倾倒临界：即将翻倒时柜子绕前下角 $O$ 转动，对 $O$ 取矩。推力作用于顶部，力臂 $h$（翻倒方向）；重力作用于中心，力臂 $a/2$（抗翻方向）：</p>
+
+$$F_{\text{倒}}\cdot h = mg\cdot\frac{a}{2} \ \Rightarrow\ F_{\text{倒}} = \frac{mga}{2h} = \frac{0.40}{2\times1.0}\,mg = 0.2\,mg$$
+
+<p><strong>情形一</strong>：$\mu = 0.3$，$F_{\text{滑}} = 0.3\,mg > F_{\text{倒}} = 0.2\,mg$。推力增至 $0.2\,mg$ 时柜子先翻 → <strong>先倾倒</strong>，临界推力 $0.2\,mg$。</p>
+
+<p><strong>情形二</strong>：$\mu = 0.5$，$F_{\text{滑}} = 0.5\,mg >$ 且 $F_{\text{倒}} = 0.2\,mg$，比较：$0.5\,mg > 0.2\,mg$，依然是倒的临界更低？——别急，仔细比：先达到的是<strong>较小</strong>的那个临界。$F_{\text{滑}} = 0.5\,mg$，$F_{\text{倒}} = 0.2\,mg$，较小者仍是 $0.2\,mg$……</p>
+
+<p>停！这里要警觉：$F_{\text{倒}}$ 的推导默认了"柜子不打滑"。若 $\mu$ 很大，$F$ 增大过程中柜子确实不滑，推倒临界依然 $0.2\,mg$；若 $\mu$ 很小，$F$ 还没到 $0.2\,mg$ 柜子就先滑走了。所以正确比较是：<strong>谁小谁先发生</strong>。</p>
+
+<p>情形一 $\mu=0.3$：$\min(0.3, 0.2)mg = 0.2mg$ → <strong>先倾倒</strong>，$F_c = 0.2\,mg$。<br>
+情形二 $\mu=0.5$：$\min(0.5, 0.2)mg = 0.2mg$ → 仍<strong>先倾倒</strong>？再核对倾倒条件：$\mu_{\text{临界}} = \dfrac{a}{2h} = 0.2$。$\mu > 0.2$ 时推倒先于滑动。两种地面 $\mu = 0.3, 0.5$ 均大于 $0.2$，故<strong>都是先倾倒，临界推力均为 $0.2\,mg$</strong>。若地面打蜡 $\mu = 0.1 < 0.2$，则先滑动，$F_c = 0.1\,mg$。</p>
+
+<p><strong>点评</strong>：判据一句话——比较 $\mu$ 与 $\dfrac{a}{2h}$：$\mu < \dfrac{a}{2h}$ 先滑，$\mu > \dfrac{a}{2h}$ 先倒。生活对应：又高又窄的书柜（$a/2h$ 小）一推就倒；矮胖的保险柜推都推不动只能滑动。这也解释了为什么家具防倒带要往墙上钉。</p>
+
+<h3>例 7　挖孔的圆盘：负质量法求重心</h3>
+
+<p><strong>题目</strong>：均匀薄圆盘半径 $R = 20\ \mathrm{cm}$，在盘上挖去一个半径 $r = 10\ \mathrm{cm}$ 的圆孔，孔心距盘心 $d = 10\ \mathrm{cm}$。求剩余部分的重心位置。</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：不规则图形拆成"完整大圆盘 + 负质量的小圆盘"。对称轴（两心连线）上设坐标，用重心公式加权平均——挖掉的部分质量取负。
+</div>
+
+<p><strong>解析</strong>：设面密度为 $\sigma$，取盘心为原点、指向孔心为 $x$ 正方向。质量与面积成正比：</p>
+
+$$M_{\text{大}} = \sigma\pi R^2 = 400\pi\sigma,\qquad m_{\text{孔}} = \sigma\pi r^2 = 100\pi\sigma = \tfrac14 M_{\text{大}}$$
+
+<p>剩余部分质量 $M = M_{\text{大}} - m_{\text{孔}} = 300\pi\sigma$。重心公式（孔取负质量）：</p>
+
+$$x_C = \frac{M_{\text{大}}\cdot 0 - m_{\text{孔}}\cdot d}{M_{\text{大}} - m_{\text{孔}}} = \frac{-100\pi\sigma \times 10}{300\pi\sigma} = -\frac{1000}{300} = -\frac{10}{3} \approx -3.3\ \mathrm{cm}$$
+
+<p>重心在两心连线上、盘心<strong>另一侧</strong> $\dfrac{10}{3}\ \mathrm{cm} \approx 3.3\ \mathrm{cm}$ 处。<strong>点评</strong>：重心偏移方向与直觉一致（孔在哪边，重心就远离哪边）。此盘若用悬挂法找重心：从边缘任一点挂起，铅垂线必过新重心——两法互相印证。负质量法在复赛里还会用于求挖孔球体的引力场、带电球壳的电场，思想完全一样。</p>
+
+<hr>
+
+<!-- 五、易错点 -->
+<h2 id="s5">五、易错点</h2>
+
+<div class="warn">
+  <strong>易错点 1：力臂找错——对着"点"量距离。</strong>力臂是转轴到<strong>力的作用线</strong>的垂直距离，不是到作用点的距离。例 3 梯子里重力的力臂是 $\frac{L}{2}\cos\theta$ 而不是 $\frac{L}{2}$；凡是力与"轴到作用点连线"不垂直的情形，直接拿 $r$ 当力臂必错。养成"延线、作垂、量距"三步的肌肉记忆。
+</div>
+
+<div class="warn">
+  <strong>易错点 2：以为转轴必须取在真实支点上。</strong>转轴任取是定理，取在"未知力交点"才是灵魂。很多人对着铰链老老实实列矩，却不敢对梯脚、对截面交点取矩——方程立刻多两个未知量。记住：转轴是<strong>工具</strong>，不是实体，爱放哪放哪。
+</div>
+
+<div class="warn">
+  <strong>易错点 3：力矩正负号一题两制。</strong>同一道题里一会儿"逆时针为正"一会儿又反过来，最后正负抵消出荒谬结果。开卷第一行就写"取逆时针为正"，画图时对每个力先判断它让物体绕轴<strong>怎么转</strong>，再写符号，别让公式替你做判断。
+</div>
+
+<div class="warn">
+  <strong>易错点 4：静摩擦随手写 $f = \mu N$。</strong>只有<strong>临界（即将滑动）</strong>时才有 $f = \mu N$；一般情况静摩擦是"被动"力，大小由平衡方程解出来，$f \le \mu N$ 只是约束。梯子问题里不问"是否临界"就直接代入 $f=\mu N$，等于偷偷假设了临界——求出来的就是临界角，而不是一般情形的摩擦力。
+</div>
+
+<div class="warn">
+  <strong>易错点 5：摩擦方向画反。</strong>梯子顶端若墙光滑，梯脚摩擦力指向墙（顶住外滑趋势）；但传送带、人走路时摩擦是动力。判断依据永远是"<strong>相对运动趋势</strong>的方向"，不是运动方向，更不是"阻力所以向后"。临界问题里方向假设错了，临界条件整个反号，所得 $\mu$ 会变成负数——看到负 $\mu$ 要立刻回头查方向。
+</div>
+
+<div class="warn">
+  <strong>易错点 6：倾倒与滑动只检验一个。</strong>"推柜子"类问题有两条失守路径：滑动临界 $\mu mg$ 与倾倒临界 $\dfrac{mga}{2h}$，<strong>小的那个先发生</strong>。只算倾倒忘了滑动（或反之），在 $\mu$ 接近 $\dfrac{a}{2h}$ 的题里必翻车。另外倾倒临界时支持力合力已移到边缘支点，对"几何中心正下方"取矩是错的。
+</div>
+
+<div class="warn">
+  <strong>易错点 7：重心三大误解。</strong>① 以为重心必在物体上（圆环、挖孔盘就是反例）；② 以为重心=几何中心（只对<strong>均匀</strong>规则物体成立）；③ 以为"支持力不过重心就一定倒"——真正的判据是<strong>重力作用线是否落在支持面内</strong>。斜面上的车静止时重力作用线也在支持面内，照样稳。
+</div>
+
+<div class="warn">
+  <strong>易错点 8：桁架杆的拉压方向想当然。</strong>二力杆对节点的作用力方向取决于杆受拉还是受压；正确做法是<strong>一律先假设受拉</strong>（力沿杆指向外），让方程的正负号告诉你真相。凭肉眼"看着像压"直接画压力，一旦假设与所求量耦合，符号全乱。截面法里被截断的杆同理：截口处先画拉力。
+</div>
+
+<hr>
+
+<!-- 六、自检清单 -->
+<h2 id="s6">六、自检清单</h2>
+
+<p>合上讲义，逐条自查。能做到就打勾，做不到回到对应小节再过一遍。</p>
+
+<ul class="checklist">
+  <li>我能默写平面刚体平衡的三个独立方程，并说明为什么"最多解三个未知量"。</li>
+  <li>给我任意一个力和一个转轴，我能用"延线、作垂、量距"三步找出力臂，并判断力矩的正负。</li>
+  <li>我理解"转轴任取"的原理（会用 $\sum M_{O'} = \sum M_O - \vec R\times\sum\vec F$ 解释），并能有意识地把转轴选在未知力的交点上。</li>
+  <li>我能独立重做例 3（梯子）：列两个力平衡方程 + 一个力矩方程，推出 $\tan\theta_{\min} = \dfrac{1}{2\mu}$，并说出每个力的力臂是怎么来的。</li>
+  <li>我知道静摩擦力是"被动求解"的，能判断什么时候才允许写 $f = \mu N$。</li>
+  <li>我会画摩擦角（$\tan\varphi = \mu$），能用"全反力 + 三力汇交"的几何方法重做例 5，并与解析法结果对照。</li>
+  <li>我能解释自锁现象，并推出斜面自锁条件 $\mu \ge \tan\theta$。</li>
+  <li>给我"推柜子"类问题，我会同时算滑动临界与倾倒临界，比较大小判断谁先发生。</li>
+  <li>我能用节点法求出例 4 三角桁架全部三根杆的内力，并正确标注拉/压。</li>
+  <li>我理解截面法"一刀最多截三根未知杆、转轴取两杆交点"的原因。</li>
+  <li>我会用负质量法求挖孔圆盘（或类似组合体）的重心，并能用悬挂法的语言描述实验上怎么验证。</li>
+  <li>我能用"重力作用线是否落在支持面内"判断物体稳不稳，并说出至少两种提高稳度的办法（降低重心、加大支持面）。</li>
+  <li>做完一道平衡题，我会换一个转轴再列一次力矩方程做回代检验。</li>
+</ul>
+
+<div class="chap-intro" style="margin-top:24px">
+  全部打勾？恭喜，静力学这一关你已经有了预赛底气。下一章《振动与波》里，我们会看到"平衡位置"这个概念再次登场——原来这一章学的"稳定平衡"，就是简谐振动的起点。物理的知识网就是这样一环扣一环，继续往前走！
+</div>
+
+</body>
+</html>

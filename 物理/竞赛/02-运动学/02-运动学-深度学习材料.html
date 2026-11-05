@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02 运动学 · 物理竞赛入门</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+/* 例题卡片（竞赛系列专用） */
+.ex { border: 1px solid var(--line); border-left: 5px solid var(--c-example); border-radius: 0 10px 10px 0; background: var(--c-example-bg); padding: 4px 20px 12px; margin: 18px 0; page-break-inside: avoid; }
+.ex .ex-tag { display: inline-block; font-size: 12.5px; font-weight: 700; color: #fff; background: var(--c-example); border-radius: var(--r-pill); padding: 2px 12px; margin: 12px 0 4px; letter-spacing: .05em; }
+.ex .ex-tag.hard { background: var(--c-key); }
+.ex h4 { margin-top: 8px; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point, .ex { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<nav class="chap-nav">高考备考 · 物理 · 竞赛专题 ｜ 02-运动学-深度学习材料.html</nav>
+<header class="chap-head">
+  <h1>02 运动学 · 物理竞赛入门</h1>
+  <p class="chap-meta">物理竞赛专题 · 第 02 章（共 12 章）｜ 目标：预赛 → 复赛入门 ｜ 适用：高一竞赛入门（零基础起步）｜ 学生：小兵</p>
+</header>
+
+<div class="chap-intro">
+  小兵，欢迎来到竞赛第 02 章！运动学是竞赛的「第一语言」——后面的力学、电磁学全都要用它来描述。这一章我们只干三件事：<strong>用微积分精确描述运动、换一个参考系看问题、把抛体和圆周运动写到参数化的深度</strong>。你会第一次感到：原来高中课本里那些"背下来的公式"，全都可以自己算出来。这种"我能推"的感觉，就是竞赛的入门门票。
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-label">本章导览</div>
+  <div class="toc-links">
+    <a href="#s1">一、知识全景</a>
+    <a href="#s2">二、核心概念</a>
+    <a href="#s3">三、竞赛专属·高考不考</a>
+    <a href="#s4">四、例题精讲</a>
+    <a href="#s5">五、易错点</a>
+    <a href="#s6">六、自检清单</a>
+  </div>
+</div>
+
+<h2 id="s1">一、知识全景</h2>
+
+<p>高中课内的运动学是「公式驱动」：背下匀变速三公式去套题。竞赛的运动学是「定义驱动」：从 $v = \dfrac{dx}{dt}$、$a = \dfrac{dv}{dt}$ 两个定义出发，<strong>一切结论自己推</strong>。整张地图如下：</p>
+
+<div class="map">
+  <div class="row"><div class="node root">运动学（竞赛版）</div></div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node">微积分描述运动</div>
+    <div class="node">相对运动</div>
+    <div class="node">典型运动参数化</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">导数：$v=\frac{dx}{dt}$，$a=\frac{dv}{dt}$</div>
+    <div class="node leaf">速度合成 $\vec v_{AC}=\vec v_{AB}+\vec v_{BC}$</div>
+    <div class="node leaf">抛体：轨迹·射程·极值</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">反问题：积分 + 初条件</div>
+    <div class="node leaf">变换参考系简化问题</div>
+    <div class="node leaf">圆周：角量·向心加速度推导</div>
+  </div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node view">竞赛专属武器<br><small>微积分反问题 · 包络线 · 非直角坐标描述</small></div>
+  </div>
+</div>
+
+<blockquote>
+  <p><strong>学习节奏建议</strong>：本章配高中数学「导数」同步食用最佳。如果导数还没学，先记住两条规则就够本章用：$(t^n)' = nt^{n-1}$，以及 $(\sin\omega t)' = \omega\cos\omega t$、$(\cos\omega t)' = -\omega\sin\omega t$。用到即学，效果最好。</p>
+</blockquote>
+
+<hr>
+
+<h2 id="s2">二、核心概念</h2>
+
+<h3>2.1 用导数描述运动：从「平均」到「瞬时」</h3>
+
+<p>课内你学过平均速度 $\bar v = \dfrac{\Delta x}{\Delta t}$。竞赛里我们把时间间隔无限缩小，得到<strong>瞬时速度</strong>——这就是导数：</p>
+
+$$v = \lim_{\Delta t \to 0} \frac{\Delta x}{\Delta t} = \frac{dx}{dt}, \qquad a = \lim_{\Delta t \to 0} \frac{\Delta v}{\Delta t} = \frac{dv}{dt} = \frac{d^2x}{dt^2}$$
+
+<p>几何意义：<strong>$x\text{-}t$ 图上某点切线的斜率 = 该时刻速度；$v\text{-}t$ 图上切线斜率 = 加速度</strong>。图象的「斜率、面积」两板斧，到了竞赛依然是主力。</p>
+
+<ul>
+  <li><strong>速度是矢量</strong>：一维情形用正负号表示方向；二维情形 $\vec v = \left(\dfrac{dx}{dt}, \dfrac{dy}{dt}\right)$，各分量各自求导。</li>
+  <li><strong>速率 ≠ 速度的大小之外没有别的</strong>：$|\vec v| = \sqrt{v_x^2 + v_y^2}$，而「速率的变化率」$\dfrac{d|\vec v|}{dt}$ 一般<strong>不等于</strong>加速度的大小 $|\vec a|$（详见易错点 1）。</li>
+</ul>
+
+<div class="key-point">
+  <strong>一句话总结</strong>：知道了 $x(t)$，求导两次就能得到一切运动信息；反过来，知道了 $a(t)$ 配上初条件，积分两次也能还原一切。<strong>求导与积分是运动学的两条腿</strong>，课内只练了第一条，竞赛要两条都会走。
+</div>
+
+<h3>2.2 反问题：积分与初条件</h3>
+
+<p>如果 $a = \dfrac{dv}{dt}$，那么反过来：</p>
+
+$$v(t) = v_0 + \int_0^t a(t')\, dt', \qquad x(t) = x_0 + \int_0^t v(t')\, dt'$$
+
+<p>其中 $v_0 = v(0)$、$x_0 = x(0)$ 是<strong>初始条件</strong>。几何意义：$v\text{-}t$ 图线下面积 = 位移；$a\text{-}t$ 图线下面积 = 速度变化量。</p>
+
+<p><strong>检验</strong>：匀加速情形 $a = \text{常量}$，$v(t) = v_0 + at$，$x(t) = x_0 + v_0 t + \dfrac{1}{2}at^2$——课内公式自动蹦出来！这说明课内三公式只是积分的一个特例，你以后再也不怕忘公式了。</p>
+
+<div class="deep">
+  <strong>方法卡：反问题三步</strong>① 写出 $a(t)$（或 $v(t)$）；② 积分，<strong>立刻带上初条件</strong>（积分常数 $C$ 由 $t=0$ 的值定）；③ 检查量纲与 $t=0$ 时刻是否自洽。漏初条件是新手第一杀手，见易错点 2。
+</div>
+
+<h3>2.3 相对运动：换一个参考系看世界</h3>
+
+<p>设 A、B、C 三个对象（比如船、水、岸），速度满足<strong>合成法则</strong>：</p>
+
+$$\vec v_{A\text{对}C} = \vec v_{A\text{对}B} + \vec v_{B\text{对}C}$$
+
+<p>记忆口诀「<strong>下标接力</strong>」：左边是「A 对 C」，右边前一个矢量「从 A 出发」，后一个「到 C 结束」，中间的 B 像接力棒一样被消去。</p>
+
+<ul>
+  <li>参考系变换只改变速度，<strong>不改变加速度</strong>（各参考系相对匀速时）——所以牛顿定律的形式不变。</li>
+  <li><strong>选参考系的艺术</strong>：把「追、躲、相遇」问题换到「其中一个物体静止」的参考系里，常常一步出答案（例 4 体会）。</li>
+  <li>相对速度：$\vec v_{A\text{对}B} = \vec v_A - \vec v_B$（都是对同一地面系）。</li>
+</ul>
+
+<h3>2.4 抛体运动的参数化分析</h3>
+
+<p>以抛出点为原点，初速度 $v_0$、抛射角 $\theta$（与水平面夹角），只受重力。参数方程：</p>
+
+$$x = v_0\cos\theta \cdot t, \qquad y = v_0\sin\theta \cdot t - \frac{1}{2}gt^2$$
+
+<p>消去 $t$（用 $t = \dfrac{x}{v_0\cos\theta}$ 代入 $y$）得<strong>轨迹方程</strong>：</p>
+
+$$y = x\tan\theta - \frac{gx^2}{2v_0^2\cos^2\theta} = x\tan\theta - \frac{gx^2}{2v_0^2}\left(1 + \tan^2\theta\right)$$
+
+<p>（用到恒等式 $\dfrac{1}{\cos^2\theta} = 1 + \tan^2\theta$。）这是一条开口向下的抛物线。</p>
+
+<p><strong>同高度射程</strong>：落回 $y = 0$ 时，解 $x\tan\theta = \dfrac{gx^2}{2v_0^2\cos^2\theta}$，除去 $x=0$ 的根得</p>
+
+$$R = \frac{2v_0^2\sin\theta\cos\theta}{g} = \frac{v_0^2\sin 2\theta}{g}$$
+
+<p>当 $\sin 2\theta = 1$ 即 $\theta = 45°$ 时射程最大，$R_{\max} = \dfrac{v_0^2}{g}$。<strong>注意前提：落点与抛出点同高</strong>（易错点 4）。</p>
+
+<h3>2.5 圆周运动的参数化与向心加速度推导</h3>
+
+<p>半径 $R$、角速度 $\omega$（单位 rad/s，<strong>必须用弧度制</strong>）的匀速圆周运动，参数方程：</p>
+
+$$x = R\cos\omega t, \qquad y = R\sin\omega t$$
+
+<p>对时间求两次导数（用 $(\cos\omega t)' = -\omega\sin\omega t$，$(\sin\omega t)' = \omega\cos\omega t$）：</p>
+
+$$v_x = -\omega R\sin\omega t, \quad v_y = \omega R\cos\omega t \;\Rightarrow\; |\vec v| = \omega R$$
+
+$$a_x = -\omega^2 R\cos\omega t, \quad a_y = -\omega^2 R\sin\omega t \;\Rightarrow\; \vec a = -\omega^2 \vec r$$
+
+<p>三个结论一目了然：</p>
+
+<ol>
+  <li><strong>速率</strong> $v = \omega R$（角量与线量的桥梁）；</li>
+  <li><strong>速度方向</strong>：$\vec v \cdot \vec r = v_x x + v_y y = 0$，即速度时刻与半径垂直（沿切线）；</li>
+  <li><strong>向心加速度</strong>：$\vec a = -\omega^2\vec r$，大小 $a_n = \omega^2 R = \dfrac{v^2}{R}$，方向时刻<strong>指向圆心</strong>（负号的意义）。</li>
+</ol>
+
+<div class="key-point">
+  <strong>这套推导是竞赛的"见面礼"</strong>：课本告诉你 $a_n = \dfrac{v^2}{R}$，竞赛要求你<strong>自己推出来</strong>。例 7 带你完整走一遍，推过一遍终身不忘。
+</div>
+
+<p>角量的关系与线量完全平行：</p>
+
+<table>
+  <thead>
+    <tr><th>线量（直线运动）</th><th>角量（圆周运动）</th><th>桥梁</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>位移 $x$</td><td>角位移 $\theta$（rad）</td><td>$s = R\theta$（弧长）</td></tr>
+    <tr><td>速度 $v = \frac{dx}{dt}$</td><td>角速度 $\omega = \frac{d\theta}{dt}$</td><td>$v = \omega R$</td></tr>
+    <tr><td>加速度 $a = \frac{dv}{dt}$</td><td>角加速度 $\beta = \frac{d\omega}{dt}$</td><td>切向加速度 $a_\tau = \beta R$</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2 id="s3">三、竞赛专属·高考不考：三件新武器</h2>
+
+<p>下面三件事高考不考，但竞赛预赛起步就要用。它们都不难，只是「没见过」——见过一次就是你的了。</p>
+
+<h3>3.1 微积分反问题进阶：$a$ 不只依赖时间</h3>
+
+<p>课内 $a$ 是常量，竞赛里 $a$ 可以是 $t$、$v$ 甚至 $x$ 的函数。处理口诀：<strong>看 $a$ 是谁的函数，就配谁的形式</strong>。</p>
+
+<table>
+  <thead>
+    <tr><th>给定形式</th><th>选用变形</th><th>积分得到</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="l">$a = a(t)$</td><td class="l">$dv = a(t)\,dt$</td><td class="l">$v(t)$，再积一次得 $x(t)$</td></tr>
+    <tr><td class="l">$a = a(v)$</td><td class="l">$\dfrac{dv}{a(v)} = dt$</td><td class="l">$v$ 与 $t$ 的关系（分离变量）</td></tr>
+    <tr><td class="l">$a = a(x)$</td><td class="l">链式：$a = \dfrac{dv}{dt} = \dfrac{dv}{dx}\cdot\dfrac{dx}{dt} = v\dfrac{dv}{dx}$</td><td class="l">$v^2$ 与 $x$ 的关系：$v\,dv = a(x)\,dx$</td></tr>
+  </tbody>
+</table>
+
+<div class="deep">
+  <strong>链式变形 $a = v\dfrac{dv}{dx}$ 是竞赛高频变形</strong>。比如弹簧振子 $a = -\dfrac{k}{m}x$，代入得 $v\,dv = -\dfrac{k}{m}x\,dx$，两边积分：$\dfrac{v^2}{2} = -\dfrac{kx^2}{2m} + C$——这就是能量守恒的雏形！你提前摸到了第 04 章的门。
+</div>
+
+<h3>3.2 抛体包络线：一支抛物线家族的「边界」</h3>
+
+<p>以固定速率 $v_0$ 向<strong>各个方向</strong>抛射（比如喷泉、礼花弹），所有可能的抛物线轨迹挤在一起，外包出一条边界曲线——<strong>包络线</strong>。包络线以内的点都打得到，以外的点怎么抛都打不到。</p>
+
+<p>推导思路（固定 $x$，对 $\theta$ 求 $y$ 的极值）：轨迹方程中含 $\tan\theta$，记 $m = \tan\theta$，则</p>
+
+$$y = mx - \frac{gx^2}{2v_0^2}(1 + m^2)$$
+
+<p>这是关于 $m$ 的二次函数，当 $m = \dfrac{v_0^2}{gx}$ 时 $y$ 取最大值（开口向下，顶点处），代回整理得<strong>包络线方程</strong>：</p>
+
+$$\boldsymbol{y = \frac{v_0^2}{2g} - \frac{gx^2}{2v_0^2}}$$
+
+<p>三个漂亮的性质（请对照数字验证，例 6）：最高点 $\left(0, \dfrac{v_0^2}{2g}\right)$ 正好是竖直上抛的最大高度；与 $x$ 轴交点 $x = \pm\dfrac{v_0^2}{g}$ 正好是最大射程；它自己也是一条抛物线。</p>
+
+<h3>3.3 非直角坐标描述：自然坐标下的切向与法向</h3>
+
+<p>圆周运动里我们其实偷偷用了「自然坐标」：不分解到固定的 $x,y$ 轴，而是分解到<strong>运动自己的切线方向（$\tau$）和法线方向（$n$，指向凹侧）</strong>：</p>
+
+$$\vec a = a_\tau\,\hat\tau + a_n\,\hat n, \qquad a_\tau = \frac{dv}{dt}\ \text{（速率的变化率）}, \qquad a_n = \frac{v^2}{\rho}\ \text{（方向变化的快慢）}$$
+
+<p>其中 $\rho$ 是轨迹在该点的曲率半径（圆周运动 $\rho = R$）。这套分解的好处：<strong>变速圆周运动</strong>也能处理——加速圆周有 $a_\tau \ne 0$，合加速度不再指向圆心，大小 $|\vec a| = \sqrt{a_\tau^2 + a_n^2}$。这也是 3.1 节「速率变化率 ≠ 加速度大小」的精确解释：前者只是 $a_\tau$。</p>
+
+<blockquote>
+  <p><strong>小兵的望远镜</strong>：极坐标（径向 + 横向）在竞赛复赛里描述天体运动才真正登场，本章只需知道「坐标系可以跟着运动走」这个思想。不用急着掌握，留个印象即可。</p>
+</blockquote>
+
+<hr>
+
+<h2 id="s4">四、例题精讲</h2>
+
+<p>本章 7 道例题，全部做到「思路起点 + 不跳步解析」。建议先遮住解析自己试 5 分钟，再对照。</p>
+
+<!-- 例1 -->
+<div class="ex">
+  <span class="ex-tag">例 1 · 课内基础</span>
+  <h4>由位置函数求速度与加速度</h4>
+  <p>质点沿 $x$ 轴运动，位置 $x = 2t^3 - 5t^2 + 3$（SI 制，即 $x$ 单位 m、$t$ 单位 s）。求：(1) $v(t)$ 与 $a(t)$；(2) $t = 2\ \mathrm{s}$ 时的速度与加速度；(3) 何时速度为零？</p>
+  <p><strong>思路起点</strong>：位置函数在手，求导两次就全有了——这是 2.1 节的直接应用。幂函数求导：$(t^n)' = nt^{n-1}$。</p>
+  <p><strong>解析</strong>：</p>
+  <p>(1) 对 $x$ 求一阶导数：$v = \dfrac{dx}{dt} = 6t^2 - 10t$（m/s）；再求一阶：$a = \dfrac{dv}{dt} = 12t - 10$（m/s²）。</p>
+  <p>(2) 代入 $t = 2$：$v(2) = 6\times 4 - 10\times 2 = 4\ \mathrm{m/s}$；$a(2) = 24 - 10 = 14\ \mathrm{m/s^2}$。</p>
+  <p>(3) 令 $v = 0$：$6t^2 - 10t = 2t(3t - 5) = 0$，得 $t = 0$ 或 $t = \dfrac{5}{3}\ \mathrm{s} \approx 1.67\ \mathrm{s}$。$t = \frac{5}{3}\ \mathrm{s}$ 处是运动的「折返点」——质点先向 $-x$ 方向走，再掉头向 $+x$ 方向。</p>
+  <p><strong>点评</strong>：注意 $a(0) = -10\ \mathrm{m/s^2} \ne 0$，说明 $t=0$ 时虽速度为零但加速度不为零——「速度为零」和「加速度为零」完全是两回事。</p>
+</div>
+
+<!-- 例2 -->
+<div class="ex">
+  <span class="ex-tag hard">例 2 · 【预赛难度】</span>
+  <h4>积分反问题：由加速度还原运动</h4>
+  <p>质点沿 $x$ 轴运动，加速度 $a = 6t$（SI 制，系数 $6$ 的单位是 $\mathrm{m/s^3}$）。$t = 0$ 时 $v_0 = 2\ \mathrm{m/s}$，$x_0 = 0$。求 $v(t)$、$x(t)$，并算 $t = 2\ \mathrm{s}$ 时的速度与位置。</p>
+  <p><strong>思路起点</strong>：$a(t)$ 已知 → 积分一次得 $v$，再积一次得 $x$。<strong>每次积分立刻用初条件定常数</strong>。</p>
+  <p><strong>解析</strong>：</p>
+  <p>第一步，$v = \int a\,dt + C_1 = 3t^2 + C_1$。代入 $t=0$：$v(0) = C_1 = 2$，所以</p>
+  $$v(t) = 3t^2 + 2\ \mathrm{(m/s)}$$
+  <p>第二步，$x = \int v\,dt + C_2 = t^3 + 2t + C_2$。代入 $t=0$：$x(0) = C_2 = 0$，所以</p>
+  $$x(t) = t^3 + 2t\ \mathrm{(m)}$$
+  <p>第三步，$t = 2\ \mathrm{s}$：$v = 3\times 4 + 2 = 14\ \mathrm{m/s}$；$x = 8 + 4 = 12\ \mathrm{m}$。</p>
+  <p><strong>点评</strong>：用 $a\text{-}t$ 图象检验——$a=6t$ 是过原点的直线，$0$ 到 $2\ \mathrm{s}$ 面积 $= \frac{1}{2}\times 2\times 12 = 12\ \mathrm{m/s}$，恰是速度增量 $14 - 2 = 12\ \mathrm{m/s}$ ✓。几何与代数对上了，说明没算错。</p>
+</div>
+
+<!-- 例3 -->
+<div class="ex">
+  <span class="ex-tag">例 3 · 课内延伸</span>
+  <h4>雨中打伞：相对速度的方向</h4>
+  <p>无风时雨滴以 $v_2 = 4\ \mathrm{m/s}$ 竖直下落，小兵以 $v_1 = 3\ \mathrm{m/s}$ 水平骑车前进。为不让雨淋到，伞柄应与竖直方向成多大角度、向哪边倾？</p>
+  <p><strong>思路起点</strong>：雨「打在身上」的方向 = 雨相对人的速度方向。用合成法则：$\vec v_{\text{雨对人}} = \vec v_{\text{雨对地}} - \vec v_{\text{人对地}}$。</p>
+  <p><strong>解析</strong>：取水平向前为 $x$ 正方向、竖直向下为 $y$ 正方向。</p>
+  <p>$\vec v_{\text{雨对地}} = (0,\ 4)$，$\vec v_{\text{人对地}} = (3,\ 0)$（均为 m/s）。</p>
+  <p>所以 $\vec v_{\text{雨对人}} = (0-3,\ 4-0) = (-3,\ 4)$：水平向后 $3$、竖直向下 $4$。</p>
+  <p>大小：$|\vec v_{\text{雨对人}}| = \sqrt{3^2 + 4^2} = 5\ \mathrm{m/s}$（经典的 3-4-5 三角形）。</p>
+  <p>方向：与竖直方向夹角 $\theta$ 满足 $\tan\theta = \dfrac{3}{4}$，即 $\theta = 37°$。<strong>伞应向前倾，与竖直方向成 37°</strong>——因为雨相对人是「从前上方斜着砸过来」的。</p>
+  <p><strong>点评</strong>：直觉的「雨是竖直的，伞竖直打」是错的——相对运动改变了雨的「来向」。这也是行船中「测风旗」、飞机侧风降落同一原理。</p>
+</div>
+
+<!-- 例4 -->
+<div class="ex">
+  <span class="ex-tag hard">例 4 · 【预赛难度】</span>
+  <h4>救生圈问题：换参考系一步出答案</h4>
+  <p>小船在静水中速度 $u = 4\ \mathrm{m/s}$，河水流速 $w = 0.5\ \mathrm{m/s}$。船逆流而上，经过一座桥时船上掉下一个救生圈（圈随水漂流）。船继续行驶 $t = 10\ \mathrm{min}$ 后才发现，立即掉头顺流追赶。求：(1) 掉头后多久追上救生圈？(2) 从掉圈到追上，救生圈漂了多远？</p>
+  <p><strong>思路起点</strong>：地面参考系里要算「逆流船速、顺流船速、漂移速度」，很烦。换到<strong>水的参考系</strong>：水静止，救生圈静止，船始终以 $u = 4\ \mathrm{m/s}$ 行驶——问题瞬间变成「离开再回来」。</p>
+  <p><strong>解析</strong>：</p>
+  <p>(1) 在水参考系中：船离开静止的救生圈行驶 $10\ \mathrm{min}$，返回时距离不变、速率不变，所以返回时间也是 $10\ \mathrm{min}$。<strong>追上共需 $t' = 10\ \mathrm{min}$</strong>，从掉圈算起总历时 $20\ \mathrm{min} = 1200\ \mathrm{s}$。</p>
+  <p>(2) 回到地面参考系：救生圈以水速漂流，$s = w \times 1200\ \mathrm{s} = 0.5 \times 1200 = 600\ \mathrm{m}$。</p>
+  <p><strong>地面系验证</strong>（建立信心）：船逆流速度 $u - w = 3.5\ \mathrm{m/s}$，$600\ \mathrm{s}$ 内上行 $3.5 \times 600 = 2100\ \mathrm{m}$；此间救生圈漂下 $0.5 \times 600 = 300\ \mathrm{m}$，掉头瞬间相距 $2400\ \mathrm{m}$。船顺流速度 $u + w = 4.5\ \mathrm{m/s}$，相对圈的接近速度 $4.5 - 0.5 = 4\ \mathrm{m/s}$，追上需 $2400 / 4 = 600\ \mathrm{s} = 10\ \mathrm{min}$ ✓ 与水系答案完全一致。</p>
+  <p><strong>点评</strong>：注意结论「追回时间 = 离开时间」与水流速度 $w$ 无关——$w$ 只影响圈漂了多远。竞赛里「选哪个参考系」常常是整题的第一突破口。</p>
+</div>
+
+<!-- 例5 -->
+<div class="ex">
+  <span class="ex-tag hard">例 5 · 【复赛难度】</span>
+  <h4>斜面上的抛体：射程何时最大</h4>
+  <p>在倾角 $\alpha = 30°$ 的斜面底端，以固定速率 $v_0 = 10\ \mathrm{m/s}$ 向斜面上方抛射小球（$g$ 取 $10\ \mathrm{m/s^2}$），抛射方向与水平面夹角 $\theta$ 可调。求：沿斜面射程 $R$ 的表达式、最大值及对应的 $\theta$。</p>
+  <p><strong>思路起点</strong>：沿斜面建坐标（$x$ 沿斜面向上，$y$ 垂直斜面），重力分解为 $-g\sin\alpha$ 和 $-g\cos\alpha$ 两个分量——斜面上也是「类抛体」，只是 $g$ 拆成了两份。</p>
+  <p><strong>解析</strong>：初速度沿斜面分量 $v_0\cos(\theta - \alpha)$，垂直斜面分量 $v_0\sin(\theta-\alpha)$。垂直方向是匀变速，落回斜面（$y=0$）时：</p>
+  $$T = \frac{2v_0\sin(\theta-\alpha)}{g\cos\alpha}$$
+  <p>沿斜面方向以 $-g\sin\alpha$ 减速，位移：</p>
+  $$R = v_0\cos(\theta-\alpha)\,T - \frac{1}{2}g\sin\alpha\,T^2$$
+  <p>代入 $T$ 化简（用 $2\sin A\cos A = \sin 2A$ 与 $\sin A\cos B$ 的积化和差），得标准结果：</p>
+  $$R = \frac{2v_0^2\cos\theta\,\sin(\theta-\alpha)}{g\cos^2\alpha}$$
+  <p>求极值：记 $f(\theta) = \cos\theta\sin(\theta-\alpha)$，$f'(\theta) = -\sin\theta\sin(\theta-\alpha) + \cos\theta\cos(\theta-\alpha) = \cos(2\theta - \alpha)$。令 $f' = 0$：$2\theta - \alpha = 90°$，即</p>
+  $$\boldsymbol{\theta = 45° + \frac{\alpha}{2}} = 45° + 15° = 60°$$
+  <p>代回（利用 $\cos(45°+\frac{\alpha}{2})\sin(45°-\frac{\alpha}{2}) = \frac{1-\sin\alpha}{2}$，因为 $\cos(45°+\frac{\alpha}{2}) = \sin(45°-\frac{\alpha}{2})$，平方后用 $\sin^2 x = \frac{1-\cos 2x}{2}$）：</p>
+  $$\boldsymbol{R_{\max} = \frac{v_0^2}{g(1+\sin\alpha)}} = \frac{100}{10\times 1.5} = \frac{20}{3} \approx 6.67\ \mathrm{m}$$
+  <p><strong>点评</strong>：两个检验——$\alpha = 0$ 时退化为平地结果 $\theta = 45°$、$R_{\max} = v_0^2/g = 10\ \mathrm{m}$ ✓；直觉上「斜面越陡越抛不远」也与 $1+\sin\alpha$ 在分母上一致 ✓。<strong>最佳角 $45° + \alpha/2$ 恰是斜面方向与竖直方向夹角的角平分线方向</strong>，这个几何结论值得记住。</p>
+</div>
+
+<!-- 例6 -->
+<div class="ex">
+  <span class="ex-tag hard">例 6 · 【复赛难度】</span>
+  <h4>喷泉的包络线：哪里淋得到</h4>
+  <p>喷泉口以速率 $v_0 = 10\ \mathrm{m/s}$ 向各方向喷水（$g = 10\ \mathrm{m/s^2}$）。(1) 写出包络线方程；(2) 花坛边缘点 $(6\ \mathrm{m},\ 3\ \mathrm{m})$ 能否被淋到？(3) 若要淋到点 $(8\ \mathrm{m},\ 2.5\ \mathrm{m})$ 呢？</p>
+  <p><strong>思路起点</strong>：包络线内的点都能到、上的点恰好能到、外的点怎么都到不了。把点的纵坐标与包络线在同一 $x$ 处的高度比较即可。</p>
+  <p><strong>解析</strong>：</p>
+  <p>(1) 由 3.2 节结论：</p>
+  $$y = \frac{v_0^2}{2g} - \frac{gx^2}{2v_0^2} = \frac{100}{20} - \frac{10x^2}{200} = 5 - \frac{x^2}{20}\ \mathrm{(m)}$$
+  <p>边界：最高点 $(0, 5\ \mathrm{m})$（竖直上抛高度 ✓），落点 $x = \pm 10\ \mathrm{m}$（最大射程 ✓）。</p>
+  <p>(2) $x = 6$ 时包络线高 $y = 5 - \dfrac{36}{20} = 3.2\ \mathrm{m}$。花坛点高 $3 < 3.2$，在包络线<strong>以内</strong>——<strong>能淋到</strong>。</p>
+  <p>(3) $x = 8$ 时包络线高 $y = 5 - \dfrac{64}{20} = 1.8\ \mathrm{m}$。目标点高 $2.5 > 1.8$，在包络线<strong>以外</strong>——<strong>淋不到</strong>，除非提高 $v_0$。</p>
+  <p><strong>点评</strong>：「包络线」思想不只用于喷泉——雷达覆盖、炮火覆盖、安全区设计都是它。竞赛里它常与「存在性判断」（能不能打到）绑定出现。</p>
+</div>
+
+<!-- 例7 -->
+<div class="ex">
+  <span class="ex-tag">例 7 · 课内基础（推导）</span>
+  <h4>向心加速度的完整推导</h4>
+  <p>质点做半径 $R = 2\ \mathrm{m}$、角速度 $\omega = 3\ \mathrm{rad/s}$ 的匀速圆周运动。(1) 写出参数方程并推导 $\vec v$、$\vec a$；(2) 求 $v$、$a_n$ 的数值；(3) 验证 $a_n = \dfrac{v^2}{R}$。</p>
+  <p><strong>思路起点</strong>：把 2.5 节的流程完整走一遍，每一步都落笔，不许心算跳步。</p>
+  <p><strong>解析</strong>：</p>
+  <p>(1) 参数方程：$x = 2\cos 3t$，$y = 2\sin 3t$（m）。</p>
+  <p>一阶导数：$v_x = -6\sin 3t$，$v_y = 6\cos 3t$（m/s）。</p>
+  <p>二阶导数：$a_x = -18\cos 3t$，$a_y = -18\sin 3t$（m/s²）。</p>
+  <p>(2) 速率：$v = \sqrt{36\sin^2 3t + 36\cos^2 3t} = 6\ \mathrm{m/s}$（$= \omega R = 3\times 2$ ✓）。</p>
+  <p>加速度大小：$a_n = \sqrt{18^2\cos^2 3t + 18^2\sin^2 3t} = 18\ \mathrm{m/s^2}$（$= \omega^2 R = 9\times 2$ ✓）。</p>
+  <p>方向：$\vec a = (-18\cos 3t,\ -18\sin 3t) = -9\,(2\cos 3t,\ 2\sin 3t) = -9\vec r$——与位矢反向，即<strong>指向圆心</strong> ✓。</p>
+  <p>(3) $\dfrac{v^2}{R} = \dfrac{36}{2} = 18\ \mathrm{m/s^2} = a_n$ ✓ 三种算法完全一致。</p>
+  <p><strong>点评</strong>：推过这一遍，$a_n = \omega^2 R = \dfrac{v^2}{R} = \dfrac{4\pi^2}{T^2}R$ 这一串等价形式你都能互相推出，不用再背。这就是竞赛要求的「公式内力」。</p>
+</div>
+
+<hr>
+
+<h2 id="s5">五、易错点</h2>
+
+<div class="warn">
+  <strong>易错 1：把「速率的变化率」当成「加速度的大小」</strong>。$\left|\vec a\right| = \left|\dfrac{d\vec v}{dt}\right|$，而 $\dfrac{d|\vec v|}{dt}$ 只是切向分量 $a_\tau$。匀速圆周运动速率不变（$\frac{d|\vec v|}{dt} = 0$）但 $|\vec a| = \frac{v^2}{R} \ne 0$。<strong>速度是矢量，方向变也是变</strong>。
+</div>
+
+<div class="warn">
+  <strong>易错 2：积分后漏掉初条件</strong>。写 $v = \int a\,dt$ 必须紧跟一句「$t=0$ 时 $v = v_0$」定常数 $C$。漏掉的直接后果：例 2 的 $v(t)$ 你会写成 $3t^2$，比正确答案 $3t^2+2$ 整整少了初速度——后面全错。<strong>积分与初条件永远成对出现</strong>。
+</div>
+
+<div class="warn">
+  <strong>易错 3：相对运动下标顺序写反</strong>。$\vec v_{A对C} = \vec v_{A对B} + \vec v_{B对C}$，口诀「下标接力，中间相消」。写成 $\vec v_{B对A} + \vec v_{B对C}$ 之类就全乱了。每写一步检查：前一个下标的「对字后面」是否等于后一个下标的「对字前面」。
+</div>
+
+<div class="warn">
+  <strong>易错 4：死记「45° 射程最大」</strong>。该结论的前提是<strong>落点与抛出点同高</strong>。斜面上抛是 $45° + \frac{\alpha}{2}$（例 5）；从高处往低处抛，最佳角小于 45°。条件变了结论就变，先问前提再用结论。
+</div>
+
+<div class="warn">
+  <strong>易错 5：圆周运动公式里用角度制</strong>。$\omega$ 的单位是 rad/s，$\theta = \omega t$、$s = R\theta$、$v = \omega R$ 全部只在<strong>弧度制</strong>下成立。若题目给「每分钟 30 转」，先换算：$\omega = \frac{30 \times 2\pi}{60} = \pi\ \mathrm{rad/s}$，再代入。计算器也要确认在 RAD 档。
+</div>
+
+<div class="warn">
+  <strong>易错 6：认为圆周运动合加速度一定指向圆心</strong>。只有<strong>匀速</strong>圆周才纯向心。变速圆周有切向分量 $a_\tau = \beta R$，合加速度指向前内侧，大小 $\sqrt{a_\tau^2 + a_n^2}$。受力分析时同理：向心力只是合力的<strong>径向分量</strong>，不是凭空多出的力。
+</div>
+
+<div class="warn">
+  <strong>易错 7：混淆 $\dfrac{\Delta v}{\Delta t}$ 与 $\dfrac{dv}{dt}$ 的适用面</strong>。前者是平均加速度，只在匀变速时等于瞬时加速度；后者才是定义。反过来，由 $a(t)$ 求位移时两次积分、两个初条件一个都不能少，且 $a$ 随时间变化时课内三公式<strong>全部失效</strong>——必须先判断是不是匀变速。
+</div>
+
+<hr>
+
+<h2 id="s6">六、自检清单</h2>
+
+<p>合上材料，逐条自查。做不到的项目就回到对应小节再过一遍——能自查出来的缺口，都是赚到的。</p>
+
+<ul class="checklist">
+  <li>给我一个 $x(t)$（幂函数、三角函数），我能求导写出 $v(t)$、$a(t)$，不查公式</li>
+  <li>给我一个 $a(t)$ 和初条件，我能积分还原 $v(t)$、$x(t)$，并且每一步都带初条件定常数</li>
+  <li>我知道 $a = v\dfrac{dv}{dx}$ 这个链式变形，并说出什么时候用它（$a$ 随 $x$ 变时）</li>
+  <li>我能用「图线下面积」快速检验积分结果（$a\text{-}t$ 面积 = $\Delta v$，$v\text{-}t$ 面积 = $\Delta x$）</li>
+  <li>我会写速度合成式 $\vec v_{A对C} = \vec v_{A对B} + \vec v_{B对C}$，并用「下标接力」自查顺序</li>
+  <li>遇到追及/相遇题，我会先想「换到哪个参考系能让一个物体静止」</li>
+  <li>我能从参数方程消去 $t$ 推出抛体轨迹方程 $y = x\tan\theta - \frac{gx^2}{2v_0^2}(1+\tan^2\theta)$</li>
+  <li>我会推导平地射程 $R = \frac{v_0^2\sin 2\theta}{g}$，并清楚「45° 最大」的前提是落点同高</li>
+  <li>我知道包络线方程 $y = \frac{v_0^2}{2g} - \frac{gx^2}{2v_0^2}$，会用它判断「某点能否被打到」</li>
+  <li>我能从 $x = R\cos\omega t,\ y = R\sin\omega t$ 两次求导推出 $\vec a = -\omega^2\vec r$，并得到 $a_n = \frac{v^2}{R}$</li>
+  <li>我记得圆周运动一切公式用弧度制，会给「转/分」换算成 rad/s</li>
+  <li>我知道变速圆周的加速度分切向 $a_\tau$ 与法向 $a_n$，合加速度不指向圆心</li>
+  <li>每道题算出数后，我会检查量纲（单位）是否正确——比如例 2 中 $6$ 的单位是 $\mathrm{m/s^3}$</li>
+</ul>
+
+<blockquote>
+  <p><strong>小兵小贴士</strong>：这一章你其实干了一件很了不起的事——把高中运动学从「背公式」升级成了「算公式」。微积分两条腿（求导、积分）+ 两个视角（换参考系、参数化），就是你未来三年竞赛路上的随身工具。下一章《受力分析与牛顿定律》，我们要给「运动」配上「原因」，到时候本章的 $a$ 都要由 $\frac{F_合}{m}$ 供出来。慢慢来，比较快。</p>
+</blockquote>
+
+<hr>
+
+<p style="text-align: center; color: var(--ink-soft); font-size: 0.9em;">
+  tags: #物理 #竞赛 #运动学 #微积分 #相对运动 #抛体 #圆周运动 #深度学习
+</p>
+
+</body>
+</html>

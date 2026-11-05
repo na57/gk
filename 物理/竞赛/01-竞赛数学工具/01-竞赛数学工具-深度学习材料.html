@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>01 竞赛数学工具 · 物理竞赛入门</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+/* 例题卡片 */
+.ex { border: 1px solid var(--line); border-left: 5px solid var(--c-example); background: var(--c-example-bg); border-radius: 0 10px 10px 0; padding: 14px 20px; margin: 18px 0; page-break-inside: avoid; }
+.ex-title { font-weight: 700; color: var(--c-example); margin-bottom: 6px; }
+.ex .tag { display: inline-block; font-size: 12px; padding: 1px 10px; border-radius: var(--r-pill); background: var(--c-example); color: #fff; margin-right: 6px; vertical-align: 1px; }
+.ex .tag.basic { background: var(--c-check); }
+.ex .sol { border-top: 1px dashed #d6c8f5; margin-top: 10px; padding-top: 8px; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  .ex { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<nav class="chap-nav">高考备考 · 物理 · 竞赛专题 ｜ 01-竞赛数学工具-深度学习材料.html</nav>
+<header class="chap-head">
+  <h1>01 竞赛数学工具</h1>
+  <p class="chap-meta">物理竞赛专题 · 第 1 章（入门必修 · 全套 12 章的地基） ｜ 目标：全国中学生物理竞赛 预赛 → 复赛入门 ｜ 适用：高一竞赛入门（零基础起步） ｜ 学生：小兵</p>
+</header>
+<div class="chap-intro">
+  这一章不讲新的物理定律，讲的是<strong>竞赛选手每天都在用的数学工具</strong>：矢量怎么拆、怎么"点乘""叉乘"；一个大过程怎么切成无数小份来处理；遇到很小的量怎么放心地做近似；还有一些好用的几何、级数结论和量纲检查法。听起来抽象，其实全是"干活的家伙"——把它们练熟，后面每一章你都会感谢今天读这一章的自己。放心，我们一步一步来。
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-label">本章目录</div>
+  <div class="toc-links">
+    <a href="#s1">一、知识全景</a>
+    <a href="#s2">二、核心概念</a>
+    <a href="#s3">三、竞赛专属·高考不考</a>
+    <a href="#s4">四、例题精讲</a>
+    <a href="#s5">五、易错点</a>
+    <a href="#s6">六、自检清单</a>
+  </div>
+</div>
+
+<h2 id="s1">一、知识全景</h2>
+
+<p>竞赛数学工具可以归纳为<strong>五个口袋</strong>：矢量、微元、近似、结论、量纲。前四个是"算"的工具，最后一个是"查"的工具。先看全图，再逐个口袋翻：</p>
+
+<div class="map">
+  <div class="row"><div class="node root">竞赛数学工具</div></div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node">矢量运算<br><small>分解 · 点积 · 叉积</small></div>
+    <div class="node">微元法<br><small>化整为零 · 积零为整</small></div>
+    <div class="node">小量近似<br><small>抓住主要矛盾</small></div>
+  </div>
+  <div class="row">
+    <div class="node">几何与级数<br><small>常用结论库</small></div>
+    <div class="node">量纲分析<br><small>检验 · 估阶 · 猜式</small></div>
+  </div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node leaf">受力分解、做功</div>
+    <div class="node leaf">变力、曲线求和</div>
+    <div class="node leaf">小角、小位移</div>
+    <div class="node leaf">几何光学、多次碰撞</div>
+    <div class="node leaf">答案体检</div>
+  </div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node view">一个思想<br><small>把复杂问题切成认识的小块</small></div>
+  </div>
+</div>
+
+<div class="deep">
+  <strong>为什么先学这一章？</strong>竞赛题和高考题最大的区别不是"知识更深"，而是<strong>过程更长、对象更碎</strong>。高考里一段运动一两个方程就解决；竞赛里常常要把它切成无数小段，每段写一个小关系，再合起来。这一章的五件工具，就是"切"与"合"的手艺。
+</div>
+
+<h2 id="s2">二、核心概念</h2>
+
+<h3>2.1 矢量运算：不只是"有方向的量"</h3>
+
+<h4>2.1.1 分解与投影</h4>
+<p>任何一个矢量 $\vec{A}$ 都可以沿选定方向分解。最常用的是沿直角坐标轴：</p>
+$$\vec{A} = A_x\,\hat{i} + A_y\,\hat{j} + A_z\,\hat{k}$$
+<p>其中分量与模长的关系由夹角 $\theta$（矢量与轴的夹角）给出：</p>
+$$A_x = A\cos\theta, \qquad A = \sqrt{A_x^2 + A_y^2 + A_z^2}$$
+<p><strong>竞赛味道在哪？</strong>高考里分解方向通常是题目"送"的（水平竖直、沿面垂直面）；竞赛里常常要<strong>自己选坐标轴</strong>。选轴原则只有一条：<em>让尽量多的矢量落在轴上，让要求的量好表示</em>。比如斜面上有初速度的抛体，沿斜面与垂直斜面建轴往往比水平竖直建轴省事得多。</p>
+
+<h4>2.1.2 点积（标积）：算"做功"的乘法</h4>
+$$\vec{A}\cdot\vec{B} = AB\cos\theta$$
+<p>两个矢量点乘得到一个<strong>标量</strong>，等于一个矢量的模乘以另一个在它方向上的投影。物理中最重要的点乘就是功：</p>
+$$W = \vec{F}\cdot\vec{s} = Fs\cos\theta$$
+<p>判断点乘符号有个口诀：<strong>同向为正、垂直为零、反向为负</strong>。摩擦力与速度方向相反，所以 $W_f<0$（做负功）；支持力常与位移垂直，所以不做功——这些都是点积符号的直接体现。</p>
+
+<h4>2.1.3 叉积（矢积）：方向用右手定</h4>
+$$\vec{A}\times\vec{B} = \vec{C}, \qquad C = AB\sin\theta$$
+<p>叉乘结果仍是<strong>矢量</strong>：大小等于两矢量张成的平行四边形面积，方向垂直于 $\vec{A}$、$\vec{B}$ 所在平面，由<strong>右手螺旋定则</strong>确定（四指从 $\vec{A}$ 转向 $\vec{B}$，拇指即 $\vec{C}$ 方向）。</p>
+<p>竞赛里最典型的叉乘是洛伦兹力与力矩：</p>
+$$\vec{F} = q\vec{v}\times\vec{B}, \qquad \vec{M} = \vec{r}\times\vec{F}$$
+<p>注意一个要命的特点：<strong>叉乘不满足交换律</strong>，$\vec{A}\times\vec{B} = -\vec{B}\times\vec{A}$，顺序一换，方向反掉。</p>
+
+<div class="key-point">
+  <strong>三种"乘法"对照</strong>：点积 → 标量（带 $\cos\theta$），管投影、做功、通量；叉积 → 矢量（带 $\sin\theta$），管转动、磁力。夹角为 $0$ 时点积最大、叉积为零；夹角为 $90^\circ$ 时恰好相反。
+</div>
+
+<h3>2.2 微元法：把"不均匀"切成"均匀"</h3>
+
+<p>微元法的套路永远是四步：</p>
+<ol>
+  <li><strong>切</strong>：把研究对象（一段时间、一段弧长、一块面积、一团质量）切成许多足够小的微元 $\Delta x$；</li>
+  <li><strong>近似</strong>：在微元内部，把变化的量当作不变（恒力、匀速、均匀密度），写出这一小份的表达式 $\Delta A \approx f(x)\,\Delta x$；</li>
+  <li><strong>求和</strong>：把所有微元加起来 $A = \sum f(x_i)\,\Delta x$；</li>
+  <li><strong>取极限</strong>：令 $\Delta x \to 0$，求和变成积分（或直接用几何意义，如图像面积）。</li>
+</ol>
+
+<p>举个你已经会的例子：$v$–$t$ 图像下的面积 = 位移。这其实就是把运动切成无数小段 $\Delta t$，每段近似匀速，位移 $\approx v_i\Delta t$，求和即面积。<strong>微元法不神秘，你早就在用了</strong>，只是竞赛要你自己决定"切什么、怎么切"。</p>
+
+<div class="deep">
+  <strong>切微元的两条常见路线</strong>：① 按<strong>空间</strong>切（切弧长、切质量元），适合形状、分布问题；② 按<strong>时间</strong>切（切 $\Delta t$），适合变化过程。切入点的选择标准：让微元内部"近似均匀"这一步最好写。
+</div>
+
+<h3>2.3 小量近似：竞赛里的"合法偷懒"</h3>
+
+<p>当某个量 $x$ 很小（通常 $|x| \ll 1$，即远小于 1）时，下列近似非常好用。<strong>每一条都必须连同适用条件一起背</strong>：</p>
+
+<table>
+  <thead>
+    <tr><th>近似公式</th><th>适用条件</th><th>误差量级</th><th>典型场景</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="l">$(1+x)^n \approx 1 + nx$</td>
+      <td class="l">$|x|\ll 1$，$n$ 为任意实数（含负数和分数）</td>
+      <td class="l">约 $\frac{n(n-1)}{2}x^2$</td>
+      <td class="l">估算引力随高度变化、二项展开</td>
+    </tr>
+    <tr>
+      <td class="l">$\sin\theta \approx \theta$，$\tan\theta \approx \theta$</td>
+      <td class="l">$\theta$ 小且<strong>必须用弧度制</strong></td>
+      <td class="l">约 $\theta^3/6$</td>
+      <td class="l">单摆小摆角、几何光学近轴光线</td>
+    </tr>
+    <tr>
+      <td class="l">$\cos\theta \approx 1 - \theta^2/2$</td>
+      <td class="l">同上（弧度制）</td>
+      <td class="l">约 $\theta^4/24$</td>
+      <td class="l">单摆能量、竖直方向的微小偏离</td>
+    </tr>
+    <tr>
+      <td class="l">$\ln(1+x) \approx x$</td>
+      <td class="l">$|x|\ll 1$</td>
+      <td class="l">约 $x^2/2$</td>
+      <td class="l">连续变化累积、指数过程取对数</td>
+    </tr>
+    <tr>
+      <td class="l">几何级数 $1+r+r^2+\cdots = \dfrac{1}{1-r}$</td>
+      <td class="l">$|r| < 1$（必须收敛）</td>
+      <td class="l">—（精确等式）</td>
+      <td class="l">多次碰撞、往返过程求和</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="key-point">
+  <strong>近似的灵魂是"留几阶"</strong>：一阶小量 $x$、二阶小量 $x^2$……式子里如果保留到 $x$ 的一次项就足够说明问题，那么所有 $x^2$ 及更高次项都可以扔。但要小心：<strong>如果一次项恰好抵消（或问题本身就问二阶效应，如单摆周期修正），就必须保留到下一阶</strong>。判断标准：先粗算一阶，一阶不为零就停；一阶为零，再补一阶。
+</div>
+
+<p>来感受一下"小"到什么程度算小：$\theta = 5^\circ \approx 0.0873$ rad，此时 $\sin\theta \approx 0.0872$，与 $\theta$ 的相对误差只有约 $0.1\%$——单摆"摆角小于 $5^\circ$"的经典条件就是这么来的。</p>
+
+<h3>2.4 常见几何与级数结论</h3>
+
+<p>这些结论在预赛、复赛中反复出现，见到就该"条件反射"：</p>
+
+<ul>
+  <li><strong>弧长与扇形</strong>：圆心角 $\theta$（弧度）对应弧长 $l = R\theta$，扇形面积 $S = \frac{1}{2}R^2\theta$。小角度下弧长 $\approx$ 弦长 $\approx$ 切线上的投影，三者之差是 $\theta^3$ 量级。</li>
+  <li><strong>相似与角平分</strong>：镜面反射、光的折射里大量相似三角形；入射角等于反射角的几何题，常靠"展开法"（把折线镜像成直线）秒杀。</li>
+  <li><strong>立体角初步</strong>：锥体顶点处面积元 $\mathrm{d}S$ 对顶点张的立体角 $\mathrm{d}\Omega = \dfrac{\mathrm{d}S\cos\alpha}{r^2}$（$\alpha$ 为面法线与视线夹角），点源通量按 $\dfrac{\Omega}{4\pi}$ 分配——这是点电荷、点光源问题的几何骨架。</li>
+  <li><strong>等差、等比数列</strong>：等差求和 $S_n = \frac{n(a_1+a_n)}{2}$；等比求和 $S_n = \frac{a_1(1-r^n)}{1-r}$；无穷等比 $|r|<1$ 时 $S = \frac{a_1}{1-r}$。多次反弹、逐级衰减过程全是它。</li>
+  <li><strong>常用平方求和</strong>：$1+2+\cdots+n = \frac{n(n+1)}{2}$；$1^2+2^2+\cdots+n^2 = \frac{n(n+1)(2n+1)}{6}$。离散热身题里会遇到。</li>
+</ul>
+
+<h3>2.5 量纲分析：不要钱的"验算器"</h3>
+
+<p>力学的三个基本量纲是长度 $\mathrm{L}$、质量 $\mathrm{M}$、时间 $\mathrm{T}$（电磁学再加电流 $\mathrm{I}$、热学加温度 $\Theta$）。任何物理等式，<strong>两边的量纲必须相同</strong>——这是铁律。</p>
+<p>量纲分析有三重用途：</p>
+<ol>
+  <li><strong>体检</strong>：算完答案，把各物理量的单位代进去，两边量纲不一致，必然有错（但一致不保证全对）；</li>
+  <li><strong>翻译</strong>：记住 $\text{N} = \text{kg}\cdot\text{m/s}^2$、$\text{J} = \text{N}\cdot\text{m}$、$\text{Pa} = \text{N/m}^2$ 等，可以在忘公式时现场"组装"单位；</li>
+  <li><strong>猜式</strong>：知道结果由哪几个量决定，用量纲把公式的"骨架"拼出来，最多差一个无量纲系数（详见第三节与例 6）。</li>
+</ol>
+
+<div class="deep">
+  <strong>给小兵的一句话</strong>：量纲检查成本极低（半分钟），收益极高（抓出抄错、漏乘、单位混乱）。从现在起，<strong>每算出一个字母结果，顺手查一次量纲</strong>——这是竞赛选手的肌肉记忆。
+</div>
+
+<h2 id="s3">三、竞赛专属·高考不考</h2>
+
+<p>以下三块内容超出高考大纲，属于竞赛"加餐"。高一刚入门不必追求全懂，先混个脸熟，后面章节用到时再回来看。</p>
+
+<h3>3.1 叉积的运算细节与角动量雏形</h3>
+<p>高考只要求"左手定则判断洛伦兹力方向"，竞赛则要求会<strong>算</strong>。右手直角坐标系中，叉积按分量展开：</p>
+$$\vec{A}\times\vec{B} = (A_yB_z - A_zB_y)\,\hat{i} + (A_zB_x - A_xB_z)\,\hat{j} + (A_xB_y - A_yB_x)\,\hat{k}$$
+<p>记忆技巧：写三行行列式，第一行 $\hat{i},\hat{j},\hat{k}$，第二行 $\vec{A}$ 分量，第三行 $\vec{B}$ 分量，按行列式展开。由它可定义<strong>角动量</strong> $\vec{L} = \vec{r}\times\vec{p}$ 与<strong>力矩</strong> $\vec{M} = \vec{r}\times\vec{F}$，并有 $\vec{M} = \dfrac{\mathrm{d}\vec{L}}{\mathrm{d}t}$——这是第五章"角动量守恒"的全部数学基础。</p>
+
+<h3>3.2 矢量微元与点乘、叉乘的求和</h3>
+<p>变力做功要写成微元形式 $W = \sum \vec{F}_i\cdot\Delta\vec{s}_i$，再过渡到积分 $W = \int \vec{F}\cdot\mathrm{d}\vec{s}$。例如弹簧弹力做功：</p>
+$$W = \int_{x_1}^{x_2}(-kx)\,\mathrm{d}x = \frac{1}{2}kx_1^2 - \frac{1}{2}kx_2^2$$
+<p>负号来自弹力与位移方向的关系，这一步的符号判断正是点积思想。同理，安培力 $\mathrm{d}\vec{F} = I\,\mathrm{d}\vec{l}\times\vec{B}$ 是"电流元 × 磁场"的叉乘微元。</p>
+
+<h3>3.3 量纲分析估数量级（"聪明的猜"）</h3>
+<p>竞赛里有一类题只问<strong>数量级</strong>或<strong>比例关系</strong>，标准做法就是量纲分析。假设待求量 $X \propto a^{\alpha}b^{\beta}c^{\gamma}$，写出两边量纲、比对指数、解方程组即得 $\alpha,\beta,\gamma$。经典例子（例 6 详解）：单摆周期 $T \propto \sqrt{l/g}$；球形物体收尾速度 $v \propto r^2$（斯托克斯律 $v = \frac{2(\rho-\rho_0)gr^2}{9\eta}$ 的骨架）。这类方法在高考中完全不要求，但在竞赛预赛选择题里经常能 30 秒出答案。</p>
+
+<h2 id="s4">四、例题精讲</h2>
+
+<div class="ex">
+  <div class="ex-title"><span class="tag basic">基础</span>例 1 ｜ 斜面上重力的正交分解</div>
+  <p>质量为 $m$ 的物块放在倾角为 $\theta$ 的固定斜面上。把重力 $G = mg$ 沿<strong>平行斜面</strong>和<strong>垂直斜面</strong>方向分解，并求各分力大小。</p>
+  <div class="sol">
+    <p><strong>思路起点</strong>：分解的关键是找对角度——重力竖直向下，斜面与水平面夹 $\theta$，那么重力与"垂直斜面方向"的夹角恰好也是 $\theta$（两线夹角等于其垂线夹角）。</p>
+    <p>沿斜面方向（与垂直斜面方向差 $90^\circ$，故与重力夹角为 $90^\circ-\theta$）：</p>
+    $$G_{\parallel} = mg\cos(90^\circ-\theta) = mg\sin\theta$$
+    <p>垂直斜面方向：</p>
+    $$G_{\perp} = mg\cos\theta$$
+    <p><strong>检验</strong>：勾股关系 $G_{\parallel}^2 + G_{\perp}^2 = m^2g^2(\sin^2\theta+\cos^2\theta) = m^2g^2$ ✓。极限检验：$\theta\to 0$（水平面）时 $G_{\parallel}\to 0$ ✓；$\theta\to 90^\circ$（竖直墙面）时 $G_{\perp}\to 0$ ✓。</p>
+    <p><strong>收获</strong>：竞赛里分解之后常要用"二力平衡"或"合力提供加速度"，而<strong>方向选择</strong>决定计算量。多问自己一句：沿哪个方向力最少？</p>
+  </div>
+</div>
+
+<div class="ex">
+  <div class="ex-title"><span class="tag basic">基础</span>例 2 ｜ 点积判断做功的正负</div>
+  <p>物块在水平面上滑行，受四个力：重力 $mg$、支持力 $N$、拉力 $F$（与水平成 $\alpha$ 角斜向上）、滑动摩擦力 $f$。物块向右位移 $s$。求各力做功。</p>
+  <div class="sol">
+    <p><strong>思路起点</strong>：做功 $W = Fs\cos\theta$，其中 $\theta$ 是<strong>力与位移</strong>的夹角，不是力与水平面的夹角——先定位移方向（向右），再逐个量角。</p>
+    <ul>
+      <li>重力：与位移夹角 $90^\circ$，$W_G = mgs\cos 90^\circ = 0$；</li>
+      <li>支持力：与位移夹角 $90^\circ$，$W_N = 0$；</li>
+      <li>拉力：与位移夹角 $\alpha$，$W_F = Fs\cos\alpha$（正功）；</li>
+      <li>摩擦力：与位移反向，夹角 $180^\circ$，$W_f = fs\cos 180^\circ = -fs$（负功）。</li>
+    </ul>
+    <p><strong>收获</strong>：点积的符号就是能量的流向——正功给物块"充值"，负功让能量"流失"。"垂直不做功"是竞赛里最高频的一句话，没有之一。</p>
+  </div>
+</div>
+
+<div class="ex">
+  <div class="ex-title"><span class="tag basic">基础</span>例 3 ｜ 微元法求绳与钉的接触段正压力</div>
+  <p>一根绳子绕过一根光滑圆钉，圆钉半径 $R$，绳子与钉的接触弧对应圆心角 $\theta$。绳中张力处处为 $T$（光滑，张力大小不变）。求绳子对钉的总压力大小。</p>
+  <div class="sol">
+    <p><strong>思路起点</strong>：压力沿圆弧分布、方向各不相同（都指向圆心），不能直接相加——这正是微元法的舞台。把圆弧切成小弧段，每段对应圆心角 $\Delta\varphi$。</p>
+    <p>取圆心角 $\varphi$ 处一小段 $\Delta\varphi$。该处绳对钉的压力 $\Delta N$ 由该段两端张力的合力提供（类似皮带张力的常规结论）：两端张力大小均为 $T$，夹角为 $\Delta\varphi$，指向圆心的合力为</p>
+    $$\Delta N = 2T\sin\frac{\Delta\varphi}{2} \approx T\,\Delta\varphi \quad (\text{小角近似 } \sin x \approx x)$$
+    <p>方向沿该处半径向外（绳压钉）。把所有小段的压力<strong>按方向</strong>求和——注意各段方向不同，总压力是矢量和。由对称性，总压力沿 $\theta$ 角的角平分线方向。设角平分线方向为正，各段压力在该方向的投影为 $T\Delta\varphi\cos\varphi'$（$\varphi'$ 为该段偏离角平分线的角度，范围 $-\theta/2$ 到 $\theta/2$）：</p>
+    $$N = \int_{-\theta/2}^{\theta/2} T\cos\varphi'\,\mathrm{d}\varphi' = T\big[\sin\varphi'\big]_{-\theta/2}^{\theta/2} = 2T\sin\frac{\theta}{2}$$
+    <p><strong>检验</strong>：$\theta = \pi$（半圆，绳两端反向）时 $N = 2T$ ✓——恰好等于两端张力拉直的合力；$\theta \to 0$ 时 $N \to T\theta \to 0$ ✓。</p>
+    <p><strong>收获</strong>：微元法求矢量和时，先利用<strong>对称性</strong>确定合矢量方向，再只对该方向投影积分，工作量减半。</p>
+  </div>
+</div>
+
+<div class="ex">
+  <div class="ex-title"><span class="tag">预赛难度</span>例 4 ｜ 小量近似估算高空重力加速度</div>
+  <p>地球半径 $R \approx 6.4\times 10^{6}$ m，地面重力加速度 $g \approx 9.8\ \mathrm{m/s^2}$。在海拔 $h = 32$ km 处，重力加速度约变为多少？（用近似公式心算，取两位有效数字）</p>
+  <div class="sol">
+    <p><strong>思路起点</strong>：万有引力 $\propto 1/r^2$，$h = 32$ km 与 $R = 6400$ km 相比是小量，$\dfrac{h}{R} = 5\times 10^{-3} \ll 1$，正是 $(1+x)^n \approx 1+nx$ 的用武之地（$n = -2$）。</p>
+    <p>海拔 $h$ 处：</p>
+    $$g_h = \frac{GM}{(R+h)^2} = \frac{GM}{R^2}\cdot\frac{1}{\left(1+\frac{h}{R}\right)^2} = g\left(1+\frac{h}{R}\right)^{-2} \approx g\left(1 - \frac{2h}{R}\right)$$
+    <p>代入数字：$\dfrac{2h}{R} = \dfrac{2\times 32}{6400} = 0.01$，所以</p>
+    $$g_h \approx 9.8\times(1-0.01) = 9.8\times 0.99 \approx 9.7\ \mathrm{m/s^2}$$
+    <p><strong>误差估计</strong>：被扔掉的二阶项约为 $3\left(\frac{h}{R}\right)^2 = 7.5\times 10^{-5}$，相对误差不到万分之一，两位有效数字下完全没问题。</p>
+    <p><strong>收获</strong>：预赛中"估算"题极多，核心动作就是<strong>凑出 $1+x$</strong>。记住一句口诀：指数翻下来，符号跟着走（$(1+x)^{-2} \to 1 - 2x$）。</p>
+  </div>
+</div>
+
+<div class="ex">
+  <div class="ex-title"><span class="tag">预赛难度</span>例 5 ｜ 几何级数处理多次碰撞</div>
+  <p>一个小球从高度 $h_0 = 5$ m 处自由落下，每次与地面碰撞后速度大小变为碰前的 $e = \dfrac{1}{2}$（恢复系数）。求小球从释放到最终静止所走过的<strong>总路程</strong>。</p>
+  <div class="sol">
+    <p><strong>思路起点</strong>：碰撞无限多次，每次的高度构成等比数列——先找出相邻两次上升高度之比。</p>
+    <p>碰前速度 $v$ 与下落高度满足 $v^2 = 2gh$。碰后速度变为 $ev$，故下次上升高度 $h' = \dfrac{(ev)^2}{2g} = e^2 h$。于是各次上升高度为：</p>
+    $$h_1 = e^2 h_0,\quad h_2 = e^4 h_0,\quad h_3 = e^6 h_0,\ \cdots$$
+    <p>总路程 = 第一次下落 $h_0$ + 之后每一次"上升再下落" $2h_n$：</p>
+    $$S = h_0 + 2(h_1 + h_2 + h_3 + \cdots) = h_0 + 2h_0\left(e^2 + e^4 + e^6 + \cdots\right)$$
+    <p>括号内是首项 $e^2$、公比 $e^2$ 的无穷等比级数，$|e^2| < 1$ 收敛：</p>
+    $$e^2 + e^4 + e^6 + \cdots = \frac{e^2}{1 - e^2}$$
+    <p>代入 $e = \dfrac{1}{2}$，$e^2 = \dfrac{1}{4}$：</p>
+    $$S = h_0\left(1 + \frac{2\times\frac{1}{4}}{1-\frac{1}{4}}\right) = h_0\left(1 + \frac{\frac{1}{2}}{\frac{3}{4}}\right) = h_0\left(1 + \frac{2}{3}\right) = \frac{5}{3}h_0 = \frac{5}{3}\times 5 = \frac{25}{3}\ \text{m} \approx 8.3\ \text{m}$$
+    <p><strong>收获</strong>：这类题的固定动作是<strong>先求相邻项之比</strong>（往往是某个量的平方），再套无穷等比求和。注意总路程要把"上"和"下"都算进去——掉坑最多的地方。</p>
+  </div>
+</div>
+
+<div class="ex">
+  <div class="ex-title"><span class="tag">复赛难度</span>例 6 ｜ 量纲分析推出单摆周期公式</div>
+  <p>一个单摆，摆球质量 $m$，摆长 $l$，当地重力加速度 $g$。假定小摆角下周期 $T$ 只与这三个量有关，即 $T = k\,m^{\alpha}l^{\beta}g^{\gamma}$（$k$ 为无量纲常数）。用量纲分析确定 $\alpha,\beta,\gamma$，写出周期的表达式骨架。</p>
+  <div class="sol">
+    <p><strong>思路起点</strong>：量纲分析三步走——① 列出每个量的量纲；② 代入假设式，比对两边各基本量纲的指数；③ 解方程组。</p>
+    <p>各量量纲：$[T] = \mathrm{T}$（此处 $T$ 指时间量纲），$[m] = \mathrm{M}$，$[l] = \mathrm{L}$，$[g] = \mathrm{L\,T^{-2}}$。代入：</p>
+    $$\mathrm{T} = \mathrm{M}^{\alpha}\,\mathrm{L}^{\beta}\,(\mathrm{L\,T^{-2}})^{\gamma} = \mathrm{M}^{\alpha}\,\mathrm{L}^{\beta+\gamma}\,\mathrm{T}^{-2\gamma}$$
+    <p>比对三个基本量纲的指数：</p>
+    $$\mathrm{M}:\ \alpha = 0; \qquad \mathrm{L}:\ \beta + \gamma = 0; \qquad \mathrm{T}:\ -2\gamma = 1 \Rightarrow \gamma = -\frac{1}{2},\ \beta = \frac{1}{2}$$
+    <p>所以</p>
+    $$T = k\sqrt{\frac{l}{g}}$$
+    <p>周期的骨架被量纲分析<strong>完全钉死</strong>：与质量无关（$\alpha=0$）、与 $\sqrt{l}$ 成正比、与 $\sqrt{g}$ 成反比。剩下的无量纲系数 $k$ 量纲分析给不出（动力学计算给出 $k = 2\pi$）。</p>
+    <p><strong>收获</strong>：量纲分析是"免费的午餐"，能猜出公式结构，但<strong>猜不出无量纲系数</strong>（$2\pi$、$\frac{1}{2}$ 之类）。复赛里遇到陌生情境，先用量纲搭骨架，再补动力学细节，是标准战术。</p>
+  </div>
+</div>
+
+<div class="ex">
+  <div class="ex-title"><span class="tag">复赛难度</span>例 7 ｜ 叉积综合：带电粒子的圆周运动</div>
+  <p>质量 $m$、电荷量 $q$（$q>0$）的粒子，以速度 $\vec{v}$ 射入匀强磁场 $\vec{B}$，$\vec{v}\perp\vec{B}$。磁场范围足够大。求粒子做圆周运动的半径 $R$ 与周期 $T$；若 $\vec{v}$ 与 $\vec{B}$ 夹角为 $\theta$（不是 $90^\circ$），轨迹变成什么？</p>
+  <div class="sol">
+    <p><strong>思路起点</strong>：洛伦兹力 $\vec{F} = q\vec{v}\times\vec{B}$，其大小由叉积定义给出 $F = qvB\sin\alpha$（$\alpha$ 为 $\vec{v}$ 与 $\vec{B}$ 夹角），方向永远垂直于 $\vec{v}$——垂直于速度的力不做功，只改变方向，这正是圆周运动向心力的来源。</p>
+    <p><strong>第一问</strong>（$\vec{v}\perp\vec{B}$，$\sin\alpha = 1$）：洛伦兹力提供向心力</p>
+    $$qvB = \frac{mv^2}{R} \quad\Rightarrow\quad R = \frac{mv}{qB}$$
+    <p>周期由周长除以速率：</p>
+    $$T = \frac{2\pi R}{v} = \frac{2\pi m}{qB}$$
+    <p>注意周期与速度无关——速度大的粒子转大圈，转一圈的时间却一样，这是回旋加速器的工作原理。</p>
+    <p><strong>第二问</strong>：把速度分解为平行与垂直磁场的分量：$v_{\parallel} = v\cos\theta$，$v_{\perp} = v\sin\theta$。平行分量不受力（$\vec{v}_{\parallel}\times\vec{B} = 0$），粒子沿磁场方向匀速前进；垂直分量按第一问做圆周运动，半径 $R = \dfrac{mv\sin\theta}{qB}$。两者合成——<strong>等距螺旋线</strong>，螺距（每转一圈沿磁场方向前进的距离）：</p>
+    $$d = v_{\parallel}T = v\cos\theta\cdot\frac{2\pi m}{qB} = \frac{2\pi m v\cos\theta}{qB}$$
+    <p><strong>检验</strong>：$\theta \to 90^\circ$ 时 $d \to 0$，螺旋线退化为圆周 ✓；$\theta \to 0$ 时 $R \to 0$，退化为匀速直线 ✓。</p>
+    <p><strong>收获</strong>：叉积题的标准战术是"分速度"——沿场分量管前进、垂直场分量管转圈。方向判断用右手定则（负电荷则反手），千万不要背成死的。</p>
+  </div>
+</div>
+
+<h2 id="s5">五、易错点</h2>
+
+<div class="warn">
+  <strong>易错 1 ｜ $\sin\theta\approx\theta$ 忘了换弧度。</strong>小角近似只在<strong>弧度制</strong>下成立。$\theta = 10^\circ$ 直接代 $\sin\theta \approx 10$ 就错得离谱了；必须先换算 $10^\circ = 0.1745$ rad，此时 $\sin\theta \approx 0.1736$，近似才有效。看到"度"先化弧度，再谈近似。
+</div>
+<div class="warn">
+  <strong>易错 2 ｜ $(1+x)^n \approx 1+nx$ 用在 $x$ 不小时。</strong>这条近似的误差约为 $\frac{n(n-1)}{2}x^2$。当 $|x|$ 达到 $0.3$、$n=-2$ 时误差已有几个百分点。近似前必须先问自己：<strong>$x$ 是不是真的远小于 1？题目要求几位有效数字？</strong>要求精度高（如 $1\%$ 以内）而 $x \sim 0.1$ 时，就要补二阶项 $\frac{n(n-1)}{2}x^2$。
+</div>
+<div class="warn">
+  <strong>易错 3 ｜ 一阶项相消还硬用一阶近似。</strong>如果问题关心的是两个大量之<strong>差</strong>（如微小形变导致的势能变化），一阶项常常精确抵消，这时必须保留到二阶，否则算出"零"这种荒谬结论。单摆周期的修正项、$\cos\theta - 1 \approx -\theta^2/2$ 都是典型。
+</div>
+<div class="warn">
+  <strong>易错 4 ｜ 叉积顺序写反，方向整个颠倒。</strong>$\vec{A}\times\vec{B} = -\,\vec{B}\times\vec{A}$。写 $\vec{F} = q\vec{v}\times\vec{B}$ 时，顺序固定是 $\vec{v}$ 在前、$\vec{B}$ 在后；写成 $\vec{B}\times\vec{v}$ 方向就反了，整题满盘皆输。负电荷（$q<0$）还要再反一次，等于方向与 $q>0$ 相反。
+</div>
+<div class="warn">
+  <strong>易错 5 ｜ 量纲分析猜不出无量纲系数就以为公式错了。</strong>量纲分析只能确定"骨架"，确定不了 $2\pi$、$\frac{1}{2}$ 这类纯数。由量纲得到 $T = k\sqrt{l/g}$ 是正确的，若因为"没算出 $2\pi$"而怀疑自己，属误解工具边界。反过来，骨架若与量纲分析矛盾（如出现 $T\propto\sqrt{g/l}$），则一定错了。
+</div>
+<div class="warn">
+  <strong>易错 6 ｜ 微元求和时把矢量当标量直接加。</strong>例 3 中各弧段压力方向不同，若把 $T\Delta\varphi$ 直接累加成 $T\theta$，得到的既不是合力大小也没有物理意义。微元法求和之前先想清楚：<strong>加起来的是标量还是矢量？矢量能否利用对称性只在一个方向上投影求和？</strong>
+</div>
+<div class="warn">
+  <strong>易错 7 ｜ 单位漏带、乱带，量纲检查形同虚设。</strong>常见三连错：km 没化成 m、分钟没化成秒、角度当成弧度进计算器。量纲检查能抓住这类错误，但前提是你<strong>真的把单位代进式子算了一遍</strong>。竞赛计算题建议每一步都在等号后带单位，最后结果单位不对就立刻回头。
+</div>
+<div class="warn">
+  <strong>易错 8 ｜ 无穷级数不查收敛条件。</strong>$1+r+r^2+\cdots = \frac{1}{1-r}$ 只在 $|r|<1$ 时成立。例 5 中 $e^2 = \frac{1}{4} < 1$ 收敛没问题；但若哪天算出公比 $r \geq 1$ 还去套公式，结果必然荒谬（负数或无穷大的路程）——这其实是物理在提醒你：过程根本不会停，模型用错了。
+</div>
+
+<h2 id="s6">六、自检清单</h2>
+
+<p>学完本章，逐条自查（能给自己讲清楚"为什么"才算过）：</p>
+
+<ul class="checklist">
+  <li>我能在 30 秒内把任意方向的重力分解到"沿斜面/垂直斜面"或任意自建坐标轴上，并用勾股关系自检。</li>
+  <li>我说得清点积和叉积的本质区别（标量还是矢量、$\cos$ 还是 $\sin$、各自管什么物理量）。</li>
+  <li>我能用右手定则判断 $\vec{v}\times\vec{B}$ 的方向，并知道负电荷要反向。</li>
+  <li>我知道 $\vec{A}\times\vec{B} = -\vec{B}\times\vec{A}$，写公式时不会随意交换顺序。</li>
+  <li>我能复述微元法四步（切、近似、求和、取极限），并举出一个 $v$–$t$ 图像之外的例子。</li>
+  <li>遇到分布力（绳压钉、压力沿面分布）时，我知道先利用对称性定合力方向再投影求和。</li>
+  <li>我能背出 $(1+x)^n\approx 1+nx$、$\sin\theta\approx\theta$、$\cos\theta\approx 1-\theta^2/2$ 三条近似的<strong>适用条件</strong>（不只是公式本身）。</li>
+  <li>我知道什么时候一阶近似不够、必须保留二阶（一阶相消的情形）。</li>
+  <li>我能写出无穷等比级数求和公式，并记得先检查 $|r|<1$。</li>
+  <li>我能写出 $\mathrm{L,M,T}$ 三个基本量纲，并把 N、J、W、Pa 拆成基本单位。</li>
+  <li>我能用量纲分析独立推出 $T \propto \sqrt{l/g}$，并清楚量纲分析给不出无量纲系数。</li>
+  <li>我养成了"算出字母结果先查量纲"的习惯，并能说出量纲一致为什么只是必要条件而非充分条件。</li>
+  <li>我知道弧长 $l = R\theta$、扇形面积 $S = \frac{1}{2}R^2\theta$ 中 $\theta$ 必须用弧度，并能推出小角下弧长≈弦长。</li>
+</ul>
+
+<div class="deep">
+  <strong>写在最后</strong>：这一章没有一句物理定律，却是十二章里"使用频率"最高的一章。下一章《运动学》开始，微元法、矢量分解、小量近似会立刻轮番登场。如果现在对某些推导还发怵，完全正常——把例 1 到例 7 动手抄算一遍，比看三遍都有用。竞赛是马拉松，第一章跑稳了，后面才敢加速。加油，小兵！
+</div>
+
+</body>
+</html>

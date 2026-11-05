@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>11 光学 · 物理竞赛入门</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+/* 例题卡片（竞赛系列专用） */
+.ex { border: 1px solid var(--line); border-left: 5px solid var(--c-example); border-radius: 0 10px 10px 0; background: var(--c-example-bg); padding: 4px 20px 12px; margin: 18px 0; page-break-inside: avoid; }
+.ex .ex-tag { display: inline-block; font-size: 12.5px; font-weight: 700; color: #fff; background: var(--c-example); border-radius: var(--r-pill); padding: 2px 12px; margin: 12px 0 4px; letter-spacing: .05em; }
+.ex .ex-tag.hard { background: var(--c-key); }
+.ex h4 { margin-top: 8px; }
+figure.svg-fig { margin: 16px auto; text-align: center; page-break-inside: avoid; }
+figure.svg-fig figcaption { font-size: 13px; color: var(--ink-soft); margin-top: 6px; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point, .ex { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<nav class="chap-nav">高考备考 · 物理 · 竞赛专题 ｜ 11-光学-深度学习材料.html</nav>
+<header class="chap-head">
+  <h1>11 光学 · 物理竞赛入门</h1>
+  <p class="chap-meta">物理竞赛专题 · 第 11 章（共 12 章）｜ 目标：预赛 → 复赛入门 ｜ 适用：高一竞赛入门（零基础起步）｜ 学生：小兵</p>
+</header>
+
+<div class="chap-intro">
+  小兵，欢迎来到竞赛第 11 章！光学是竞赛里<strong>最"讲道理"</strong>的一章：几何光学靠一套符号约定 + 一个成像公式打天下，物理光学靠"光程差"三个字通吃干涉与衍射。这一章我们只干四件事：<strong>把球面镜与透镜成像公式连同符号约定吃透、把三条特殊光线练成肌肉记忆、用光程差推开干涉的大门、看懂单缝衍射与分辨本领</strong>。你会第一次发现：原来"肥皂泡的彩色条纹""照相机镜头为什么要镀膜"都可以用一页纸算清楚。这种"我能解释"的感觉，就是物理竞赛最迷人的地方。
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-label">本章导览</div>
+  <div class="toc-links">
+    <a href="#s1">一、知识全景</a>
+    <a href="#s2">二、核心概念</a>
+    <a href="#s3">三、竞赛专属·高考不考</a>
+    <a href="#s4">四、例题精讲</a>
+    <a href="#s5">五、易错点</a>
+    <a href="#s6">六、自检清单</a>
+  </div>
+</div>
+
+<h2 id="s1">一、知识全景</h2>
+
+<p>高中课内的光学是「现象驱动」：反射折射定律、双缝干涉条纹间距公式，背下来去套。竞赛的光学是「约定驱动 + 光程驱动」：几何光学先立一套<strong>符号约定</strong>，所有成像问题归到一个公式；波动光学先立<strong>光程差</strong>概念，干涉、衍射、薄膜全是它的应用。整张地图如下：</p>
+
+<div class="map">
+  <div class="row"><div class="node root">光学（竞赛版）</div></div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node">几何光学<br><small>成像</small></div>
+    <div class="node">波动光学<br><small>干涉 · 衍射</small></div>
+  </div>
+  <div class="row">
+    <div class="node leaf">符号约定 + 成像公式 $\frac{1}{u}+\frac{1}{v}=\frac{1}{f}$</div>
+    <div class="node leaf">光程差 $\delta$：一切干涉的灵魂</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">三条特殊光线作图 · 组合光具</div>
+    <div class="node leaf">双缝干涉 $\Delta x=\frac{L\lambda}{d}$ · 薄膜</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">放大率 $\beta=-\frac{v}{u}$（含符号）</div>
+    <div class="node leaf">单缝衍射 $a\sin\theta=\pm k\lambda$ · 分辨本领</div>
+  </div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node view">竞赛专属武器<br><small>严格符号约定推导 · 半波损失 · 暗纹公式由来</small></div>
+  </div>
+</div>
+
+<blockquote>
+  <p><strong>学习节奏建议</strong>：本章用到的数学只有三角函数、小量近似（$\sin\theta\approx\tan\theta\approx\theta$）和一点点相似三角形——都是初中到高一的知识，零压力。真正要花心思的是<strong>符号约定</strong>：光学竞赛题的错误，十有八九不是不会算，而是正负号代错。慢慢来，这一章值得你写得工整。</p>
+</blockquote>
+
+<hr>
+
+<h2 id="s2">二、核心概念</h2>
+
+<h3>2.1 符号约定：成像公式的"交通规则"</h3>
+
+<p>成像公式全世界有好几套写法，彼此差一个正负号，混用必死。本章全章统一使用竞赛中最通用的<strong>「实正虚负」约定</strong>：</p>
+
+<div class="key-point">
+  <strong>本章唯一约定（实正虚负）</strong>：
+  <ul>
+    <li><strong>物距 $u$</strong>：实物（光真的会聚/发出的物体）$u>0$；虚物（会聚光束被截住，尚未会聚成的"像"当物）$u<0$</li>
+    <li><strong>像距 $v$</strong>：实像（光线真的会聚成的像，能成在屏上）$v>0$；虚像（光线的反向延长线会聚成的像）$v<0$</li>
+    <li><strong>焦距 $f$</strong>：凸透镜、凹面镜（会聚型）$f>0$；凹透镜、凸面镜（发散型）$f<0$</li>
+    <li><strong>曲率半径 $R$</strong>：与 $f$ 同规则——凹面镜 $R>0$，凸面镜 $R<0$，且 $\boldsymbol{f=\dfrac{R}{2}}$</li>
+  </ul>
+  <p style="margin-bottom:0">在这一约定下，球面镜与薄透镜共用<strong>同一个</strong>成像公式，不用背两个。</p>
+</div>
+
+<p>为什么敢共用？因为凸透镜的两个折射面等效于一次"会聚"，凹面镜的反射也等效于一次"会聚"——在实正虚负约定下，它们的数学形式完全一致。这就是约定的威力：<strong>把四种元件（凸透镜、凹透镜、凹面镜、凸面镜）统一成一个公式</strong>。</p>
+
+<h3>2.2 成像公式与放大率</h3>
+
+<p>对近轴光线（光线与主轴夹角很小，$\sin\theta\approx\theta$，这是整个几何光学的隐含前提），可以严格推出（推导见第三节）：</p>
+
+$$\boldsymbol{\frac{1}{u}+\frac{1}{v}=\frac{1}{f}=\frac{2}{R}}$$
+
+<p>横向放大率定义为像高与物高之比（带上正倒立的符号）：</p>
+
+$$\boldsymbol{\beta=\frac{h_{像}}{h_{物}}=-\frac{v}{u}}$$
+
+<ul>
+  <li>$\beta>0$：像与物<strong>同侧正立</strong>（此时必为虚像，$v<0$）；$\beta<0$：像<strong>倒立</strong>（此时必为实像，$v>0$）</li>
+  <li>$|\beta|>1$ 放大，$|\beta|<1$ 缩小，$|\beta|=1$ 等大（此时 $u=v=2f$，即"二倍焦距处等大倒立实像"）</li>
+  <li>公式里的负号不是装饰！它正是"实像倒立、虚像正立"的代数表达——第三节会让你看到它从相似三角形里自己长出来</li>
+</ul>
+
+<div class="deep">
+  <strong>解题固定三步</strong>：① 先定 $f$ 的正负（会聚正、发散负）；② 把 $u$（实物正）代入公式解出 $v$——<strong>解出来 $v>0$ 就是实像，$v<0$ 就是虚像，不用事先猜</strong>；③ 用 $\beta=-v/u$ 定正倒与大小。全程不许脑补"应该是实像吧"，让符号自己说话。
+</div>
+
+<h4>四种元件的成像速查表</h4>
+
+<table>
+  <thead>
+    <tr><th>元件</th><th>$f$ 符号</th><th>典型成像（实物 $u>0$）</th><th>记忆</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="l">凸透镜</td><td>$f>0$</td>
+      <td class="l">$u>2f$：缩小倒立实像（$f<v<2f$）；$u=2f$：等大倒立实像；$f<u<2f$：放大倒立实像（$v>2f$）；$u=f$：不成像（平行光）；$u<f$：放大正立虚像（放大镜）</td>
+      <td class="l">一倍焦距分虚实，二倍焦距分大小</td>
+    </tr>
+    <tr>
+      <td class="l">凹透镜</td><td>$f<0$</td>
+      <td class="l">永远成缩小正立虚像（$v<0$ 且 $|v|<|f|$）</td>
+      <td class="l">只有一种像，最省心</td>
+    </tr>
+    <tr>
+      <td class="l">凹面镜</td><td>$f>0$</td>
+      <td class="l">规律与凸透镜相同（实像在镜前，$v>0$）</td>
+      <td class="l">凸透镜的"反射版"</td>
+    </tr>
+    <tr>
+      <td class="l">凸面镜</td><td>$f<0$</td>
+      <td class="l">永远成缩小正立虚像（汽车后视镜）</td>
+      <td class="l">凹透镜的"反射版"，视野大</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>2.3 光路作图：三条特殊光线</h3>
+
+<p>作图法既是理解成像的直观工具，也是竞赛里检验解析结果的<strong>第一道防线</strong>。对薄透镜（过光心 $O$ 厚度不计），从物点发出的无数条光线里，有三条不用算就能画：</p>
+
+<table>
+  <thead>
+    <tr><th>编号</th><th>入射光线</th><th>出射光线（凸透镜）</th><th>出射光线（凹透镜）</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>①</td><td class="l">平行于主轴</td><td class="l">过<strong>像方焦点</strong> $F'$</td><td class="l">反向延长线过<strong>物方同侧焦点</strong> $F$</td></tr>
+    <tr><td>②</td><td class="l">过光心 $O$</td><td class="l"><strong>不偏折</strong>，直线穿过</td><td class="l">不偏折，直线穿过</td></tr>
+    <tr><td>③</td><td class="l">过物方焦点 $F$</td><td class="l">平行于主轴射出</td><td class="l">（对凹透镜：对准异侧焦点射入）平行主轴射出</td></tr>
+  </tbody>
+</table>
+
+<p>任意两条出射光线（或其反向延长线）的交点就是像点。球面镜版本只需把"过光心"换成"过顶点（入射角=反射角）"、"过焦点"换成"过球心 $C$ 沿原路返回"。</p>
+
+<figure class="svg-fig">
+  <svg width="640" height="220" viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;background:#fbfdff;border:1px solid var(--line);border-radius:8px;">
+    <!-- 主轴 -->
+    <line x1="20" y1="110" x2="620" y2="110" stroke="#52606d" stroke-width="1.2"/>
+    <!-- 透镜 -->
+    <line x1="320" y1="20" x2="320" y2="200" stroke="#2b6cb0" stroke-width="2.5"/>
+    <polygon points="320,20 312,36 328,36" fill="#2b6cb0"/>
+    <polygon points="320,200 312,184 328,184" fill="#2b6cb0"/>
+    <!-- F 与 2F 刻度 -->
+    <circle cx="230" cy="110" r="3.5" fill="#1f2933"/><text x="222" y="128" font-size="13" fill="#1f2933">F</text>
+    <circle cx="410" cy="110" r="3.5" fill="#1f2933"/><text x="402" y="128" font-size="13" fill="#1f2933">F′</text>
+    <circle cx="140" cy="110" r="3.5" fill="#52606d"/><text x="128" y="128" font-size="13" fill="#52606d">2F</text>
+    <circle cx="500" cy="110" r="3.5" fill="#52606d"/><text x="492" y="128" font-size="13" fill="#52606d">2F′</text>
+    <!-- 物体（在 2F 外，x=110） -->
+    <line x1="110" y1="110" x2="110" y2="50" stroke="#b91c1c" stroke-width="3"/>
+    <polygon points="110,50 104,62 116,62" fill="#b91c1c"/>
+    <text x="96" y="45" font-size="13" fill="#b91c1c">物</text>
+    <!-- 光线①：平行主轴 → 过 F′ -->
+    <line x1="110" y1="50" x2="320" y2="50" stroke="#d69e2e" stroke-width="1.6"/>
+    <line x1="320" y1="50" x2="464" y2="158" stroke="#d69e2e" stroke-width="1.6"/>
+    <!-- 光线②：过光心 -->
+    <line x1="110" y1="50" x2="464" y2="158" stroke="#047857" stroke-width="1.6"/>
+    <!-- 光线③：过 F → 平行出射 -->
+    <line x1="110" y1="50" x2="320" y2="94.4" stroke="#6d28d9" stroke-width="1.6"/>
+    <line x1="320" y1="94.4" x2="464" y2="94.4" stroke="#6d28d9" stroke-width="1.6" stroke-dasharray="0"/>
+    <line x1="320" y1="94.4" x2="464" y2="158" stroke="#6d28d9" stroke-width="0" />
+    <!-- 修正：光线③过F(230,110) 从物顶(110,50) 到镜面高度 -->
+    <!-- 像（倒立，位于 F′ 与 2F′ 之间 x≈464） -->
+    <line x1="464" y1="110" x2="464" y2="158" stroke="#b91c1c" stroke-width="3"/>
+    <polygon points="464,158 458,146 470,146" fill="#b91c1c"/>
+    <text x="470" y="172" font-size="13" fill="#b91c1c">像（倒立缩小实像）</text>
+    <!-- 标注光心 -->
+    <text x="326" y="104" font-size="12" fill="#2b6cb0">O</text>
+  </svg>
+  <figcaption>凸透镜三条特殊光线：①平行→过 F′（黄）②过光心不偏折（绿）③过 F→平行出射（紫）。物在 2F 外，像在 F′~2F′ 之间，倒立缩小。</figcaption>
+</figure>
+
+<div class="warn">
+  <strong>作图纪律</strong>：光线必须画箭头；虚像、反向延长线一律画<strong>虚线</strong>；作图结果与公式结果互相验证——两者对不上，先查符号再查图。
+</div>
+
+<h4>组合光具：逐次成像法</h4>
+
+<p>两个（以上）透镜或"透镜+面镜"组合时，规则只有一句话：<strong>前一个元件成的像，就是后一个元件的物</strong>。注意两点：</p>
+
+<ul>
+  <li>后一个元件的物距 $u_2$ 要从<strong>后一个元件</strong>量起：$u_2 = d - v_1$（$d$ 为两元件间距，$v_1$ 以前一元件量起）。若 $v_1 > d$，光线还没会聚就被截住——这就是<strong>虚物</strong>，$u_2<0$，实正虚负约定自动处理；</li>
+  <li>总放大率 $\beta = \beta_1 \cdot \beta_2$（各次放大率连乘，符号自然也连乘）。</li>
+</ul>
+
+<h3>2.4 干涉初步：光程差是唯一的"通用货币"</h3>
+
+<p>光是电磁波。两列频率相同、相位差恒定、振动方向相同的相干光相遇时，合成光强取决于<strong>相位差</strong>，而相位差由<strong>光程差</strong> $\delta$ 决定。光程 = 几何路程 × 折射率（$nr$），真空中光程就是路程本身。</p>
+
+$$\delta = \begin{cases} \pm k\lambda & (k=0,1,2,\dots)\ \text{相长（明纹）}\\[2mm] \pm(2k+1)\dfrac{\lambda}{2} & (k=0,1,2,\dots)\ \text{相消（暗纹）} \end{cases}$$
+
+<h4>双缝干涉（杨氏实验）</h4>
+
+<p>缝间距 $d$（$d\ll L$），屏距 $L$，双缝到屏上 $P$ 点（距中央 $x$ 处）的几何程差：</p>
+
+$$\delta = d\sin\theta \approx d\tan\theta = \frac{dx}{L} \qquad(\text{小角近似}\ \sin\theta\approx\tan\theta)$$
+
+<p>第 $k$ 级明纹位置 $x_k = k\dfrac{L\lambda}{d}$，所以<strong>相邻明（暗）纹间距</strong>：</p>
+
+$$\boldsymbol{\Delta x = \frac{L\lambda}{d}}$$
+
+<ul>
+  <li>条件链一个都不能少：相干光 + $d\ll L$ + 观察范围小（小角近似成立）。$\lambda$ 越大、$L$ 越大、$d$ 越小，条纹越稀疏；</li>
+  <li>白光入射：中央是白色明纹（各色光零程差重合），两侧按波长由小到大展开成彩色；</li>
+  <li>条纹是<strong>等间距</strong>的——这是双缝干涉与单缝衍射图样最大的外观区别。</li>
+</ul>
+
+<h4>薄膜干涉入门：等倾与等厚</h4>
+
+<p>一束光在薄膜上表面反射一次、下表面反射一次，两束反射光相遇干涉。光程差的主体是 $2nd$（$n$ 为膜折射率，$d$ 为膜厚，垂直入射时），<strong>但还可能要补一项半波损失</strong>（见第三节，这是高考完全不考、预赛必考的点）：</p>
+
+$$\delta = 2nd \;\Big(+\;\frac{\lambda}{2}\ \text{若两束反射光中只有一束发生半波损失}\Big)$$
+
+<ul>
+  <li><strong>等厚干涉</strong>（$d$ 变、倾角不变）：同一级条纹对应同一厚度——劈尖干涉条纹平行等距，相邻条纹对应厚度差 $\Delta d = \dfrac{\lambda}{2n}$，可用来测细丝直径、检查平面平整度；</li>
+  <li><strong>等倾干涉</strong>（$d$ 不变、倾角变）：同一级条纹对应同一入射倾角——呈同心圆环，扩展光源才能看到；</li>
+  <li>肥皂泡、油膜的彩色：白光下不同波长在不同厚度处相长——厚度在变，颜色跟着变。</li>
+</ul>
+
+<h3>2.5 衍射初步：单缝与分辨本领</h3>
+
+<h4>单缝夫琅禾费衍射</h4>
+
+<p>宽为 $a$ 的单缝，平行光正入射。用"半波带"思想（第三节细讲）可得<strong>暗纹</strong>条件：</p>
+
+$$\boldsymbol{a\sin\theta = \pm k\lambda}\qquad (k=1,2,3,\dots)$$
+
+<ul>
+  <li>注意与双缝干涉<strong>形式相反</strong>：这里是 $k\lambda$ 对应<strong>暗纹</strong>！记忆法：缝内光线两两配对抵消，能分成偶数个半波带就暗；</li>
+  <li>中央明纹半角宽 $\theta_1 \approx \dfrac{\lambda}{a}$，屏上线宽度 $\Delta x_0 = \dfrac{2L\lambda}{a}$，<strong>是其他各级明纹宽度的 2 倍</strong>，且集中了绝大部分光能；</li>
+  <li>缝越窄（$a$ 越小），中央亮斑越宽——"限制越狠，展开越宽"，这是波动性的指纹。</li>
+</ul>
+
+<h4>分辨本领（瑞利判据）</h4>
+
+<p>圆孔衍射使每个点光源的像都是一个艾里斑，第一暗环角半径 $\theta \approx 1.22\dfrac{\lambda}{D}$（$D$ 为孔径）。<strong>瑞利判据</strong>：一个斑的中心恰好落在另一个斑的第一暗环上时，两物点刚好能分辨，故最小分辨角：</p>
+
+$$\boldsymbol{\theta_{\min} = 1.22\frac{\lambda}{D}}$$
+
+<ul>
+  <li>望远镜口径 $D$ 越大、波长 $\lambda$ 越短，分辨本领越高——所以天文望远镜要做大口径，电子显微镜用短波长"电子波"；</li>
+  <li>人眼瞳孔 $D\approx 2\sim 5\ \mathrm{mm}$，对 $\lambda\approx 550\ \mathrm{nm}$，$\theta_{\min}\approx 1.22\times\dfrac{550\times10^{-9}}{3\times10^{-3}}\approx 2.2\times10^{-4}\ \mathrm{rad}\approx 0.77'$，与实际吻合。</li>
+</ul>
+
+<blockquote>
+  <p><strong>一句话串起波动光学</strong>：双缝干涉是"两条缝的光程差"，薄膜是"上下表面反射的光程差"，单缝衍射是"缝内无数个子波的光程差"。抓住光程差 $\delta$，就抓住了整章的牛鼻子。</p>
+</blockquote>
+
+<hr>
+
+<h2 id="s3">三、竞赛专属·高考不考：符号约定的严格推导、半波损失与暗纹公式的由来</h2>
+
+<p>以下内容高考完全不作要求，但预赛选择题、复赛填空题里反复出现。它们共同的特征是：<strong>课本只给结论，竞赛要你说清"为什么"</strong>。每一段推导都只用到相似三角形和小量近似，跟着走一遍，你就真正拥有了这些公式。</p>
+
+<h3>3.1 球面镜成像公式的严格推导（符号约定版）</h3>
+
+<p>以凹面镜为例。设凹面镜顶点为 $O$，球心 $C$ 在镜前，曲率半径 $OC = R$（按约定 $R>0$）。主轴上物点 $A$ 距顶点 $u$，从 $A$ 发出一条近轴光线射到镜面上 $P$ 点，反射后交主轴于像点 $B$，像距 $OB = v$。设 $P$ 点高度为 $h$，$\angle PCO$ 对应的小角为 $\varphi$。</p>
+
+<p><strong>第一步：反射定律定几何关系。</strong>半径 $CP$ 是法线，入射角 = 反射角，记为 $i$。设入射光线 $AP$ 与主轴夹角 $\alpha$，反射光线 $PB$ 与主轴夹角 $\beta$，由三角形外角关系：</p>
+
+$$\varphi = \alpha + i, \qquad \beta = \varphi + i \;\Rightarrow\; \alpha + \beta = 2\varphi$$
+
+<p><strong>第二步：近轴近似（$\tan\theta\approx\theta$）把角变成边。</strong></p>
+
+$$\alpha \approx \tan\alpha = \frac{h}{u}, \qquad \beta \approx \frac{h}{v}, \qquad \varphi \approx \frac{h}{R}$$
+
+<p>（近轴意味着 $P$ 离主轴很近，物距、像距都可近似用顶点 $O$ 量起。）</p>
+
+<p><strong>第三步：代入 $\alpha+\beta=2\varphi$，约去 $h$：</strong></p>
+
+$$\frac{h}{u}+\frac{h}{v}=\frac{2h}{R} \;\Rightarrow\; \boldsymbol{\frac{1}{u}+\frac{1}{v}=\frac{2}{R}=\frac{1}{f}}\quad\left(f=\frac{R}{2}\right)$$
+
+<p>焦点定义：平行主轴入射（$u\to\infty$）的光线会聚于 $\dfrac{1}{v}=\dfrac{2}{R}$ 处，即 $v=\dfrac{R}{2}$——所以焦距恰好是半径的一半，$\boldsymbol{f=R/2}$，这不是巧合而是推论。</p>
+
+<div class="deep">
+  <strong>虚像情形的推广</strong>：若物在焦距内，反射光线发散，反向延长线交于镜后，即 $v<0$。推导中只要把 $\beta\approx\dfrac{h}{v}$ 理解为带符号的代数式，<strong>同一个公式自动成立</strong>——这正是"实正虚负"约定的价值：一个公式覆盖全部情形，无需分类讨论。薄透镜（两面折射）的推导思路相同，用到折射定律近轴形式 $n_1\theta_1 = n_2\theta_2$，结论形式完全一致。
+</div>
+
+<h3>3.2 放大率负号的由来（相似三角形）</h3>
+
+<p>凸透镜成像，物高 $h$，过光心的光线不偏折。物在左侧高 $h$（向上为正），实像在右侧。由相似三角形（物、光心、像尖构成的两个直角三角形）：</p>
+
+$$\frac{h_{像}}{h_{物}} = \frac{v}{u}\quad(\text{大小关系})$$
+
+<p>但实像<strong>倒立</strong>——若规定向上为正，则 $h_{像}$ 本身是负的。为了在公式里自动携带正倒信息，定义放大率时补上负号：</p>
+
+$$\boldsymbol{\beta = -\frac{v}{u}}$$
+
+<p>检验：实像 $v>0 \Rightarrow \beta<0$ 倒立 ✓；虚像 $v<0 \Rightarrow \beta>0$ 正立 ✓。负号不是人为规定着玩，而是把"正立/倒立"这个几何事实编译成了代数语言。</p>
+
+<h3>3.3 半波损失：什么时候要加 $\dfrac{\lambda}{2}$</h3>
+
+<p>光从<strong>光疏介质射向光密介质</strong>（$n_1<n_2$）时，界面上的<strong>反射光</strong>会发生相位 $\pi$ 的突变，等效于光程多了半个波长——这就是半波损失。折射光永远没有半波损失；从光密射向光疏的反射也没有。</p>
+
+<table>
+  <thead>
+    <tr><th>薄膜情形（膜折射率 $n$，上下介质折射率比较）</th><th>上表面反射</th><th>下表面反射</th><th>是否补 $\frac{\lambda}{2}$</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="l">肥皂膜在空气中：空气 $1.0$ / 膜 $1.33$ / 空气 $1.0$</td><td class="l">有（疏→密）</td><td class="l">无（密→疏）</td><td class="l"><strong>要补</strong>：$\delta=2nd+\frac{\lambda}{2}$</td></tr>
+    <tr><td class="l">空气劈尖（两玻璃夹空气）：玻璃 $1.5$ / 空气 $1.0$ / 玻璃 $1.5$</td><td class="l">无</td><td class="l">有</td><td class="l"><strong>要补</strong>：$\delta=2d+\frac{\lambda}{2}$</td></tr>
+    <tr><td class="l">增透膜：空气 $1.0$ / 膜 $n$ / 玻璃 $n'$（$1.0<n<n'$）</td><td class="l">有</td><td class="l">有</td><td class="l"><strong>不补</strong>：$\delta=2nd$（两次突变相互抵消）</td></tr>
+    <tr><td class="l">膜 $n$ 比两侧介质都大或都小</td><td colspan="2" class="l">两次反射同有或同无</td><td class="l"><strong>不补</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>判断口诀</strong>：两次反射，<strong>只丢一次</strong>半波就补 $\dfrac{\lambda}{2}$；丢零次或丢两次都不补。每次反射单独问一句"我是从疏到密吗"，答"是"记一次。
+</div>
+
+<p>增透膜的设计就基于上表第三行：$\delta = 2nd$ 取半波长的奇数倍使反射光相消，垂直入射最薄时</p>
+
+$$2nd = \frac{\lambda}{2} \;\Rightarrow\; \boldsymbol{d_{\min} = \frac{\lambda}{4n}}\quad\text{（"四分之一波长膜"）}$$
+
+<h3>3.4 单缝衍射暗纹公式：半波带法</h3>
+
+<p>平行光正入射到宽 $a$ 的单缝，考察衍射角 $\theta$ 方向的会聚点。把缝面想象成一排等宽的子波源。<strong>关键技巧</strong>：把缝分成若干条与缝缘平行的"半波带"——相邻半波带到观察点的光程差恰好是 $\dfrac{\lambda}{2}$，于是相邻半波带内一一对应的两点发出的子波<strong>两两相消</strong>。</p>
+
+<ul>
+  <li>缝两端光线的光程差为 $a\sin\theta$。若 $a\sin\theta = 2\times\dfrac{\lambda}{2} = \lambda$，缝恰好分成 <strong>2 个</strong>半波带，全部配对相消 → <strong>第一暗纹</strong>；</li>
+  <li>一般地，$a\sin\theta = \pm k\lambda$（$k=1,2,\dots$）时分成 $2k$ 个半波带（偶数），全部抵消 → <strong>第 $k$ 级暗纹</strong>；</li>
+  <li>若分成 $2k+1$ 个半波带（奇数，$a\sin\theta=\pm(2k+1)\dfrac{\lambda}{2}$），剩一个带没人配对 → 近似为第 $k$ 级<strong>明纹</strong>中心（严格说要用积分算，半波带给出的是极好的近似）。</li>
+</ul>
+
+$$\boldsymbol{a\sin\theta = \pm k\lambda}\ \text{（暗）}; \qquad a\sin\theta \approx \pm(2k+1)\frac{\lambda}{2}\ \text{（明，近似）}$$
+
+<div class="key-point">
+  <strong>对比记忆</strong>：双缝干涉 $d\sin\theta = k\lambda$ 是<strong>明纹</strong>（两束光同相叠加），单缝衍射 $a\sin\theta = k\lambda$ 是<strong>暗纹</strong>（无数个波带两两抵消）。一个是"相加"，一个是"配对相消"，物理机制不同，公式形似而结论相反——竞赛就爱考这个反差。
+</div>
+
+<h3>3.5 瑞利判据为什么是 $1.22\dfrac{\lambda}{D}$</h3>
+
+<p>圆孔衍射的严格理论（贝塞尔函数，复赛中也不要求推导）给出第一暗环角位置 $\sin\theta_1 = 1.22\dfrac{\lambda}{D}$——系数 $1.22$ 来自圆孔衍射图样的第一个零点（精确值 $1.2197$），区别于单缝的 $1.00$。瑞利判据是一个<strong>约定俗成的实用标准</strong>：两等亮物点的衍射斑中心相距恰为一个斑的第一暗环半径时，叠加光强谷底比峰低约 $26\%$，人眼刚好能分辨。记住系数与结论即可：</p>
+
+$$\boldsymbol{\theta_{\min} = 1.22\frac{\lambda}{D}}$$
+
+<hr>
+
+<h2 id="s4">四、例题精讲</h2>
+
+<p>本章 7 道例题，全部做到「思路起点 + 不跳步解析」。建议先遮住解析自己试 5 分钟，再对照。</p>
+
+<!-- 例1 -->
+<div class="ex">
+  <span class="ex-tag">例 1 · 课内基础</span>
+  <h4>凸透镜成像的完整三问</h4>
+  <p>焦距 $f = 20\ \mathrm{cm}$ 的凸透镜，物体放在镜前 $u = 60\ \mathrm{cm}$ 处。求：①像的位置；②像的性质（虚实、正倒、大小）；③若物体高 $2\ \mathrm{cm}$，像高多少？</p>
+  <p><strong>思路起点</strong>：固定三步走——定 $f$ 正负 → 代公式解 $v$（让符号说话）→ 用 $\beta=-v/u$ 定正倒大小。</p>
+  <p><strong>解</strong>：① 凸透镜 $f=+20\ \mathrm{cm}$，实物 $u=+60\ \mathrm{cm}$。由成像公式：</p>
+  $$\frac{1}{v}=\frac{1}{f}-\frac{1}{u}=\frac{1}{20}-\frac{1}{60}=\frac{3-1}{60}=\frac{1}{30}\ \Rightarrow\ v=+30\ \mathrm{cm}$$
+  <p>② $v>0$ → <strong>实像</strong>，位于镜后 $30\ \mathrm{cm}$ 处。放大率</p>
+  $$\beta=-\frac{v}{u}=-\frac{30}{60}=-0.5$$
+  <p>$\beta<0$ → <strong>倒立</strong>；$|\beta|=0.5<1$ → <strong>缩小</strong>。③ 像高 $|h'|=|\beta|\cdot h = 0.5\times 2 = \boldsymbol{1\ \mathrm{cm}}$（倒立）。</p>
+  <p><strong>验证</strong>：$u=60>2f=40$，物在二倍焦距外，按速查表应成缩小倒立实像，$f<v<2f$ 即 $20<30<40$ ✓。作图法（前图）同样落在 F′ 与 2F′ 之间 ✓。</p>
+</div>
+
+<!-- 例2 -->
+<div class="ex">
+  <span class="ex-tag">例 2 · 课内基础</span>
+  <h4>凹面镜的虚像与符号判读</h4>
+  <p>一曲率半径 $R = 40\ \mathrm{cm}$ 的凹面镜，物体放在镜前 $u = 5\ \mathrm{cm}$ 处。求像的位置与性质。</p>
+  <p><strong>思路起点</strong>：先由 $f = R/2$ 定焦距，再统一代成像公式——凹面镜与凸透镜同公式，不许换写法。</p>
+  <p><strong>解</strong>：凹面镜 $R=+40\ \mathrm{cm}$，$f = \dfrac{R}{2} = +20\ \mathrm{cm}$。实物 $u = +5\ \mathrm{cm}$：</p>
+  $$\frac{1}{v}=\frac{1}{f}-\frac{1}{u}=\frac{1}{20}-\frac{1}{5}=\frac{1-4}{20}=-\frac{3}{20}\ \Rightarrow\ v=-\frac{20}{3}\approx -6.7\ \mathrm{cm}$$
+  <p>$v<0$ → <strong>虚像</strong>，位于镜后 $\dfrac{20}{3}\ \mathrm{cm}$。放大率</p>
+  $$\beta=-\frac{v}{u}=-\frac{-20/3}{5}=+\frac{4}{3}\approx +1.33$$
+  <p>$\beta>0$ → <strong>正立</strong>，$|\beta|>1$ → <strong>放大</strong>。这正是"物在焦距内 → 正立放大虚像"（化妆镜原理）。注意 $u<f$ 时没有实像可成，公式自动给出 $v<0$，与速查表一致 ✓。</p>
+</div>
+
+<!-- 例3 -->
+<div class="ex">
+  <span class="ex-tag hard">例 3 · 【预赛难度】</span>
+  <h4>双透镜组合：逐次成像与总放大率</h4>
+  <p>焦距 $f_1 = +20\ \mathrm{cm}$ 的凸透镜与焦距 $f_2 = -15\ \mathrm{cm}$ 的凹透镜共轴放置，相距 $d = 10\ \mathrm{cm}$。物体置于凸透镜前 $u_1 = 30\ \mathrm{cm}$ 处。求最终像的位置与总放大率。</p>
+  <p><strong>思路起点</strong>：第一个透镜成的像 = 第二个透镜的物；第二个透镜的物距从它自己量起 $u_2 = d - v_1$。虚物（$u_2<0$）照样代公式，符号约定会处理好。</p>
+  <p><strong>解</strong>：<strong>第一次成像</strong>（凸透镜）：</p>
+  $$\frac{1}{v_1}=\frac{1}{f_1}-\frac{1}{u_1}=\frac{1}{20}-\frac{1}{30}=\frac{3-2}{60}=\frac{1}{60}\ \Rightarrow\ v_1=+60\ \mathrm{cm}$$
+  <p>即若无凹透镜，光线将在凸透镜后 $60\ \mathrm{cm}$ 处会聚。但 $v_1 = 60 > d = 10$，光线<strong>尚未会聚</strong>就被凹透镜截住——对凹透镜而言这是<strong>虚物</strong>：</p>
+  $$u_2 = d - v_1 = 10 - 60 = -50\ \mathrm{cm}\ (<0,\ \text{虚物})$$
+  <p><strong>第二次成像</strong>（凹透镜，$f_2 = -15\ \mathrm{cm}$）：</p>
+  $$\frac{1}{v_2}=\frac{1}{f_2}-\frac{1}{u_2}=\frac{1}{-15}-\frac{1}{-50}=-\frac{1}{15}+\frac{1}{50}=\frac{-10+3}{150}=-\frac{7}{150}$$
+  $$\Rightarrow\ v_2=-\frac{150}{7}\approx -21.4\ \mathrm{cm}$$
+  <p>$v_2<0$ → 最终像位于凹透镜<strong>左方</strong>（入射光一侧）$\dfrac{150}{7}\ \mathrm{cm}$ 处，为<strong>虚像</strong>。各次放大率：</p>
+  $$\beta_1=-\frac{v_1}{u_1}=-\frac{60}{30}=-2, \qquad \beta_2=-\frac{v_2}{u_2}=-\frac{-150/7}{-50}=-\frac{3}{7}$$
+  <p>总放大率</p>
+  $$\beta=\beta_1\beta_2=(-2)\times\left(-\frac{3}{7}\right)=+\frac{6}{7}\approx +0.86$$
+  <p>$\beta>0$ → 最终像相对原物<strong>正立</strong>、略缩小。负负得正不是巧合：凸透镜把像倒了一次，凹透镜对虚物又"倒"了一次。</p>
+</div>
+
+<!-- 例4 -->
+<div class="ex">
+  <span class="ex-tag hard">例 4 · 【预赛难度】</span>
+  <h4>白光双缝干涉：第一级光谱的宽度</h4>
+  <p>双缝间距 $d = 0.20\ \mathrm{mm}$，缝到屏距离 $L = 1.0\ \mathrm{m}$，用白光（波长范围 $400\ \mathrm{nm} \sim 760\ \mathrm{nm}$）垂直照射。求屏上第一级可见光谱的宽度。</p>
+  <p><strong>思路起点</strong>：第一级光谱内端由<strong>紫光</strong>（$\lambda_1 = 400\ \mathrm{nm}$，第一级明纹）决定，外端由<strong>红光</strong>（$\lambda_2 = 760\ \mathrm{nm}$，第一级明纹）决定，宽度 = 两端位置之差。注意第 $k$ 级明纹位置 $x_k = k\dfrac{L\lambda}{d}$，取 $k=1$。</p>
+  <p><strong>解</strong>：紫光第一级明纹位置</p>
+  $$x_1 = \frac{L\lambda_1}{d} = \frac{1.0\times 400\times 10^{-9}}{0.20\times 10^{-3}} = 2.0\times 10^{-3}\ \mathrm{m} = 2.0\ \mathrm{mm}$$
+  <p>红光第一级明纹位置</p>
+  $$x_2 = \frac{L\lambda_2}{d} = \frac{1.0\times 760\times 10^{-9}}{0.20\times 10^{-3}} = 3.8\times 10^{-3}\ \mathrm{m} = 3.8\ \mathrm{mm}$$
+  <p>第一级光谱宽度</p>
+  $$\Delta x = x_2 - x_1 = \frac{L(\lambda_2-\lambda_1)}{d} = \boldsymbol{3.8 - 2.0 = 1.8\ \mathrm{mm}}$$
+  <p><strong>复核单位</strong>：$\dfrac{\mathrm{m}\cdot\mathrm{m}}{\mathrm{m}} = \mathrm{m}$ ✓；$\Delta x \ll L = 1\ \mathrm{m}$，小角近似自洽 ✓。顺便说明：紫光条纹间距 $\dfrac{L\lambda_1}{d} = 2.0\ \mathrm{mm}$ 比红光 $3.8\ \mathrm{mm}$ 密，所以光谱内紫外红。</p>
+</div>
+
+<!-- 例5 -->
+<div class="ex">
+  <span class="ex-tag hard">例 5 · 【复赛难度】</span>
+  <h4>增透膜的最小厚度（半波损失的完整应用）</h4>
+  <p>照相机镜头玻璃折射率 $n_3 = 1.5$，在其表面镀一层折射率 $n_2 = 1.38$ 的氟化镁薄膜，空气折射率 $n_1 = 1.0$。为使垂直入射的黄绿光（$\lambda = 550\ \mathrm{nm}$，人眼最敏感）反射最弱，求膜的最小厚度。</p>
+  <p><strong>思路起点</strong>：分两步——① 先判半波损失：比较 $n_1, n_2, n_3$ 的相对大小，数两次反射各有没有半波损失；② 再写光程差并令其为半波长的奇数倍（反射相消）。</p>
+  <p><strong>解</strong>：① 折射率关系 $1.0 < 1.38 < 1.5$，即 <strong>空气 → 膜 → 玻璃逐级增大</strong>。上表面反射（空气→膜，疏→密）：<strong>有</strong>半波损失；下表面反射（膜→玻璃，疏→密）：<strong>也有</strong>半波损失。两次突变各 $\dfrac{\lambda}{2}$，合计恰好抵消，<strong>不补附加项</strong>：</p>
+  $$\delta = 2n_2 d$$
+  <p>② 反射光相消（增透）条件：</p>
+  $$2n_2 d = (2k+1)\frac{\lambda}{2} \qquad (k=0,1,2,\dots)$$
+  <p>取 $k=0$ 得最薄厚度：</p>
+  $$d_{\min} = \frac{\lambda}{4n_2} = \frac{550\ \mathrm{nm}}{4\times 1.38} = \frac{550}{5.52}\ \mathrm{nm} \approx \boldsymbol{99.6\ \mathrm{nm} \approx 100\ \mathrm{nm}}$$
+  <p><strong>复核</strong>：若错误地多补一个 $\dfrac{\lambda}{2}$（即按"只丢一次"处理），会得到 $2n_2 d + \frac{\lambda}{2} = \frac{\lambda}{2} \Rightarrow d = 0$——物理上荒谬，反推出此处确实不该补。这也是检查半波损失是否判对的实用技巧。<strong>附带结论</strong>：膜对黄绿光增透，对红、紫光反射稍强，故镀膜镜头呈淡淡的紫红色。</p>
+</div>
+
+<!-- 例6 -->
+<div class="ex">
+  <span class="ex-tag hard">例 6 · 【复赛难度】</span>
+  <h4>天文望远镜的分辨本领</h4>
+  <p>某天文望远镜物镜口径 $D = 2.4\ \mathrm{m}$（与哈勃空间望远镜相当），光波长取 $\lambda = 550\ \mathrm{nm}$。①求其最小分辨角；②求它在距离 $r = 380\ \mathrm{km}$ 的月球轨道上能分辨月面上两点的最小间距（月球到地球距离按 $L = 3.8\times 10^{8}\ \mathrm{m}$ 估算）。</p>
+  <p><strong>思路起点</strong>：瑞利判据 $\theta_{\min} = 1.22\dfrac{\lambda}{D}$ 直接给出角分辨极限；"能分辨的最小间距" = 角距离 × 距离（小角近似 $s = L\theta$）。</p>
+  <p><strong>解</strong>：①</p>
+  $$\theta_{\min} = 1.22\frac{\lambda}{D} = 1.22\times\frac{550\times 10^{-9}}{2.4} = \frac{6.71\times 10^{-7}}{2.4} \approx \boldsymbol{2.8\times 10^{-7}\ \mathrm{rad}}$$
+  <p>（约合 $0.058$ 角秒。）② 月面上恰能分辨的两点间距：</p>
+  $$s = L\theta_{\min} = 3.8\times 10^{8} \times 2.8\times 10^{-7} = \boldsymbol{1.06\times 10^{2}\ \mathrm{m} \approx 106\ \mathrm{m}}$$
+  <p><strong>复核</strong>：数量级检查——$\theta$ 极小 ✓（衍射极限都很小）；$s$ 约百米量级 ✓（这就是"望远镜再强也看不清月面上的脚印"的原因——百米级的分辨极限）。题目中 "$380\ \mathrm{km}$" 是月轨高度的干扰信息，分辨间距取决于地月距离 $L$ 而非轨道高度，读题时要看清谁才是真正的"距离"。</p>
+</div>
+
+<!-- 例7 -->
+<div class="ex">
+  <span class="ex-tag">例 7 · 课内延伸（作图 + 解析互验）</span>
+  <h4>凹透镜成像：作图与公式双重验证</h4>
+  <p>焦距大小 $30\ \mathrm{cm}$ 的凹透镜，物体置于镜前 $u = 20\ \mathrm{cm}$ 处。先用成像公式求像，再说明如何用三条特殊光线作图验证。</p>
+  <p><strong>思路起点</strong>：凹透镜 $f<0$ 是唯一要当心的地方；作图时注意"平行入射的光，出射光的<strong>反向延长线</strong>过同侧焦点"。</p>
+  <p><strong>解</strong>：凹透镜 $f = -30\ \mathrm{cm}$，$u = +20\ \mathrm{cm}$：</p>
+  $$\frac{1}{v} = \frac{1}{f} - \frac{1}{u} = -\frac{1}{30} - \frac{1}{20} = \frac{-2-3}{60} = -\frac{1}{12} \ \Rightarrow\ v = -12\ \mathrm{cm}$$
+  <p>$v<0$ → <strong>虚像</strong>，在镜前（与物同侧）$12\ \mathrm{cm}$ 处。放大率</p>
+  $$\beta = -\frac{v}{u} = -\frac{-12}{20} = +0.6$$
+  <p>$\beta>0$ 正立，$|\beta|<1$ 缩小——符合"凹透镜恒成正立缩小虚像" ✓。作图验证：①从物顶作平行主轴光线，到镜面后其反向延长线过物方焦点 $F$（镜前 $30\ \mathrm{cm}$ 处）；②过光心光线不偏折直穿。两条出射光线的反向延长线交于镜前 $12\ \mathrm{cm}$、高约 $0.6$ 倍物高处——与解析结果完全一致 ✓。<strong>自检习惯</strong>：凡是公式算完，花 30 秒用两条光线画个草图对一下，符号错误立刻现形。</p>
+</div>
+
+<hr>
+
+<h2 id="s5">五、易错点</h2>
+
+<p>以下 8 条全部是真实高频错误，每一条都有人栽过。逐条对照自己，别急着点头——动手算一遍例 1～例 7 再回来认领。</p>
+
+<div class="warn">
+  <strong>易错 1：符号约定混用，公式的正负全凭感觉。</strong>把"实正虚负"和某些教材的"物距恒为正"两套约定混着用，$\dfrac{1}{u}+\dfrac{1}{v}=\dfrac{1}{f}$ 直接崩盘。<strong>铁律</strong>：全章只用本章约定——实物 $u>0$、实像 $v>0$、会聚型 $f>0$，解出负值就按负值解释（$v<0$ 虚像、$u<0$ 虚物），中途不换规则。
+</div>
+
+<div class="warn">
+  <strong>易错 2：放大率忘记负号，把 $|\beta|$ 当 $\beta$。</strong>$\beta = -\dfrac{v}{u}$ 的负号携带正倒信息：只写 $\beta = \dfrac{v}{u}$ 会把"倒立"算成"正立"。问答"放大率"时必须带符号；只有问"放大多少倍"时才取绝对值。例 3 中 $\beta_1\beta_2$ 负负得正，丢了负号连正倒都会判反。
+</div>
+
+<div class="warn">
+  <strong>易错 3：组合光具中物距从错误的基准量起。</strong>第二个透镜的物距 $u_2$ 必须从<strong>第二个透镜</strong>量起：$u_2 = d - v_1$。直接把第一个透镜的像距 $v_1$ 当 $u_2$ 是组合题第一杀手。$v_1 > d$ 时 $u_2 < 0$ 是虚物——不要慌，照代公式。
+</div>
+
+<div class="warn">
+  <strong>易错 4：半波损失的有无判反或漏判。</strong>肥皂膜（空气/膜/空气）只在上表面有半波损失，<strong>要补</strong> $\dfrac{\lambda}{2}$；增透膜（$n$ 逐级增大）两次反射都有，<strong>不补</strong>。口诀：两次反射各问一句"疏→密吗"，只丢一次才补。判错的后果是明暗条件整个颠倒（例 5 的荒谬值自检法）。
+</div>
+
+<div class="warn">
+  <strong>易错 5：双缝条纹间距公式的条件被无视。</strong>$\Delta x = \dfrac{L\lambda}{d}$ 只在 $d \ll L$、小角近似、垂直入射、真（空）气路径下成立。把它搬进大角度或斜入射情形必然出错；另外注意 $d$ 是<strong>两缝中心间距</strong>，不是缝宽——缝宽 $a$ 管衍射，缝距 $d$ 管干涉，两个字母两件事。
+</div>
+
+<div class="warn">
+  <strong>易错 6：单缝衍射与双缝干涉的明暗条件记反。</strong>双缝：$d\sin\theta = k\lambda$ <strong>明</strong>；单缝：$a\sin\theta = k\lambda$ <strong>暗</strong>（$k=1,2,\dots$，无 $k=0$——$\theta=0$ 是中央明纹中心）。机制不同（相加 vs 配对相消），形似而结论相反。记反一条，整题清零。
+</div>
+
+<div class="warn">
+  <strong>易错 7：中央明纹宽度当成普通条纹宽度。</strong>单缝衍射中央明纹宽度 $\dfrac{2L\lambda}{a}$ 是<strong>两侧其他明纹宽度的 2 倍</strong>，且双缝干涉条纹<strong>等间距</strong>而单缝衍射条纹<strong>不等间距</strong>。看图识图样时这是最快的判据。
+</div>
+
+<div class="warn">
+  <strong>易错 8：分辨本领公式用错量或算错数量级。</strong>$\theta_{\min} = 1.22\dfrac{\lambda}{D}$ 中 $D$ 是<strong>孔径（直径）</strong>不是半径；$\lambda$ 与 $D$ 必须统一成同一单位再相除（$\mathrm{nm}$ 与 $\mathrm{m}$ 混用会差 $10^9$）。算完必做数量级检查：光学衍射极限通常在 $10^{-7}\sim10^{-4}\ \mathrm{rad}$ 量级，超出范围先怀疑单位。
+</div>
+
+<hr>
+
+<h2 id="s6">六、自检清单</h2>
+
+<p>合上书，逐条自查。任何一条答不上来，回到对应小节再过一遍。</p>
+
+<ul class="checklist">
+  <li>我能默写本章的符号约定：$u$、$v$、$f$、$R$ 各自的正负规则，并能说出"实正虚负"四个字的具体含义</li>
+  <li>我能不看笔记写出成像公式 $\dfrac{1}{u}+\dfrac{1}{v}=\dfrac{1}{f}=\dfrac{2}{R}$ 与放大率 $\beta = -\dfrac{v}{u}$，并解释负号的意义</li>
+  <li>我能用 $\alpha+\beta=2\varphi$ 加近轴近似，独立推出球面镜成像公式（第三节 3.1 的三步）</li>
+  <li>我能背出凸透镜在 $u>2f$、$u=2f$、$f<u<2f$、$u=f$、$u<f$ 五种情形下的成像性质，并用公式逐一验证</li>
+  <li>我能画出凸透镜、凹透镜、凹面镜各自的三条特殊光线，并说明作图法如何与公式互相验证</li>
+  <li>我能处理双透镜组合题：会写 $u_2 = d - v_1$，知道 $v_1>d$ 时出现虚物且照样代公式，会算 $\beta=\beta_1\beta_2$</li>
+  <li>我能写出双缝干涉明纹位置 $x_k = k\dfrac{L\lambda}{d}$ 与条纹间距 $\Delta x = \dfrac{L\lambda}{d}$，并说出成立的全部前提条件</li>
+  <li>我能判断任意薄膜情形的半波损失有无（肥皂膜、空气劈尖、增透膜三种典型都说得清）</li>
+  <li>我能独立算出增透膜最小厚度 $d_{\min} = \dfrac{\lambda}{4n}$，并用"荒谬值法"自检半波损失判断是否出错</li>
+  <li>我能写出单缝衍射暗纹条件 $a\sin\theta = \pm k\lambda$（$k=1,2,\dots$），说清它与双缝干涉明纹条件形似而相反的原因</li>
+  <li>我记得单缝衍射中央明纹宽度 $\dfrac{2L\lambda}{a}$ 是其他明纹的两倍，并能用它区分干涉与衍射图样</li>
+  <li>我能用瑞利判据 $\theta_{\min} = 1.22\dfrac{\lambda}{D}$ 估算望远镜的分辨极限，并自觉做单位统一与数量级检查</li>
+  <li>我把例 1～例 7 全部独立重做了一遍（遮住解析），符号、单位、数量级都对</li>
+</ul>
+
+<blockquote>
+  <p><strong>小兵小贴士</strong>：光学是竞赛里"投入产出比"最高的一章——约定吃透、光程差抓住，预赛的光学题基本就是送分。但它也是<strong>最考验书写习惯</strong>的一章：正负号、单位换算、近似条件，任何一个潦草都会付出代价。把这一章写得工工整整，你练的不只是光学，还有物理人最重要的"严谨"肌肉。下一章《近代物理与实验》见！</p>
+</blockquote>
+
+<hr>
+
+<p style="text-align: center; color: var(--ink-soft); font-size: 0.9em;">
+  tags: #物理 #竞赛 #光学 #几何光学 #干涉 #衍射 #深度学习
+</p>
+
+</body>
+</html>

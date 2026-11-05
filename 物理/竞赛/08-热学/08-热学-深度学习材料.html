@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>08 热学 · 物理竞赛入门</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+figure { margin: 18px 0; text-align: center; page-break-inside: avoid; }
+figcaption { font-size: 13px; color: var(--ink-soft); margin-top: 6px; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<nav class="chap-nav">高考备考 · 物理 · 竞赛专题 ｜ 08-热学-深度学习材料.html</nav>
+<header class="chap-head">
+  <h1>08 热 学</h1>
+  <p class="chap-meta">物理竞赛专题（12 章系列 · 第 8 章） ｜ 适用：高一竞赛入门（目标：预赛 → 复赛入门） ｜ 前置：01 竞赛数学工具（小量与积分思想）、04 功与能量 ｜ 学生：小兵</p>
+</header>
+<div class="chap-intro">
+  热学是竞赛里出了名的"<strong>纸老虎</strong>"章节：公式数量不多，核心就三条——状态方程、热力学第一定律、循环效率。真正拉开差距的是<strong>符号约定</strong>和<strong>过程分析</strong>：同样是"气体膨胀"，等温、等压、绝热的算法完全不同。本章我们从"打气筒为什么会发热"这种生活现象出发，把每条公式推一遍、每张 p-V 图画一遍。你只要带上演算纸，跟着一步步算，热学完全可以变成你的稳定得分区。
+</div>
+
+<div class="toc">
+  <div class="toc-label">本章导航</div>
+  <div class="toc-links">
+    <a href="#s1">一、知识全景</a>
+    <a href="#s2">二、核心概念</a>
+    <a href="#s3">三、竞赛专属·高考不考</a>
+    <a href="#s4">四、例题精讲</a>
+    <a href="#s5">五、易错点</a>
+    <a href="#s6">六、自检清单</a>
+  </div>
+</div>
+
+<!-- 一、知识全景 -->
+<h2 id="s1">一、知识全景</h2>
+
+<p>热学研究的对象是<strong>大量分子组成的系统</strong>。它的迷人之处在于"两条腿走路"：一条是<strong>宏观</strong>的热力学（压强、体积、温度、热量、功），一条是<strong>微观</strong>的分子动理论（分子的无规则运动）。竞赛题往往让这两条腿交替前进——用微观解释宏观，用宏观约束微观。</p>
+
+<div class="map">
+  <div class="row"><div class="node root">热 学</div></div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node">状态描述<br><small>p、V、T</small></div>
+    <div class="node">微观本质<br><small>分子动理论</small></div>
+    <div class="node">能量守恒<br><small>热力学第一定律</small></div>
+    <div class="node">过程方向<br><small>熵 · 第二定律</small></div>
+  </div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node leaf">pV = nRT</div>
+    <div class="node leaf">等温 / 等压 / 等容 / 绝热</div>
+    <div class="node leaf">内能 U 与温度的关系</div>
+    <div class="node leaf">p-V 图面积 = 功</div>
+    <div class="node leaf">循环与效率</div>
+  </div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node view">竞赛工具<br><small>绝热方程 pV^γ = 常量</small></div>
+    <div class="node view">竞赛工具<br><small>卡诺循环效率推导</small></div>
+    <div class="node view">竞赛工具<br><small>熵的统计意义</small></div>
+  </div>
+</div>
+
+<blockquote>
+  <p><strong>和高考的衔接</strong>：新高考里热学是选考模块，考玻意耳定律、查理定律和第一定律的定性判断。竞赛不增加多少新公式，但要求你把"定性感觉"升级成"<strong>定量计算</strong>"：p-V 图上随便画一个循环，你要能算出每一段的 Q、W、ΔU，最后算出效率。这一步跨过去，预赛热学题就基本拿下了。</p>
+</blockquote>
+
+<hr>
+
+<!-- 二、核心概念 -->
+<h2 id="s2">二、核心概念</h2>
+
+<h3>2.1 理想气体状态方程</h3>
+
+<p>一定质量的理想气体，三个状态参量 $p$、$V$、$T$ 被一条方程捆在一起：</p>
+
+$$\boldsymbol{pV = nRT = \frac{m}{M}RT}$$
+
+<ul>
+  <li>$n$：物质的量（mol）；$m$：气体质量；$M$：摩尔质量（如氧气 $M = 32\ \mathrm{g/mol} = 0.032\ \mathrm{kg/mol}$）</li>
+  <li>$R = 8.31\ \mathrm{J/(mol\cdot K)}$：普适气体常量</li>
+  <li><strong>T 必须用开尔文</strong>：$T(\mathrm{K}) = t(℃) + 273.15$，平时计算取 273 即可</li>
+  <li>理想气体模型：分子本身大小可忽略、分子间无相互作用力（除碰撞瞬间）。常温常压下的真实气体都是很好的理想气体</li>
+</ul>
+
+<p>质量不变时，任意两个状态之间满足：</p>
+
+$$\frac{p_1V_1}{T_1} = \frac{p_2V_2}{T_2} = \text{常量}$$
+
+<table>
+  <thead>
+    <tr><th>过程</th><th>不变的量</th><th>规律</th><th>名称</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="l">等温</td><td>T</td><td>$p_1V_1 = p_2V_2$</td><td class="l">玻意耳定律</td></tr>
+    <tr><td class="l">等压</td><td>p</td><td>$\dfrac{V_1}{T_1} = \dfrac{V_2}{T_2}$</td><td class="l">盖-吕萨克定律</td></tr>
+    <tr><td class="l">等容</td><td>V</td><td>$\dfrac{p_1}{T_1} = \dfrac{p_2}{T_2}$</td><td class="l">查理定律</td></tr>
+  </tbody>
+</table>
+
+<div class="key-point">
+  <strong>压强单位速查</strong>：$1\ \mathrm{atm} = 1.01\times10^{5}\ \mathrm{Pa} = 76\ \mathrm{cmHg}$。竞赛计算一律换成国际单位：压强用 Pa、体积用 m³（$1\ \mathrm{L} = 10^{-3}\ \mathrm{m^3}$）、温度用 K，功和能量自然就出来焦耳了。
+</div>
+
+<h3>2.2 微观图景：压强和温度到底是什么</h3>
+
+<p>气体压强不是"气体的重量"，而是<strong>无数分子撞击器壁的平均效果</strong>。用分子动理论可以推出（复赛入门会要求）：</p>
+
+$$p = \frac{2}{3} n_0\, \overline{\varepsilon_k} \qquad \overline{\varepsilon_k} = \frac{1}{2}m_0\overline{v^2}$$
+
+<p>其中 $n_0$ 是分子数密度，$\overline{\varepsilon_k}$ 是分子的平均平动动能。与状态方程对比，得到本章最重要的一座桥：</p>
+
+$$\boldsymbol{\overline{\varepsilon_k} = \frac{3}{2}kT} \qquad k = 1.38\times10^{-23}\ \mathrm{J/K}\ \text{（玻尔兹曼常量）}$$
+
+<ul>
+  <li><strong>温度是分子平均平动动能的量度</strong>——温度越高，分子撞得越凶。这就是"温度"的微观本质。</li>
+  <li>由此可得分子的<strong>方均根速率</strong>：$v_{\mathrm{rms}} = \sqrt{\overline{v^2}} = \sqrt{\dfrac{3kT}{m_0}} = \sqrt{\dfrac{3RT}{M}}$</li>
+  <li>估算一下：0 ℃（273 K）的氧气，$v_{\mathrm{rms}} = \sqrt{\dfrac{3\times8.31\times273}{0.032}} \approx 461\ \mathrm{m/s}$——比声音还快！气体分子其实很"忙碌"。</li>
+</ul>
+
+<h3>2.3 内能：理想气体的内能只由温度决定</h3>
+
+<p>理想气体分子间没有相互作用，<strong>没有分子势能</strong>，内能就是所有分子动能的总和。因此：</p>
+
+$$U = n\,C_V T \qquad\Rightarrow\qquad \boldsymbol{\Delta U = nC_V\,\Delta T}$$
+
+<p>其中 $C_V$ 是<strong>等容摩尔热容</strong>，由分子结构决定：</p>
+
+<table>
+  <thead>
+    <tr><th>气体类型</th><th>例子</th><th>$C_V$</th><th>$C_p = C_V + R$</th><th>$\gamma = C_p/C_V$</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="l">单原子</td><td class="l">He、Ne、Ar</td><td>$\dfrac{3}{2}R$</td><td>$\dfrac{5}{2}R$</td><td>$\dfrac{5}{3} \approx 1.67$</td></tr>
+    <tr><td class="l">双原子（常温）</td><td class="l">N₂、O₂、H₂、空气</td><td>$\dfrac{5}{2}R$</td><td>$\dfrac{7}{2}R$</td><td>$\dfrac{7}{5} = 1.40$</td></tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p><strong>为什么双原子是 $\frac{5}{2}R$？</strong>单原子分子只有 3 个平动自由度，每个自由度贡献 $\frac{1}{2}kT$ 的能量（能量均分定理），所以 $U = \frac{3}{2}nRT$。双原子分子多出 2 个转动自由度（绕垂直于分子轴的两个方向转），能量变成 $\frac{5}{2}nRT$。这个结论竞赛里<strong>当作已知直接用</strong>，推导属于大学内容，记住数字 $3/2$、$5/2$、$7/2$ 就够了。</p>
+  <p><strong>千万注意</strong>：$\Delta U = nC_V\Delta T$ 对<strong>任何过程</strong>（不只等容）都成立——因为内能只看温度，不看过程。这是 $C_V$ 下标"V"最容易误导人的地方，见易错点 3。</p>
+</blockquote>
+
+<h3>2.4 热力学第一定律：本章的"宪法"</h3>
+
+<p>热力学第一定律就是<strong>能量守恒在热现象中的表达式</strong>。全章统一采用如下约定（写在卷子第一行，永远不反悔）：</p>
+
+$$\boldsymbol{\Delta U = Q + W}$$
+
+<ul>
+  <li>$Q$：气体从外界<strong>吸收</strong>的热量。吸热 $Q > 0$，放热 $Q < 0$</li>
+  <li>$W$：<strong>外界对气体</strong>所做的功。气体被压缩时 $W > 0$；气体膨胀对外做功时 $W < 0$</li>
+  <li>口诀："<strong>吸热为正、被压为正</strong>"——都是外界给气体"输送"能量的方式</li>
+</ul>
+
+<div class="warn">
+  <strong>约定警告</strong>：很多教材（包括部分高中课本）写的是 $\Delta U = Q - W'$，那里的 $W'$ 是"<strong>气体对外</strong>做功"，膨胀时 $W' > 0$。两种写法物理完全一样，只是 $W = -W'$。本书全章用 $\Delta U = Q + W$（$W$ 为外界对气体做功）。以后看任何资料，先确认它的 $W$ 是"谁对谁"，再动笔。
+</div>
+
+<h4>准静态过程中功的计算：p-V 图的面积</h4>
+
+<p>气体缓慢（准静态）膨胀时，外界对气体做功：</p>
+
+$$W = -\int_{V_1}^{V_2} p\,\mathrm{d}V \qquad\text{（负号来自我们的约定）}$$
+
+<p>几何意义：<strong>p-V 图线下方的面积 = 气体对外做的功</strong>（即 $-W$）。</p>
+
+<figure>
+  <svg viewBox="0 0 340 220" width="340" height="220" xmlns="http://www.w3.org/2000/svg">
+    <!-- 坐标轴 -->
+    <line x1="45" y1="15" x2="45" y2="185" stroke="#1f2933" stroke-width="1.5"/>
+    <line x1="45" y1="185" x2="320" y2="185" stroke="#1f2933" stroke-width="1.5"/>
+    <polygon points="45,15 41,25 49,25" fill="#1f2933"/>
+    <polygon points="320,185 310,181 310,189" fill="#1f2933"/>
+    <text x="30" y="22" font-size="13" fill="#1f2933">p</text>
+    <text x="312" y="203" font-size="13" fill="#1f2933">V</text>
+    <text x="30" y="195" font-size="12" fill="#1f2933">O</text>
+    <!-- 面积填充 -->
+    <path d="M 100,60 L 260,60 L 260,185 L 100,185 Z" fill="#2b6cb0" opacity="0.12"/>
+    <!-- 等压线 -->
+    <line x1="100" y1="60" x2="260" y2="60" stroke="#2b6cb0" stroke-width="2.5"/>
+    <polygon points="260,60 250,56 250,64" fill="#2b6cb0"/>
+    <!-- 虚线落轴 -->
+    <line x1="100" y1="60" x2="100" y2="185" stroke="#52606d" stroke-width="1" stroke-dasharray="4,3"/>
+    <line x1="260" y1="60" x2="260" y2="185" stroke="#52606d" stroke-width="1" stroke-dasharray="4,3"/>
+    <text x="93" y="203" font-size="12" fill="#52606d">V₁</text>
+    <text x="253" y="203" font-size="12" fill="#52606d">V₂</text>
+    <text x="150" y="50" font-size="12.5" fill="#2b6cb0">等压膨胀 p = 常量</text>
+    <text x="140" y="130" font-size="12.5" fill="#52606d">面积 = 气体对外做功</text>
+  </svg>
+  <figcaption>图 1：等压膨胀的 p-V 图。功 = 矩形面积 $p(V_2 - V_1)$；曲线过程则是曲线下方面积。</figcaption>
+</figure>
+
+<ul>
+  <li>等压过程：$W = -p\,\Delta V = -nR\,\Delta T$（用状态方程代换，非常好用）</li>
+  <li>等容过程：$\Delta V = 0 \Rightarrow W = 0$，所以 $Q = \Delta U$——这正是 $C_V$ 名字的由来</li>
+  <li>等温过程（理想气体 $\Delta U = 0$）：$Q = -W = nRT\ln\dfrac{V_2}{V_1}$（推导见竞赛专属节）</li>
+  <li>循环一周：净功 = <strong>闭合曲线所围面积</strong>；顺时针循环气体对外做正功（热机），逆时针为负（制冷机）</li>
+</ul>
+
+<h3>2.5 四大基本过程一页通</h3>
+
+<table>
+  <thead>
+    <tr><th>过程</th><th>特征</th><th>过程方程</th><th>W（外界对气体）</th><th>ΔU</th><th>Q</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="l"><strong>等温</strong></td><td class="l">$T$ 不变</td><td class="l">$pV = C$</td>
+      <td class="l">$-nRT\ln\dfrac{V_2}{V_1}$</td><td>$0$</td><td class="l">$Q = -W$</td>
+    </tr>
+    <tr>
+      <td class="l"><strong>等压</strong></td><td class="l">$p$ 不变</td><td class="l">$\dfrac{V}{T} = C$</td>
+      <td class="l">$-p\,\Delta V = -nR\Delta T$</td><td>$nC_V\Delta T$</td><td class="l">$nC_p\,\Delta T$</td>
+    </tr>
+    <tr>
+      <td class="l"><strong>等容</strong></td><td class="l">$V$ 不变</td><td class="l">$\dfrac{p}{T} = C$</td>
+      <td class="l">$0$</td><td>$nC_V\Delta T$</td><td class="l">$Q = \Delta U$</td>
+    </tr>
+    <tr>
+      <td class="l"><strong>绝热</strong></td><td class="l">$Q = 0$</td><td class="l">$pV^{\gamma} = C$</td>
+      <td class="l">$W = \Delta U$</td><td>$nC_V\Delta T$</td><td class="l">$0$</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="deep">
+  <strong>解过程题的通用三步</strong>：① 先认出这是什么过程（题目给"缓慢导热良好"→等温；"绝热气缸"或"过程极快"→绝热；"活塞可自由滑动且受力不变"→等压）；② 用过程方程 + 状态方程联立，求出末态 $(p, V, T)$；③ 套第一定律表格算 $Q$、$W$、$\Delta U$。<strong>顺序不要反</strong>：先定状态，再算能量。
+</div>
+
+<h3>2.6 循环过程与热机效率</h3>
+
+<p>系统经过一系列变化回到初态，叫<strong>循环</strong>。循环一周 $\Delta U = 0$（内能是状态量，回家就等于没变），所以第一定律给出：</p>
+
+$$Q_{净} + W_{净} = 0 \quad\Rightarrow\quad \text{气体对外净功} = Q_1 - Q_2$$
+
+<p>其中 $Q_1$ 是所有<strong>吸热段</strong>吸的总热量（取正），$Q_2$ 是所有<strong>放热段</strong>放出的总热量（取绝对值）。热机效率定义为"花多少热、出多少功"：</p>
+
+$$\boldsymbol{\eta = \frac{W_{输出}}{Q_1} = \frac{Q_1 - Q_2}{Q_1} = 1 - \frac{Q_2}{Q_1}}$$
+
+<ul>
+  <li>永远 $\eta &lt; 1$——热量不可能全部变功（这是第二定律的味道，后面细说）</li>
+  <li><strong>制冷机</strong>（热机倒着跑）不用效率，而用<strong>制冷系数</strong>：$\varepsilon = \dfrac{Q_2}{W_{输入}}$——从冷室抽走的热 ÷ 消耗的功。注意 $\varepsilon$ 可以大于 1，好空调 $\varepsilon$ 能到 3 以上</li>
+</ul>
+
+<div class="key-point">
+  <strong>卡诺定理（先用，证明在竞赛专属节）</strong>：工作在高温热源 $T_1$ 与低温热源 $T_2$（<strong>开尔文</strong>）之间的所有热机，效率最高的是可逆卡诺热机：
+  $$\boldsymbol{\eta_{卡} = 1 - \frac{T_2}{T_1}}$$
+  它只取决于两个热源的温度。蒸汽机 $T_1 = 600\ \mathrm{K}$、$T_2 = 300\ \mathrm{K}$ 时，$\eta_{卡} = 50\%$——这已经是上限，实际蒸汽机只有 15% 左右，热机的效率天花板远比想象中低。
+</div>
+
+<hr>
+
+<!-- 三、竞赛专属·高考不考 -->
+<h2 id="s3">三、竞赛专属·高考不考：绝热方程 pV^γ 的推导、卡诺效率的证明与熵的统计解释</h2>
+
+<p>这一节是预赛、复赛和高考的分水岭。内容听起来"硬核"，其实每条推导只用到一个数学动作——分离变量积分。跟着推一遍，你会发现它们远没有传说中可怕。</p>
+
+<h3>3.1 绝热过程方程：$pV^{\gamma} = \text{常量}$ 的推导</h3>
+
+<p><strong>出发点</strong>：准静态绝热过程，$Q = 0$，第一定律变成 $\mathrm{d}U = \mathrm{d}W$，即</p>
+
+$$nC_V\,\mathrm{d}T = -p\,\mathrm{d}V$$
+
+<p>用状态方程 $p = \dfrac{nRT}{V}$ 消去 $p$，分离变量：</p>
+
+$$C_V\frac{\mathrm{d}T}{T} = -R\,\frac{\mathrm{d}V}{V}$$
+
+<p>两边积分（$C_V$、$R$ 都是常数）：</p>
+
+$$C_V\ln T + R\ln V = \text{常量} \;\Rightarrow\; \ln\left(T\,V^{R/C_V}\right) = \text{常量}$$
+
+<p>记 $\gamma = \dfrac{C_p}{C_V} = \dfrac{C_V + R}{C_V}$，则 $\dfrac{R}{C_V} = \gamma - 1$，于是：</p>
+
+$$\boldsymbol{TV^{\gamma-1} = \text{常量}}$$
+
+<p>再用 $T = \dfrac{pV}{nR}$ 代入，依次得到绝热方程的三种面孔（全都要会互相推导）：</p>
+
+$$\boldsymbol{pV^{\gamma} = \text{常量}} \qquad \boldsymbol{TV^{\gamma-1} = \text{常量}} \qquad \boldsymbol{\frac{T^{\gamma}}{p^{\gamma-1}} = \text{常量}}$$
+
+<div class="deep">
+  <strong>绝热线为什么比等温线陡？</strong>等温线 $p = C/V$，斜率 $\dfrac{\mathrm{d}p}{\mathrm{d}V} = -\dfrac{p}{V}$；绝热线 $p = C'/V^{\gamma}$，斜率 $= -\gamma\dfrac{p}{V}$。因为 $\gamma &gt; 1$，所以<strong>过同一点，绝热线更陡</strong>。物理图像：绝热膨胀时气体不吸热还要对外做功，只能靠降温"自掏腰包"，所以压强掉得比等温快。判图题就靠这条"陡的是绝热"。
+</div>
+
+<h3>3.2 等温功公式的推导（补 2.4 节的账）</h3>
+
+<p>等温过程中 $p = \dfrac{nRT}{V}$，$T$ 是常数，直接积分：</p>
+
+$$W = -\int_{V_1}^{V_2}\frac{nRT}{V}\,\mathrm{d}V = -nRT\ln\frac{V_2}{V_1}$$
+
+<p>理想气体等温 $\Delta U = 0$，故 $Q = -W = nRT\ln\dfrac{V_2}{V_1}$。膨胀（$V_2 &gt; V_1$）时 $Q &gt; 0$——等温膨胀必须吸热，吸的热全部变成对外做的功，"左手进右手出"。</p>
+
+<h3>3.3 卡诺循环效率的完整证明</h3>
+
+<p>卡诺循环由<strong>两条等温线 + 两条绝热线</strong>围成：$A\to B$ 等温膨胀（吸热 $Q_1$，温度 $T_1$），$B\to C$ 绝热膨胀（降温到 $T_2$），$C\to D$ 等温压缩（放热 $Q_2$），$D\to A$ 绝热压缩（回到 $T_1$）。</p>
+
+<figure>
+  <svg viewBox="0 0 360 240" width="360" height="240" xmlns="http://www.w3.org/2000/svg">
+    <!-- 坐标轴 -->
+    <line x1="40" y1="15" x2="40" y2="205" stroke="#1f2933" stroke-width="1.5"/>
+    <line x1="40" y1="205" x2="340" y2="205" stroke="#1f2933" stroke-width="1.5"/>
+    <polygon points="40,15 36,25 44,25" fill="#1f2933"/>
+    <polygon points="340,205 330,201 330,209" fill="#1f2933"/>
+    <text x="25" y="22" font-size="13" fill="#1f2933">p</text>
+    <text x="332" y="224" font-size="13" fill="#1f2933">V</text>
+    <text x="24" y="215" font-size="12" fill="#1f2933">O</text>
+    <!-- 等温线 T1（上） -->
+    <path d="M 90,55 Q 150,68 265,92" stroke="#c53030" stroke-width="2.2" fill="none"/>
+    <!-- 绝热线 B→C -->
+    <path d="M 265,92 Q 285,120 300,150" stroke="#2b6cb0" stroke-width="2.2" fill="none"/>
+    <!-- 等温线 T2（下） -->
+    <path d="M 300,150 Q 200,172 130,152" stroke="#c53030" stroke-width="2.2" fill="none"/>
+    <!-- 绝热线 D→A -->
+    <path d="M 130,152 Q 105,110 90,55" stroke="#2b6cb0" stroke-width="2.2" fill="none"/>
+    <!-- 状态点 -->
+    <circle cx="90" cy="55" r="3.5" fill="#1a365d"/>
+    <circle cx="265" cy="92" r="3.5" fill="#1a365d"/>
+    <circle cx="300" cy="150" r="3.5" fill="#1a365d"/>
+    <circle cx="130" cy="152" r="3.5" fill="#1a365d"/>
+    <text x="76" y="50" font-size="13" fill="#1a365d">A</text>
+    <text x="270" y="86" font-size="13" fill="#1a365d">B</text>
+    <text x="306" y="158" font-size="13" fill="#1a365d">C</text>
+    <text x="112" y="165" font-size="13" fill="#1a365d">D</text>
+    <!-- 标注 -->
+    <text x="150" y="48" font-size="12" fill="#c53030">等温 T₁（吸热 Q₁）</text>
+    <text x="195" y="195" font-size="12" fill="#c53030">等温 T₂（放热 Q₂）</text>
+    <text x="296" y="118" font-size="12" fill="#2b6cb0">绝热</text>
+    <text x="60" y="120" font-size="12" fill="#2b6cb0">绝热</text>
+  </svg>
+  <figcaption>图 2：卡诺循环示意图（红色等温线、蓝色绝热线）。顺时针方向运行即为热机。</figcaption>
+</figure>
+
+<p><strong>证明</strong>：等温段吸放热由 3.2 的公式：</p>
+
+$$Q_1 = nRT_1\ln\frac{V_B}{V_A}, \qquad Q_2 = nRT_2\ln\frac{V_C}{V_D}$$
+
+<p>两条绝热线各写一个 $TV^{\gamma-1} = \text{常量}$：</p>
+
+$$T_1V_B^{\gamma-1} = T_2V_C^{\gamma-1}, \qquad T_1V_A^{\gamma-1} = T_2V_D^{\gamma-1}$$
+
+<p>两式相除：</p>
+
+$$\left(\frac{V_B}{V_A}\right)^{\gamma-1} = \left(\frac{V_C}{V_D}\right)^{\gamma-1} \;\Rightarrow\; \frac{V_B}{V_A} = \frac{V_C}{V_D}$$
+
+<p>代回热量表达式，两个对数完全相等，于是：</p>
+
+$$\frac{Q_2}{Q_1} = \frac{T_2}{T_1} \;\Rightarrow\; \boldsymbol{\eta_{卡} = 1 - \frac{Q_2}{Q_1} = 1 - \frac{T_2}{T_1}}$$
+
+<p>证明完毕——整个推导只用了"等温功公式 + 绝热方程"，没有任何超纲内容。这也是竞赛的风格：<strong>武器都是旧的，组合是新的</strong>。</p>
+
+<h3>3.4 多方过程（了解即可）</h3>
+
+<p>$pV^{n} = \text{常量}$（$n$ 为任意常数）叫多方过程，它是一把"万能伞"：$n = 0$ 等压、$n = 1$ 等温、$n = \gamma$ 绝热、$n \to \infty$ 等容。对应的多方摩尔热容 $C = C_V + \dfrac{R}{1 - n}$，预赛偶尔出现，知道"四大过程是多方过程的特例"这层统一关系即可。</p>
+
+<h3>3.5 熵的初步：混乱度的物理学</h3>
+
+<p>先宣布<strong>热力学第二定律</strong>的两种经典表述（竞赛常考判断）：</p>
+
+<ul>
+  <li><strong>克劳修斯表述</strong>：热量不可能自发地从低温物体传到高温物体（空调必须耗电）</li>
+  <li><strong>开尔文表述</strong>：不可能从单一热源吸热全部转化为功而不产生其他影响（$\eta = 100\%$ 的热机造不出来）</li>
+</ul>
+
+<p>第二定律的定量语言是<strong>熵</strong> $S$。两个层面理解它：</p>
+
+<p><strong>① 宏观定义</strong>（克劳修斯）：可逆过程中</p>
+
+$$\mathrm{d}S = \frac{\mathrm{d}Q_{可逆}}{T} \qquad\Rightarrow\qquad \Delta S = \int_A^B \frac{\mathrm{d}Q_{可逆}}{T}$$
+
+<p>熵是<strong>状态量</strong>，只由初末状态决定，与路径无关——所以算不可逆过程的熵变时，可以<strong>设计一条可逆路径</strong>来算。</p>
+
+<p><strong>② 微观定义</strong>（玻尔兹曼，刻在墓碑上的公式）：</p>
+
+$$\boldsymbol{S = k\ln\Omega}$$
+
+<p>$\Omega$ 是宏观状态对应的<strong>微观状态数</strong>（"混乱度"的精确度量）。一滴墨水滴进清水，分子的排布方式数 $\Omega$ 暴增，熵就增大——这就是"墨水不会自己聚回去"的统计学原因。</p>
+
+<div class="key-point">
+  <strong>熵增原理</strong>：孤立系统的熵永不减少：$\Delta S \ge 0$，可逆过程取等号。它给出了宏观过程的<strong>方向箭头</strong>——这是物理学里第一个"时间有方向"的定律。高考只要求知道"能量转化有方向性"，竞赛要求会用 $S = k\ln\Omega$ 的图像解释自由膨胀（见例 5）这类不可逆过程为什么熵增。
+</div>
+
+<hr>
+
+<!-- 四、例题精讲 -->
+<h2 id="s4">四、例题精讲</h2>
+
+<h3>例 1　等压加热：把 Q、W、ΔU 三个量算清楚（衔接入门）</h3>
+
+<p><strong>题目</strong>：气缸内封存 $1\ \mathrm{mol}$ 氦气（单原子理想气体），活塞可自由滑动，气体压强恒为 $1.0\times10^{5}\ \mathrm{Pa}$。用电热丝将气体从 $300\ \mathrm{K}$ 缓慢加热到 $600\ \mathrm{K}$。求：(1) 气体对外做的功；(2) 内能增量；(3) 吸收的热量。</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：活塞"自由滑动"→ 压强恒定，这是<strong>等压过程</strong>。先按 2.5 节表格的三行分别算：等压功 $W = -p\Delta V = -nR\Delta T$；单原子 $C_V = \frac{3}{2}R$ 算 $\Delta U$；最后第一定律对账。
+</div>
+
+<p><strong>解析</strong>：</p>
+
+<p>(1) 等压过程，外界对气体做功（膨胀，应为负）：</p>
+
+$$W = -p\,\Delta V = -nR\,\Delta T = -1\times8.31\times(600-300) = -2.49\times10^{3}\ \mathrm{J}$$
+
+<p>即<strong>气体对外做功</strong> $2.49\times10^{3}\ \mathrm{J}$（约 $2.5\ \mathrm{kJ}$）。</p>
+
+<p>（验证体积：$V_1 = \dfrac{nRT_1}{p} = \dfrac{8.31\times300}{1.0\times10^5} = 2.49\times10^{-2}\ \mathrm{m^3} = 24.9\ \mathrm{L}$，$V_2 = 49.9\ \mathrm{L}$，$\Delta V \approx 24.9\ \mathrm{L}$，$p\Delta V = 1.0\times10^5 \times 2.49\times10^{-2} = 2.49\times10^3\ \mathrm{J}$ ✓）</p>
+
+<p>(2) 氦气是单原子，$C_V = \dfrac{3}{2}R$：</p>
+
+$$\Delta U = nC_V\Delta T = 1\times\frac{3}{2}\times8.31\times300 = 3.74\times10^{3}\ \mathrm{J}$$
+
+<p>(3) 第一定律 $\Delta U = Q + W$：</p>
+
+$$Q = \Delta U - W = 3.74\times10^3 - (-2.49\times10^3) = 6.23\times10^{3}\ \mathrm{J}$$
+
+<p><strong>对账</strong>：等压吸热公式 $Q = nC_p\Delta T = 1\times\dfrac{5}{2}\times8.31\times300 = 6.23\times10^3\ \mathrm{J}$ ✓ 两条路结果一致。</p>
+
+<p><strong>点评</strong>：吸热 $6.23\ \mathrm{kJ}$，其中 $60\%$ 变成内能（$3.74/6.23$）、$40\%$ 变成对外做功（$2.49/6.23$）——这个 $3:2$ 的分配比例由 $C_V : R$ 决定，单原子气体等压吸热永远按 $\frac{3}{5}$ 升温、$\frac{2}{5}$ 做功分配。数字会忘，比例结构要记住。</p>
+
+<h3>例 2　方均根速率：温度是分子的"忙碌程度"</h3>
+
+<p><strong>题目</strong>：求 $0\ ℃$ 时氧气分子和氢气分子的方均根速率，并说明同温度下谁"跑"得快。（$M_{O_2} = 0.032\ \mathrm{kg/mol}$，$M_{H_2} = 0.002\ \mathrm{kg/mol}$）</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：$\overline{\varepsilon_k} = \frac{3}{2}kT$ 只含温度 → 同温度下所有气体分子平均平动动能相同；动能相同则质量小的速率大。套 $v_{\mathrm{rms}} = \sqrt{\dfrac{3RT}{M}}$。
+</div>
+
+<p><strong>解析</strong>：$T = 273\ \mathrm{K}$。氧气：</p>
+
+$$v_{O_2} = \sqrt{\frac{3RT}{M_{O_2}}} = \sqrt{\frac{3\times8.31\times273}{0.032}} = \sqrt{\frac{6805.9}{0.032}} = \sqrt{2.13\times10^{5}} \approx 461\ \mathrm{m/s}$$
+
+<p>氢气：</p>
+
+$$v_{H_2} = \sqrt{\frac{3\times8.31\times273}{0.002}} = \sqrt{3.40\times10^{6}} \approx 1.85\times10^{3}\ \mathrm{m/s}$$
+
+<p><strong>比值检验</strong>：$\dfrac{v_{H_2}}{v_{O_2}} = \sqrt{\dfrac{M_{O_2}}{M_{H_2}}} = \sqrt{16} = 4$，$461\times4 = 1844\ \mathrm{m/s}$ ✓。</p>
+
+<p><strong>点评</strong>：同温度下分子平均动能相同，速率与摩尔质量的平方根成反比——"轻者快"。这解释了为什么地球大气里几乎没有氢气：氢分子速度接近逃逸速度的分量比例高，几十亿年下来跑光了；而氧、氮被地球引力牢牢锁住。一个方均根速率，串起了大气演化的故事。</p>
+
+<h3>例 3　矩形循环：在 p-V 图上数格子算效率【预赛难度】</h3>
+
+<p><strong>题目</strong>：一定量单原子理想气体经历图示矩形循环 $A\to B\to C\to D\to A$：$A(p_A = 2\times10^{5}\ \mathrm{Pa},\ V_A = 1\times10^{-3}\ \mathrm{m^3})$，等压膨胀到 $B(V_B = 3\times10^{-3}\ \mathrm{m^3})$，再等容降压到 $C(p_C = 1\times10^{5}\ \mathrm{Pa})$，再等压压缩到 $D(V_D = 1\times10^{-3}\ \mathrm{m^3})$，最后等容升压回 $A$。求：(1) 循环一周气体对外做的净功；(2) 各段吸放热；(3) 此热机的效率。</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：净功 = 闭合曲线面积（顺时针为正）。逐段用 2.5 表格算 $Q$，把 $pV$ 当作"能量记账单位"：单原子气体 $\Delta U = \frac{3}{2}\Delta(pV)$，等压热 $Q = \frac{5}{2}\Delta(pV)$——不用真的去求 $n$ 和 $T$！
+</div>
+
+<p><strong>解析</strong>：</p>
+
+<p>(1) 净功 = 矩形面积（顺时针，气体对外做正功）：</p>
+
+$$W_{输出} = (p_A - p_C)(V_B - V_A) = (2-1)\times10^{5}\times(3-1)\times10^{-3} = 200\ \mathrm{J}$$
+
+<p>(2) 先备"记账单位"：$p_AV_A = 200\ \mathrm{J}$，$p_BV_B = 600\ \mathrm{J}$，$p_CV_C = 300\ \mathrm{J}$，$p_DV_D = 100\ \mathrm{J}$。</p>
+
+<p>逐段分析（单原子 $C_V = \frac{3}{2}R$，$C_p = \frac{5}{2}R$；等容 $Q = \Delta U$，等压 $Q = nC_p\Delta T$）：</p>
+
+<table>
+  <thead>
+    <tr><th>过程</th><th>Δ(pV)</th><th>ΔU = 3/2·Δ(pV)</th><th>W（外界对气体）</th><th>Q = ΔU − W</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="l">A→B 等压膨胀</td><td>$+400$</td><td>$+600$</td><td>$-p\Delta V = -400$</td><td class="l">$Q = 600+400 = +1000\ \mathrm{J}$（吸）</td></tr>
+    <tr><td class="l">B→C 等容降压</td><td>$-300$</td><td>$-450$</td><td>$0$</td><td class="l">$Q = -450\ \mathrm{J}$（放）</td></tr>
+    <tr><td class="l">C→D 等压压缩</td><td>$-200$</td><td>$-300$</td><td>$-p\Delta V = +200$</td><td class="l">$Q = -300-200 = -500\ \mathrm{J}$（放）</td></tr>
+    <tr><td class="l">D→A 等容升压</td><td>$+100$</td><td>$+150$</td><td>$0$</td><td class="l">$Q = +150\ \mathrm{J}$（吸）</td></tr>
+  </tbody>
+</table>
+
+<p>（检验：四段 $\Delta U$ 之和 $600-450-300+150 = 0$ ✓，回到初态内能必须归零。）</p>
+
+<p>(3) 吸热总量 $Q_1 = 1000 + 150 = 1150\ \mathrm{J}$，放热总量 $Q_2 = 450 + 500 = 950\ \mathrm{J}$：</p>
+
+$$\eta = \frac{W_{输出}}{Q_1} = \frac{200}{1150} \approx 17.4\%$$
+
+<p>（再验：$Q_1 - Q_2 = 1150 - 950 = 200\ \mathrm{J} = W_{输出}$ ✓ 能量守恒闭环。）</p>
+
+<p><strong>点评</strong>：三个要领——① 循环净功看面积、看方向；② $\Delta(pV)$ 记账法让你绕开 $n$、$T$ 直接算能量，这是单原子/双原子气体循环题的提速神器（双原子把 $\frac{3}{2}$、$\frac{5}{2}$ 换成 $\frac{5}{2}$、$\frac{7}{2}$ 即可）；③ 效率分母只数<strong>吸热段</strong>，D→A 等容升压也在吸热，千万别漏。</p>
+
+<h3>例 4　等温 + 绝热接力：两段式过程分析【预赛难度】</h3>
+
+<p><strong>题目</strong>：$1\ \mathrm{mol}$ 双原子理想气体，初态 $(p_0, V_0, T_0)$。先经等温膨胀使体积加倍，再经绝热膨胀使体积再加倍（末态体积 $4V_0$）。求：(1) 末态温度与压强；(2) 全过程气体对外做的总功（用 $p_0V_0$ 表示，$\ln 2 \approx 0.693$，$2^{-2/5} \approx 0.758$）。</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：分段！第一段等温 $T$ 不变，$pV$ 守恒；第二段绝热用 $TV^{\gamma-1} = \text{常量}$（双原子 $\gamma = \frac{7}{5}$，$\gamma - 1 = \frac{2}{5}$）。接力赛的关键是<strong>交接棒</strong>：第一段末态 = 第二段初态。
+</div>
+
+<p><strong>解析</strong>：</p>
+
+<p>(1) 第一段（等温，$A \to B$）：$T_B = T_0$，$p_BV_B = p_0V_0 \Rightarrow p_B = \dfrac{p_0}{2}$，$V_B = 2V_0$。</p>
+
+<p>第二段（绝热，$B \to C$）：用 $TV^{\gamma-1} = \text{常量}$：</p>
+
+$$T_C = T_B\left(\frac{V_B}{V_C}\right)^{\gamma-1} = T_0\left(\frac{2V_0}{4V_0}\right)^{2/5} = T_0\cdot 2^{-2/5} \approx \boldsymbol{0.758\,T_0}$$
+
+<p>由状态方程求末压：</p>
+
+$$p_C = \frac{nRT_C}{V_C} = \frac{R\times0.758\,T_0}{4V_0} = 0.758\times\frac{1}{4}\times\frac{RT_0}{V_0} \approx \boldsymbol{0.189\,p_0}$$
+
+<p>（其中用到 $p_0V_0 = RT_0$。也可以用 $pV^{\gamma}$ 验：$p_C = p_B\left(\frac{V_B}{V_C}\right)^{7/5} = \frac{p_0}{2}\cdot 2^{-7/5} = p_0\cdot2^{-12/5} \approx 0.189\,p_0$ ✓）</p>
+
+<p>(2) 分段算功（算"气体对外做功"，即 $-W$）：</p>
+
+<p>等温段：</p>
+
+$$W'_{AB} = nRT_0\ln\frac{V_B}{V_A} = p_0V_0\ln 2 \approx 0.693\,p_0V_0$$
+
+<p>绝热段（$Q = 0$，对外做功全部来自内能下降）：</p>
+
+$$W'_{BC} = -\Delta U = -nC_V(T_C - T_B) = \frac{5}{2}R\,(T_0 - 0.758\,T_0) = \frac{5}{2}\times0.242\,p_0V_0 \approx 0.605\,p_0V_0$$
+
+<p>（用 $RT_0 = p_0V_0$ 代换。）总功：</p>
+
+$$W'_{总} \approx (0.693 + 0.605)\,p_0V_0 \approx \boldsymbol{1.30\,p_0V_0}$$
+
+<p><strong>点评</strong>：同样是体积膨胀 4 倍，若全程等温，功是 $p_0V_0\ln4 = 1.386\,p_0V_0$；等温接绝热只有 $1.30\,p_0V_0$，更少——因为绝热段降温降压，p-V 图上曲线从等温线"掉下来"（绝热线更陡），面积自然小了。算完回头在 p-V 图上画一遍，数形结合才不心虚。</p>
+
+<h3>例 5　自由膨胀：温度不变，但熵增加了【复赛难度】</h3>
+
+<p><strong>题目</strong>：一绝热刚性容器被隔板分成两等份，左边有 $1\ \mathrm{mol}$ 理想气体，右边真空。抽去隔板，气体自由膨胀充满整个容器。(1) 末态温度如何变化？(2) 这个过程等温吗？和等温膨胀到同样体积有何区别？(3) 求熵变（用可逆等温路径计算），并说明它与熵增原理是否矛盾。</p>
+
+<div class="deep">
+  <strong>思路起点</strong>："绝热"→ $Q = 0$；"自由膨胀"（向真空）→ 没有推动任何活塞，气体<strong>不对外做功</strong> $W = 0$。两个零进第一定律，答案立刻出来。第 (3) 问记住熵是状态量：设计一条从同一初态到同一末态的<strong>可逆等温</strong>路径来算。
+</div>
+
+<p><strong>解析</strong>：</p>
+
+<p>(1) 容器绝热 ⇒ $Q = 0$；向真空膨胀，外界没有阻力，气体对外做功 $W = 0$。由第一定律：</p>
+
+$$\Delta U = Q + W = 0$$
+
+<p>理想气体内能只由温度决定 ⇒ $\boldsymbol{\Delta T = 0}$，<strong>末态温度不变</strong>（这就是焦耳的自由膨胀实验，是"理想气体内能只与温度有关"的实验支柱之一）。</p>
+
+<p>(2) 虽然初末温度相同，但它<strong>不是等温过程</strong>：自由膨胀是剧烈的非准静态过程，中间态没有统一确定的 $p$、$T$，在 p-V 图上根本画不出一条线，只能画出首尾两个点。与可逆等温膨胀的区别：</p>
+
+<table>
+  <thead>
+    <tr><th>对比项</th><th>可逆等温膨胀（V → 2V）</th><th>自由膨胀（V → 2V）</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="l">吸热 Q</td><td class="l">$nRT\ln2$（从热源吸）</td><td class="l">0</td></tr>
+    <tr><td class="l">对外做功</td><td class="l">$nRT\ln2$</td><td class="l">0</td></tr>
+    <tr><td class="l">ΔU</td><td class="l">0</td><td class="l">0</td></tr>
+    <tr><td class="l">可逆性</td><td class="l">可逆（可沿原路压回去，外界复原）</td><td class="l"><strong>不可逆</strong>（气体不会自己缩回左半边）</td></tr>
+  </tbody>
+</table>
+
+<p>(3) 熵是状态量，初末态与"可逆等温膨胀到 2 倍体积"完全相同，沿该可逆路径计算：</p>
+
+$$\Delta S = \int\frac{\mathrm{d}Q_{可逆}}{T} = \frac{1}{T}\cdot nRT\ln\frac{2V}{V} = nR\ln2 = 1\times8.31\times0.693 \approx \boldsymbol{5.76\ \mathrm{J/K}}$$
+
+<p>$\Delta S &gt; 0$，与熵增原理<strong>完全吻合</strong>：孤立系统（容器绝热且不做功，系统总能量不变）发生了不可逆过程，熵必须增加。</p>
+
+<p>微观图像：气体可用体积加倍，每个分子的位置可能性翻倍，$\Omega$ 增大到约 $2^{N_A}$ 倍，$\Delta S = k\ln(2^{N_A}) = N_Ak\ln2 = nR\ln2$——宏观公式和微观公式严丝合缝，这就是 $S = k\ln\Omega$ 的威力。</p>
+
+<p><strong>点评</strong>：这题是复赛最爱的"概念陷阱三合一"：① "温度不变 ⇒ 等温过程"——错，等温是<strong>过程</strong>要求全程 $T$ 恒定且准静态；② "温度不变 ⇒ 没有发生任何事"——错，熵增加了；③ 算不可逆过程的熵变，用可逆路径"搭桥"。把这三条想清楚，第二定律就入门了。</p>
+
+<h3>例 6　恒外压绝热压缩：pV^γ 失效的典型【复赛难度】</h3>
+
+<p><strong>题目</strong>：绝热气缸中有 $n\ \mathrm{mol}$ 单原子理想气体，初态 $(p_0, V_0, T_0)$，活塞外突然施加并<strong>保持</strong>恒定外压 $p_{外} = 2p_0$，气体被压缩，最终达到新的平衡。求末态温度 $T_2$ 与体积 $V_2$。</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：外压"突然"加上——过程<strong>不是准静态</strong>，绝热方程 $pV^{\gamma} = \text{常量}$ <strong>不能用</strong>（它只对准静态绝热成立）！但第一定律永远成立：绝热 $Q = 0$，$\Delta U = W = p_{外}(V_0 - V_2)$（外压恒定，外界对气体做功好算）。再配合状态方程，两个方程解两个未知量。
+</div>
+
+<p><strong>解析</strong>：</p>
+
+<p>绝热 ⇒ $Q = 0$，第一定律：</p>
+
+$$\Delta U = W \;\Rightarrow\; nC_V(T_2 - T_0) = p_{外}\,(V_0 - V_2)$$
+
+<p>代入 $C_V = \dfrac{3}{2}R$、$p_{外} = 2p_0$ 与末态状态方程 $V_2 = \dfrac{nRT_2}{2p_0}$（平衡时气体压强 = 外压）：</p>
+
+$$\frac{3}{2}nR\,(T_2 - T_0) = 2p_0\left(V_0 - \frac{nRT_2}{2p_0}\right) = 2p_0V_0 - nRT_2$$
+
+<p>用 $p_0V_0 = nRT_0$ 代换右端第一项：</p>
+
+$$\frac{3}{2}nRT_2 - \frac{3}{2}nRT_0 = 2nRT_0 - nRT_2$$
+
+<p>两边除以 $nR$，整理：</p>
+
+$$\frac{3}{2}T_2 + T_2 = 2T_0 + \frac{3}{2}T_0 \;\Rightarrow\; \frac{5}{2}T_2 = \frac{7}{2}T_0 \;\Rightarrow\; \boldsymbol{T_2 = \frac{7}{5}T_0 = 1.4\,T_0}$$
+
+<p>$$V_2 = \frac{nRT_2}{2p_0} = \frac{7T_0/5}{2}\cdot\frac{nR}{p_0} = \frac{7}{10}V_0 = \boldsymbol{0.7\,V_0}$$</p>
+
+<p><strong>检验</strong>：$\Delta U = \frac{3}{2}nR(0.4T_0) = 0.6\,nRT_0$；$W = 2p_0\times0.3V_0 = 0.6\,p_0V_0 = 0.6\,nRT_0$ ✓ 两者相等，对账成功。</p>
+
+<p><strong>点评</strong>：若错误地套用准静态绝热方程，会得到 $T_2 = T_0\cdot2^{2/5} \approx 1.32\,T_0$，与正确答案 $1.4\,T_0$ 明显不同。<strong>判断能否用 $pV^{\gamma}$ 的标准只有一个：过程是否准静态（缓慢）。</strong>"突然加压""自由膨胀""快速压缩"都是非准静态，第一定律 + 恒外压做功才是正解。顺便体会：不可逆压缩同样体积，外界要多做功（$0.6$ vs 准静态的 $\frac{3}{2}(2^{2/5}-1) \approx 0.48\,nRT_0$），多做的功变成了气体内额外的热——不可逆是要"交税"的。</p>
+
+<h3>例 7　卡诺热机与卡诺冰箱：一体两面</h3>
+
+<p><strong>题目</strong>：一卡诺热机工作在 $T_1 = 400\ \mathrm{K}$ 的高温热源与 $T_2 = 300\ \mathrm{K}$ 的低温热源之间，每循环从高温热源吸热 $Q_1 = 1000\ \mathrm{J}$。(1) 求每循环对外做的功与放给低温热源的热量；(2) 若让这台机器逆向运行成为制冷机（卡诺冰箱），每循环消耗同样的功，能从低温热源抽走多少热量？制冷系数是多少？</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：卡诺 ⇒ 效率直接套 $\eta_{卡} = 1 - T_2/T_1$（开尔文！）。逆向运行时所有能量流反向：$Q_1$、$Q_2$、$W$ 的大小关系不变，只是箭头调头。
+</div>
+
+<p><strong>解析</strong>：</p>
+
+<p>(1) 卡诺效率：</p>
+
+$$\eta_{卡} = 1 - \frac{T_2}{T_1} = 1 - \frac{300}{400} = 25\%$$
+
+$$W = \eta_{卡}\,Q_1 = 0.25\times1000 = 250\ \mathrm{J}$$
+
+<p>由能量守恒 $Q_1 = W + Q_2$：</p>
+
+$$Q_2 = Q_1 - W = 1000 - 250 = 750\ \mathrm{J}$$
+
+<p>(2) 逆向运行：消耗功 $W = 250\ \mathrm{J}$，从低温热源抽热 $Q_2 = 750\ \mathrm{J}$，向高温热源放热 $Q_1 = 1000\ \mathrm{J}$（全部箭头反向，数值不变）。制冷系数：</p>
+
+$$\varepsilon = \frac{Q_2}{W} = \frac{750}{250} = 3$$
+
+<p>也可以直接套卡诺制冷系数公式：</p>
+
+$$\varepsilon_{卡} = \frac{T_2}{T_1 - T_2} = \frac{300}{400 - 300} = 3 \ \checkmark$$
+
+<p><strong>点评</strong>：注意 $\varepsilon = 3 &gt; 1$——这不是"效率超过 100%"，而是制冷系数的定义本来就允许大于 1：花 1 份电，搬运 3 份热。家用空调 $\varepsilon$ 在 3~4 正是这个原因，所以"用空调取暖比电暖器省电"：电暖器 1 份电最多变 1 份热，空调 1 份电能"搬"来 3 份热。物理就在电费单里。</p>
+
+<hr>
+
+<!-- 五、易错点 -->
+<h2 id="s5">五、易错点</h2>
+
+<div class="warn">
+  <strong>易错点 1：第一定律符号约定"混搭"。</strong>最常见的翻车现场：公式背的是 $\Delta U = Q + W$，脑子里想的 $W$ 却是"气体对外做功"，膨胀时把 $W$ 当正数代入，符号当场崩溃。<strong>对策</strong>：本书约定 $\Delta U = Q + W$，$W$ 为<strong>外界对气体</strong>做功，膨胀为负、压缩为正；口诀"吸热为正、被压为正"。换参考书、看答案解析时，先确认对方的约定再对照。
+</div>
+
+<div class="warn">
+  <strong>易错点 2：绝热线与等温线的陡缓记反。</strong>过 p-V 图上同一点，<strong>绝热线更陡</strong>（斜率 $-\gamma p/V$，等温线 $-p/V$，$\gamma &gt; 1$）。物理记忆法：绝热膨胀"又降压又降温"，压强掉得比等温快。判图题、比较功的大小题全指望这一条，记反了整题全反。
+</div>
+
+<div class="warn">
+  <strong>易错点 3：以为 $\Delta U = nC_V\Delta T$ 只能用于等容过程。</strong>$C_V$ 的下标只是<strong>定义来源</strong>（等容时测出来的热容），这个公式对理想气体的<strong>任何过程</strong>都成立——等压、绝热、任意过程，内能变化都只认温度变化。附带两个兄弟误区：① 以为"内能只与温度有关"对所有物质成立——只对<strong>理想气体</strong>成立（真实气体、液体有分子势能，相变更谈不上）；② 等压过程用 $C_V$ 算热量——等压吸热要用 $C_p = C_V + R$。
+</div>
+
+<div class="warn">
+  <strong>易错点 4：温度用摄氏度代入。</strong>状态方程 $pV = nRT$、卡诺效率 $\eta = 1 - T_2/T_1$、方均根速率……所有公式里的 $T$ 都是<strong>开尔文</strong>。$\eta = 1 - 27/127$（直接用 ℃）和 $\eta = 1 - 300/400$ 完全是两个数。开卷先写"$T(\mathrm{K}) = t(℃) + 273$"，形成肌肉记忆。
+</div>
+
+<div class="warn">
+  <strong>易错点 5：热机效率与制冷系数张冠李戴。</strong>热机 $\eta = \dfrac{W}{Q_1}$（分母是<strong>从高温吸的热</strong>）；制冷机 $\varepsilon = \dfrac{Q_2}{W}$（分子是<strong>从低温抽的热</strong>）。卡诺机 $\eta_{卡} = 1 - \dfrac{T_2}{T_1} = \dfrac{T_1 - T_2}{T_1}$，卡诺制冷 $\varepsilon_{卡} = \dfrac{T_2}{T_1 - T_2}$——注意分母不一样！另外别把"放给低温的热 $Q_2$"误当吸热代入效率公式。
+</div>
+
+<div class="warn">
+  <strong>易错点 6：不可逆过程乱套 $pV^{\gamma} = \text{常量}$。</strong>绝热方程的适用前提是"<strong>准静态</strong> + 绝热"。自由膨胀、突然加压、快速压缩、气体冲进真空……都是非准静态，$pV^{\gamma}$ 一律失效，只能用 $\Delta U = Q + W$（配合恒外压做功 $W = p_{外}\Delta V$ 这类直接算法）。看到题目里"突然""迅速""抽去隔板"这些词，立刻把 $pV^{\gamma}$ 从脑子里划掉。
+</div>
+
+<div class="warn">
+  <strong>易错点 7："温度不变 ⇒ 不吸热"与"绝热 ⇒ 温度不变"的双重混淆。</strong>两个都是错的：等温膨胀（理想气体 $\Delta U = 0$）必须<strong>吸热</strong>来支付对外做的功，$Q = nRT\ln\frac{V_2}{V_1} \neq 0$；绝热过程 $Q = 0$ 但对外做功要靠降温支付，$T$ 一般<strong>变</strong>。判断依据永远是第一定律对账，不是"感觉"。
+</div>
+
+<div class="warn">
+  <strong>易错点 8：循环效率分母算错、净功方向看反。</strong>① 效率 $\eta = \dfrac{W_{输出}}{Q_{吸}}$，分母只加<strong>吸热段</strong>的热量（等容升压段也可能在吸热，如例 3 的 D→A），把放热段也加进分母会严重低估效率；② p-V 图上<strong>顺时针</strong>循环对外做正功（热机），<strong>逆时针</strong>是外界对气体做功（制冷机），面积给的是绝对值，方向要自己判。
+</div>
+
+<hr>
+
+<!-- 六、自检清单 -->
+<h2 id="s6">六、自检清单</h2>
+
+<p>合上讲义，逐条自查。能做到就打勾，做不到回到对应小节再过一遍。</p>
+
+<ul class="checklist">
+  <li>我能默写 $pV = nRT$ 及各量单位，能把 atm、L、℃ 熟练换算成 Pa、m³、K。</li>
+  <li>我能用"分子撞器壁"的语言解释压强的来源，并写出 $\overline{\varepsilon_k} = \frac{3}{2}kT$，说出温度的微观意义。</li>
+  <li>给我任意气体的摩尔质量和温度，我会算方均根速率 $v_{\mathrm{rms}} = \sqrt{\frac{3RT}{M}}$（如例 2），并解释为什么同温度下轻分子更快。</li>
+  <li>我牢记本书约定 $\Delta U = Q + W$（$W$ 为外界对气体做功），能一句话说清与"$\Delta U = Q - W'$"版本的关系。</li>
+  <li>我能默写四大过程（等温/等压/等容/绝热）的过程方程、$W$、$\Delta U$、$Q$ 一整行表格，不靠翻书。</li>
+  <li>我清楚 $\Delta U = nC_V\Delta T$ 对任何过程成立，并能背出单原子 $C_V = \frac{3}{2}R$、双原子 $C_V = \frac{5}{2}R$ 以及对应的 $\gamma$ 值。</li>
+  <li>给我 p-V 图上任意一段线，我会用"曲线下面积"读出气体对外做功；给我一个闭合循环，我会用面积和绕向判断净功正负。</li>
+  <li>我能独立重做例 3：用 $\Delta(pV)$ 记账法逐段算 $Q$，求出矩形循环效率，并用 $Q_1 - Q_2 = W$ 对账。</li>
+  <li>我会从头推导绝热方程：从 $nC_V\mathrm{d}T = -p\,\mathrm{d}V$ 出发推出 $TV^{\gamma-1} = \text{常量}$ 与 $pV^{\gamma} = \text{常量}$，并说明为什么绝热线比等温线陡。</li>
+  <li>我能完整证明卡诺效率 $\eta_{卡} = 1 - \frac{T_2}{T_1}$（两条等温功 + 两条绝热关系），并说出卡诺循环由哪四段组成。</li>
+  <li>遇到"突然加压""自由膨胀"类问题，我知道 $pV^{\gamma}$ 不能用，会改用 $\Delta U = Q + W$ 配合恒外压做功求解（如例 6）。</li>
+  <li>我能解释自由膨胀为什么温度不变却是不可逆过程，并会用可逆等温路径计算其熵变 $\Delta S = nR\ln2$。</li>
+  <li>我会区分热机效率 $\eta = W/Q_1$ 与制冷系数 $\varepsilon = Q_2/W$，默写卡诺的 $\eta_{卡}$ 与 $\varepsilon_{卡}$，并解释 $\varepsilon &gt; 1$ 为什么不违反能量守恒。</li>
+  <li>我能用熵的统计定义 $S = k\ln\Omega$ 定性解释：墨水扩散、热传递方向、自由膨胀为什么都朝一个方向进行。</li>
+</ul>
+
+<div class="chap-intro" style="margin-top:24px">
+  全部打勾？恭喜，你已经跨过了热学最难的两道坎——符号约定与过程分析。下一章《静电场与直流电路》里，"能量守恒"这位老朋友还会再见面：电场力做功与电势能的关系，和热力学第一定律是同一个思想。物理越学越像一家人，继续保持！
+</div>
+
+</body>
+</html>

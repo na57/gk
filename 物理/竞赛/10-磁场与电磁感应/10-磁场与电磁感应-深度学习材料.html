@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 磁场与电磁感应 · 物理竞赛入门</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+/* ===== 例题卡（本系列约定） ===== */
+.example { border: 1px solid var(--line); border-left: 5px solid var(--c-example); background: var(--c-example-bg); border-radius: 0 10px 10px 0; padding: 14px 20px; margin: 18px 0; page-break-inside: avoid; }
+.example .tag { display: inline-block; font-size: 12px; font-weight: 700; color: #fff; background: var(--c-example); border-radius: var(--r-pill); padding: 2px 10px; margin-right: 8px; vertical-align: middle; }
+.example h4 { margin-top: 10px; color: var(--c-example); }
+.example .sol { background: #fff; border: 1px dashed #c4b5fd; border-radius: 8px; padding: 10px 16px; margin-top: 10px; }
+@media print { .example { background: #fff; } }
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<nav class="chap-nav">高考备考 · 物理 · 竞赛专题 ｜ 10-磁场与电磁感应-深度学习材料.html</nav>
+<header class="chap-head">
+  <h1>10 磁场与电磁感应</h1>
+  <p class="chap-meta">物理竞赛专题 · 第 10 章 ｜ 目标：预赛 → 复赛入门 ｜ 适用：高一竞赛入门（零基础起步，已修完第 09 章静电场与直流电路） ｜ 学生：小兵</p>
+  <p class="chap-intro">磁场这一章，是很多人心里"最抽象"的一章——看不见摸不着的 $\boldsymbol{B}$，还有一堆左手右手。但其实它的骨架非常干净：<strong>一条洛伦兹力、一条法拉第定律</strong>，其余全是力学工具（圆周运动、能量、牛顿定律）的迁移。把这一章啃下来，你就同时复习了力学三大观点，这是竞赛里最划算的一章。</p>
+</header>
+
+<div class="toc">
+  <div class="toc-label">本章目录</div>
+  <div class="toc-links">
+    <a href="#s1">一、知识全景</a>
+    <a href="#s2">二、核心概念</a>
+    <a href="#s3">三、竞赛专属·高考不考</a>
+    <a href="#s4">四、例题精讲</a>
+    <a href="#s5">五、易错点</a>
+    <a href="#s6">六、自检清单</a>
+  </div>
+</div>
+
+<!-- 一、知识全景 -->
+<h2 id="s1">一、知识全景</h2>
+
+<div class="map">
+  <div class="row"><div class="node root">磁场与电磁感应</div></div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node">磁场对电流/电荷的作用<br><small>安培力 · 洛伦兹力</small></div>
+    <div class="node">带电粒子在场中运动<br><small>圆周 · 螺旋 · 复合场</small></div>
+    <div class="node">电磁感应<br><small>动生 · 感生 · 楞次</small></div>
+    <div class="node">自感与 LC<br><small>自感 · LC 振荡初步</small></div>
+  </div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node leaf">左手定则（力）</div>
+    <div class="node leaf">$r=\frac{mv}{qB}$，$T=\frac{2\pi m}{qB}$</div>
+    <div class="node leaf">$\varepsilon=n\frac{\Delta\Phi}{\Delta t}$，$\varepsilon=BLv$</div>
+    <div class="node leaf">$W=\frac12 LI^2$，$T=2\pi\sqrt{LC}$</div>
+  </div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node view">力学观点迁移<br><small>圆周 · 能量 · 动量</small></div>
+    <div class="node view">能量守恒<br><small>电↔磁↔机械能</small></div>
+    <div class="node view">方向判定体系<br><small>左手/右手/楞次</small></div>
+  </div>
+</div>
+
+<blockquote>
+  <p><strong>全章一句话</strong>：磁场对运动电荷"只拐弯、不加速"（洛伦兹力不做功）；电磁感应则是"磁变生电、电生动、动生磁"的循环，背后真正的主宰是<strong>能量守恒</strong>。方向问题交给定则，大小问题交给公式，能量问题交给守恒——三件事分开想，题就不难了。</p>
+</blockquote>
+
+<hr>
+
+<!-- 二、核心概念 -->
+<h2 id="s2">二、核心概念</h2>
+
+<h3>2.1 磁感应强度 $\boldsymbol{B}$ 与安培力</h3>
+
+<ul>
+  <li><strong>磁感应强度</strong>：描述磁场强弱的矢量，定义式 $B=\dfrac{F}{IL}$（导线与磁场垂直时，单位电流、单位长度导线受的力），单位特斯拉（$\mathrm{T}$）。常见量级：地磁场约 $5\times10^{-5}\ \mathrm{T}$，实验室电磁铁 $0.1\sim2\ \mathrm{T}$。</li>
+  <li><strong>安培力</strong>（磁场对通电导线的力）：
+  $$\boldsymbol{F=BIL\sin\theta}$$
+  $\theta$ 为电流方向与 $\boldsymbol{B}$ 的夹角。方向用<strong>左手定则</strong>：磁感线穿掌心，四指指电流方向，拇指即受力方向。</li>
+  <li>安培力可以对导线<strong>做功</strong>——它是电动机的工作原理。</li>
+</ul>
+
+<h3>2.2 洛伦兹力：磁场的"分子级"表达</h3>
+
+<p>电流是电荷的定向移动，安培力其实是无数个运动电荷所受洛伦兹力的宏观叠加。单个电荷 $q$ 以速度 $\boldsymbol{v}$ 在磁场中运动：</p>
+
+$$\boldsymbol{f=qvB\sin\theta}$$
+
+<ul>
+  <li>方向：左手定则（四指指向<strong>正电荷</strong>运动方向；负电荷则四指指向其运动<strong>反方向</strong>）。</li>
+  <li>$f\perp v$ 恒成立 $\Rightarrow$ <strong>洛伦兹力永不做功</strong>，只改变速度方向，不改变速率与动能。</li>
+  <li>静止电荷在磁场中不受力；$v\parallel B$ 时 $f=0$。</li>
+</ul>
+
+<div class="key-point">
+  <strong>微观↔宏观</strong>：安培力是洛伦兹力的宏观表现。洛伦兹力对单个电荷不做功，安培力却能对导线做功——不矛盾：电荷参与"定向移动（沿导线）"和"随导线平移"两种运动，洛伦兹力的两个分力一个做正功一个做负功互相抵消，总功仍为零；做正功的那一分力正是安培力的来源，负功那一分表现为感应电动势（动生）。复赛常考这层理解。
+</div>
+
+<h3>2.3 带电粒子在匀强磁场中的圆周运动</h3>
+
+<p>$v\perp B$ 时，洛伦兹力大小恒定、始终垂直于速度 $\Rightarrow$ 匀速圆周运动，洛伦兹力提供向心力：</p>
+
+$$qvB=m\frac{v^2}{r}\;\Rightarrow\;\boldsymbol{r=\frac{mv}{qB}},\qquad \boldsymbol{T=\frac{2\pi m}{qB}}$$
+
+<ul>
+  <li><strong>周期与速度无关</strong>（同种粒子在同一磁场中，转一圈的时间一样）——这是回旋加速器能工作的物理基础。</li>
+  <li>动能形式：$r=\dfrac{\sqrt{2mE_k}}{qB}$，求半径时给速度给动能都要会用。</li>
+  <li>粒子在磁场中转过圆心角 $\theta$ 的时间：$t=\dfrac{\theta}{2\pi}T=\dfrac{\theta m}{qB}$（$\theta$ 用弧度）。</li>
+</ul>
+
+<h3>2.4 速度选择器、质谱仪、回旋加速器</h3>
+
+<table>
+  <thead>
+    <tr><th>装置</th><th>核心方程</th><th>要点</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="l"><strong>速度选择器</strong></td>
+      <td class="l">$qE=qvB\Rightarrow v=\dfrac{E}{B}$</td>
+      <td class="l">正交的匀强电场与匀强磁场，只有速度恰为 $E/B$ 的粒子直线通过，与电荷量、电性无关（方向装置调转则都偏）</td>
+    </tr>
+    <tr>
+      <td class="l"><strong>质谱仪</strong></td>
+      <td class="l">$qU=\frac12 mv^2$，$r=\dfrac{mv}{qB}$</td>
+      <td class="l">先加速再偏转，由半径分离同位素：$r=\dfrac{1}{B}\sqrt{\dfrac{2mU}{q}}$，$\dfrac{q}{m}=\dfrac{2U}{B^2r^2}$</td>
+    </tr>
+    <tr>
+      <td class="l"><strong>回旋加速器</strong></td>
+      <td class="l">交变频率 $f=\dfrac{qB}{2\pi m}$；最大动能 $E_{km}=\dfrac{q^2B^2R^2}{2m}$</td>
+      <td class="l">D 形盒内磁场转圈、盒缝间电场加速；最大动能只由 $B$、$R$ 决定，<strong>与加速电压无关</strong>（电压只影响加速次数/圈数）</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>2.5 电磁感应：磁变生电</h3>
+
+<h4>磁通量</h4>
+
+$$\Phi=BS\cos\theta$$
+
+<ul>
+  <li>$S$ 是<strong>有效面积</strong>（处在磁场中且与磁场垂直的投影面积）；$\theta$ 是 $\boldsymbol{B}$ 与线圈<strong>法线</strong>的夹角。</li>
+  <li>磁通量变化的三条途径：$B$ 变、$S$ 变、$\theta$ 变（线圈转动）。题目里"面积没变、磁场没变"但线圈翻转了，$\Phi$ 照样变。</li>
+</ul>
+
+<h4>法拉第电磁感应定律</h4>
+
+$$\boldsymbol{\varepsilon=n\frac{\Delta\Phi}{\Delta t}}$$
+
+<ul>
+  <li><strong>感生电动势</strong>：$B$ 随时间变化，$\varepsilon=nS\dfrac{\Delta B}{\Delta t}$（面积不变）。</li>
+  <li><strong>动生电动势</strong>：导体切割磁感线，$\varepsilon=BLv$（$B$、$L$、$v$ 两两垂直）。本质：导体内自由电荷随导体运动受洛伦兹力而分离。</li>
+  <li>电动势的<strong>大小</strong>由法拉第定律给，<strong>方向（正负极）</strong>由楞次定律或右手定则判——两件事分开做，不要混在一起。</li>
+</ul>
+
+<h4>楞次定律：感应电流的方向</h4>
+
+<div class="deep">
+  <strong>楞次定律的能量理解（竞赛视角）</strong>：感应电流的效果总是<strong>阻碍</strong>引起感应的磁通量变化——"增反减同、来拒去留"。这不是一条新规律，而是<strong>能量守恒的必然结果</strong>：如果感应电流"帮助"磁通变化，就会变成正反馈，无中生有地产出能量。判断方向时直接背口诀；计算受力、判断加速减速时，记住"感应效果永远起阻碍作用"，很多选择题可以秒答。
+</div>
+
+<h3>2.6 电磁感应中的导体棒：力电综合大本营</h3>
+
+<p>光滑水平导轨（电阻不计），间距 $L$，匀强磁场 $B$ 竖直穿过，导体棒电阻 $R$，受水平恒力 $F$ 由静止开始运动：</p>
+
+<ul>
+  <li>棒加速 $\rightarrow v\uparrow \rightarrow \varepsilon=BLv\uparrow \rightarrow I=\dfrac{BLv}{R}\uparrow \rightarrow$ 安培力 $F_安=BIL=\dfrac{B^2L^2v}{R}\uparrow$（方向阻碍运动）$\rightarrow$ 合力减小 $\rightarrow$ 加速度减小的加速运动，最终 $F_安=F$ 匀速。</li>
+  <li><strong>收尾速度</strong>：$\boldsymbol{v_m=\dfrac{FR}{B^2L^2}}$。</li>
+  <li>能量：恒力做功 = 棒的动能增量 + 回路焦耳热；匀速后恒力功率全部转化为焦耳热：$P_F=P_热=I^2R$。</li>
+</ul>
+
+<h3>2.7 自感</h3>
+
+<ul>
+  <li><strong>自感现象</strong>：线圈自身电流变化 $\rightarrow$ 自身磁通变化 $\rightarrow$ 产生自感电动势 $\varepsilon=-L\dfrac{\Delta I}{\Delta t}$，总是<strong>阻碍电流的变化</strong>（"电感惯性"）。</li>
+  <li><strong>通电自感</strong>：闭合开关瞬间，电感相当于"断路"（电流只能从 0 慢慢涨），灯泡缓慢变亮；<strong>断电自感</strong>：断开瞬间，电感维持原电流方向、与能构成回路的元件组成新回路放电，可能让灯泡"闪亮一下再灭"（条件：稳定时电感支路电流大于灯泡支路电流）。</li>
+  <li><strong>自感储能</strong>：$W=\dfrac12 LI^2$（与电容储能 $\dfrac{q^2}{2C}$ 对偶）。</li>
+</ul>
+
+<hr>
+
+<!-- 三、竞赛专属·高考不考 -->
+<h2 id="s3">三、竞赛专属·高考不考</h2>
+
+<p>下面三块内容，高考考纲明确不要求（或只作定性了解），但预赛常考、复赛必会。高一入门阶段先建立图像和基本定量能力，不用追求一步到位。</p>
+
+<h3>3.1 竞赛专属·高考不考：螺旋运动的定量分解</h3>
+
+<p>带电粒子初速度 $\boldsymbol{v}$ 与匀强磁场 $\boldsymbol{B}$ 成角 $\theta$（既非垂直也非平行）。把速度分解：</p>
+
+$$v_\perp=v\sin\theta\quad(\text{垂直磁场，决定圆周}),\qquad v_\parallel=v\cos\theta\quad(\text{平行磁场，不受力、匀速})$$
+
+<ul>
+  <li>垂直方向：$qv_\perp B=\dfrac{mv_\perp^2}{r}\Rightarrow r=\dfrac{mv\sin\theta}{qB}$，周期 $T=\dfrac{2\pi m}{qB}$（仍与速度无关）。</li>
+  <li>平行方向匀速前进，合运动为<strong>等距螺旋线</strong>，螺距（转一圈沿磁场方向前进的距离）：
+  $$\boldsymbol{h=v_\parallel T=\frac{2\pi m v\cos\theta}{qB}}$$</li>
+  <li>典型应用：<strong>磁聚焦</strong>——一束粒子从同一点以小角度发散射出，$\theta$ 都很小时 $\cos\theta\approx1$，各粒子螺距几乎相同，一个周期后重新汇聚。这是电子显微镜和显像管的原理，预赛填空题里出现过。</li>
+</ul>
+
+<h3>3.2 竞赛专属·高考不考：感生电场（涡旋电场）</h3>
+
+<p>变化的磁场在周围空间激发<strong>感生电场</strong>，其电场线是闭合的涡旋（没有起点终点，不对应电势）。这是麦克斯韦的第二大假设，也是"感生电动势"的真正来源：回路中的自由电荷是被感生电场推着走的。</p>
+
+<p>最经典的可计算模型：半径 $R$ 的圆形区域内匀强磁场 $B$ 以 $\dfrac{\mathrm{d}B}{\mathrm{d}t}=k$ 均匀变化，由对称性，距圆心 $r$ 处感生电场 $E$ 沿切线、大小处处相等。沿半径 $r$ 的圆积分一周，电动势 $=E\cdot2\pi r$；由法拉第定律：</p>
+
+<ul>
+  <li>$r\le R$：$E\cdot2\pi r=\pi r^2\dfrac{\mathrm{d}B}{\mathrm{d}t}\Rightarrow \boldsymbol{E=\dfrac{r}{2}\,\dfrac{\mathrm{d}B}{\mathrm{d}t}}$（与 $r$ 成正比）</li>
+  <li>$r\ge R$：$E\cdot2\pi r=\pi R^2\dfrac{\mathrm{d}B}{\mathrm{d}t}\Rightarrow \boldsymbol{E=\dfrac{R^2}{2r}\,\dfrac{\mathrm{d}B}{\mathrm{d}t}}$（与 $r$ 成反比）</li>
+</ul>
+
+<blockquote>
+  <p><strong>与静电场的对比</strong>：静电场电场线起于正电荷、止于负电荷，是"有源无旋"场，可以定义电势；感生电场线是闭合涡旋，"无源有旋"，<strong>不能</strong>定义电势（沿闭合回路走一圈电场做功不为零，恰好等于感应电动势）。把 $U=Ed$ 往感生电场上套是典型错误。</p>
+</blockquote>
+
+<h3>3.3 竞赛专属·高考不考：LC 振荡方程与能量</h3>
+
+<p>电容 $C$（充电后）与电感 $L$ 接成回路：电容放电 $\rightarrow$ 电感电流渐增 $\rightarrow$ 电容放空时电流最大（磁场能最大）$\rightarrow$ 电流给电容反向充电 $\rightarrow$ 周而复始。能量在"电场能 $\dfrac{q^2}{2C}$"与"磁场能 $\dfrac12 LI^2$"之间往复转换，总量守恒（无电阻时）。</p>
+
+<p>设某时刻电容极板电荷为 $q$，回路电流 $I=\dfrac{\mathrm{d}q}{\mathrm{d}t}$。沿回路：自感电动势 $-L\dfrac{\mathrm{d}I}{\mathrm{d}t}$ 与电容电压 $\dfrac{q}{C}$ 平衡（取合适正负号）：</p>
+
+$$L\frac{\mathrm{d}^2q}{\mathrm{d}t^2}+\frac{q}{C}=0\;\Rightarrow\;\boldsymbol{\frac{\mathrm{d}^2q}{\mathrm{d}t^2}=-\frac{1}{LC}\,q}$$
+
+<p>这正是简谐运动的方程 $a=-\omega^2x$ 的"电学版"！对比得：</p>
+
+$$\boldsymbol{\omega=\frac{1}{\sqrt{LC}}},\qquad \boldsymbol{T=2\pi\sqrt{LC}}$$
+
+<ul>
+  <li>对应关系：$q\leftrightarrow x$（位移），$I\leftrightarrow v$（速度），$\dfrac{1}{C}\leftrightarrow k$（劲度），$L\leftrightarrow m$（质量/惯性）。记电感是"电学惯性"、电容倒数是"电学劲度"，整套振动结论直接搬过来。</li>
+  <li>能量守恒式：$\dfrac{q^2}{2C}+\dfrac12 LI^2=\dfrac{Q_0^2}{2C}=\dfrac12 LI_m^2$，由此最大电流 $I_m=\omega Q_0=\dfrac{Q_0}{\sqrt{LC}}$。</li>
+  <li>电磁波的发射需要<strong>开放电路</strong>和<strong>高频率</strong>——把线圈拉直成天线、减小 $L$ 和 $C$。</li>
+</ul>
+
+<hr>
+
+<!-- 四、例题精讲 -->
+<h2 id="s4">四、例题精讲</h2>
+
+<div class="example">
+  <span class="tag">例 1</span><strong>【基础】洛伦兹力"不做功"辨析</strong>
+  <p>质子以速率 $v$ 垂直射入匀强磁场做匀速圆周运动。下列说法正确的是（　）</p>
+  <p>A. 洛伦兹力对质子做正功，使其速率保持 $v$　B. 洛伦兹力提供向心力，方向指向圆心<br>
+  C. 洛伦兹力不做功，所以它对质子的运动毫无影响　D. 若磁场增强一倍，质子动能也加倍</p>
+  <div class="sol">
+    <p><strong>思路起点</strong>：圆周运动一章告诉我们——向心力永远与速度垂直、不做功；这里洛伦兹力恰好扮演了这个角色。逐项用"力是否改变速率"来检验。</p>
+    <p><strong>解析</strong>：洛伦兹力 $f=qvB$ 始终垂直于速度，$W=\boldsymbol{f}\cdot\boldsymbol{v}\,\mathrm{d}t=0$，故速率、动能不变，A、D 错。它虽不做功，却改变了速度<strong>方向</strong>，是质点转弯的唯一原因，C 错。它大小恒定、方向时刻指向圆心，正好充当向心力，<strong>B 正确</strong>。</p>
+    <p><strong>一句话总结</strong>："不做功"≠"没作用"。磁场不改变能量，只改变方向——这是带电粒子问题的第一块基石。</p>
+  </div>
+</div>
+
+<div class="example">
+  <span class="tag">例 2</span><strong>【基础】速度选择器</strong>
+  <p>两块平行金属板间有竖直向下的匀强电场 $E=3.0\times10^4\ \mathrm{V/m}$，同时有垂直纸面向里的匀强磁场 $B=0.10\ \mathrm{T}$。一束含不同速率正离子的粒子流水平射入两板之间。问能以直线穿出的离子速率多大？若换成负离子以同样速率反向射入，能否直线通过？</p>
+  <div class="sol">
+    <p><strong>思路起点</strong>：直线通过 $\Rightarrow$ 电场力与洛伦兹力平衡。注意两个力都正比于 $q$，最后 $q$ 会消掉。</p>
+    <p><strong>解析</strong>：设离子电荷量 $q$、速率 $v$。电场力 $F_E=qE$ 与洛伦兹力 $f=qvB$ 方向相反，平衡时</p>
+    $$qE=qvB\;\Rightarrow\;v=\frac{E}{B}=\frac{3.0\times10^4}{0.10}=3.0\times10^5\ \mathrm{m/s}$$
+    <p>方程中 $q$ 与电性均不出现 $\Rightarrow$ 对任何电荷都成立。负离子反向射入：速度反向后洛伦兹力方向翻转两次（电荷变号翻一次、速度反向翻一次）回到原位，电场力方向也翻转一次（电场方向不变、电荷变号），两力仍反向平衡，<strong>仍能直线通过</strong>（前提：电场方向也按原装置）。</p>
+    <p><strong>一句话总结</strong>：速度选择器"选速不选电"——选出的是 $v=E/B$，不分辨电荷与电性。</p>
+  </div>
+</div>
+
+<div class="example">
+  <span class="tag">例 3</span><strong>【预赛难度】磁场中的半圆与时间</strong>
+  <p>质子和 $\alpha$ 粒子（$m_\alpha=4m_p$，$q_\alpha=2e$）经相同电压 $U$ 从静止加速后，先后垂直射入同一匀强磁场 $B$，各自偏转半周后从磁场边界射出。求：① 两者圆周半径之比 $r_p:r_\alpha$；② 两者在磁场中运动时间之比 $t_p:t_\alpha$。</p>
+  <div class="sol">
+    <p><strong>思路起点</strong>：题目没给速度，先由加速过程（动能定理）把 $v$ 换成 $U$；时间用"圆心角占整圈的比例 × 周期"。</p>
+    <p><strong>解析</strong>：① 加速：$qU=\dfrac12 mv^2\Rightarrow v=\sqrt{\dfrac{2qU}{m}}$。代入半径公式：</p>
+    $$r=\frac{mv}{qB}=\frac{1}{B}\sqrt{\frac{2mU}{q}}\;\Rightarrow\;r\propto\sqrt{\frac{m}{q}}$$
+    $$\frac{r_p}{r_\alpha}=\sqrt{\frac{m_p/q_p}{m_\alpha/q_\alpha}}=\sqrt{\frac{1/1}{4/2}}=\sqrt{\frac12}=\boldsymbol{\frac{1}{\sqrt2}}$$
+    <p>② 半周时间是半个周期：$t=\dfrac{T}{2}=\dfrac{\pi m}{qB}$，故 $t\propto\dfrac{m}{q}$：</p>
+    $$\frac{t_p}{t_\alpha}=\frac{m_p/q_p}{m_\alpha/q_\alpha}=\frac{1}{2}\;\Rightarrow\;\boldsymbol{t_p:t_\alpha=1:2}$$
+    <p><strong>一句话总结</strong>：同电压加速后 $\dfrac{q}{m}$ 大的粒子半径小、转得快。质谱仪正是靠 $r\propto\sqrt{m/q}$ 把同位素分开的。</p>
+  </div>
+</div>
+
+<div class="example">
+  <span class="tag">例 4</span><strong>【预赛难度】回旋加速器的账要算清</strong>
+  <p>某回旋加速器 D 形盒半径 $R=0.50\ \mathrm{m}$，磁感应强度 $B=1.0\ \mathrm{T}$，加速质子的交变电压 $U=2.0\times10^5\ \mathrm{V}$（每过一次缝隙加速一次）。求：① 交变电场的频率；② 质子能获得的最大动能；③ 质子从中心到出射约被加速多少次？（质子 $m=1.67\times10^{-27}\ \mathrm{kg}$，$e=1.60\times10^{-19}\ \mathrm{C}$）</p>
+  <div class="sol">
+    <p><strong>思路起点</strong>：交变电场必须与转圈"合拍"，频率就是圆周运动的回旋频率；最大动能对应"最大半径即盒半径 $R$"的时刻。</p>
+    <p><strong>解析</strong>：① 交变频率 = 回旋频率：</p>
+    $$f=\frac{qB}{2\pi m}=\frac{1.60\times10^{-19}\times1.0}{2\pi\times1.67\times10^{-27}}\approx1.53\times10^{7}\ \mathrm{Hz}=15.3\ \mathrm{MHz}$$
+    <p>② 出射时 $r=R$：由 $R=\dfrac{mv_m}{qB}$ 得 $v_m=\dfrac{qBR}{m}$，</p>
+    $$E_{km}=\frac12 mv_m^2=\frac{q^2B^2R^2}{2m}=\frac{(1.60\times10^{-19})^2\times1.0^2\times0.50^2}{2\times1.67\times10^{-27}}\approx1.92\times10^{-12}\ \mathrm{J}\approx12\ \mathrm{MeV}$$
+    <p>③ 每过缝隙一次获得动能 $qU$，一圈过两次。设共加速 $N$ 次：</p>
+    $$N=\frac{E_{km}}{qU}=\frac{1.92\times10^{-12}}{1.60\times10^{-19}\times2.0\times10^5}=60\ \text{次（即约 30 圈）}$$
+    <p><strong>一句话总结</strong>：频率由 $B$、$m$、$q$ 定死；最大动能只由 $B^2R^2$ 定死——电压只负责"喂多少顿"，不负责"长多胖"。</p>
+  </div>
+</div>
+
+<div class="example">
+  <span class="tag">例 5</span><strong>【复赛难度】配速法：重、电场平衡后的圆周</strong>
+  <p>空间有竖直向上的匀强电场 $E$、垂直纸面向里的匀强磁场 $B=0.50\ \mathrm{T}$，还有竖直向下的重力场。一质量 $m=1.0\times10^{-5}\ \mathrm{kg}$、带电荷量 $q=+1.0\times10^{-4}\ \mathrm{C}$ 的液滴，以水平速度 $v_0=10\ \mathrm{m/s}$ 射入场区，恰能做匀速圆周运动。求：① 电场强度 $E$；② 圆周半径与周期。（$g=10\ \mathrm{m/s^2}$）</p>
+  <div class="sol">
+    <p><strong>思路起点</strong>："恰能做匀速圆周运动"是最强提示——速率不变说明除洛伦兹力外其他力必须互相抵消（否则速率会变）。于是重力和电场力先配平，剩下的就是纯磁场圆周问题。</p>
+    <p><strong>解析</strong>：① 匀速圆周 $\Rightarrow$ 竖直方向重力与电场力平衡：</p>
+    $$qE=mg\;\Rightarrow\;E=\frac{mg}{q}=\frac{1.0\times10^{-5}\times10}{1.0\times10^{-4}}=\boldsymbol{1.0\ \mathrm{N/C}\ (\text{方向竖直向上})}$$
+    <p>② 只剩洛伦兹力提供向心力：</p>
+    $$r=\frac{mv_0}{qB}=\frac{1.0\times10^{-5}\times10}{1.0\times10^{-4}\times0.50}=\boldsymbol{2.0\ \mathrm{m}}$$
+    $$T=\frac{2\pi m}{qB}=\frac{2\pi\times1.0\times10^{-5}}{1.0\times10^{-4}\times0.50}=0.40\pi\ \mathrm{s}\approx\boldsymbol{1.26\ \mathrm{s}}$$
+    <p><strong>一句话总结</strong>：这就是竞赛"配速法"的入门版——先把恒力配平（或把速度拆出一个使洛伦兹力抵消恒力的分量），剩下的洛伦兹力分量只负责转圈。三个场叠加不可怕，可怕的是不拆开看。</p>
+  </div>
+</div>
+
+<div class="example">
+  <span class="tag">例 6</span><strong>【基础】导体棒的收尾速度与能量</strong>
+  <p>水平光滑导轨间距 $L=0.20\ \mathrm{m}$，处于竖直向下的匀强磁场 $B=0.50\ \mathrm{T}$ 中。质量不计的导体棒（回路总电阻 $R=0.10\ \Omega$）在水平恒力 $F=0.10\ \mathrm{N}$ 作用下由静止开始运动。求：① 棒的最大速度；② 匀速时恒力 $F$ 的功率与回路热功率，并验证二者相等。</p>
+  <div class="sol">
+    <p><strong>思路起点</strong>：速度越大、感应电流越大、安培力（阻碍运动）越大——负反馈，必存在力平衡时的"收尾速度"。</p>
+    <p><strong>解析</strong>：① 匀速时 $F=F_安=BIL=\dfrac{B^2L^2v_m}{R}$：</p>
+    $$v_m=\frac{FR}{B^2L^2}=\frac{0.10\times0.10}{(0.50)^2\times(0.20)^2}=\frac{0.010}{0.010}=\boldsymbol{1.0\ \mathrm{m/s}}$$
+    <p>② 恒力功率：$P_F=Fv_m=0.10\times1.0=0.10\ \mathrm{W}$。</p>
+    <p>回路电流 $I=\dfrac{BLv_m}{R}=\dfrac{0.50\times0.20\times1.0}{0.10}=1.0\ \mathrm{A}$，热功率 $P_热=I^2R=1.0^2\times0.10=0.10\ \mathrm{W}$。</p>
+    <p>二者相等 ✓。</p>
+    <p><strong>一句话总结</strong>：匀速阶段，外力做的功<strong>全部</strong>变成焦耳热——这正是楞次定律"阻碍"背后的能量守恒。验算题做到这一步，基本可以锁定满分。</p>
+  </div>
+</div>
+
+<div class="example">
+  <span class="tag">例 7</span><strong>【复赛难度】LC 振荡的能量账与周期</strong>
+  <p>一 LC 回路中，$L=0.10\ \mathrm{H}$，$C=10\ \mu\mathrm{F}$。给电容充电至 $Q_0=2.0\times10^{-5}\ \mathrm{C}$ 后闭合回路。求：① 振荡周期；② 回路中的最大电流；③ 当电容电荷减为 $q=1.2\times10^{-5}\ \mathrm{C}$ 时，回路电流多大？（忽略电阻）</p>
+  <div class="sol">
+    <p><strong>思路起点</strong>：把它翻译成弹簧振子——$q$ 是"位移"、$I$ 是"速度"、总能量守恒。初态全部能量在电场中，电流最大时全部在磁场中。</p>
+    <p><strong>解析</strong>：① 周期：</p>
+    $$T=2\pi\sqrt{LC}=2\pi\sqrt{0.10\times10\times10^{-6}}=2\pi\sqrt{10^{-6}}=2\pi\times10^{-3}\approx\boldsymbol{6.28\ \mathrm{ms}}$$
+    <p>② 能量守恒：$\dfrac{Q_0^2}{2C}=\dfrac12 LI_m^2\Rightarrow I_m=\dfrac{Q_0}{\sqrt{LC}}$：</p>
+    $$I_m=\frac{2.0\times10^{-5}}{\sqrt{10^{-6}}}=\frac{2.0\times10^{-5}}{10^{-3}}=\boldsymbol{2.0\times10^{-2}\ \mathrm{A}=20\ \mathrm{mA}}$$
+    <p>（也可写成 $I_m=\omega Q_0$，$\omega=\dfrac{1}{\sqrt{LC}}=1000\ \mathrm{rad/s}$。）</p>
+    <p>③ 任意时刻 $\dfrac{q^2}{2C}+\dfrac12 LI^2=\dfrac{Q_0^2}{2C}$，解出：</p>
+    $$I=\sqrt{\frac{Q_0^2-q^2}{LC}}=\omega\sqrt{Q_0^2-q^2}=1000\times\sqrt{(2.0\times10^{-5})^2-(1.2\times10^{-5})^2}$$
+    $$=1000\times\sqrt{4.0\times10^{-10}-1.44\times10^{-10}}=1000\times1.6\times10^{-5}=\boldsymbol{1.6\times10^{-2}\ \mathrm{A}=16\ \mathrm{mA}}$$
+    <p><strong>一句话总结</strong>：$I$ 与 $q$ 的关系 $I=\omega\sqrt{Q_0^2-q^2}$，和简谐运动 $v=\omega\sqrt{A^2-x^2}$ 一模一样——认出这个"同构"，LC 题就全变成了送分题。</p>
+  </div>
+</div>
+
+<hr>
+
+<!-- 五、易错点 -->
+<h2 id="s5">五、易错点（竞赛阅卷最常见的失分坑）</h2>
+
+<div class="warn">
+  <strong>坑 1：左手、右手、右手螺旋三个定则混用。</strong>判<strong>力</strong>（安培力、洛伦兹力）用<strong>左手</strong>；判<strong>感应电流方向</strong>（动生）用<strong>右手</strong>；判<strong>电流产生的磁场方向</strong>用<strong>右手螺旋（安培）定则</strong>。口诀："左力右电（磁生电），螺旋管磁场"。做题前先在草稿纸写上"问什么用什么"，考场上手一伸错，整题归零。
+</div>
+
+<div class="warn">
+  <strong>坑 2：忘记洛伦兹力不做功，乱用动能定理。</strong>带电粒子只在磁场中运动时，动能、速率恒定；想用磁场"加速"粒子是方向性错误（加速只能靠电场，回旋加速器里加速发生在盒缝的电场，磁场只管拐弯）。反过来，列动能定理时也不要把洛伦兹力的"功"写进去。
+</div>
+
+<div class="warn">
+  <strong>坑 3：负电荷的方向陷阱。</strong>左手定则的四指指向<strong>正电荷</strong>的运动方向；对电子、负离子，四指要指向其运动的<strong>反方向</strong>（等价于判断后把结果反向）。速度选择器、霍尔效应类题目中，电性判断错，电势高低全反。
+</div>
+
+<div class="warn">
+  <strong>坑 4：以为"速度大则周期短"。</strong>$T=\dfrac{2\pi m}{qB}$ 与速度、半径都无关。同种粒子在同一磁场中，快粒子转大圈、慢粒子转小圈，周期相同。凭直觉答"速度加倍周期减半"是最经典的失分。
+</div>
+
+<div class="warn">
+  <strong>坑 5：感应电动势的大小与方向一锅煮，符号乱套。</strong>正确分工：$|\varepsilon|=n\left|\dfrac{\Delta\Phi}{\Delta t}\right|$ 只管<strong>大小</strong>，方向交给楞次定律（或右手定则）。楞次的"阻碍"阻碍的是<strong>磁通量的变化</strong>，不是磁通量本身，也不是磁场本身——原磁场减弱时感应电流的磁场与原磁场<strong>同向</strong>（"减同"）。
+</div>
+
+<div class="warn">
+  <strong>坑 6：磁通量 $\Phi=BS$ 直接套，忽略有效面积与夹角。</strong>线圈只有一半在磁场中，$S$ 只能算磁场内的部分；$\theta$ 是 $\boldsymbol{B}$ 与<strong>线圈平面法线</strong>的夹角（不是与平面的夹角）；线圈翻转 $180^\circ$，$\Delta\Phi=2BS$ 而不是 0。这三个细节预赛年年有人栽。
+</div>
+
+<div class="warn">
+  <strong>坑 7：自感电流方向判断错误。</strong>通电瞬间，自感电动势"反对"电流增大——方向与原电流相反，线圈相当于临时断路；断电瞬间，自感"挽留"电流——方向与原电流<strong>相同</strong>，且只能沿新构成的闭合回路流动。判断断电自感先画"稳定时的电流方向"，自感电流延续这个方向走。
+</div>
+
+<div class="warn">
+  <strong>坑 8：把复合场中的洛伦兹力当恒力，套匀变速公式。</strong>洛伦兹力随速度变化（大小、方向都在变），粒子一旦进入复合场做曲线运动，$v^2=2as$、$x=\frac12at^2$ 这类恒加速度公式全部失效。通用武器是：配速/配平分解（恒力先抵消）+ 动能定理（只管速率）+ 圆周运动的向心力方程。
+</div>
+
+<hr>
+
+<!-- 六、自检清单 -->
+<h2 id="s6">六、自检清单</h2>
+
+<ul class="checklist">
+  <li>不看书能说出安培力 $F=BIL\sin\theta$ 与洛伦兹力 $f=qvB\sin\theta$ 中每个符号的含义与单位吗？</li>
+  <li>能现场演示左手定则，并说明负电荷如何处理吗？（同桌抽查 3 个方向，全对才算）</li>
+  <li>能从 $qvB=\dfrac{mv^2}{r}$ 独立推出 $r=\dfrac{mv}{qB}$ 和 $T=\dfrac{2\pi m}{qB}$，并解释"周期与速度无关"的物理原因吗？</li>
+  <li>粒子速度与磁场成任意角 $\theta$ 时，能把运动分解成"圆周 + 匀速直线"，并写出半径、周期、螺距三个式子吗？</li>
+  <li>能画出速度选择器、质谱仪、回旋加速器的原理图，并各写出 1~2 个核心方程吗？</li>
+  <li>能说清回旋加速器最大动能为什么与加速电压无关、交变频率由什么决定吗？</li>
+  <li>能用楞次定律独立判断"磁铁插入/拔出线圈""导线框进出磁场"两种情形的感应电流方向，并从能量守恒解释"阻碍"二字吗？</li>
+  <li>能区分动生电动势（$\varepsilon=BLv$）与感生电动势（$\varepsilon=nS\dfrac{\Delta B}{\Delta t}$）的适用情形，并各举一例吗？</li>
+  <li>导体棒在导轨上受恒力运动的全过程（加速度减小的加速运动 → 匀速），能画出 $v\text{-}t$ 图并写出收尾速度公式吗？</li>
+  <li>能说清洛伦兹力不做功、安培力却可以做功二者为何不矛盾吗？（提示：分力分工）</li>
+  <li>自感：能分别画出"通电"与"断电"瞬间线圈两端等效状态，并判断断电自感灯泡是否会闪亮吗？</li>
+  <li>能写出 LC 振荡的周期公式、能量守恒式，并完成 $q\leftrightarrow x$、$I\leftrightarrow v$、$L\leftrightarrow m$、$1/C\leftrightarrow k$ 的对应吗？</li>
+  <li>面对一道"三场合一"（重力 + 电场 + 磁场）的题，能先说清第一步该干什么（配平恒力）吗？</li>
+  <li>本章 7 道例题，合上解析能独立重做 6 道以上吗？不能的那道，回炉抄进错题本并标注卡壳步骤。</li>
+</ul>
+
+<hr>
+
+<p style="text-align: center; color: var(--ink-soft); font-size: 0.9em;">
+  tags: #物理 #竞赛 #磁场 #电磁感应 #洛伦兹力 #LC振荡 #深度学习
+</p>
+
+</body>
+</html>

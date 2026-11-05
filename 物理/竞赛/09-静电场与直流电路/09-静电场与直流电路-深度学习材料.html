@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>09 静电场与直流电路 · 物理竞赛入门</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+.fig { text-align: center; margin: 16px 0; page-break-inside: avoid; }
+.fig figcaption { font-size: 13px; color: var(--ink-soft); margin-top: 6px; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<nav class="chap-nav">高考备考 · 物理 · 竞赛专题 ｜ 09-静电场与直流电路-深度学习材料.html</nav>
+<header class="chap-head">
+  <h1>09 静电场与直流电路</h1>
+  <p class="chap-meta">物理竞赛专题（12 章系列 · 第 9 章） ｜ 适用：高一竞赛入门（目标：预赛 → 复赛入门） ｜ 前置：01 竞赛数学工具（微元法）、04 功与能量（能量观点） ｜ 学生：小兵</p>
+</header>
+<div class="chap-intro">
+  从这一章起，我们正式进入<strong>电磁学</strong>的世界。静电场和直流电路是两块风格迥异的大陆：前者考验你"对看不见的东西做积分"的想象力，后者考验你"在蜘蛛网一样的电路里找对称"的观察力。这两件事恰好是预赛复赛的常客。别怕公式多——本章每个公式都配了推导，每道例题都从"思路起点"写起，你只管跟着走，走着走着就会了。
+</div>
+
+<div class="toc">
+  <div class="toc-label">本章导航</div>
+  <div class="toc-links">
+    <a href="#s1">一、知识全景</a>
+    <a href="#s2">二、核心概念</a>
+    <a href="#s3">三、竞赛专属·高考不考</a>
+    <a href="#s4">四、例题精讲</a>
+    <a href="#s5">五、易错点</a>
+    <a href="#s6">六、自检清单</a>
+  </div>
+</div>
+
+<!-- 一、知识全景 -->
+<h2 id="s1">一、知识全景</h2>
+
+<p>静电学回答一个问题：<strong>电荷不动时，空间里的"电"长什么样？</strong>我们用两个量描写它——场强 $E$（力的角度，矢量）和电势 $\varphi$（能的角度，标量）。电路学回答另一个问题：<strong>电荷流动起来后，电流、电压怎么分配？</strong>核心武器是基尔霍夫两条定律。</p>
+
+<div class="map">
+  <div class="row"><div class="node root">静电场与直流电路</div></div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node">静电场<br><small>场强 E · 电势 φ</small></div>
+    <div class="node">导体<br><small>静电平衡 · 屏蔽</small></div>
+    <div class="node">电容器<br><small>C · 串并联 · 储能</small></div>
+    <div class="node">直流电路<br><small>基尔霍夫 · 等效</small></div>
+  </div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node leaf">库仑定律</div>
+    <div class="node leaf">叠加原理</div>
+    <div class="node leaf">微元法积分</div>
+    <div class="node leaf">感应电荷</div>
+    <div class="node leaf">闭合电路欧姆定律</div>
+    <div class="node leaf">节点电势法</div>
+  </div>
+  <div class="arrow-down">⬇</div>
+  <div class="row">
+    <div class="node view">竞赛工具<br><small>微元法积分</small></div>
+    <div class="node view">竞赛工具<br><small>等势点短接</small></div>
+    <div class="node view">竞赛工具<br><small>Y-Δ 变换</small></div>
+  </div>
+</div>
+
+<blockquote>
+  <p><strong>和高考的衔接</strong>：高考也考库仑定律、电容器、闭合电路，但只到"点电荷、平行板、简单混联"为止。竞赛向前走的三小步是：<strong>连续带电体要积分</strong>（微元法）、<strong>导体问题用场强叠加解释</strong>（不是背结论）、<strong>复杂网络靠对称性和 Y-Δ 变换</strong>。你会发现，高考里"电容器动态分析"那类题，用竞赛的眼光看就是"先想清楚谁不变"一句话的事。</p>
+</blockquote>
+
+<hr>
+
+<!-- 二、核心概念 -->
+<h2 id="s2">二、核心概念</h2>
+
+<h3>2.1 库仑定律与电场强度</h3>
+
+<p>真空中两个点电荷之间的作用力：</p>
+
+$$\boldsymbol{F = k\frac{q_1 q_2}{r^2}} \qquad k = 9.0\times 10^{9}\ \mathrm{N\cdot m^2/C^2}$$
+
+<ul>
+  <li>适用条件：<strong>真空、点电荷</strong>（$r$ 远大于带电体尺寸时可当点电荷；均匀带电球体外也可等效为球心处点电荷）</li>
+  <li>同号相斥、异号相吸；力沿两电荷连线；满足牛顿第三定律</li>
+  <li>$k$ 与真空介电常数的关系：$k = \dfrac{1}{4\pi\varepsilon_0}$，$\varepsilon_0 = 8.85\times10^{-12}\ \mathrm{F/m}$（竞赛里两个写法都要认得）</li>
+</ul>
+
+<p>电场强度定义：放入场中的检验电荷 $q$ 受力 $F$，则</p>
+
+$$E = \frac{F}{q} \qquad\text{点电荷产生的场：}\quad \boldsymbol{E = \frac{kQ}{r^2}}$$
+
+<ul>
+  <li>$E$ 是<strong>矢量</strong>，方向与正电荷受力方向相同</li>
+  <li><strong>叠加原理</strong>：多个电荷产生的场强 = 各自场强的<strong>矢量和</strong>——这是全章最重要的思想，微元法积分就是它的无限细分版</li>
+</ul>
+
+<h3>2.2 电势与电势能</h3>
+
+<p>电荷 $q$ 在电场中某点的电势能 $E_p$ 与 $q$ 成正比，比例系数只由电场决定，称为<strong>电势</strong>：</p>
+
+$$\varphi = \frac{E_p}{q} \qquad\text{点电荷产生的电势（取无穷远为零点）：}\quad \boldsymbol{\varphi = \frac{kQ}{r}}$$
+
+<ul>
+  <li>$\varphi$ 是<strong>标量</strong>，但有正负：正电荷周围 $\varphi &gt; 0$，负电荷周围 $\varphi &lt; 0$（以无穷远为零点）</li>
+  <li>电势叠加 = <strong>代数和</strong>（带正负号直接加），比场强的矢量叠加简单得多</li>
+  <li>电势差（电压）：$U_{AB} = \varphi_A - \varphi_B$；电场力做功 $\boldsymbol{W_{AB} = qU_{AB}}$（$q$ 带符号代入）</li>
+  <li>匀强电场中 $\boldsymbol{E = \dfrac{U}{d}}$，$d$ 是沿场强方向的距离</li>
+  <li>等势面与电场线处处垂直；沿电场线方向电势降低最快</li>
+</ul>
+
+<div class="key-point">
+  <strong>E 与 φ 的微积分关系（竞赛视角）</strong>：场强是电势的"空间变化率"：沿 $x$ 方向有 $E_x = -\dfrac{\mathrm{d}\varphi}{\mathrm{d}x}$。反过来 $\varphi$ 是 $E$ 的累积。这给了我们一条黄金路线：<strong>先用标量积分求 φ，再求导得 E</strong>——往往比直接做矢量积分省一半力气（例 2 见分晓）。
+</div>
+
+<h4>E 与 φ 对比总表</h4>
+
+<table>
+  <thead>
+    <tr><th>对比项</th><th>场强 E</th><th>电势 φ</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="l">性质</td><td class="l">矢量（有方向）</td><td class="l">标量（有正负）</td></tr>
+    <tr><td class="l">点电荷公式</td><td>$E = \dfrac{kQ}{r^2}$</td><td>$\varphi = \dfrac{kQ}{r}$</td></tr>
+    <tr><td class="l">叠加方式</td><td class="l">矢量合成（要分解投影）</td><td class="l">代数和（直接加）</td></tr>
+    <tr><td class="l">零点</td><td class="l">不需要零点</td><td class="l">必须约定零点（通常取无穷远或大地）</td></tr>
+    <tr><td class="l">相互关系</td><td colspan="2">$E_x = -\dfrac{\mathrm{d}\varphi}{\mathrm{d}x}$；沿电场线电势降低；等势面 ⊥ 电场线</td></tr>
+  </tbody>
+</table>
+
+<h3>2.3 导体的静电平衡</h3>
+
+<p>导体内部有大量自由电子。把导体放进电场，自由电子在电场力作用下重新分布（<strong>静电感应</strong>），直到导体内部合场强处处为零——这个过程只要约 $10^{-14}$ s，之后达到<strong>静电平衡</strong>。</p>
+
+<div class="key-point">
+  <strong>静电平衡四大结论（每条都要会"为什么"）</strong>：
+  <ol>
+    <li>导体内部<strong>合场强处处为零</strong>（若不为零，自由电荷还会继续移动，谈不上平衡）</li>
+    <li>导体是<strong>等势体</strong>，表面是等势面（内部 $E=0$，移动电荷不做功，各点电势相等）</li>
+    <li>净电荷只分布在导体<strong>外表面</strong>（内部若有净电荷，它发出的电场线无处可去，必然在导体内产生场，矛盾）</li>
+    <li>表面处场强<strong>垂直于表面</strong>（若有切向分量，电荷会沿表面移动）</li>
+  </ol>
+</div>
+
+<ul>
+  <li><strong>感应电荷规律</strong>：把不带电导体靠近带电体 $+Q$，近端感应出异号电荷（$-q$），远端感应出同号电荷（$+q$），总量仍为零</li>
+  <li><strong>静电屏蔽</strong>：
+    <ul>
+      <li>空腔导体（不接地）：外部电场进不了空腔——腔内无电荷时腔内场强为零。<strong>屏蔽外场</strong></li>
+      <li>空腔导体<strong>接地</strong>：腔内带电体产生的电场被锁在腔内，外表面感应电荷被大地中和，外部空间场强为零。<strong>屏蔽内场</strong></li>
+    </ul>
+  </li>
+  <li><strong>机理一句话</strong>：不是导体"挡住"了电场，而是<strong>感应电荷产生的场与外场在导体内部恰好叠加抵消</strong>——这是叠加原理的胜利，例 3 会让你把这个机理用成解题工具</li>
+</ul>
+
+<h3>2.4 电容器</h3>
+
+<p>两个彼此绝缘又靠得很近的导体构成电容器，容纳电荷的本领用电容描写：</p>
+
+$$C = \frac{Q}{U} \qquad\text{平行板电容器：}\quad \boldsymbol{C = \frac{\varepsilon_r \varepsilon_0 S}{d}}$$
+
+<ul>
+  <li>$Q$：一块极板所带电荷的绝对值；$U$：两极板间电压；单位法拉（F），常用 $\mu F$（$10^{-6}$ F）、pF（$10^{-12}$ F）</li>
+  <li>$\varepsilon_r$：相对介电常数，真空为 1，插入电介质后 $C$ 增大为原来的 $\varepsilon_r$ 倍（电介质被极化，削弱了内部场强）</li>
+  <li>平行板间是匀强电场：$E = \dfrac{U}{d} = \dfrac{Q}{\varepsilon_r\varepsilon_0 S}$</li>
+</ul>
+
+<h4>串联与并联（和电阻的规律正好相反！）</h4>
+
+<table>
+  <thead>
+    <tr><th></th><th>串联</th><th>并联</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="l">不变量</td><td class="l">各电容<strong>电量相同</strong>（中间极板电荷来自静电感应，孤立岛内总电荷守恒）</td><td class="l">各电容<strong>电压相同</strong></td></tr>
+    <tr><td class="l">等效电容</td><td>$\dfrac{1}{C} = \dfrac{1}{C_1} + \dfrac{1}{C_2}$（越串越小）</td><td>$C = C_1 + C_2$（越并越大）</td></tr>
+    <tr><td class="l">电压/电量分配</td><td class="l">电压与电容成反比：$U_1 : U_2 = C_2 : C_1$</td><td class="l">电量与电容成正比：$Q_1 : Q_2 = C_1 : C_2$</td></tr>
+    <tr><td class="l">类比记忆</td><td class="l">与电阻<strong>并联</strong>公式同形</td><td class="l">与电阻<strong>串联</strong>公式同形</td></tr>
+  </tbody>
+</table>
+
+<h4>储能公式</h4>
+
+$$\boldsymbol{W = \frac{1}{2}QU = \frac{1}{2}CU^2 = \frac{Q^2}{2C}}$$
+
+<p>记忆线索：充电过程中电压从 0 线性涨到 $U$，平均电压 $\bar U = \dfrac{U}{2}$，故 $W = \bar U Q = \dfrac{1}{2}QU$（和"匀加速平均速度"一个套路）。</p>
+
+<div class="deep">
+  <strong>动态分析两板斧</strong>：电容器接在电源上 → <strong>U 不变</strong>（电源强行钳位）；充完电断开电源 → <strong>Q 不变</strong>（电荷无处可逃）。遇到"插介质、变间距、错开极板"类问题，先问自己三遍：谁不变？谁不变？谁不变？然后 $C = \dfrac{\varepsilon_r\varepsilon_0 S}{d}$ 看 C 怎么变，$Q = CU$ 或 $U = Q/C$ 推其余，$E = U/d$ 看场强。例 4 就是这套流程。
+</div>
+
+<h3>2.5 直流电路与电源</h3>
+
+<ul>
+  <li><strong>电流</strong>：$I = \dfrac{q}{t}$；微观表达式 $\boldsymbol{I = nqSv}$（$n$ 载流子密度，$v$ 漂移速度——注意 $v$ 极小，约 $10^{-4}\ \mathrm{m/s}$ 量级，"电"传得快靠的是电场的建立速度，不是电子跑得快）</li>
+  <li><strong>电阻定律</strong>：$R = \rho \dfrac{L}{S}$；<strong>部分电路欧姆定律</strong>：$I = \dfrac{U}{R}$</li>
+  <li><strong>电功与电功率</strong>：$W = UIt$，$P = UI$；纯电阻电路才有 $P = I^2 R = \dfrac{U^2}{R}$</li>
+  <li><strong>电动势 E</strong>：电源把其他形式的能转化为电能的本领，数值上等于断开外电路时的路端电压</li>
+  <li><strong>闭合电路欧姆定律</strong>：</li>
+</ul>
+
+$$\boldsymbol{I = \frac{E}{R + r}} \qquad\text{路端电压：}\quad U = E - Ir$$
+
+<ul>
+  <li>$r$ 是电源内阻；外电路断开时 $I=0$，$U = E$；短路时 $I_{短} = \dfrac{E}{r}$（危险！）</li>
+  <li><strong>电源输出功率</strong>（外电阻消耗的功率）：</li>
+</ul>
+
+$$P_{出} = I^2 R = \frac{E^2 R}{(R+r)^2} \qquad\Rightarrow\qquad \boxed{R = r\ \text{时}\ P_{出\max} = \frac{E^2}{4r}}$$
+
+<div class="key-point">
+  <strong>推导（均值不等式）</strong>：$(R+r)^2 = (R-r)^2 + 4Rr \ge 4Rr$，故 $\dfrac{R}{(R+r)^2} \le \dfrac{1}{4r}$，等号当且仅当 $R = r$。<br>
+  <strong>注意</strong>：此时电源效率 $\eta = \dfrac{R}{R+r} = 50\%$——<strong>最大输出功率 ≠ 最高效率</strong>，两者不可兼得（例 5）。
+</div>
+
+<h3>2.6 基尔霍夫定律</h3>
+
+<p>遇到"既不是串联也不是并联"的复杂网络（如不平衡电桥），串并联公式失效，轮到电路世界的"牛顿定律"登场：</p>
+
+<ul>
+  <li><strong>基尔霍夫第一定律（KCL，节点电流定律）</strong>：任意节点，流入电流之和 = 流出电流之和。本质：<strong>电荷守恒</strong>——节点不能凭空堆积电荷。</li>
+  <li><strong>基尔霍夫第二定律（KVL，回路电压定律）</strong>：沿任意闭合回路绕行一周，各元件电压降的代数和为零。本质是<strong>能量守恒</strong>——电荷绕一圈回到原点，电势能必须复原。</li>
+</ul>
+
+<div class="deep">
+  <strong>符号约定（写题目前先声明，全题统一）</strong>：<br>
+  ① 每条支路电流方向<strong>任意假设</strong>，解出来为正 → 假设正确；为负 → 实际反向，大小取绝对值。不要因为"看着像"而纠结，让方程说话。<br>
+  ② 节点电势法（推荐）：给每个独立节点设电势 $V_i$，每条支路电流用 $\dfrac{V_i - V_j}{R}$ 表示，对每个节点写 KCL。未知数少、机械化、不易错——本章例 6 全程示范。<br>
+  ③ 若用回路法：先定绕行方向，电阻上顺流降压（$+IR$ 为降）、逆流升压；电源从负极穿到正极升 $E$、反之降 $E$；绕行一周总和为零。
+</div>
+
+<hr>
+
+<!-- 三、竞赛专属·高考不考 -->
+<h2 id="s3">三、竞赛专属·高考不考：连续带电体的积分计算、对称性电路与 Y-Δ 变换</h2>
+
+<p>下面三块内容高考卷面上几乎绝迹，但预赛年年见、复赛当基本功。它们的门槛其实不在物理，而在"你敢不敢动手算"。</p>
+
+<h3>3.1 微元法与积分：连续带电体的场强与电势</h3>
+
+<p>真实带电体的电荷分布在一条线、一个面或一块体积里。处理它们只有一条路：<strong>切成无数个点电荷微元，用叠加原理加起来</strong>——也就是积分。</p>
+
+<div class="deep">
+  <strong>微元法四步（背下来）</strong>：<br>
+  ① <strong>选微元</strong>：取一小段电荷 $\mathrm{d}q$（线分布 $\mathrm{d}q = \lambda\,\mathrm{d}l$，面分布 $\mathrm{d}q = \sigma\,\mathrm{d}S$）；<br>
+  ② <strong>写微元场</strong>：$\mathrm{d}E = \dfrac{k\,\mathrm{d}q}{r^2}$（电势则 $\mathrm{d}\varphi = \dfrac{k\,\mathrm{d}q}{r}$）；<br>
+  ③ <strong>对称性先行</strong>：先判断哪些分量两两抵消，<strong>只积分活下来的分量</strong>（乘 $\cos\theta$ 之类的投影因子）；<br>
+  ④ <strong>积分求和</strong>：统一变量、定上下限，算到底。
+</div>
+
+<h4>样板一：均匀带电圆环轴线上的电势（标量积分，最简单）</h4>
+
+<figure class="fig">
+  <svg viewBox="0 0 320 180" width="320" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="90" cy="90" rx="60" ry="22" fill="none" stroke="#2b6cb0" stroke-width="2.5"/>
+    <line x1="90" y1="90" x2="285" y2="90" stroke="#52606d" stroke-width="1.2" stroke-dasharray="5,4"/>
+    <circle cx="90" cy="90" r="3" fill="#1a365d"/>
+    <circle cx="250" cy="90" r="4" fill="#b91c1c"/>
+    <circle cx="44" cy="104" r="3" fill="#047857"/>
+    <line x1="90" y1="90" x2="142" y2="72" stroke="#047857" stroke-width="1.2"/>
+    <line x1="44" y1="104" x2="250" y2="90" stroke="#047857" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="82" y="112" font-size="12" fill="#1a365d">O</text>
+    <text x="258" y="86" font-size="12" fill="#b91c1c">P</text>
+    <text x="24" y="118" font-size="12" fill="#047857">dq</text>
+    <text x="112" y="66" font-size="12" fill="#047857">R</text>
+    <text x="160" y="108" font-size="12" fill="#52606d">x</text>
+    <text x="140" y="80" font-size="10.5" fill="#047857">r = √(R²+x²)</text>
+  </svg>
+  <figcaption>均匀带电圆环：轴线上一点 P 的电势与场强</figcaption>
+</figure>
+
+<p>圆环半径 $R$、总电量 $Q$ 均匀分布，P 在轴上距环心 $x$。每个微元 $\mathrm{d}q$ 到 P 的距离<strong>都一样</strong>：$r = \sqrt{R^2 + x^2}$。于是电势积分根本不用"积"——分母是常数，直接提出：</p>
+
+$$\varphi = \int \frac{k\,\mathrm{d}q}{\sqrt{R^2+x^2}} = \frac{k}{\sqrt{R^2+x^2}} \int \mathrm{d}q = \boldsymbol{\frac{kQ}{\sqrt{R^2+x^2}}}$$
+
+<p><strong>检验极限</strong>：$x \gg R$ 时 $\varphi \to \dfrac{kQ}{x}$（退化为点电荷）✓；$x = 0$ 时 $\varphi = \dfrac{kQ}{R}$（环心电势不为零！）✓。</p>
+
+<h4>样板二：同一圆环轴线上的场强（矢量积分，先抵消再积）</h4>
+
+<p>每个 $\mathrm{d}q$ 在 P 产生的 $\mathrm{d}E$ 方向各异，但绕轴一圈，<strong>垂直于轴的分量两两抵消</strong>，只剩轴向分量 $\mathrm{d}E_x = \mathrm{d}E\cos\theta$，其中 $\cos\theta = \dfrac{x}{\sqrt{R^2+x^2}}$ 也是常数：</p>
+
+$$E = \int \frac{k\,\mathrm{d}q}{R^2+x^2}\cdot\frac{x}{\sqrt{R^2+x^2}} = \frac{kx}{(R^2+x^2)^{3/2}}\int \mathrm{d}q = \boldsymbol{\frac{kQx}{(R^2+x^2)^{3/2}}}$$
+
+<p><strong>检验</strong>：① 用 $E_x = -\dfrac{\mathrm{d}\varphi}{\mathrm{d}x}$ 验证：$-\dfrac{\mathrm{d}}{\mathrm{d}x}\left[kQ(R^2+x^2)^{-1/2}\right] = kQx(R^2+x^2)^{-3/2}$ ✓ 与直接积分一致；② $x=0$ 时 $E=0$（环心对称，场强为零）✓；③ $x \gg R$ 时 $E \to \dfrac{kQ}{x^2}$ ✓。三个检验全过，才敢写在答卷上。</p>
+
+<h4>样板三：有限长均匀带电直导线中垂线上的场强</h4>
+
+<p>导线长 $L$、线电荷密度 $\lambda$，P 在中垂线上距导线 $d$。取微元 $\mathrm{d}q = \lambda\,\mathrm{d}y$，由对称性只有中垂方向分量存活：</p>
+
+$$E = \int_{-L/2}^{L/2} \frac{k\lambda\,\mathrm{d}y}{d^2+y^2}\cdot\frac{d}{\sqrt{d^2+y^2}} = k\lambda d \int_{-L/2}^{L/2} \frac{\mathrm{d}y}{(d^2+y^2)^{3/2}}$$
+
+<p>换元 $y = d\tan\theta$（则 $\mathrm{d}y = d\sec^2\theta\,\mathrm{d}\theta$，$(d^2+y^2)^{3/2} = d^3\sec^3\theta$，被积函数化简为 $\dfrac{\cos\theta}{d^2}\,\mathrm{d}\theta$）：</p>
+
+$$E = \frac{k\lambda}{d}\cdot 2\sin\theta_0 = \boldsymbol{\frac{2k\lambda}{d}\cdot\frac{L/2}{\sqrt{d^2 + (L/2)^2}}} \qquad \xrightarrow{L \to \infty}\quad \boldsymbol{E = \frac{2k\lambda}{d} = \frac{\lambda}{2\pi\varepsilon_0 d}}$$
+
+<p>最后那个极限——无限长直导线的场——是竞赛里的"名人"，与距离<strong>一次方</strong>成反比（点电荷是平方，记住这个对比）。</p>
+
+<h4>附：两个常用的结论（均匀带电球面）</h4>
+
+<ul>
+  <li>球面外（$r &gt; R$）：$E = \dfrac{kQ}{r^2}$，$\varphi = \dfrac{kQ}{r}$——如同电荷全部集中在球心</li>
+  <li>球面内（$r &lt; R$）：$\boldsymbol{E = 0}$，$\varphi = \dfrac{kQ}{R}$（常数）——"内部场强为零"但"电势不为零"的经典案例</li>
+</ul>
+
+<h3>3.2 对称性电路：等势点短接法</h3>
+
+<p>有些电阻网络既不串也不并，但<strong>结构对称</strong>。这时可以用两条推论：</p>
+
+<ul>
+  <li><strong>对称点等势</strong>：电路关于某平面（轴）对称，且激励也关于它对称，则对称位置上的节点电势相等。</li>
+  <li><strong>等势点可以短接</strong>：电势相等的点之间用导线连起来，<strong>导线里没有电流</strong>，电路状态丝毫不受影响——于是网络被"折叠"成串并联结构。</li>
+</ul>
+
+<p>反过来，<strong>电流对称分配</strong>也常用：从顶点 A 注入的电流 $I$，若 A 连着三条完全对称的支路，则每条支路电流必为 $\dfrac{I}{3}$（若不等，把三条支路轮换一遍电路不变，电流值却换了，矛盾——这就是对称性论证的标准腔调）。例 7 的立方体网络全程示范这套功夫。</p>
+
+<div class="warn">
+  <strong>前提红线</strong>：等势点短接只在<strong>严格对称</strong>时成立。"看起来差不多对称"不算数——某条边阻值不同、电源接偏一点，对称性就破了，必须回到基尔霍夫定律硬算。
+</div>
+
+<h3>3.3 Y-Δ 变换入门</h3>
+
+<p>三个电阻连成三角形（Δ）或星形（Y），对外都只有三个端子。适当选择阻值，两种接法可以<strong>对外完全等效</strong>——端子间任意电压下电流全同。变换公式（Δ 三边为 $R_{12}, R_{23}, R_{31}$，Y 三臂为 $R_1, R_2, R_3$）：</p>
+
+$$\textbf{Δ→Y：}\quad R_1 = \frac{R_{12}R_{31}}{R_{12}+R_{23}+R_{31}},\quad R_2 = \frac{R_{12}R_{23}}{R_{12}+R_{23}+R_{31}},\quad R_3 = \frac{R_{23}R_{31}}{R_{12}+R_{23}+R_{31}}$$
+
+$$\text{Y→Δ：}\quad R_{12} = \frac{R_1R_2 + R_2R_3 + R_3R_1}{R_3}\ \text{（分子两两乘积之和，分母为"对臂"）}$$
+
+<ul>
+  <li>Δ→Y 口诀：<strong>"夹边乘积 ÷ 三边和"</strong>——$R_1$ 由夹着 1 号端子的两条 Δ 边相乘，除以三边之和</li>
+  <li>特例：对称 Δ（三个 $R$）↔ 对称 Y（三个 $\dfrac{R}{3}$）。如三个 $30\ \Omega$ 的 Δ，等效 Y 每臂 $\dfrac{30\times30}{30+30+30} = 10\ \Omega$</li>
+</ul>
+
+<div class="deep">
+  <strong>实战价值</strong>：不平衡电桥、立方体面对角线这类"无法串并联"的网络，把一个 Δ 变成 Y（或反之），电路立刻塌缩成串并联结构。例 6 的电桥用 Y-Δ 复算：把 A-B-D 三点间的 Δ（$R_{AB}=2\ \Omega$、$R_{BD}=1\ \Omega$、$R_{AD}=1\ \Omega$）变成 Y：
+  $$R_A = \frac{2\times1}{2+1+1} = 0.5\ \Omega,\quad R_B = \frac{2\times1}{4} = 0.5\ \Omega,\quad R_D = \frac{1\times1}{4} = 0.25\ \Omega$$
+  总电阻立刻串并联化：$R_{AC} = 0.5 + (0.5+4)\parallel(0.25+3) = 0.5 + \dfrac{4.5\times3.25}{7.75} = \dfrac{74}{31} \approx 2.39\ \Omega$，与例 6 基尔霍夫的结果严丝合缝 ✓。
+</div>
+
+<hr>
+
+<!-- 四、例题精讲 -->
+<h2 id="s4">四、例题精讲</h2>
+
+<h3>例 1　两个点电荷连线上的"零场强点"</h3>
+
+<p><strong>题目</strong>：真空中有两个点电荷 $Q_1 = +4.0\times10^{-8}\ \mathrm{C}$、$Q_2 = -1.0\times10^{-8}\ \mathrm{C}$，相距 $L = 30\ \mathrm{cm}$。在两者连线上找出场强为零的点，并说明该点两侧场强的方向。</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：零场强点要求两电荷产生的场<strong>等大反向</strong>。先定性排除不可能的区域，再定量列方程。异号电荷：连线之间两场同向（都指向负电荷），不可能抵消；电量较大的 $Q_1$ 外侧，离大电荷近、离小电荷远，$E_1$ 恒大于 $E_2$，也不可能——只剩 $Q_2$（电量小者）外侧。
+</div>
+
+<p><strong>解析</strong>：设零点在 $Q_2$ 外侧、距 $Q_2$ 为 $x$，则距 $Q_1$ 为 $L + x$。等大条件：</p>
+
+$$k\frac{|Q_1|}{(L+x)^2} = k\frac{|Q_2|}{x^2} \ \Rightarrow\ \frac{4}{(0.30+x)^2} = \frac{1}{x^2} \ \Rightarrow\ 2x = 0.30 + x \ \Rightarrow\ \boxed{x = 0.30\ \mathrm{m}}$$
+
+<p><strong>验证</strong>：该点距 $Q_1$ 为 $0.60\ \mathrm{m}$，两场大小均为 $E = \dfrac{9.0\times10^9\times1.0\times10^{-8}}{0.30^2} = \dfrac{90}{0.09} = 1.0\times10^3\ \mathrm{N/C}$ ✓。方向：$Q_1$（正）在该点的场指向外（远离 $Q_1$），$Q_2$（负）的场指向 $Q_2$，恰好相反 ✓。</p>
+
+<p><strong>点评</strong>：口诀——"零场点，异号外侧靠小电"（同号电荷则在连线之间靠小电）。先定区域再列方程，比拿到题就硬解快得多，也避免增根。</p>
+
+<h3>例 2　均匀带电圆环：电势好积，场强求导【预赛难度】</h3>
+
+<p><strong>题目</strong>：半径 $R = 0.10\ \mathrm{m}$ 的细圆环均匀带电 $Q = +3.0\times10^{-8}\ \mathrm{C}$。(1) 求轴线上距环心 $x = 0.10\ \mathrm{m}$ 处 P 点的电势与场强；(2) 轴线上场强最大的位置在哪里？最大场强多大？</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：连续带电体 → 微元法。电势是标量，直接积分（3.1 节样板一）；场强不必重做矢量积分——对 $\varphi(x)$ 求一次导数即可（$E_x = -\dfrac{\mathrm{d}\varphi}{\mathrm{d}x}$）。第 (2) 问是函数极值：对 $E(x)$ 再求一次导找驻点。
+</div>
+
+<p><strong>解析</strong>：(1) 由 3.1 节：</p>
+
+$$\varphi(x) = \frac{kQ}{\sqrt{R^2+x^2}} = \frac{9.0\times10^9\times3.0\times10^{-8}}{\sqrt{0.10^2+0.10^2}} = \frac{270}{\sqrt{0.02}} = \frac{270}{0.1414} \approx \boxed{1.9\times10^3\ \mathrm{V}}$$
+
+$$E(x) = \frac{kQx}{(R^2+x^2)^{3/2}} = \frac{270\times0.10}{(0.02)^{3/2}} = \frac{27}{2.83\times10^{-3}} \approx \boxed{9.5\times10^3\ \mathrm{N/C}}$$
+
+<p>方向沿轴背离环心（$Q &gt; 0$）。<strong>复核</strong>：$-\varphi'(x) = kQx(R^2+x^2)^{-3/2}$，与场强公式一致 ✓。</p>
+
+<p>(2) 对 $E(x) = kQx(R^2+x^2)^{-3/2}$ 求导并令其为零：</p>
+
+$$\frac{\mathrm{d}E}{\mathrm{d}x} = kQ\left[(R^2+x^2)^{-3/2} - 3x^2(R^2+x^2)^{-5/2}\right] = kQ\,\frac{R^2 - 2x^2}{(R^2+x^2)^{5/2}} = 0$$
+
+$$\Rightarrow\ R^2 = 2x^2 \ \Rightarrow\ \boxed{x = \frac{R}{\sqrt2} \approx 7.1\ \mathrm{cm}}$$
+
+<p>代回求最大值（注意 $(\tfrac32 R^2)^{3/2} = \tfrac{3\sqrt3}{2\sqrt2}R^3$）：</p>
+
+$$E_{\max} = \frac{kQ\cdot R/\sqrt2}{\left(\frac32 R^2\right)^{3/2}} = \frac{2kQ}{3\sqrt3\,R^2} = \frac{2\times270}{3\times1.732\times0.01} \approx \boxed{1.04\times10^4\ \mathrm{N/C}}$$
+
+<p><strong>点评</strong>：本题是预赛风格的标配——"先标量积分，再求导拿矢量"。请顺手记住两个反直觉点：环心处 $\varphi$ 最大而 $E = 0$；场强最大值既不在环心也不在无穷远，而在 $x = R/\sqrt2$ 处。这正是"E 与 φ 各自独立、又由求导相连"的最好注解。</p>
+
+<h3>例 3　导体球壳里的点电荷：感应电荷与静电屏蔽</h3>
+
+<p><strong>题目</strong>：不带电的空腔导体球壳（内半径 $a = 5\ \mathrm{cm}$、外半径 $b = 10\ \mathrm{cm}$），腔内中心固定一点电荷 $q = +1.0\times10^{-8}\ \mathrm{C}$。(1) 求球壳内、外表面各感应出多少电荷；(2) 求球壳外 $r = 20\ \mathrm{cm}$ 处的场强与球壳的电势；(3) 若把球壳接地，以上结果如何变化？</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：静电平衡的核心方程只有一条——<strong>导体材料内部合场强为零</strong>。在导体材料内取一个包围内表面的球面，内部 $E = 0$ 意味着面内总电荷为零，由此锁住内表面电荷；再用电荷守恒推外表面。
+</div>
+
+<p><strong>解析</strong>：(1) 在导体材料内（$a &lt; r &lt; b$）取同心球面。静电平衡时该面上 $E = 0$ 处处成立，由对称性这意味着面内净电荷为零：</p>
+
+$$q + q_{内表面} = 0 \ \Rightarrow\ \boxed{q_{内表面} = -q = -1.0\times10^{-8}\ \mathrm{C}}$$
+
+<p>球壳原来不带电，电荷守恒：</p>
+
+$$q_{内表面} + q_{外表面} = 0 \ \Rightarrow\ \boxed{q_{外表面} = +q = +1.0\times10^{-8}\ \mathrm{C}}$$
+
+<p>（物理图像：点电荷发出的电场线终止于内表面的 $-q$；外表面 $+q$ 另起炉灶向外发电场线。）</p>
+
+<p>(2) 整个体系球对称。球外空间的总电荷（点电荷 $+$ 内表面 $+$ 外表面）等效于集中在球心的 $+q$：</p>
+
+$$E_{外} = \frac{kq}{r^2} = \frac{9.0\times10^9\times1.0\times10^{-8}}{0.20^2} = \frac{90}{0.04} = \boxed{2.25\times10^3\ \mathrm{N/C}}$$
+
+<p>球壳是等势体，其电势等于外表面处电势（外部场由等效球心电荷 $+q$ 产生）：</p>
+
+$$\varphi_{壳} = \frac{kq}{b} = \frac{90}{0.10} = \boxed{900\ \mathrm{V}}$$
+
+<p>(3) 接地后，球壳电势被钳为 $0$：外表面的 $+q$ 沿导线流入大地（正电荷从高电势流向零电势，合理），外表面电荷清零。于是：</p>
+
+<ul>
+  <li>球外空间 $E = 0$，外部世界完全"不知道"腔内有个电荷——<strong>接地屏蔽内场</strong></li>
+  <li>内表面 $-q$ 不动（它被腔内 $+q$ 的电场线拴住），腔内场强分布<strong>不变</strong></li>
+  <li>复核电势：腔外无场 → 从无穷远到球壳移动电荷不做功 → 球壳电势确为 $0$ ✓</li>
+</ul>
+
+<p><strong>点评</strong>：注意屏蔽的机理不是"导体挡住了电场线"，而是<strong>感应电荷的场与外场精确抵消</strong>。把这条机理想通，"为什么接地才能屏蔽内场"就不再是背诵题：不接地时外表面 $+q$ 照样对外辐射，只有接地才能把它"抽走"。</p>
+
+<h3>例 4　电容器串联后并联：电量守恒的能量账</h3>
+
+<p><strong>题目</strong>：$C_1 = 2\ \mathrm{\mu F}$、$C_2 = 4\ \mathrm{\mu F}$ 串联后接在 $U = 300\ \mathrm{V}$ 电源上，稳定后：(1) 求各电容器的电量与电压；(2) 求系统总储能；(3) 断开电源，把两电容<strong>正极对正极、负极对负极</strong>并联，求最终公共电压与总储能——少了的能量去哪了？</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：串联时中间孤岛（两电容相连的两块极板）总电荷守恒且为零 → 两电容电量相同。断开电源后并联：极板上的总电荷无处可逃（<strong>电荷守恒</strong>），按新电容重新分配，直到两电容电压相等。
+</div>
+
+<p><strong>解析</strong>：(1) 串联等效电容：</p>
+
+$$C_{串} = \frac{C_1 C_2}{C_1 + C_2} = \frac{2\times4}{2+4} = \frac{4}{3}\ \mathrm{\mu F}$$
+
+$$Q = C_{串}U = \frac{4}{3}\times 300 = 400\ \mathrm{\mu C}$$
+
+$$U_1 = \frac{Q}{C_1} = \frac{400}{2} = \boxed{200\ \mathrm{V}}, \qquad U_2 = \frac{Q}{C_2} = \frac{400}{4} = \boxed{100\ \mathrm{V}}\quad(200+100=300\ ✓)$$
+
+<p>(2) 总储能：</p>
+
+$$W = \frac{1}{2}C_{串}U^2 = \frac{1}{2}\times\frac{4}{3}\times10^{-6}\times300^2 = \boxed{6.0\times10^{-2}\ \mathrm{J} = 60\ \mathrm{mJ}}$$
+
+<p>（分算验证：$\frac12\times2\times10^{-6}\times200^2 + \frac12\times4\times10^{-6}\times100^2 = 0.040 + 0.020 = 0.060\ \mathrm{J}$ ✓）</p>
+
+<p>(3) 断开电源后并联。两对极板总电荷守恒：$Q_{总} = 400 + 400 = 800\ \mathrm{\mu C}$，并联总电容 $C_{并} = 2 + 4 = 6\ \mathrm{\mu F}$：</p>
+
+$$U' = \frac{Q_{总}}{C_{并}} = \frac{800}{6} \approx \boxed{133\ \mathrm{V}}$$
+
+$$W' = \frac{1}{2}C_{并}U'^2 = \frac{1}{2}\times6\times10^{-6}\times\left(\frac{400}{3}\right)^2 \approx \boxed{5.3\times10^{-2}\ \mathrm{J} = 53\ \mathrm{mJ}}$$
+
+<p>能量差额 $\Delta W = 60 - 53.3 \approx 6.7\ \mathrm{mJ}$ ——并联瞬间电荷重新分配，连接导线中有瞬时电流，差额以<strong>焦耳热</strong>形式耗散（若过程剧烈还有火花与电磁辐射）。<strong>点评</strong>：这类"重连后能量变少"的题，能量不守恒的假象总能在"发热"上找到出口。另外体会流程：断电源 → Q 守恒，这是电容器动态分析的第二板斧。</p>
+
+<h3>例 5　电源最大输出功率：最大功率不等于最高效率</h3>
+
+<p><strong>题目</strong>：电源电动势 $E = 12\ \mathrm{V}$、内阻 $r = 2\ \Omega$，外接可调电阻 $R$。(1) $R$ 取何值时电源输出功率最大？最大值是多少？(2) 此时电源的效率是多少？(3) 若 $R = 6\ \Omega$，输出功率与效率又各是多少？</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：写出 $P_{出}(R)$ 的函数式，用均值不等式（或求导）找极值；效率 $\eta = \dfrac{U}{E} = \dfrac{R}{R+r}$ 另行计算，与功率峰值<strong>不是同一回事</strong>。
+</div>
+
+<p><strong>解析</strong>：(1) $P_{出} = \dfrac{E^2 R}{(R+r)^2}$。由 $(R+r)^2 \ge 4Rr$（展开即 $(R-r)^2 \ge 0$），等号在 $R = r$ 时成立：</p>
+
+$$R = r = \boxed{2\ \Omega}, \qquad P_{出\max} = \frac{E^2}{4r} = \frac{12^2}{4\times2} = \boxed{18\ \mathrm{W}}$$
+
+<p>（验证：$I = \dfrac{12}{2+2} = 3\ \mathrm{A}$，$P = I^2 R = 9\times2 = 18\ \mathrm{W}$ ✓）</p>
+
+<p>(2) 此时效率：</p>
+
+$$\eta = \frac{P_{出}}{P_{总}} = \frac{R}{R+r} = \frac{2}{4} = \boxed{50\%}$$
+
+<p>(3) $R = 6\ \Omega$ 时：$I = \dfrac{12}{6+2} = 1.5\ \mathrm{A}$，</p>
+
+$$P_{出} = I^2 R = 1.5^2\times6 = \boxed{13.5\ \mathrm{W}}, \qquad \eta = \frac{6}{8} = \boxed{75\%}$$
+
+<p><strong>点评</strong>：$R = 6\ \Omega$ 时功率小了 $25\%$，效率却高了 $25$ 个百分点。工程上要"功率大"还是要"效率高"，看场景：信号源要最大功率传输（阻抗匹配），电力系统要高效率（绝不能让 $R = r$）。竞赛卷上见到"最大功率"，条件反射 $R = r$；见到"效率"，老老实实用 $\eta = \dfrac{R}{R+r}$。</p>
+
+<h3>例 6　不平衡电桥：节点电势法全程示范【预赛难度】</h3>
+
+<p><strong>题目</strong>：惠斯通电桥四个臂为 $R_1 = 2\ \Omega$（A—B）、$R_2 = 4\ \Omega$（B—C）、$R_3 = 1\ \Omega$（A—D）、$R_4 = 3\ \Omega$（D—C），桥支路 B—D 间接 $R_g = 1\ \Omega$。电源 $E = 6\ \mathrm{V}$（内阻不计）接在 A、C 之间。求通过 $R_g$ 的电流。</p>
+
+<div class="deep">
+  <strong>思路起点</strong>：先查平衡条件 $\dfrac{R_1}{R_2} = \dfrac{R_3}{R_4}$？$\dfrac{2}{4} = 0.5 \ne \dfrac{1}{3}$——不平衡，桥上有电流，串并联全部失效。上<strong>节点电势法</strong>：设 $\varphi_A = 6\ \mathrm{V}$、$\varphi_C = 0$，未知数只有 $\varphi_B = V_1$、$\varphi_D = V_2$ 两个，对每个节点写"流入 = 流出"。
+</div>
+
+<p><strong>解析</strong>：节点 B（流入的电流 $=$ 流出的电流）：</p>
+
+$$\frac{6 - V_1}{2} = \frac{V_1}{4} + \frac{V_1 - V_2}{1} \ \Rightarrow\ 12 - 2V_1 = 5V_1 - 4V_2 \ \Rightarrow\ 7V_1 - 4V_2 = 12$$
+
+<p>节点 D：</p>
+
+$$\frac{6 - V_2}{1} + \frac{V_1 - V_2}{1} = \frac{V_2}{3} \ \Rightarrow\ 18 + 3V_1 = 7V_2$$
+
+<p>联立：第一式乘 7、第二式乘 4 相加，$84 + 72 + 12V_1 = 49V_1$，得</p>
+
+$$V_1 = \frac{156}{37} \approx 4.22\ \mathrm{V}, \qquad V_2 = \frac{18 + 3V_1}{7} = \frac{162}{37} \approx 4.38\ \mathrm{V}$$
+
+<p>桥支路电流：</p>
+
+$$I_g = \frac{V_1 - V_2}{R_g} = \frac{156/37 - 162/37}{1} = -\frac{6}{37} \approx \boxed{-0.16\ \mathrm{A}}$$
+
+<p>负号的含义：<strong>实际方向与假设相反</strong>，即电流从 D 流向 B，大小 $\dfrac{6}{37} \approx 0.16\ \mathrm{A}$。方向合理吗？$\dfrac{R_3}{R_4} &lt; \dfrac{R_1}{R_2}$，D 点"分得"的电压高于 B 点，电流由 D 流向 B ✓。</p>
+
+<p><strong>全套检验</strong>：$I_1 = \dfrac{6-4.22}{2} = 0.89\ \mathrm{A}$，$I_2 = \dfrac{4.22}{4} = 1.05\ \mathrm{A}$，$I_1 + I_g = 0.89 + 0.16 = 1.05 = I_2$ ✓；总电流 $I_{总} = I_1 + I_3 = 0.89 + 1.62 = \dfrac{93}{37}\ \mathrm{A}$，总电阻 $R_{总} = \dfrac{6}{93/37} = \dfrac{74}{31} \approx 2.39\ \Omega$——与 3.3 节 Y-Δ 变换的结果一致 ✓。两套方法互相印证，这就是竞赛答卷的保险丝。</p>
+
+<p><strong>点评</strong>：节点电势法的机械美在于：未知数只有节点电势，方程只有 KCL，方向全靠假设、正负交给方程。两个节点两个方程，三元一次方程组都不用。<strong>这方法请练到条件反射</strong>。</p>
+
+<h3>例 7　立方体电阻网络：对称性的华丽演出【复赛难度】</h3>
+
+<p><strong>题目</strong>：12 根阻值均为 $R = 12\ \Omega$ 的电阻丝焊成立方体框架。求体对角线两端 A、G 之间的等效电阻。</p>
+
+<figure class="fig">
+  <svg viewBox="0 0 300 215" width="300" xmlns="http://www.w3.org/2000/svg">
+    <line x1="70" y1="180" x2="170" y2="180" stroke="#2b6cb0" stroke-width="2"/>
+    <line x1="170" y1="180" x2="230" y2="130" stroke="#2b6cb0" stroke-width="2"/>
+    <line x1="70" y1="180" x2="130" y2="130" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,4"/>
+    <line x1="130" y1="130" x2="230" y2="130" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,4"/>
+    <line x1="70" y1="60" x2="170" y2="60" stroke="#2b6cb0" stroke-width="2"/>
+    <line x1="170" y1="60" x2="230" y2="10" stroke="#2b6cb0" stroke-width="2"/>
+    <line x1="230" y1="10" x2="130" y2="10" stroke="#2b6cb0" stroke-width="2"/>
+    <line x1="130" y1="10" x2="70" y2="60" stroke="#2b6cb0" stroke-width="2"/>
+    <line x1="70" y1="180" x2="70" y2="60" stroke="#2b6cb0" stroke-width="2"/>
+    <line x1="170" y1="180" x2="170" y2="60" stroke="#2b6cb0" stroke-width="2"/>
+    <line x1="230" y1="130" x2="230" y2="10" stroke="#2b6cb0" stroke-width="2"/>
+    <line x1="130" y1="130" x2="130" y2="10" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,4"/>
+    <circle cx="70" cy="180" r="5" fill="#b91c1c"/>
+    <circle cx="230" cy="10" r="5" fill="#1a365d"/>
+    <circle cx="170" cy="180" r="4" fill="#d69e2e"/>
+    <circle cx="130" cy="130" r="4" fill="#d69e2e"/>
+    <circle cx="70" cy="60" r="4" fill="#d69e2e"/>
+    <circle cx="230" cy="130" r="4" fill="#047857"/>
+    <circle cx="170" cy="60" r="4" fill="#047857"/>
+    <circle cx="130" cy="10" r="4" fill="#047857"/>
+    <text x="48" y="196" font-size="13" fill="#b91c1c" font-weight="bold">A（进）</text>
+    <text x="238" y="14" font-size="13" fill="#1a365d" font-weight="bold">G（出）</text>
+    <text x="176" y="198" font-size="12" fill="#d69e2e">B</text>
+    <text x="122" y="146" font-size="12" fill="#d69e2e">D</text>
+    <text x="48" y="58" font-size="12" fill="#d69e2e">E</text>
+    <text x="238" y="134" font-size="12" fill="#047857">C</text>
+    <text x="176" y="56" font-size="12" fill="#047857">F</text>
+    <text x="122" y="6" font-size="12" fill="#047857">H</text>
+  </svg>
+  <figcaption>立方体网络：每条棱均为 R；橙点（B、D、E）互为等势点，绿点（C、F、H）互为等势点</figcaption>
+</figure>
+
+<div class="deep">
+  <strong>思路起点</strong>：既不串也不并——但结构关于体对角线 AG 高度对称。设电流 $I$ 从 A 流入、G 流出。A 的三条邻边地位完全相同 → 电流均分；与 A 相邻的三个顶点 B、D、E <strong>等势</strong>；同理与 G 相邻的 C、F、H 等势。等势点短接，网络折叠成三段串并联。
+</div>
+
+<p><strong>解析</strong>：由对称性，$\varphi_B = \varphi_D = \varphi_E$（若有差异，轮换三顶点电路不变而电势变，矛盾），$\varphi_C = \varphi_F = \varphi_H$。将两组等势点分别短接，电路分三段：</p>
+
+<ol>
+  <li><strong>A → {B, D, E}</strong>：3 个 $R$ 并联，$R^{(1)} = \dfrac{R}{3}$</li>
+  <li><strong>{B, D, E} → {C, F, H}</strong>：B—C、B—F、D—C、D—H、E—F、E—H 共 6 条棱，6 个 $R$ 并联，$R^{(2)} = \dfrac{R}{6}$</li>
+  <li><strong>{C, F, H} → G</strong>：3 个 $R$ 并联，$R^{(3)} = \dfrac{R}{3}$</li>
+</ol>
+
+<p>三段串联：</p>
+
+$$R_{AG} = \frac{R}{3} + \frac{R}{6} + \frac{R}{3} = \boxed{\frac{5}{6}R} = \frac{5}{6}\times12 = \boxed{10\ \Omega}$$
+
+<p><strong>电流复核</strong>：设 $I$ 从 A 注入，三条边各分 $\dfrac{I}{3}$；到 B 后再均分到 B—C、B—F 两条"中层"边，每条 $\dfrac{I}{6}$；中层 6 条边电流合计 $I$ ✓；汇入 G 的三条边各收 $\dfrac{I}{3}$（C 点收 B、D 两路各 $\dfrac{I}{6}$，合 $\dfrac{I}{3}$）✓。全部自洽。</p>
+
+<p><strong>点评</strong>：$\dfrac{5}{6}R$ 是复赛题库里的经典答案。同一套路还能问：<strong>面对角线</strong>两端等效电阻为 $\dfrac{7}{12}R = 7\ \Omega$（对称面只剩一个，需配合 Y-Δ 变换），<strong>棱</strong>两端为 $\dfrac{3}{4}R$。先吃透体对角线这个最对称的情形，再去挑战面对角线——竞赛的难度阶梯就是这样一级级搭起来的。</p>
+
+<hr>
+
+<!-- 五、易错点 -->
+<h2 id="s5">五、易错点</h2>
+
+<div class="warn">
+  <strong>易错点 1：电势叠加当矢量算。</strong>电势是<strong>标量</strong>，叠加是带正负号的代数和。求两个异号电荷连线中点的电势，正确做法是 $\varphi = \dfrac{kQ}{r} + \dfrac{k(-Q)}{r} = 0$，而不是"两场强抵消所以电势为零"——场强在中点恰恰是<strong>加倍</strong>的。矢量、标量，两条轨道别串线。
+</div>
+
+<div class="warn">
+  <strong>易错点 2：以为"场强为零 ⇔ 电势为零"。</strong>两个经典反例背下来：① 等量<strong>同号</strong>电荷连线中点：$E = 0$（对称抵消）但 $\varphi = \dfrac{2kQ}{r} \ne 0$；② 等量<strong>异号</strong>电荷中垂线上各点：$\varphi = 0$（代数和抵消）但 $E \ne 0$（方向都指向负电荷一侧）。E 看的是"φ 的变化率"，φ 看的是"绝对高度"，零不零各自独立。
+</div>
+
+<div class="warn">
+  <strong>易错点 3：导体内部 $E=0$ 误读成"感应电荷不产生场"。</strong>真相是：外电荷的场 $\vec E_0$ 与感应电荷的场 $\vec E'$ 在导体内部<strong>叠加抵消</strong>：$\vec E_0 + \vec E' = 0$。所以"感应电荷在导体内部产生的场"恰恰是 $-\vec E_0$，并不为零。用叠加的眼光看静电屏蔽，例 3 那种"内表面电荷被电场线拴住"的定量分析才写得出来。
+</div>
+
+<div class="warn">
+  <strong>易错点 4：电容器串并联公式记反、又与电池串联混用。</strong>电容器<strong>串联</strong>用倒数和（$\frac1C = \frac1{C_1}+\frac1C_2$，与电阻并联同形）、<strong>并联</strong>用直接相加——与电阻的规律恰好相反。更隐蔽的混淆：电池串联是"电压相加、电流相同"，电容串联是"电量相同、电压相加"——电容器串联时各极板电量相等靠的是孤岛电荷守恒，不是"串联电流相等"，稳定后电路里根本没有电流。
+</div>
+
+<div class="warn">
+  <strong>易错点 5：电容器动态分析不先判断"谁不变"。</strong>接在电源上 → $U$ 被电源钳死；断开电源 → $Q$ 无处可逃。有人插介质时既不判 $U$ 也不判 $Q$，直接 $C$ 变 $\varepsilon_r$ 倍就说"$U$ 也变 $\varepsilon_r$ 倍"，全错。标准流程：先定不变量 → $C$ 怎么变 → 用 $Q = CU$ 推另一量 → $E = \dfrac{U}{d}$ 收场。例 4 的第 (3) 问就是"断电源、Q 守恒"的完整示范。
+</div>
+
+<div class="warn">
+  <strong>易错点 6：$E = \dfrac{U}{d}$ 乱用。</strong>该式只在<strong>匀强电场</strong>成立，且 $d$ 必须是<strong>沿场强方向</strong>的距离。点电荷的场里用它算"电压"是原则性错误（点电荷场要用 $\varphi = \dfrac{kQ}{r}$）；匀强场里两点连线与场强成角时，$U = Ed\cos\theta$——忘记投影因子 $\cos\theta$ 是高频失分点。
+</div>
+
+<div class="warn">
+  <strong>易错点 7：基尔霍夫方程的符号约定一题两制。</strong>电流方向、绕行方向、升降压规则，开题时各定一次，全题死守。常见翻车：解出 $I = -0.16\ \mathrm{A}$ 后，下一步列方程又擅自把方向"改正过来"代入，导致双重变号。记住：<strong>负号是结果，不是错误</strong>——保留假设方向与负号，最后统一解读"实际反向"。节点电势法（例 6）把方向问题压缩到最少，强烈推荐。
+</div>
+
+<div class="warn">
+  <strong>易错点 8：最大功率与最高效率混为一谈；等势点短接越界使用。</strong>① $R = r$ 时输出功率最大，但效率只有 50%；要效率高，$R$ 越大越好——两者诉求相反，题目问哪个答哪个。② 等势点短接（例 7）只在<strong>严格对称</strong>时合法；某条棱阻值换一下，立方体的对称就破了，此时只能退回节点电势法或 Y-Δ 变换硬算。对称性工具用之前，先论证对称性成立。
+</div>
+
+<hr>
+
+<!-- 六、自检清单 -->
+<h2 id="s6">六、自检清单</h2>
+
+<p>合上讲义，逐条自查。能做到就打勾，做不到回到对应小节再过一遍。</p>
+
+<ul class="checklist">
+  <li>我能默写库仑定律、点电荷场强 $E = \dfrac{kQ}{r^2}$、点电荷电势 $\varphi = \dfrac{kQ}{r}$，并说出各自的适用条件与零点约定。</li>
+  <li>我能讲清 E（矢量）与 φ（标量）叠加方式的区别，并各举一例说明"$E=0$ 但 $\varphi \ne 0$"与"$\varphi=0$ 但 $E \ne 0$"。</li>
+  <li>我能用微元法四步独立推导均匀带电圆环轴线上的电势 $\varphi = \dfrac{kQ}{\sqrt{R^2+x^2}}$，并说明为什么这个积分"不用积"。</li>
+  <li>我会用 $E_x = -\dfrac{\mathrm{d}\varphi}{\mathrm{d}x}$ 由电势求场强，并用三个极限检验（$x=0$、$x\gg R$、求导对照）验证结果。</li>
+  <li>我能陈述导体静电平衡的四大结论，并用"感应电荷的场与外场叠加抵消"逐条解释原因。</li>
+  <li>我能解释不接地空腔屏蔽外场、接地空腔屏蔽内场的区别，并说出例 3 中接地后"内表面 $-q$ 不动、外表面清零"的理由。</li>
+  <li>我记住了电容器串并联公式与电阻规律正好相反，并能解释串联时"各电容电量相等"的来源（孤岛电荷守恒）。</li>
+  <li>做电容器动态分析时，我的第一步永远是判断"接电源（U 不变）还是断电源（Q 不变）"，并能独立重算例 4 的全部数值（200 V / 100 V / 60 mJ / 133 V / 53 mJ）。</li>
+  <li>我能默写闭合电路欧姆定律 $I = \dfrac{E}{R+r}$，会推导 $P_{出\max} = \dfrac{E^2}{4r}$（条件 $R = r$），并说明此时效率为何只有 50%。</li>
+  <li>我会用节点电势法对不平衡电桥列 KCL 方程，重做例 6 得到 $I_g = \dfrac{6}{37}\ \mathrm{A}$（方向 D→B），并能解释负号的含义。</li>
+  <li>我能写出 Y-Δ 变换公式（Δ→Y："夹边乘积 ÷ 三边和"），并用它把例 6 的电桥折算成总电阻 $\dfrac{74}{31}\ \Omega$，与基尔霍夫结果对照。</li>
+  <li>我能用"等势点短接"重做例 7，说清 B、D、E 为何等势、三段 $\dfrac{R}{3}+\dfrac{R}{6}+\dfrac{R}{3}$ 各是哪几条棱，并指出短接法失效的情形。</li>
+</ul>
+
+<div class="chap-intro" style="margin-top:24px">
+  全部打勾？漂亮——电场与电路这两座大陆你已经插上旗了。下一章《磁场与电磁感应》里，电荷要"动起来"：洛伦兹力、带电粒子圆周运动、电磁感应，全是本章工具（场、能量、电路）与力学三大观点的会师。带上这一章攒下的微元法和节点电势法，我们继续！
+</div>
+
+</body>
+</html>
