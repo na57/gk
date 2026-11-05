@@ -9,7 +9,7 @@
     --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb; --canvas:#f7f8fa; --card:#fff;
     --math:#1d4ed8; --phys:#2b6cb0; --chem:#0e7c7b;
     --pink:#fb7299; --green:#047857;
-    --radius:10px; --pill:999px;
+    --radius:10px;
   }
   *{ box-sizing:border-box; }
   body{ margin:0; font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; background:var(--canvas); color:var(--ink); line-height:1.8; font-size:16px; }
@@ -22,14 +22,14 @@
   .intro h2{ font-size:18px; margin:0 0 8px; }
   .intro p{ margin:6px 0; color:var(--ink-soft); font-size:15px; }
   .subject{ margin-bottom:34px; }
-  .subject > h3{ font-size:22px; margin:0 0 14px; padding-left:12px; border-left:4px solid var(--accent,var(--ink)); }
-  .block-title{ font-size:15px; font-weight:600; color:var(--ink-soft); margin:18px 0 10px; letter-spacing:.5px; }
-  .module{ margin-bottom:14px; }
-  .module .m-name{ font-size:14px; font-weight:600; color:var(--ink-soft); margin-bottom:6px; }
-  .chapters{ display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:8px; }
-  .chap{ display:block; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:10px 14px; text-decoration:none; color:var(--ink); font-size:15px; transition:.15s; }
-  .chap:hover{ border-color:var(--accent); box-shadow:0 2px 8px rgba(0,0,0,.06); }
-  .chap .no{ color:var(--accent); font-weight:600; margin-right:6px; }
+  .subject > h3{ font-size:22px; margin:0 0 12px; padding-left:12px; border-left:4px solid var(--accent,var(--ink)); }
+  .block-title{ font-size:14px; font-weight:600; color:var(--ink-soft); margin:16px 0 8px; letter-spacing:.5px; }
+  .chaps{ margin:0; padding:0; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; }
+  .chaps a{ display:flex; align-items:baseline; gap:14px; padding:7px 16px; text-decoration:none; color:var(--ink); font-size:15.5px; line-height:1.7; border-top:1px solid var(--line); transition:background .12s; }
+  .chaps a:first-child{ border-top:none; }
+  .chaps a:hover{ background:var(--canvas); }
+  .chaps .no{ flex:0 0 46px; color:var(--accent); font-weight:600; font-variant-numeric:tabular-nums; }
+  .chaps .tag{ margin-left:auto; font-size:12.5px; color:var(--ink-soft); }
   .item{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px; margin-bottom:12px; transition:.15s; }
   .item:hover{ border-color:var(--accent); box-shadow:0 4px 12px rgba(0,0,0,.08); }
   .item .t{ font-size:17px; font-weight:600; }
@@ -45,7 +45,7 @@
   footer a{ color:var(--ink-soft); }
   @media (max-width:560px){
     header h1{ font-size:22px; }
-    .chapters{ grid-template-columns:1fr; }
+    .chaps a{ padding:9px 14px; font-size:15px; }
     .btn{ flex:1 1 100%; }
   }
 </style>
@@ -64,61 +64,22 @@
     <p>• <b>深度学习材料</b>——按章节组织的图文深读讲义，零外链、可打印（A4 排版），适合系统过一遍知识网络；<br>
        • <b>讲解视频</b>——带配音与字幕，边听边看推导，多处设「暂停推导」互动；<br>
        • <b>图文课件</b>——可翻页自学的网页版 PPT，适合反复回看与做笔记。</p>
-    <p>材料按 <b>科目 → 模块 → 章节</b> 组织，持续更新。</p>
+    <p>材料按 <b>科目 → 章节编号</b> 排列，持续更新。</p>
   </section>
 
   <section class="subject" style="--accent:var(--math)">
-    <h3>数学</h3>
-    <div class="block-title">深度学习材料（10 章）</div>
-    <div class="module">
-      <div class="m-name">集合与常用逻辑用语</div>
-      <div class="chapters">
-        <a class="chap" href="数学/01-集合/01 集合-深度学习材料.html"><span class="no">01</span>集合</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">函数</div>
-      <div class="chapters">
-        <a class="chap" href="数学/02-函数/02 函数-深度学习材料.html"><span class="no">02</span>函数</a>
-        <a class="chap" href="数学/02-函数/02 函数与不等式(拓展)-深度学习材料.html"><span class="no">02+</span>函数与不等式（拓展）</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">不等式</div>
-      <div class="chapters">
-        <a class="chap" href="数学/03-不等式/03 不等式-深度学习材料.html"><span class="no">03</span>不等式</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">三角函数</div>
-      <div class="chapters">
-        <a class="chap" href="数学/04-三角函数/04 三角函数-深度学习材料.html"><span class="no">04</span>三角函数</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">数列与导数</div>
-      <div class="chapters">
-        <a class="chap" href="数学/05-数列与导数/05 数列与导数-深度学习材料.html"><span class="no">05</span>数列与导数</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">立体几何</div>
-      <div class="chapters">
-        <a class="chap" href="数学/06-立体几何/06 立体几何与解析几何初步-深度学习材料.html"><span class="no">06</span>立体几何与解析几何初步</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">解析几何</div>
-      <div class="chapters">
-        <a class="chap" href="数学/07-解析几何/07 解析几何-深度学习材料.html"><span class="no">07</span>解析几何</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">概率统计</div>
-      <div class="chapters">
-        <a class="chap" href="数学/08-概率统计/08 概率与统计-深度学习材料.html"><span class="no">08</span>概率与统计</a>
-        <a class="chap" href="数学/08-概率统计/08 概率统计拓展-深度学习材料.html"><span class="no">08+</span>概率统计拓展</a>
-      </div>
+    <h3>数学 · 深度学习材料（10 章）</h3>
+    <div class="chaps">
+      <a href="数学/01-集合/01 集合-深度学习材料.html"><span class="no">01</span>集合</a>
+      <a href="数学/02-函数/02 函数-深度学习材料.html"><span class="no">02</span>函数</a>
+      <a href="数学/02-函数/02 函数与不等式(拓展)-深度学习材料.html"><span class="no">02+</span>函数与不等式（拓展）</a>
+      <a href="数学/03-不等式/03 不等式-深度学习材料.html"><span class="no">03</span>不等式</a>
+      <a href="数学/04-三角函数/04 三角函数-深度学习材料.html"><span class="no">04</span>三角函数</a>
+      <a href="数学/05-数列与导数/05 数列与导数-深度学习材料.html"><span class="no">05</span>数列与导数</a>
+      <a href="数学/06-立体几何/06 立体几何与解析几何初步-深度学习材料.html"><span class="no">06</span>立体几何与解析几何初步</a>
+      <a href="数学/07-解析几何/07 解析几何-深度学习材料.html"><span class="no">07</span>解析几何</a>
+      <a href="数学/08-概率统计/08 概率与统计-深度学习材料.html"><span class="no">08</span>概率与统计</a>
+      <a href="数学/08-概率统计/08 概率统计拓展-深度学习材料.html"><span class="no">08+</span>概率统计拓展</a>
     </div>
     <div class="block-title">专题讲解（视频 + 课件 + 讲义）</div>
     <div class="item">
@@ -142,94 +103,25 @@
   </section>
 
   <section class="subject" style="--accent:var(--phys)">
-    <h3>物理</h3>
-    <div class="block-title">深度学习材料（17 章）</div>
-    <div class="module">
-      <div class="m-name">运动学</div>
-      <div class="chapters">
-        <a class="chap" href="物理/01-运动学/3.1 运动的描述与匀变速直线运动-深度学习材料-v2.html"><span class="no">3.1</span>运动的描述与匀变速直线运动</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">力学</div>
-      <div class="chapters">
-        <a class="chap" href="物理/02-力学/力学-深度学习材料-v2.html"><span class="no">3.2</span>相互作用与牛顿运动定律（力学总复习）</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">曲线运动与万有引力</div>
-      <div class="chapters">
-        <a class="chap" href="物理/03-曲线运动与万有引力/3.3 曲线运动与万有引力-深度学习材料.html"><span class="no">3.3</span>曲线运动与万有引力</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">机械能</div>
-      <div class="chapters">
-        <a class="chap" href="物理/04-机械能/3.4 机械能守恒定律-深度学习材料.html"><span class="no">3.4</span>机械能守恒定律</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">动量</div>
-      <div class="chapters">
-        <a class="chap" href="物理/05-动量/3.5 动量守恒定律-深度学习材料.html"><span class="no">3.5</span>动量守恒定律</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">机械振动与机械波</div>
-      <div class="chapters">
-        <a class="chap" href="物理/06-机械振动与机械波/3.6 机械振动与机械波-深度学习材料.html"><span class="no">3.6</span>机械振动与机械波</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">静电场</div>
-      <div class="chapters">
-        <a class="chap" href="物理/07-静电场/3.7 静电场-深度学习材料.html"><span class="no">3.7</span>静电场</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">恒定电流</div>
-      <div class="chapters">
-        <a class="chap" href="物理/08-恒定电流/3.8 恒定电流-深度学习材料.html"><span class="no">3.8</span>恒定电流</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">磁场</div>
-      <div class="chapters">
-        <a class="chap" href="物理/09-磁场/3.9 磁场-深度学习材料.html"><span class="no">3.9</span>磁场</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">电磁感应</div>
-      <div class="chapters">
-        <a class="chap" href="物理/10-电磁感应/3.10 电磁感应-深度学习材料.html"><span class="no">3.10</span>电磁感应</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">交变电流</div>
-      <div class="chapters">
-        <a class="chap" href="物理/11-交变电流/3.11 交变电流-深度学习材料.html"><span class="no">3.11</span>交变电流</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">光学</div>
-      <div class="chapters">
-        <a class="chap" href="物理/12-光学/3.12 几何光学-深度学习材料.html"><span class="no">3.12</span>几何光学</a>
-        <a class="chap" href="物理/12-光学/3.13 物理光学-深度学习材料.html"><span class="no">3.13</span>物理光学</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">热学</div>
-      <div class="chapters">
-        <a class="chap" href="物理/13-热学/3.14 分子动理论-深度学习材料.html"><span class="no">3.14</span>分子动理论</a>
-        <a class="chap" href="物理/13-热学/3.15 气体定律-深度学习材料.html"><span class="no">3.15</span>气体定律</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">原子物理</div>
-      <div class="chapters">
-        <a class="chap" href="物理/14-原子物理/3.16 原子结构与原子核-深度学习材料.html"><span class="no">3.16</span>原子结构与原子核</a>
-        <a class="chap" href="物理/14-原子物理/3.17 波粒二象性-深度学习材料.html"><span class="no">3.17</span>波粒二象性</a>
-      </div>
+    <h3>物理 · 深度学习材料（17 章）</h3>
+    <div class="chaps">
+      <a href="物理/01-运动学/3.1 运动的描述与匀变速直线运动-深度学习材料-v2.html"><span class="no">3.1</span>运动的描述与匀变速直线运动</a>
+      <a href="物理/02-力学/力学-深度学习材料-v2.html"><span class="no">3.2</span>相互作用与牛顿运动定律（力学总复习）</a>
+      <a href="物理/03-曲线运动与万有引力/3.3 曲线运动与万有引力-深度学习材料.html"><span class="no">3.3</span>曲线运动与万有引力</a>
+      <a href="物理/04-机械能/3.4 机械能守恒定律-深度学习材料.html"><span class="no">3.4</span>机械能守恒定律</a>
+      <a href="物理/05-动量/3.5 动量守恒定律-深度学习材料.html"><span class="no">3.5</span>动量守恒定律</a>
+      <a href="物理/06-机械振动与机械波/3.6 机械振动与机械波-深度学习材料.html"><span class="no">3.6</span>机械振动与机械波</a>
+      <a href="物理/07-静电场/3.7 静电场-深度学习材料.html"><span class="no">3.7</span>静电场</a>
+      <a href="物理/08-恒定电流/3.8 恒定电流-深度学习材料.html"><span class="no">3.8</span>恒定电流</a>
+      <a href="物理/09-磁场/3.9 磁场-深度学习材料.html"><span class="no">3.9</span>磁场</a>
+      <a href="物理/10-电磁感应/3.10 电磁感应-深度学习材料.html"><span class="no">3.10</span>电磁感应</a>
+      <a href="物理/11-交变电流/3.11 交变电流-深度学习材料.html"><span class="no">3.11</span>交变电流</a>
+      <a href="物理/12-光学/3.12 几何光学-深度学习材料.html"><span class="no">3.12</span>几何光学</a>
+      <a href="物理/12-光学/3.13 物理光学-深度学习材料.html"><span class="no">3.13</span>物理光学</a>
+      <a href="物理/13-热学/3.14 分子动理论-深度学习材料.html"><span class="no">3.14</span>分子动理论</a>
+      <a href="物理/13-热学/3.15 气体定律-深度学习材料.html"><span class="no">3.15</span>气体定律</a>
+      <a href="物理/14-原子物理/3.16 原子结构与原子核-深度学习材料.html"><span class="no">3.16</span>原子结构与原子核</a>
+      <a href="物理/14-原子物理/3.17 波粒二象性-深度学习材料.html"><span class="no">3.17</span>波粒二象性</a>
     </div>
     <div class="block-title">专题讲解（视频 + 课件 + 讲义）</div>
     <div class="item">
@@ -253,68 +145,34 @@
   </section>
 
   <section class="subject" style="--accent:var(--chem)">
-    <h3>化学</h3>
-    <div class="block-title">深度学习材料（25 章）</div>
-    <div class="module">
-      <div class="m-name">化学基本概念</div>
-      <div class="chapters">
-        <a class="chap" href="化学/深度学习材料/01-化学基本概念/3.1 物质的量与化学计算-深度学习材料.html"><span class="no">3.1</span>物质的量与化学计算</a>
-        <a class="chap" href="化学/深度学习材料/01-化学基本概念/3.2 化学用语与化学基本概念-深度学习材料.html"><span class="no">3.2</span>化学用语与化学基本概念</a>
-        <a class="chap" href="化学/深度学习材料/01-化学基本概念/3.3 离子反应-深度学习材料.html"><span class="no">3.3</span>离子反应</a>
-        <a class="chap" href="化学/深度学习材料/01-化学基本概念/3.4 氧化还原反应-深度学习材料.html"><span class="no">3.4</span>氧化还原反应</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">元素化合物</div>
-      <div class="chapters">
-        <a class="chap" href="化学/深度学习材料/02-元素化合物/3.5 金属元素及其化合物-深度学习材料.html"><span class="no">3.5</span>金属元素及其化合物</a>
-        <a class="chap" href="化学/深度学习材料/02-元素化合物/3.6 非金属元素及其化合物-深度学习材料.html"><span class="no">3.6</span>非金属元素及其化合物</a>
-        <a class="chap" href="化学/深度学习材料/02-元素化合物/3.7 元素化合物综合推断-深度学习材料.html"><span class="no">3.7</span>元素化合物综合推断</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">物质结构与元素周期律</div>
-      <div class="chapters">
-        <a class="chap" href="化学/深度学习材料/03-物质结构与元素周期律/3.8 原子结构-深度学习材料.html"><span class="no">3.8</span>原子结构</a>
-        <a class="chap" href="化学/深度学习材料/03-物质结构与元素周期律/3.9 元素周期律与元素周期表-深度学习材料.html"><span class="no">3.9</span>元素周期律与元素周期表</a>
-        <a class="chap" href="化学/深度学习材料/03-物质结构与元素周期律/3.10 化学键与分子结构-深度学习材料.html"><span class="no">3.10</span>化学键与分子结构</a>
-        <a class="chap" href="化学/深度学习材料/03-物质结构与元素周期律/3.11 晶体结构与性质-深度学习材料.html"><span class="no">3.11</span>晶体结构与性质</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">化学反应原理</div>
-      <div class="chapters">
-        <a class="chap" href="化学/深度学习材料/04-化学反应原理/3.12 化学反应与能量-深度学习材料.html"><span class="no">3.12</span>化学反应与能量</a>
-        <a class="chap" href="化学/深度学习材料/04-化学反应原理/3.13 化学反应速率与化学平衡-深度学习材料.html"><span class="no">3.13</span>化学反应速率与化学平衡</a>
-        <a class="chap" href="化学/深度学习材料/04-化学反应原理/3.14 水溶液中的离子平衡-深度学习材料.html"><span class="no">3.14</span>水溶液中的离子平衡</a>
-        <a class="chap" href="化学/深度学习材料/04-化学反应原理/3.15 电化学基础-深度学习材料.html"><span class="no">3.15</span>电化学基础</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">有机化学基础</div>
-      <div class="chapters">
-        <a class="chap" href="化学/深度学习材料/05-有机化学基础/3.16 有机物分类与结构-深度学习材料.html"><span class="no">3.16</span>有机物分类与结构</a>
-        <a class="chap" href="化学/深度学习材料/05-有机化学基础/3.17 烃-深度学习材料.html"><span class="no">3.17</span>烃</a>
-        <a class="chap" href="化学/深度学习材料/05-有机化学基础/3.18 烃的衍生物-深度学习材料.html"><span class="no">3.18</span>烃的衍生物</a>
-        <a class="chap" href="化学/深度学习材料/05-有机化学基础/3.19 生命中的基础有机化学物质与合成高分子-深度学习材料.html"><span class="no">3.19</span>生命中的基础有机化学物质与合成高分子</a>
-        <a class="chap" href="化学/深度学习材料/05-有机化学基础/3.20 有机合成与推断-深度学习材料.html"><span class="no">3.20</span>有机合成与推断</a>
-      </div>
-    </div>
-    <div class="module">
-      <div class="m-name">化学实验</div>
-      <div class="chapters">
-        <a class="chap" href="化学/深度学习材料/06-化学实验/3.21 化学实验基本操作与仪器-深度学习材料.html"><span class="no">3.21</span>化学实验基本操作与仪器</a>
-        <a class="chap" href="化学/深度学习材料/06-化学实验/3.22 物质的检验、分离与提纯-深度学习材料.html"><span class="no">3.22</span>物质的检验、分离与提纯</a>
-        <a class="chap" href="化学/深度学习材料/06-化学实验/3.23 物质的制备实验-深度学习材料.html"><span class="no">3.23</span>物质的制备实验</a>
-        <a class="chap" href="化学/深度学习材料/06-化学实验/3.24 定量实验-深度学习材料.html"><span class="no">3.24</span>定量实验</a>
-        <a class="chap" href="化学/深度学习材料/06-化学实验/3.25 实验方案设计与评价-深度学习材料.html"><span class="no">3.25</span>实验方案设计与评价</a>
-      </div>
-    </div>
-    <div class="block-title">专题讲义</div>
-    <div class="module">
-      <div class="chapters">
-        <a class="chap" href="化学/化学三大基本观念专题讲义-v2.html"><span class="no">专题</span>化学三大基本观念专题讲义（v2）</a>
-      </div>
+    <h3>化学 · 深度学习材料（25 章 + 1 专题）</h3>
+    <div class="chaps">
+      <a href="化学/深度学习材料/01-化学基本概念/3.1 物质的量与化学计算-深度学习材料.html"><span class="no">3.1</span>物质的量与化学计算</a>
+      <a href="化学/深度学习材料/01-化学基本概念/3.2 化学用语与化学基本概念-深度学习材料.html"><span class="no">3.2</span>化学用语与化学基本概念</a>
+      <a href="化学/深度学习材料/01-化学基本概念/3.3 离子反应-深度学习材料.html"><span class="no">3.3</span>离子反应</a>
+      <a href="化学/深度学习材料/01-化学基本概念/3.4 氧化还原反应-深度学习材料.html"><span class="no">3.4</span>氧化还原反应</a>
+      <a href="化学/深度学习材料/02-元素化合物/3.5 金属元素及其化合物-深度学习材料.html"><span class="no">3.5</span>金属元素及其化合物</a>
+      <a href="化学/深度学习材料/02-元素化合物/3.6 非金属元素及其化合物-深度学习材料.html"><span class="no">3.6</span>非金属元素及其化合物</a>
+      <a href="化学/深度学习材料/02-元素化合物/3.7 元素化合物综合推断-深度学习材料.html"><span class="no">3.7</span>元素化合物综合推断</a>
+      <a href="化学/深度学习材料/03-物质结构与元素周期律/3.8 原子结构-深度学习材料.html"><span class="no">3.8</span>原子结构</a>
+      <a href="化学/深度学习材料/03-物质结构与元素周期律/3.9 元素周期律与元素周期表-深度学习材料.html"><span class="no">3.9</span>元素周期律与元素周期表</a>
+      <a href="化学/深度学习材料/03-物质结构与元素周期律/3.10 化学键与分子结构-深度学习材料.html"><span class="no">3.10</span>化学键与分子结构</a>
+      <a href="化学/深度学习材料/03-物质结构与元素周期律/3.11 晶体结构与性质-深度学习材料.html"><span class="no">3.11</span>晶体结构与性质</a>
+      <a href="化学/深度学习材料/04-化学反应原理/3.12 化学反应与能量-深度学习材料.html"><span class="no">3.12</span>化学反应与能量</a>
+      <a href="化学/深度学习材料/04-化学反应原理/3.13 化学反应速率与化学平衡-深度学习材料.html"><span class="no">3.13</span>化学反应速率与化学平衡</a>
+      <a href="化学/深度学习材料/04-化学反应原理/3.14 水溶液中的离子平衡-深度学习材料.html"><span class="no">3.14</span>水溶液中的离子平衡</a>
+      <a href="化学/深度学习材料/04-化学反应原理/3.15 电化学基础-深度学习材料.html"><span class="no">3.15</span>电化学基础</a>
+      <a href="化学/深度学习材料/05-有机化学基础/3.16 有机物分类与结构-深度学习材料.html"><span class="no">3.16</span>有机物分类与结构</a>
+      <a href="化学/深度学习材料/05-有机化学基础/3.17 烃-深度学习材料.html"><span class="no">3.17</span>烃</a>
+      <a href="化学/深度学习材料/05-有机化学基础/3.18 烃的衍生物-深度学习材料.html"><span class="no">3.18</span>烃的衍生物</a>
+      <a href="化学/深度学习材料/05-有机化学基础/3.19 生命中的基础有机化学物质与合成高分子-深度学习材料.html"><span class="no">3.19</span>生命中的基础有机化学物质与合成高分子</a>
+      <a href="化学/深度学习材料/05-有机化学基础/3.20 有机合成与推断-深度学习材料.html"><span class="no">3.20</span>有机合成与推断</a>
+      <a href="化学/深度学习材料/06-化学实验/3.21 化学实验基本操作与仪器-深度学习材料.html"><span class="no">3.21</span>化学实验基本操作与仪器</a>
+      <a href="化学/深度学习材料/06-化学实验/3.22 物质的检验、分离与提纯-深度学习材料.html"><span class="no">3.22</span>物质的检验、分离与提纯</a>
+      <a href="化学/深度学习材料/06-化学实验/3.23 物质的制备实验-深度学习材料.html"><span class="no">3.23</span>物质的制备实验</a>
+      <a href="化学/深度学习材料/06-化学实验/3.24 定量实验-深度学习材料.html"><span class="no">3.24</span>定量实验</a>
+      <a href="化学/深度学习材料/06-化学实验/3.25 实验方案设计与评价-深度学习材料.html"><span class="no">3.25</span>实验方案设计与评价</a>
+      <a href="化学/化学三大基本观念专题讲义-v2.html"><span class="no">专题</span>化学三大基本观念专题讲义<span class="tag">v2</span></a>
     </div>
     <div class="block-title">专题讲解（视频 + 课件 + 讲义）</div>
     <div class="item">
