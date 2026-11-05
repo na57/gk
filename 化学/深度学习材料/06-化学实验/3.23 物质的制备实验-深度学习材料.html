@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.23 物质的制备实验-深度学习材料</title>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#0e7c7b; --subject-soft:#eef7f6;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 化学点缀层（无 JS，纯文本方程式） ===== */
+/* 语义卡片（例题=紫 / 易错=琥珀 / 概念=蓝 / 提示=科目色 / 结构=中性墨） */
+.card { border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 18px; margin: 14px 0; page-break-inside: avoid; }
+.card .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
+.card.concept { background: var(--c-concept-bg); } .card.concept .tag { background: var(--c-concept); color: #fff; }
+.card.example { background: var(--c-example-bg); } .card.example .tag { background: var(--c-example); color: #fff; }
+.card.trap { background: var(--c-trap-bg); } .card.trap .tag { background: var(--c-trap); color: #fff; }
+.card.note { background: var(--subject-soft); } .card.note .tag { background: var(--subject); color: #fff; }
+.card.violet { background: var(--canvas); } .card.violet .tag { background: var(--ink); color: #fff; }
+/* 方程式容器（统一灰底盒 + 科目色左边条） */
+.eq { display: block; background: var(--formula-bg); border: 1px solid var(--line); border-left: 4px solid var(--subject); border-radius: 8px; padding: var(--formula-pad); margin: 10px 0; font-size: 16px; text-align: center; letter-spacing: .3px; page-break-inside: avoid; }
+.eq-arrow { position: relative; display: inline-block; margin: 0 6px; font-weight: 600; }
+.eq-arrow::before { content: attr(data-cond); position: absolute; left: 50%; transform: translateX(-50%); top: -1.05em; font-size: 10.5px; font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
+.state { font-size: .72em; font-style: italic; color: var(--ink-soft); }
+sub, sup { font-size: .72em; line-height: 0; }
+.formula { font-size: 1.05em; }
+.kbd { background: #f0f2f5; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 13px; }
+/* 三栏对比 */
+.triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; page-break-inside: avoid; }
+.triple .cell { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: 14px; }
+.triple .cell h4 { margin: 0 0 8px; font-size: 13.5px; text-align: center; padding: 4px 0; border-radius: 6px; color: #fff; }
+.triple .cell:nth-child(1) h4 { background: var(--c-trap); }
+.triple .cell:nth-child(2) h4 { background: var(--c-example); }
+.triple .cell:nth-child(3) h4 { background: var(--subject); }
+/* 步骤与答案 */
+.step { display: flex; gap: 10px; margin: 8px 0; }
+.step .no { flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--c-method); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.ans { background: #fff; border: 1px dashed var(--c-method); border-radius: 8px; padding: 8px 14px; margin: 8px 0; }
+.chap-foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-soft); text-align: center; }
+@media (max-width: 640px) { .triple { grid-template-columns: 1fr; } }
+@media print {
+  .card { border: 1px solid #999; background: #fff !important; }
+  .card .tag { border: 1px solid #333; background: #fff !important; color: #000; }
+  .eq { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .chap-foot { border-top: none; }
+}
+</style>
+</head>
+<body>
+<nav class="chap-nav">高考备考 · 化学 · 深度学习材料 ｜ 化学实验 ｜ 3.23 物质的制备实验</nav>
+<header class="chap-head">
+  <h1>3.23 物质的制备实验</h1>
+  <p class="chap-meta">高中化学 · 深度学习材料 · 面向 2029 届云南高考</p>
+  <p class="chap-intro">物质制备是化学实验的"集大成者"：一个完整的制备实验，把反应原理、装置选择、除杂干燥、收集验满、尾气处理全部串联起来。高考实验大题几乎年年以制备为背景。本章以"气体制备八种＋无机物制备＋有机物制备"为主线，帮你建立"发生→除杂→收集→尾气"的通用分析框架——掌握了框架，任何陌生的制备实验都能拆解。</p>
+</header>
+<main>
+
+<section>
+<h2>一、知识全景</h2>
+<table>
+<thead>
+<tr>
+<th>知识点</th>
+<th>核心内容</th>
+<th>高考要求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>气体制备</td>
+<td>O<sub>2</sub>、H<sub>2</sub>、CO<sub>2</sub>、Cl<sub>2</sub>、NH<sub>3</sub>、SO<sub>2</sub>、NO、NO<sub>2</sub> 的制备原理、发生装置、净化干燥、收集、验满、尾气处理</td>
+<td>每种气体的完整制备链条零失误，能在陌生装置图中迁移应用</td>
+</tr>
+<tr>
+<td>发生装置选择</td>
+<td>固固加热型、固液不加热型、固液（液液）加热型</td>
+<td>能根据反应物状态和反应条件选择并画出装置</td>
+</tr>
+<tr>
+<td>典型无机物制备</td>
+<td>Fe(OH)<sub>3</sub> 胶体、Fe(OH)<sub>2</sub>、Al(OH)<sub>3</sub>、CuSO<sub>4</sub>·5H<sub>2</sub>O 晶体</td>
+<td>掌握制备原理与操作要点（隔氧、控温等）</td>
+</tr>
+<tr>
+<td>典型有机物制备</td>
+<td>乙酸乙酯、溴苯、硝基苯</td>
+<td>掌握原理、装置、除杂、注意事项</td>
+</tr>
+<tr>
+<td>制备实验设计</td>
+<td>发生装置→除杂装置→干燥装置→性质/收集装置→尾气处理装置</td>
+<td>能设计完整实验流程并说明各部分作用</td>
+</tr>
+</tbody>
+</table>
+<div class="card note">
+<span class="tag">学法提示</span>
+<p>制备实验的学习要"以点带面"：先把八种气体的制备吃得滚瓜烂熟（这是"点"），再提炼出通用流程框架（这是"面"）。遇到任何新气体（如 C<sub>2</sub>H<sub>2</sub>、HCl），按"反应物状态＋条件 → 定发生装置；气体性质 → 定收集与尾气处理"的思路，几分钟就能设计出合理方案。</p>
+</div>
+</section>
+
+<section>
+<h2>二、核心概念精讲</h2>
+
+<h3>2.1 气体制备的总思路：四大环节环环相扣</h3>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>（1）发生装置：由"反应物状态＋反应条件"决定</h4>
+<table>
+<thead>
+<tr>
+<th>装置类型</th>
+<th>特征</th>
+<th>典型气体</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>固固加热型</td>
+<td>大试管，管口略向下倾斜（防冷凝水回流炸裂试管）</td>
+<td>O<sub>2</sub>（加热 KClO<sub>3</sub> 或 KMnO<sub>4</sub>）、NH<sub>3</sub>（NH<sub>4</sub>Cl＋Ca(OH)<sub>2</sub>）</td>
+</tr>
+<tr>
+<td>固液不加热型</td>
+<td>锥形瓶/大试管＋长颈漏斗（须液封）或分液漏斗；块状固体可用启普发生器（随开随用、随关随停）</td>
+<td>H<sub>2</sub>、CO<sub>2</sub>、SO<sub>2</sub>、NO、NO<sub>2</sub>、C<sub>2</sub>H<sub>2</sub>（电石＋饱和食盐水）</td>
+</tr>
+<tr>
+<td>固液（液液）加热型</td>
+<td>圆底烧瓶＋分液漏斗＋酒精灯</td>
+<td>Cl<sub>2</sub>（MnO<sub>2</sub>＋浓盐酸）、HCl（NaCl＋浓硫酸微热）、C<sub>2</sub>H<sub>4</sub>（乙醇＋浓硫酸 170 ℃，温度计插入液面下）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>启普发生器的适用条件</strong>（三个同时满足）：块状固体＋液体反应；反应不需加热；生成气体难溶于反应液。能用启普发生器的典型气体：H<sub>2</sub>、CO<sub>2</sub>、H<sub>2</sub>S。粉末状固体（如 Na<sub>2</sub>SO<sub>3</sub> 制 SO<sub>2</sub>）会从多孔隔板漏下，不能用。</p>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>（2）净化与干燥：先除杂、后干燥</h4>
+<p><strong>除杂原则</strong>：除杂试剂只与杂质反应，不与目标气体反应。常见组合：</p>
+<ul>
+<li>Cl<sub>2</sub> 中混 HCl——<strong>饱和食盐水</strong>（Cl<sub>2</sub> 在饱和食盐水中溶解度小，HCl 极易溶）；</li>
+<li>CO<sub>2</sub> 中混 HCl——<strong>饱和 NaHCO<sub>3</sub> 溶液</strong>（NaHCO<sub>3</sub> + HCl → NaCl + CO<sub>2</sub>↑ + H<sub>2</sub>O，还能增产 CO<sub>2</sub>）；</li>
+<li>CO<sub>2</sub> 中混 SO<sub>2</sub>——饱和 NaHCO<sub>3</sub> 溶液或酸性 KMnO<sub>4</sub> 溶液。</li>
+</ul>
+<p><strong>干燥剂选择的"酸碱匹配"</strong>：干燥剂不能与气体反应。</p>
+<ul>
+<li><strong>浓硫酸</strong>（酸性、强吸水性）：可干燥 H<sub>2</sub>、O<sub>2</sub>、CO<sub>2</sub>、Cl<sub>2</sub>、SO<sub>2</sub>、HCl 等；<strong>不能干燥 NH<sub>3</sub></strong>（2NH<sub>3</sub> + H<sub>2</sub>SO<sub>4</sub> → (NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub>）和还原性气体 H<sub>2</sub>S、HBr、HI（被浓硫酸氧化）。</li>
+<li><strong>碱石灰</strong>（CaO＋NaOH，碱性）：可干燥 NH<sub>3</sub>、H<sub>2</sub>、O<sub>2</sub> 等；<strong>不能干燥 CO<sub>2</sub>、SO<sub>2</sub>、Cl<sub>2</sub>、HCl</strong> 等酸性气体。</li>
+<li><strong>无水 CaCl<sub>2</sub></strong>（中性）：可干燥多数气体，但<strong>不能干燥 NH<sub>3</sub></strong>（生成 CaCl<sub>2</sub>·8NH<sub>3</sub> 络合物）。</li>
+</ul>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>（3）收集方法：由气体的溶解性和密度决定</h4>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>适用气体</th>
+<th>典型实例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>排水法</td>
+<td>难溶于水且不与水反应</td>
+<td>O<sub>2</sub>、H<sub>2</sub>、<strong>NO</strong>（只能用排水法）、CH<sub>4</sub>、C<sub>2</sub>H<sub>4</sub></td>
+</tr>
+<tr>
+<td>向上排空气法（长进短出）</td>
+<td>密度比空气大、不与空气成分反应</td>
+<td>CO<sub>2</sub>、Cl<sub>2</sub>、SO<sub>2</sub>、<strong>NO<sub>2</sub></strong>（只能用排空气法，因与水反应）、HCl</td>
+</tr>
+<tr>
+<td>向下排空气法（短进长出）</td>
+<td>密度比空气小、不与空气成分反应</td>
+<td>H<sub>2</sub>、NH<sub>3</sub>（只能用排空气法，因极易溶于水）、CH<sub>4</sub></td>
+</tr>
+</tbody>
+</table>
+<p><strong>判断密度的快捷方法</strong>：空气的平均摩尔质量约 29 g/mol，气体相对分子质量大于 29 则比空气重。NO（30）虽略重于空气，但因与 O<sub>2</sub> 反应（2NO + O<sub>2</sub> → 2NO<sub>2</sub>）绝不能用排空气法——<strong>化学性质优先于物理性质</strong>。Cl<sub>2</sub> 还可以用排饱和食盐水法收集（减少溶解损失）。</p>
+<p><strong>（4）尾气处理</strong>：有毒、有污染的气体（Cl<sub>2</sub>、SO<sub>2</sub>、NO<sub>2</sub>、NO、H<sub>2</sub>S、HCl、NH<sub>3</sub>）必须处理。易溶于水的气体（HCl、NH<sub>3</sub>）用水吸收时要<strong>防倒吸</strong>（倒置漏斗/安全瓶）；Cl<sub>2</sub>、SO<sub>2</sub>、NO<sub>2</sub> 用 NaOH 溶液吸收；CO 等可燃性毒气可点燃转化为 CO<sub>2</sub> 或用气球收集。</p>
+</div>
+
+<h3>2.2 八种气体的制备全览</h3>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>气体制备一览表（原理方程式必须会默写）</h4>
+<table>
+<thead>
+<tr>
+<th>气体</th>
+<th>制备原理</th>
+<th>发生装置</th>
+<th>净化干燥</th>
+<th>收集与验满</th>
+<th>尾气处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O<sub>2</sub></td>
+<td>2KClO<sub>3</sub> <span class="eq-arrow" data-cond="MnO₂、加热">→</span> 2KCl + 3O<sub>2</sub>↑<br>或 2KMnO<sub>4</sub> <span class="eq-arrow" data-cond="加热">→</span> K<sub>2</sub>MnO<sub>4</sub> + MnO<sub>2</sub> + O<sub>2</sub>↑</td>
+<td>固固加热</td>
+<td>一般不需净化；KMnO<sub>4</sub> 法制备时试管口塞一团棉花（防粉末进入导管）</td>
+<td>排水法（纯度高）或向上排空气法；验满：带火星木条放在<strong>瓶口</strong>复燃</td>
+<td>无毒，不需处理</td>
+</tr>
+<tr>
+<td>H<sub>2</sub></td>
+<td>Zn + H<sub>2</sub>SO<sub>4</sub>(稀) → ZnSO<sub>4</sub> + H<sub>2</sub>↑</td>
+<td>固液不加热（可用启普发生器）</td>
+<td>可经浓硫酸干燥</td>
+<td>排水法或向下排空气法；点燃前必须<strong>验纯</strong></td>
+<td>无毒</td>
+</tr>
+<tr>
+<td>CO<sub>2</sub></td>
+<td>CaCO<sub>3</sub> + 2HCl → CaCl<sub>2</sub> + CO<sub>2</sub>↑ + H<sub>2</sub>O</td>
+<td>固液不加热（可用启普发生器）</td>
+<td>饱和 NaHCO<sub>3</sub> 溶液除 HCl，浓硫酸干燥</td>
+<td>向上排空气法；验满：燃着的木条放在瓶口熄灭</td>
+<td>无毒</td>
+</tr>
+<tr>
+<td>Cl<sub>2</sub></td>
+<td>MnO<sub>2</sub> + 4HCl(浓) <span class="eq-arrow" data-cond="加热">→</span> MnCl<sub>2</sub> + Cl<sub>2</sub>↑ + 2H<sub>2</sub>O</td>
+<td>固液加热（圆底烧瓶＋分液漏斗）</td>
+<td>饱和食盐水除 HCl，浓硫酸干燥</td>
+<td>向上排空气法或排饱和食盐水法；验满：湿润的淀粉 KI 试纸放瓶口变蓝</td>
+<td>NaOH 溶液吸收：Cl<sub>2</sub> + 2NaOH → NaCl + NaClO + H<sub>2</sub>O</td>
+</tr>
+<tr>
+<td>NH<sub>3</sub></td>
+<td>2NH<sub>4</sub>Cl + Ca(OH)<sub>2</sub> <span class="eq-arrow" data-cond="加热">→</span> CaCl<sub>2</sub> + 2NH<sub>3</sub>↑ + 2H<sub>2</sub>O</td>
+<td>固固加热（试管口略向下倾斜）</td>
+<td><strong>碱石灰</strong>干燥（不可用浓硫酸、无水 CaCl<sub>2</sub>）</td>
+<td>向下排空气法；验满：湿润红色石蕊试纸放瓶口变蓝（或蘸浓盐酸的玻璃棒靠近瓶口产生白烟）</td>
+<td>用水吸收并防倒吸（倒置漏斗）</td>
+</tr>
+<tr>
+<td>SO<sub>2</sub></td>
+<td>Na<sub>2</sub>SO<sub>3</sub> + H<sub>2</sub>SO<sub>4</sub>(浓) → Na<sub>2</sub>SO<sub>4</sub> + SO<sub>2</sub>↑ + H<sub>2</sub>O</td>
+<td>固液不加热</td>
+<td>浓硫酸干燥</td>
+<td>向上排空气法；验满：湿润的品红试纸褪色</td>
+<td>NaOH 溶液吸收：SO<sub>2</sub> + 2NaOH → Na<sub>2</sub>SO<sub>3</sub> + H<sub>2</sub>O</td>
+</tr>
+<tr>
+<td>NO</td>
+<td>3Cu + 8HNO<sub>3</sub>(稀) → 3Cu(NO<sub>3</sub>)<sub>2</sub> + 2NO↑ + 4H<sub>2</sub>O</td>
+<td>固液不加热</td>
+<td>可用水除去混有的 NO<sub>2</sub>（3NO<sub>2</sub> + H<sub>2</sub>O → 2HNO<sub>3</sub> + NO）</td>
+<td><strong>只能用排水法</strong>（NO 与空气中 O<sub>2</sub> 反应）</td>
+<td>与 O<sub>2</sub> 混合后用 NaOH 溶液吸收（或收集处理）</td>
+</tr>
+<tr>
+<td>NO<sub>2</sub></td>
+<td>Cu + 4HNO<sub>3</sub>(浓) → Cu(NO<sub>3</sub>)<sub>2</sub> + 2NO<sub>2</sub>↑ + 2H<sub>2</sub>O</td>
+<td>固液不加热</td>
+<td>浓硫酸干燥（不可用碱石灰）</td>
+<td><strong>只能用向上排空气法</strong>（NO<sub>2</sub> 与水反应）</td>
+<td>NaOH 溶液吸收：2NO<sub>2</sub> + 2NaOH → NaNO<sub>2</sub> + NaNO<sub>3</sub> + H<sub>2</sub>O</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="card violet">
+<span class="tag">深度辨析</span>
+<h4>气体制备中的"为什么"三连问</h4>
+<p><strong>① CO<sub>2</sub> 为什么用盐酸不用硫酸？</strong>CaCO<sub>3</sub> 与 H<sub>2</sub>SO<sub>4</sub> 反应生成的 CaSO<sub>4</sub> <strong>微溶于水</strong>，覆盖在石灰石表面形成致密薄膜，阻止酸与内部 CaCO<sub>3</sub> 继续接触，反应很快停止。也不用浓盐酸（挥发性太强，CO<sub>2</sub> 中混入大量 HCl 气体），更不用 Na<sub>2</sub>CO<sub>3</sub> 粉末（反应太快来不及收集）。</p>
+<p><strong>② 制 NH<sub>3</sub> 为什么用 Ca(OH)<sub>2</sub> 而不用 NaOH？</strong>NaOH 易吸湿结块，加热时对玻璃腐蚀性强（高温下 OH<sup>−</sup> 腐蚀 SiO<sub>2</sub>），Ca(OH)<sub>2</sub> 碱性弱、疏松多孔，利于 NH<sub>3</sub> 逸出。同理，干燥 NH<sub>3</sub> 用碱石灰不用浓硫酸（酸碱中和）、不用无水 CaCl<sub>2</sub>（生成络合物）。</p>
+<p><strong>③ 实验室也用 H<sub>2</sub>O<sub>2</sub> 制 O<sub>2</sub>，装置有何不同？</strong>2H<sub>2</sub>O<sub>2</sub> <span class="eq-arrow" data-cond="MnO₂">→</span> 2H<sub>2</sub>O + O<sub>2</sub>↑，过氧化氢是液体、MnO<sub>2</sub> 是粉末状催化剂，常温即反应——属<strong>固液不加热型</strong>，与制 H<sub>2</sub>、CO<sub>2</sub> 同装置。这正说明：<strong>装置由反应物状态与条件决定，而不是由气体本身决定</strong>。</p>
+</div>
+
+<h3>2.3 典型无机物的制备</h3>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>（1）Fe(OH)<sub>3</sub> 胶体的制备——"沸水、饱和、少量、不停加热"</h4>
+<p><strong>操作</strong>：向<strong>沸腾的蒸馏水</strong>中逐滴加入 5~6 滴<strong>饱和 FeCl<sub>3</sub> 溶液</strong>，继续煮沸至液体呈<strong>红褐色</strong>，立即停止加热。</p>
+<span class="eq">FeCl<sub>3</sub> + 3H<sub>2</sub>O <span class="eq-arrow" data-cond="加热">→</span> Fe(OH)<sub>3</sub>(胶体) + 3HCl</span>
+<p><strong>要点与原理</strong>：①必须用<strong>蒸馏水</strong>——自来水中的电解质会使胶体聚沉；②不能一次性大量倒入 FeCl<sub>3</sub>（局部浓度过大直接生成沉淀）；③不能长时间持续煮沸（胶体受热聚沉变成沉淀）；④不能用玻璃棒搅拌（破坏胶体稳定性）。产物是胶体不是沉淀，方程式中写"Fe(OH)<sub>3</sub>(胶体)"，<strong>不标沉淀符号↓</strong>。</p>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>（2）Fe(OH)<sub>2</sub> 的制备——一切为了隔绝氧气</h4>
+<p><strong>原理</strong>：FeSO<sub>4</sub> + 2NaOH → Fe(OH)<sub>2</sub>↓（白色）+ Na<sub>2</sub>SO<sub>4</sub>。难点在于 Fe(OH)<sub>2</sub> 极易被空气中的 O<sub>2</sub> 氧化：4Fe(OH)<sub>2</sub> + O<sub>2</sub> + 2H<sub>2</sub>O → 4Fe(OH)<sub>3</sub>，白色沉淀迅速变为灰绿色、最终变为红褐色，现象转瞬即逝。</p>
+<p><strong>隔氧四招</strong>（高考常考改进措施）：</p>
+<ol>
+<li>配制溶液的蒸馏水先<strong>煮沸</strong>，除去溶解的 O<sub>2</sub>，冷却后立即使用；</li>
+<li>在 FeSO<sub>4</sub> 溶液液面上加一层<strong>植物油（或苯）</strong>，隔绝空气；</li>
+<li>用<strong>长胶头滴管</strong>吸取 NaOH 溶液，将滴管尖端<strong>伸入 FeSO<sub>4</sub> 溶液液面以下</strong>再挤出，避免 NaOH 溶液在下落过程中带入空气；</li>
+<li>FeSO<sub>4</sub> 溶液中预先加少量<strong>铁粉</strong>，防止 Fe<sup>2+</sup> 被氧化（2Fe<sup>3+</sup> + Fe → 3Fe<sup>2+</sup>）。</li>
+</ol>
+<p>改进后可在较长时间内观察到<strong>白色絮状沉淀</strong>。颜色变化的完整描述（白色→灰绿色→红褐色）本身是高考现象描述题的采分点。</p>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>（3）Al(OH)<sub>3</sub> 的制备——为什么用氨水不用 NaOH</h4>
+<span class="eq">Al<sub>2</sub>(SO<sub>4</sub>)<sub>3</sub> + 6NH<sub>3</sub>·H<sub>2</sub>O → 2Al(OH)<sub>3</sub>↓ + 3(NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub></span>
+<p>离子方程式：Al<sup>3+</sup> + 3NH<sub>3</sub>·H<sub>2</sub>O → Al(OH)<sub>3</sub>↓ + 3NH<sub>4</sub><sup>+</sup>。</p>
+<p><strong>为什么不用 NaOH</strong>：Al(OH)<sub>3</sub> 是<strong>两性氢氧化物</strong>，能溶于过量的强碱：Al(OH)<sub>3</sub> + OH<sup>−</sup> → AlO<sub>2</sub><sup>−</sup> + 2H<sub>2</sub>O。用 NaOH 时用量难以控制，稍过量沉淀就溶解，产率下降。而 NH<sub>3</sub>·H<sub>2</sub>O 是弱碱，不能溶解 Al(OH)<sub>3</sub>，即使过量沉淀也不会消失——"弱碱制两性氢氧化物"是试剂选择"防过量"思想的经典体现。</p>
+<p><strong>（4）CuSO<sub>4</sub>·5H<sub>2</sub>O 晶体的制备</strong>：CuO 溶于稀硫酸得 CuSO<sub>4</sub> 溶液后，经"<strong>蒸发浓缩 → 冷却结晶 → 过滤 → 洗涤（少量冷水）→ 低温干燥</strong>"获得蓝色胆矾晶体。不能直接蒸干——CuSO<sub>4</sub>·5H<sub>2</sub>O 受热会失去结晶水变成白色粉末。</p>
+</div>
+
+<h3>2.4 典型有机物的制备</h3>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>（1）乙酸乙酯的制备——酯化反应的经典实验</h4>
+<span class="eq">CH<sub>3</sub>COOH + C<sub>2</sub>H<sub>5</sub>OH <span class="eq-arrow" data-cond="浓硫酸、加热">⇌</span> CH<sub>3</sub>COOC<sub>2</sub>H<sub>5</sub> + H<sub>2</sub>O</span>
+<p><strong>装置与操作</strong>：试管中加入乙醇、浓硫酸、乙酸（先加乙醇，再沿器壁慢慢加入浓硫酸并振荡冷却，最后加乙酸），加几片碎瓷片，用酒精灯小心加热，产生的蒸气经长导管通到盛有<strong>饱和 Na<sub>2</sub>CO<sub>3</sub> 溶液</strong>的试管中，导管末端悬于液面上方（<strong>不能插入液面以下，防倒吸</strong>）。</p>
+<p><strong>现象</strong>：饱和 Na<sub>2</sub>CO<sub>3</sub> 溶液的液面上出现<strong>无色透明的油状液体</strong>，并可闻到<strong>香味</strong>。</p>
+<p><strong>各角色分析</strong>（高频考点）：</p>
+<ul>
+<li><strong>浓硫酸</strong>：催化剂＋吸水剂（吸收生成的水，使平衡正向移动，提高产率）；</li>
+<li><strong>饱和 Na<sub>2</sub>CO<sub>3</sub> 溶液三重作用</strong>：①溶解挥发出的乙醇；②中和挥发出的乙酸（Na<sub>2</sub>CO<sub>3</sub> + 2CH<sub>3</sub>COOH → 2CH<sub>3</sub>COONa + CO<sub>2</sub>↑ + H<sub>2</sub>O）；③降低乙酸乙酯在水中的溶解度，便于分层析出；</li>
+<li><strong>长导管</strong>：导气兼冷凝（不能伸入液面下——蒸气中含易溶于水的乙醇、乙酸，且受热不均匀会倒吸）。</li>
+</ul>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>（2）溴苯的制备——取代反应的"细节大户"</h4>
+<span class="eq">C<sub>6</sub>H<sub>6</sub> + Br<sub>2</sub> <span class="eq-arrow" data-cond="FeBr₃（催化剂）">→</span> C<sub>6</sub>H<sub>5</sub>Br + HBr↑</span>
+<p><strong>装置与操作</strong>：苯与液溴在<strong>铁粉</strong>（实际起催化作用的是生成的 FeBr<sub>3</sub>）作用下反应，装置带<strong>长直导管</strong>（兼冷凝回流作用——苯和溴都易挥发，冷凝后回流到反应瓶），导管末端悬于 AgNO<sub>3</sub> 溶液（或水）液面上方。</p>
+<p><strong>现象与验证</strong>：反应放热，液体微沸，有红棕色溴蒸气；生成的 HBr 气体遇 AgNO<sub>3</sub> 溶液产生<strong>淡黄色 AgBr 沉淀</strong>——这正是证明"发生的是取代反应而非加成反应"的关键证据（加成不产生 HBr）。注意：挥发出的 Br<sub>2</sub> 蒸气也能与 AgNO<sub>3</sub> 溶液产生浅黄色沉淀，所以 HBr 气体须先通过盛有 CCl<sub>4</sub>（或苯）的洗气瓶除去 Br<sub>2</sub> 再检验。</p>
+<p><strong>产物提纯</strong>：粗溴苯呈褐色（溶有 Br<sub>2</sub>），用 NaOH 溶液洗涤（Br<sub>2</sub> + 2NaOH → NaBr + NaBrO + H<sub>2</sub>O）至无色，分液取下层（溴苯密度大于水），再蒸馏提纯。</p>
+<p><strong>边界</strong>：苯与溴的取代必须用<strong>液溴</strong>，不能用溴水（苯只萃取溴水中的溴，不发生取代）。</p>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>（3）硝基苯的制备——水浴控温的代表作</h4>
+<span class="eq">C<sub>6</sub>H<sub>6</sub> + HNO<sub>3</sub>(浓) <span class="eq-arrow" data-cond="浓硫酸、55~60℃水浴">→</span> C<sub>6</sub>H<sub>5</sub>NO<sub>2</sub> + H<sub>2</sub>O</span>
+<p><strong>操作要点</strong>：</p>
+<ol>
+<li><strong>加药顺序</strong>：先取浓硝酸，再沿器壁缓缓注入浓硫酸（酸入酸，及时散热），摇匀冷却至 50~60 ℃以下后，再逐滴加入苯（防止苯大量挥发及发生副反应）；</li>
+<li><strong>水浴加热 55~60 ℃</strong>：温度过低反应慢，温度过高硝酸分解、苯挥发，且易生成二硝基苯等副产物；水浴加热的优点是<strong>受热均匀、温度易于控制</strong>，温度计插入<strong>水浴</strong>中（不是插入反应液！）；</li>
+<li><strong>长导管</strong>兼冷凝回流作用；</li>
+<li>浓硫酸作<strong>催化剂和吸水剂</strong>。</li>
+</ol>
+<p><strong>产物</strong>：纯净的硝基苯是无色、有苦杏仁气味、密度比水大的油状液体；实验室粗产品常因溶有 NO<sub>2</sub> 而呈淡黄色，用 NaOH 溶液洗涤、分液除去杂质。</p>
+</div>
+
+<h3>2.5 制备实验的通用流程框架</h3>
+
+<div class="card violet">
+<span class="tag">核心框架</span>
+<h4>发生 → 除杂 → 干燥 → 性质/收集 → 尾气处理</h4>
+<p>任何气体制备综合题都可以按这个框架"过一遍"：</p>
+<ol>
+<li><strong>发生装置</strong>：看反应物状态（固/液）与条件（是否加热）定类型；</li>
+<li><strong>除杂装置</strong>：分析产物中混有什么杂质（挥发出来的反应物、副产物、水蒸气），选只除杂质不伤目标的试剂；</li>
+<li><strong>干燥装置</strong>：按酸碱性匹配选干燥剂，洗气瓶"长进短出"；</li>
+<li><strong>收集/性质装置</strong>：排水法 or 排空气法（上/下），或验证某性质（漂白、氧化等）；</li>
+<li><strong>尾气处理</strong>：有毒气体必须处理，易溶气体防倒吸。</li>
+</ol>
+<p>装置接口顺序口诀：<strong>"先除杂、后干燥；洗气长进又短出；干燥管要粗进细出；收集看密度；毒气要收尾"</strong>。答题时装置作用要具体到"除去××气体，防止其干扰××"的程度，不能只写"除杂"两个字。</p>
+</div>
+</section>
+
+<section>
+<h2>三、三重表征贯通</h2>
+
+<h3>第 1 组：实验室制 Cl<sub>2</sub>——氧化还原在制备中的应用</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观（装置·操作·现象）</h4>
+<p>装置：分液漏斗＋圆底烧瓶（固液加热型）→ 盛饱和食盐水的洗气瓶 → 盛浓硫酸的洗气瓶 → 向上排空气法集气瓶 → NaOH 溶液尾气吸收。</p>
+<p>现象：向烧瓶中的 MnO<sub>2</sub> 黑色粉末滴入浓盐酸并加热，立即产生大量气泡，生成<strong>黄绿色、有刺激性气味</strong>的气体，集气瓶中气体颜色逐渐加深；湿润的淀粉 KI 试纸靠近瓶口变蓝。</p>
+</div>
+<div class="cell">
+<h4>微观（原理解释）</h4>
+<p>MnO<sub>2</sub> 中 Mn 为 +4 价，具有较强氧化性；浓盐酸中的 Cl<sup>−</sup> 具有还原性。加热提供能量后，Cl<sup>−</sup> 失去电子被氧化为 Cl 原子，两个 Cl 原子结合成 Cl<sub>2</sub> 分子逸出；Mn 得到电子降为 +2 价（Mn<sup>2+</sup>）。</p>
+<p>注意：4 mol HCl 中只有 2 mol 被氧化（另 2 mol 起酸的作用提供 Cl<sup>−</sup>），所以方程式中盐酸前标"浓"，且随着反应进行盐酸变稀，反应会自行停止——<strong>稀盐酸不与 MnO<sub>2</sub> 反应</strong>。</p>
+</div>
+<div class="cell">
+<h4>符号（方程式）</h4>
+<p>MnO<sub>2</sub> + 4HCl(浓) <span class="eq-arrow" data-cond="加热">→</span> MnCl<sub>2</sub> + Cl<sub>2</sub>↑ + 2H<sub>2</sub>O</p>
+<p>离子方程式：MnO<sub>2</sub> + 4H<sup>+</sup> + 2Cl<sup>−</sup> <span class="eq-arrow" data-cond="加热">→</span> Mn<sup>2+</sup> + Cl<sub>2</sub>↑ + 2H<sub>2</sub>O</p>
+<p>尾气吸收：Cl<sub>2</sub> + 2OH<sup>−</sup> → Cl<sup>−</sup> + ClO<sup>−</sup> + H<sub>2</sub>O</p>
+</div>
+</div>
+
+<h3>第 2 组：实验室制 NH<sub>3</sub>——唯一碱性气体的"特殊待遇"</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观（装置·操作·现象）</h4>
+<p>装置：大试管（固固加热型，管口略向下倾斜）→ 盛<strong>碱石灰</strong>的干燥管 → 向下排空气法集气瓶（瓶口塞一团棉花，减少与空气对流使收集更纯）→ 倒置漏斗用水吸收尾气（防倒吸）。</p>
+<p>现象：加热 NH<sub>4</sub>Cl 与 Ca(OH)<sub>2</sub> 的混合物，产生无色、有刺激性气味的气体；湿润的红色石蕊试纸放在瓶口变蓝；蘸浓盐酸的玻璃棒靠近瓶口产生大量白烟。</p>
+</div>
+<div class="cell">
+<h4>微观（原理解释）</h4>
+<p>NH<sub>4</sub><sup>+</sup> 中的 N—H 键在 OH<sup>−</sup> 作用下断裂，NH<sub>4</sub><sup>+</sup> 与 OH<sup>−</sup> 结合生成 NH<sub>3</sub>·H<sub>2</sub>O，加热使 NH<sub>3</sub>·H<sub>2</sub>O 分解放出 NH<sub>3</sub> 分子。</p>
+<p>NH<sub>3</sub> 是极性很强的分子且与水形成氢键，故极易溶于水（1 体积水溶 700 体积 NH<sub>3</sub>），只能用排空气法收集；NH<sub>3</sub> 是碱性气体，会与浓硫酸、CaCl<sub>2</sub> 反应，只能用碱性干燥剂碱石灰。不能用 NaOH 代替 Ca(OH)<sub>2</sub> 加热制取——NaOH 高温下严重腐蚀玻璃。</p>
+</div>
+<div class="cell">
+<h4>符号（方程式）</h4>
+<p>2NH<sub>4</sub>Cl(s) + Ca(OH)<sub>2</sub>(s) <span class="eq-arrow" data-cond="加热">→</span> CaCl<sub>2</sub> + 2NH<sub>3</sub>↑ + 2H<sub>2</sub>O</p>
+<p>验满原理：NH<sub>3</sub> + H<sub>2</sub>O ⇌ NH<sub>3</sub>·H<sub>2</sub>O ⇌ NH<sub>4</sub><sup>+</sup> + OH<sup>−</sup>（碱性使石蕊变蓝）</p>
+<p>白烟原理：NH<sub>3</sub>(g) + HCl(g) → NH<sub>4</sub>Cl(s)</p>
+</div>
+</div>
+
+<h3>第 3 组：乙酸乙酯的制备——可逆反应的产率攻略</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观（装置·操作·现象）</h4>
+<p>装置：大试管＋长导管（导气兼冷凝），导管末端悬于饱和 Na<sub>2</sub>CO<sub>3</sub> 溶液液面上方。</p>
+<p>现象：加热乙醇、乙酸与浓硫酸的混合物，右侧试管中溶液液面上逐渐出现一层<strong>无色油状液体</strong>，振荡后油层变小、有气泡产生（Na<sub>2</sub>CO<sub>3</sub> 中和乙酸），可闻到水果香味；静置后液体分为两层。</p>
+</div>
+<div class="cell">
+<h4>微观（原理解释）</h4>
+<p>酯化反应的断键规律是"<strong>酸脱羟基醇脱氢</strong>"：乙酸分子断裂 C—O 键脱去 —OH，乙醇分子断裂 O—H 键脱去 —H，二者结合成水；剩余的 CH<sub>3</sub>CO— 与 —OC<sub>2</sub>H<sub>5</sub> 结合成酯（可用 <sup>18</sup>O 同位素示踪证实：<sup>18</sup>O 出现在酯中而非水中）。</p>
+<p>该反应是可逆反应，速率慢、程度小。浓硫酸一方面催化加快速率，另一方面吸收生成的水使平衡正向移动；加热既加速反应又把沸点低（77 ℃）的酯蒸出，进一步拉动平衡。</p>
+</div>
+<div class="cell">
+<h4>符号（方程式）</h4>
+<p>CH<sub>3</sub>COOH + CH<sub>3</sub>CH<sub>2</sub><sup>18</sup>OH <span class="eq-arrow" data-cond="浓硫酸、加热">⇌</span> CH<sub>3</sub>CO<sup>18</sup>OC<sub>2</sub>H<sub>5</sub> + H<sub>2</sub>O</p>
+<p>要点：</p>
+<p>①浓硫酸：催化剂＋吸水剂；</p>
+<p>②饱和 Na<sub>2</sub>CO<sub>3</sub>：溶乙醇、除乙酸、降溶解度；</p>
+<p>③导管不插入液面下——防倒吸。</p>
+</div>
+</div>
+</section>
+
+<section>
+<h2>四、典型例题分步拆解</h2>
+
+<div class="card example">
+<span class="tag">例 1 · 发生装置与收集方法选择</span>
+<p><strong>题目</strong>：实验室制备下列气体时，发生装置与收集方法均相同的一组是（　　）</p>
+<p>A．O<sub>2</sub> 和 NH<sub>3</sub>　　B．H<sub>2</sub> 和 CO<sub>2</sub>　　C．Cl<sub>2</sub> 和 SO<sub>2</sub>　　D．NO 和 NO<sub>2</sub></p>
+<p><strong>【思路点拨】</strong>分别写出每种气体的反应物状态＋条件确定发生装置，再由溶解性、密度、化学活性确定收集方法，逐项比对。</p>
+<div class="step">
+<div class="no">1</div>
+<p>A 项：O<sub>2</sub>（加热 KClO<sub>3</sub>/KMnO<sub>4</sub>）与 NH<sub>3</sub>（NH<sub>4</sub>Cl＋Ca(OH)<sub>2</sub> 加热）都是<strong>固固加热型</strong>发生装置；收集上 O<sub>2</sub> 可排水法/向上排空气，NH<sub>3</sub> 只能向下排空气。发生装置相同但收集方法不同（若以"排水法"为标准则 NH<sub>3</sub> 不行）——需注意题目要求"均相同"，A 不符合。</p>
+</div>
+<div class="step">
+<div class="no">2</div>
+<p>B 项：H<sub>2</sub>（Zn＋稀硫酸）与 CO<sub>2</sub>（CaCO<sub>3</sub>＋盐酸）都是<strong>固液不加热型</strong>；收集上 H<sub>2</sub> 排水法/向下排空气，CO<sub>2</sub> 向上排空气。收集方法不同，不符合。</p>
+</div>
+<div class="step">
+<div class="no">3</div>
+<p>C 项：Cl<sub>2</sub> 用固液<strong>加热</strong>型，SO<sub>2</sub>（Na<sub>2</sub>SO<sub>3</sub>＋浓硫酸）用固液<strong>不加热</strong>型，发生装置不同，不符合。</p>
+</div>
+<div class="step">
+<div class="no">4</div>
+<p>D 项：NO（Cu＋稀硝酸）与 NO<sub>2</sub>（Cu＋浓硝酸）都是<strong>固液不加热型</strong>；收集上 NO 只能排水法，NO<sub>2</sub> 只能向上排空气法。收集方法不同，不符合。</p>
+</div>
+<div class="ans">
+<p><strong>【答案】</strong>无（按题干严格判定）。若题目改为"发生装置相同"，则 A、B、D 均可入选；若再放宽收集方式（如 O<sub>2</sub> 用向上排空气），则需具体题目具体分析。<strong>本题设计为"找茬型"，训练点是：任何一对气体都要同时核对'发生'与'收集'两个维度。</strong></p>
+<p><strong>【方法总结】</strong>做这类题先列两列——左列"反应物状态＋条件 → 发生装置"，右列"溶解性＋密度＋化学活性 → 收集方法"，两列都一致才可选。<strong>NO 与空气反应、NO<sub>2</sub> 与水反应</strong>这两个"唯一选择"是命题人最爱挖的坑。</p>
+</div>
+</div>
+
+<div class="card example">
+<span class="tag">例 2 · Cl<sub>2</sub> 制备综合</span>
+<p><strong>题目</strong>：实验室用 MnO<sub>2</sub> 与浓盐酸反应制取纯净、干燥的 Cl<sub>2</sub>，并对尾气进行处理。请回答：</p>
+<p>（1）写出制取 Cl<sub>2</sub> 的化学方程式，并指出氧化剂。</p>
+<p>（2）从发生装置出来的 Cl<sub>2</sub> 中混有哪些杂质气体？依次用什么试剂除去？</p>
+<p>（3）用向上排空气法收集时，如何验满？</p>
+<p>（4）尾气用什么吸收？写出离子方程式。</p>
+<p>（5）若用含 4 mol HCl 的浓盐酸与足量 MnO<sub>2</sub> 反应，能否制得 1 mol Cl<sub>2</sub>？为什么？</p>
+<p><strong>【思路点拨】</strong>这是"制备链"全流程设问，按"发生→除杂→收集→尾气"框架逐问作答；第(5)问考查"浓盐酸变稀反应停止"的深层理解。</p>
+<div class="step">
+<div class="no">1</div>
+<p>(1) MnO<sub>2</sub> + 4HCl(浓) <span class="eq-arrow" data-cond="加热">→</span> MnCl<sub>2</sub> + Cl<sub>2</sub>↑ + 2H<sub>2</sub>O；Mn 元素由 +4 价降为 +2 价，氧化剂是 MnO<sub>2</sub>。</p>
+</div>
+<div class="step">
+<div class="no">2</div>
+<p>(2) 杂质：浓盐酸挥发出的 <strong>HCl 气体</strong>和水蒸气。先通过<strong>饱和食盐水</strong>除去 HCl（Cl<sub>2</sub> 在饱和食盐水中溶解度小），再通过<strong>浓硫酸</strong>除去水蒸气。顺序不能颠倒——先干燥再除 HCl 会重新带出水蒸气。</p>
+</div>
+<div class="step">
+<div class="no">3</div>
+<p>(3) 将<strong>湿润的淀粉 KI 试纸</strong>放在集气瓶口，试纸变蓝则已集满（Cl<sub>2</sub> + 2I<sup>−</sup> → I<sub>2</sub> + 2Cl<sup>−</sup>，I<sub>2</sub> 遇淀粉变蓝）。</p>
+</div>
+<div class="step">
+<div class="no">4</div>
+<p>(4) 用 NaOH 溶液吸收：Cl<sub>2</sub> + 2OH<sup>−</sup> → Cl<sup>−</sup> + ClO<sup>−</sup> + H<sub>2</sub>O。</p>
+</div>
+<div class="step">
+<div class="no">5</div>
+<p>(5) 不能。由方程式知 4 mol HCl（浓）完全反应可生成 1 mol Cl<sub>2</sub>，但随着反应进行，盐酸不断消耗且生成水，盐酸浓度逐渐降低变为<strong>稀盐酸</strong>，而稀盐酸不与 MnO<sub>2</sub> 反应，故实际生成的 Cl<sub>2</sub> <strong>小于 1 mol</strong>。</p>
+</div>
+<div class="ans">
+<p><strong>【答案】</strong>见各步解析。</p>
+<p><strong>【方法总结】</strong>制备综合题按"五连问"自查：原理写对了吗？杂质想全了吗（挥发的反应物＋水蒸气）？除杂顺序对吗（先除杂后干燥）？验满试剂对准瓶口了吗？尾气处理了吗？另外记住两类"量变引起质变"：<strong>浓盐酸制 Cl<sub>2</sub>、浓硫酸与 Cu 反应</strong>，反应物都不可能完全转化。</p>
+</div>
+</div>
+
+<div class="card example">
+<span class="tag">例 3 · 制备实验的计算</span>
+<p><strong>题目</strong>：实验室用含杂质 20% 的石灰石 25.0 g 与足量稀盐酸反应制取 CO<sub>2</sub>。计算：（1）理论上可生成 CO<sub>2</sub> 多少克？（2）标准状况下体积为多少升？（相对原子质量：Ca 40　C 12　O 16　H 1　Cl 35.5）</p>
+<p><strong>【思路点拨】</strong>先扣除杂质算出纯 CaCO<sub>3</sub> 质量，再按方程式比例计算；盐酸"足量"意味着 CaCO<sub>3</sub> 完全反应，是限量试剂。</p>
+<div class="step">
+<div class="no">1</div>
+<p>纯 CaCO<sub>3</sub> 质量：m(CaCO<sub>3</sub>) = 25.0 g × (1 − 20%) = 20.0 g；物质的量 n(CaCO<sub>3</sub>) = 20.0 g ÷ 100 g/mol = 0.200 mol。</p>
+</div>
+<div class="step">
+<div class="no">2</div>
+<p>方程式 CaCO<sub>3</sub> + 2HCl → CaCl<sub>2</sub> + CO<sub>2</sub>↑ + H<sub>2</sub>O 中，CaCO<sub>3</sub> 与 CO<sub>2</sub> 的化学计量数之比为 1∶1，故 n(CO<sub>2</sub>) = 0.200 mol。</p>
+</div>
+<div class="step">
+<div class="no">3</div>
+<p>(1) m(CO<sub>2</sub>) = 0.200 mol × 44 g/mol = <strong>8.8 g</strong>。</p>
+</div>
+<div class="step">
+<div class="no">4</div>
+<p>(2) 标准状况下 V(CO<sub>2</sub>) = 0.200 mol × 22.4 L/mol = <strong>4.48 L</strong>。</p>
+</div>
+<div class="ans">
+<p><strong>【答案】</strong>(1) 8.8 g；(2) 4.48 L。</p>
+<p><strong>【方法总结】</strong>制备计算三步走：<strong>纯化（扣杂质）→ 物质的量（除以摩尔质量）→ 按比例（方程式系数）→ 换算目标量</strong>。注意"足量"确定限量试剂；气体体积必须强调"标准状况"才能用 22.4 L/mol。</p>
+</div>
+</div>
+
+<div class="card example">
+<span class="tag">例 4 · Fe(OH)<sub>2</sub> 制备的改进</span>
+<p><strong>题目</strong>：用常规方法（向 FeSO<sub>4</sub> 溶液中滴加 NaOH 溶液）制备 Fe(OH)<sub>2</sub>，观察到的现象是"白色沉淀迅速变为灰绿色，最终变为红褐色"。某同学进行如下改进：①配制溶液所用的蒸馏水先煮沸后冷却；②在 FeSO<sub>4</sub> 溶液表面加一层植物油；③用长胶头滴管吸取 NaOH 溶液，伸入 FeSO<sub>4</sub> 溶液液面以下再挤出。请分别说明三条改进措施的作用，并写出白色沉淀变红褐色的化学方程式。</p>
+<p><strong>【思路点拨】</strong>三条措施的目标一致——隔绝 O<sub>2</sub>。分别从"除去已溶解的氧""阻断空气进入""防止加料带入空气"三个角度回答；变色方程式是必背方程式。</p>
+<div class="step">
+<div class="no">1</div>
+<p>措施①：气体在水中的溶解度随温度升高而减小，煮沸可<strong>除去蒸馏水中溶解的 O<sub>2</sub></strong>，防止其氧化 Fe(OH)<sub>2</sub>。</p>
+</div>
+<div class="step">
+<div class="no">2</div>
+<p>措施②：植物油密度比水小且不溶于水，浮在液面上形成<strong>液封</strong>，隔绝溶液与空气的接触。</p>
+</div>
+<div class="step">
+<div class="no">3</div>
+<p>措施③：常规滴加时 NaOH 液滴穿过空气会溶入 O<sub>2</sub>；伸入液面以下挤出，避免滴加过程<strong>带入空气中的 O<sub>2</sub></strong>。</p>
+</div>
+<div class="step">
+<div class="no">4</div>
+<p>变色反应：4Fe(OH)<sub>2</sub> + O<sub>2</sub> + 2H<sub>2</sub>O → 4Fe(OH)<sub>3</sub>。Fe(OH)<sub>2</sub> 中 +2 价 Fe 被空气中 O<sub>2</sub> 氧化为 +3 价。</p>
+</div>
+<div class="ans">
+<p><strong>【答案】</strong>①除去水中溶解的 O<sub>2</sub>；②液封隔绝空气；③防止滴加过程带入 O<sub>2</sub>；4Fe(OH)<sub>2</sub> + O<sub>2</sub> + 2H<sub>2</sub>O → 4Fe(OH)<sub>3</sub>。</p>
+<p><strong>【方法总结】</strong>"改进措施类"问题的回答套路：<strong>先说常规操作有什么问题（引入了什么干扰），再说改进措施如何消除该干扰</strong>。凡制备易被氧化的物质（Fe<sup>2+</sup> 化合物、亚硫酸盐等），"隔氧、除氧、还原剂保护"三板斧都要想到。</p>
+</div>
+</div>
+</section>
+
+<section>
+<h2>五、易错点与成因</h2>
+
+<div class="card trap">
+<span class="tag">易错点 1</span>
+<p><strong>易错表现</strong>：收集 NO 用排空气法，收集 NO<sub>2</sub> 用排水法。</p>
+<p><strong>错误成因</strong>：只按"密度比空气略大就用排空气法""能溶于水才用排水法"的物理标准机械套用，忽视了化学性质的优先地位——NO 会与 O<sub>2</sub> 反应（2NO + O<sub>2</sub> → 2NO<sub>2</sub>），NO<sub>2</sub> 会与水反应（3NO<sub>2</sub> + H<sub>2</sub>O → 2HNO<sub>3</sub> + NO）。</p>
+<p><strong>正确理解</strong>：收集方法的选择顺序是——<strong>先看是否与空气成分反应、是否与水反应，再看溶解性和密度</strong>。NO 只能排水法，NO<sub>2</sub> 只能向上排空气法。同理，NH<sub>3</sub> 极易溶于水只能排空气法，HCl 只能向上排空气法。</p>
+<p><strong>避坑口诀</strong>：<strong>"NO 排水、NO<sub>2</sub> 排气，化学性质定收集"</strong>。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 2</span>
+<p><strong>易错表现</strong>：用浓硫酸或无水 CaCl<sub>2</sub> 干燥 NH<sub>3</sub>；用碱石灰干燥 CO<sub>2</sub>、Cl<sub>2</sub>。</p>
+<p><strong>错误成因</strong>：只记"浓硫酸是常用干燥剂""碱石灰能吸水"，没有把干燥剂与被干燥气体当作一对可能反应的试剂来审视——NH<sub>3</sub> 是碱性气体，与浓硫酸发生中和；NH<sub>3</sub> 还能与 CaCl<sub>2</sub> 生成络合物 CaCl<sub>2</sub>·8NH<sub>3</sub>；CO<sub>2</sub>、Cl<sub>2</sub> 是酸性（或与水反应呈酸性）气体，会被碱石灰吸收。</p>
+<p><strong>正确理解</strong>：干燥剂选择第一原则是<strong>"干燥剂不与气体反应"</strong>。干燥 NH<sub>3</sub> 只能用碱石灰；干燥酸性/中性气体（CO<sub>2</sub>、Cl<sub>2</sub>、SO<sub>2</sub>、H<sub>2</sub>、O<sub>2</sub>）可用浓硫酸；碱石灰只干燥中性和碱性气体。</p>
+<p><strong>避坑口诀</strong>：<strong>"酸碱相配才干燥，氨气只认碱石灰"</strong>。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 3</span>
+<p><strong>易错表现</strong>：制 CO<sub>2</sub> 用稀硫酸代替盐酸，或用 Na<sub>2</sub>CO<sub>3</sub> 粉末代替石灰石。</p>
+<p><strong>错误成因</strong>：认为"酸都能提供 H<sup>+</sup>，碳酸盐都能提供 CO<sub>3</sub><sup>2−</sup>，随便组合都行"，忽视了产物溶解度对反应进程的影响和反应速率对可收集性的影响。</p>
+<p><strong>正确理解</strong>：稀硫酸与 CaCO<sub>3</sub> 生成的 <strong>CaSO<sub>4</sub> 微溶于水</strong>，覆盖在石灰石表面阻止反应继续，气体"虎头蛇尾"；Na<sub>2</sub>CO<sub>3</sub> 是易溶粉末，与酸接触面积极大，反应太剧烈，气体来不及收集。实验室制 CO<sub>2</sub> 的标准搭配是<strong>块状石灰石（或大理石）＋稀盐酸</strong>——块状减缓速率、盐酸不生成覆盖膜。</p>
+<p><strong>避坑口诀</strong>：<strong>"硫酸盖上盖，粉末跑太快；块石加盐酸，气流稳又长"</strong>。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 4</span>
+<p><strong>易错表现</strong>：制备乙酸乙酯时把导管插入饱和 Na<sub>2</sub>CO<sub>3</sub> 溶液液面以下；认为 Na<sub>2</sub>CO<sub>3</sub> 溶液的作用只是"吸收杂质"。</p>
+<p><strong>错误成因</strong>：对倒吸的触发条件不敏感——乙醇、乙酸蒸气极易溶于水溶液，受热不均时导管内压强骤降引发倒吸；对三重作用记忆不全，回答片面丢分。</p>
+<p><strong>正确理解</strong>：导管末端应<strong>悬于液面上方</strong>（既导气冷凝又防倒吸）。饱和 Na<sub>2</sub>CO<sub>3</sub> 溶液的作用是"三合一"：<strong>溶解乙醇、中和乙酸、降低乙酸乙酯的溶解度便于分层</strong>。振荡后油层变小正是因为乙醇、乙酸被洗去。</p>
+<p><strong>避坑口诀</strong>：<strong>"导管悬空防倒吸，碳酸钠液三重功"</strong>。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 5</span>
+<p><strong>易错表现</strong>：制备 Fe(OH)<sub>3</sub> 胶体时写成 FeCl<sub>3</sub> + 3NaOH 反应，或给胶体方程式标注沉淀符号；用自来水代替蒸馏水。</p>
+<p><strong>错误成因</strong>：混淆"Fe(OH)<sub>3</sub> 胶体"与"Fe(OH)<sub>3</sub> 沉淀"两条不同的制备路线——加碱得到的是沉淀而不是胶体；不理解胶体粒子是分子聚集体、并未形成宏观沉淀；不知道自来水中的电解质离子会中和胶粒电荷使胶体聚沉。</p>
+<p><strong>正确理解</strong>：Fe(OH)<sub>3</sub> 胶体的制备是<strong>向沸水中滴加饱和 FeCl<sub>3</sub> 溶液</strong>继续煮沸至红褐色，方程式写 FeCl<sub>3</sub> + 3H<sub>2</sub>O <span class="eq-arrow" data-cond="加热">→</span> Fe(OH)<sub>3</sub>(胶体) + 3HCl，产物注明"(胶体)"且<strong>不标↓</strong>；必须用蒸馏水，不能搅拌、不能久煮。</p>
+<p><strong>避坑口诀</strong>：<strong>"沸水滴铁红褐止，胶体不写沉淀符"</strong>。</p>
+</div>
+</section>
+
+<section>
+<h2>六、章末自检清单</h2>
+<ul class="checklist">
+<li>我能默写 O<sub>2</sub>（两种方法）、H<sub>2</sub>、CO<sub>2</sub>、Cl<sub>2</sub>、NH<sub>3</sub>、SO<sub>2</sub>、NO、NO<sub>2</sub> 的制备方程式并注明条件。</li>
+<li>我能根据反应物状态和反应条件判断发生装置类型（固固加热/固液不加热/固液加热），并说出启普发生器的适用条件。</li>
+<li>我能说出八种气体的收集方法及原因，特别记住 NO 只能排水法、NO<sub>2</sub> 只能向上排空气法、NH<sub>3</sub> 只能向下排空气法。</li>
+<li>我能为每种气体选择正确的干燥剂，并解释 NH<sub>3</sub> 为什么不能用浓硫酸和无水 CaCl<sub>2</sub> 干燥。</li>
+<li>我能说出 Cl<sub>2</sub>（饱和食盐水除 HCl）、CO<sub>2</sub>（饱和 NaHCO<sub>3</sub> 除 HCl）的净化方案及"先除杂后干燥"的顺序逻辑。</li>
+<li>我能写出 O<sub>2</sub>、CO<sub>2</sub>、Cl<sub>2</sub>、NH<sub>3</sub> 的验满方法，并强调"在瓶口"操作。</li>
+<li>我能说明 Cl<sub>2</sub>、SO<sub>2</sub>、NO<sub>2</sub>、NH<sub>3</sub>、HCl 尾气处理的方法和防倒吸措施。</li>
+<li>我能完整描述 Fe(OH)<sub>3</sub> 胶体的制备操作（沸水、饱和 FeCl<sub>3</sub>、红褐色即停）并解释不能用自来水、不能久煮的原因。</li>
+<li>我能说出 Fe(OH)<sub>2</sub> 制备的隔氧措施（煮沸蒸馏水、植物油液封、长滴管液面下挤出、铁粉保护）及变色方程式。</li>
+<li>我能解释 Al(OH)<sub>3</sub> 用氨水而不用 NaOH 制备的原因（两性、防过量溶解）。</li>
+<li>我能写出乙酸乙酯、溴苯、硝基苯的制备方程式，说出浓硫酸的作用、饱和 Na<sub>2</sub>CO<sub>3</sub> 的三重作用、水浴控温的优点及产物提纯方法。</li>
+<li>我能按"发生→除杂→干燥→收集→尾气处理"的框架设计并评价一个完整的气体制备实验。</li>
+</ul>
+</section>
+
+</main>
+<footer class="chap-foot">高考备考 · 化学 · 深度学习材料 · 2026</footer>
+</body>
+</html>

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.5 金属元素及其化合物-深度学习材料</title>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#0e7c7b; --subject-soft:#eef7f6;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 化学点缀层（无 JS，纯文本方程式） ===== */
+/* 语义卡片（例题=紫 / 易错=琥珀 / 概念=蓝 / 提示=科目色 / 结构=中性墨） */
+.card { border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 18px; margin: 14px 0; page-break-inside: avoid; }
+.card .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
+.card.concept { background: var(--c-concept-bg); } .card.concept .tag { background: var(--c-concept); color: #fff; }
+.card.example { background: var(--c-example-bg); } .card.example .tag { background: var(--c-example); color: #fff; }
+.card.trap { background: var(--c-trap-bg); } .card.trap .tag { background: var(--c-trap); color: #fff; }
+.card.note { background: var(--subject-soft); } .card.note .tag { background: var(--subject); color: #fff; }
+.card.violet { background: var(--canvas); } .card.violet .tag { background: var(--ink); color: #fff; }
+/* 方程式容器（统一灰底盒 + 科目色左边条） */
+.eq { display: block; background: var(--formula-bg); border: 1px solid var(--line); border-left: 4px solid var(--subject); border-radius: 8px; padding: var(--formula-pad); margin: 10px 0; font-size: 16px; text-align: center; letter-spacing: .3px; page-break-inside: avoid; }
+.eq-arrow { position: relative; display: inline-block; margin: 0 6px; font-weight: 600; }
+.eq-arrow::before { content: attr(data-cond); position: absolute; left: 50%; transform: translateX(-50%); top: -1.05em; font-size: 10.5px; font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
+.state { font-size: .72em; font-style: italic; color: var(--ink-soft); }
+sub, sup { font-size: .72em; line-height: 0; }
+.formula { font-size: 1.05em; }
+.kbd { background: #f0f2f5; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 13px; }
+/* 三栏对比 */
+.triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; page-break-inside: avoid; }
+.triple .cell { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: 14px; }
+.triple .cell h4 { margin: 0 0 8px; font-size: 13.5px; text-align: center; padding: 4px 0; border-radius: 6px; color: #fff; }
+.triple .cell:nth-child(1) h4 { background: var(--c-trap); }
+.triple .cell:nth-child(2) h4 { background: var(--c-example); }
+.triple .cell:nth-child(3) h4 { background: var(--subject); }
+/* 步骤与答案 */
+.step { display: flex; gap: 10px; margin: 8px 0; }
+.step .no { flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--c-method); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.ans { background: #fff; border: 1px dashed var(--c-method); border-radius: 8px; padding: 8px 14px; margin: 8px 0; }
+.chap-foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-soft); text-align: center; }
+@media (max-width: 640px) { .triple { grid-template-columns: 1fr; } }
+@media print {
+  .card { border: 1px solid #999; background: #fff !important; }
+  .card .tag { border: 1px solid #333; background: #fff !important; color: #000; }
+  .eq { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .chap-foot { border-top: none; }
+}
+</style>
+</head>
+<body>
+<nav class="chap-nav">高考备考 · 化学 · 深度学习材料 ｜ 元素化合物 ｜ 3.5 金属元素及其化合物</nav>
+<header class="chap-head">
+  <h1>3.5 金属元素及其化合物</h1>
+  <p class="chap-meta">高中化学 · 深度学习材料 · 面向 2029 届云南高考</p>
+  <p class="chap-intro">金属元素是高考无机化学的「半壁江山」：钠、铝、铁、铜四条主线贯穿选择题、工业流程题和实验探究题，分值约 20 分。本章内容多、方程式多，但规律性极强——抓住「单质 → 氧化物 → 氢氧化物 → 盐」这条主线，再辅以颜色、价态两个抓手，就能把零散知识织成网络。建议边学边画转化关系图，每周默写一次核心方程式。</p>
+</header>
+<main>
+
+<section>
+<h2>一、知识全景</h2>
+<p>本章按「钠 → 铝 → 铁 → 铜 → 金属通性」五条线展开。先看全局地图，再逐个击破。</p>
+<table>
+  <tr><th>知识点</th><th>核心内容</th><th>高考要求</th></tr>
+  <tr><td>钠及其化合物</td><td>Na、Na<sub>2</sub>O、Na<sub>2</sub>O<sub>2</sub>、NaOH、Na<sub>2</sub>CO<sub>3</sub>、NaHCO<sub>3</sub> 的性质与转化</td><td>各物质性质烂熟于心，能画出完整转化关系图；Na<sub>2</sub>O<sub>2</sub> 的「三大反应」必考</td></tr>
+  <tr><td>铝及其化合物</td><td>Al、Al<sub>2</sub>O<sub>3</sub>、Al(OH)<sub>3</sub>、铝盐、偏铝酸盐的两性</td><td>理解两性本质，熟练掌握铝三角转化，能处理图像与计算</td></tr>
+  <tr><td>铁及其化合物</td><td>Fe、FeO、Fe<sub>2</sub>O<sub>3</sub>、Fe<sub>3</sub>O<sub>4</sub>、Fe(OH)<sub>2</sub>、Fe(OH)<sub>3</sub>、铁盐与亚铁盐</td><td>铁三角转化熟练，Fe<sup>2+</sup>/Fe<sup>3+</sup> 的检验和相互转化清楚</td></tr>
+  <tr><td>铜及其化合物</td><td>Cu、CuO、Cu(OH)<sub>2</sub>、铜盐、铜的配合物</td><td>掌握主要性质，了解铜的化合物的颜色特征</td></tr>
+  <tr><td>金属通性</td><td>金属活动性顺序、金属冶炼方法、合金</td><td>理解活动性顺序的应用（置换反应、冶炼方法选择）</td></tr>
+</table>
+<div class="card note">
+  <span class="tag">学习方法</span>
+  <p>元素化合物的复习诀窍是「点—线—面」结合：每种元素的单质到化合物是一条<strong>线</strong>（如 Na → Na<sub>2</sub>O → Na<sub>2</sub>O<sub>2</sub> → NaOH → Na<sub>2</sub>CO<sub>3</sub>），各元素之间通过对比（如 Na<sub>2</sub>O 与 Na<sub>2</sub>O<sub>2</sub>、Fe<sup>2+</sup> 与 Fe<sup>3+</sup>）织成<strong>面</strong>。每个知识<strong>点</strong>都要落实到能默写方程式、能描述现象。</p>
+</div>
+</section>
+
+<section>
+<h2>二、核心概念精讲</h2>
+
+<h3>2.1 钠单质（Na）：最活泼的「遇水就着」的金属</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>是什么</strong>：钠是银白色、质软（可用小刀切割）、密度比水小（0.97 g/cm³）、熔点低（97.8 ℃）的金属。新切开的钠表面有银白色金属光泽，在空气中迅速变暗（生成 Na<sub>2</sub>O）。</p>
+  <p><strong>为什么活泼</strong>：钠原子最外层只有 1 个电子，原子半径在同周期中最大，极易失去电子形成 Na<sup>+</sup>，所以化学性质极活泼，在自然界中只以化合态（NaCl、Na<sub>2</sub>CO<sub>3</sub> 等）存在。</p>
+  <p><strong>保存方法</strong>：保存在<strong>煤油</strong>中（钠的密度比煤油大，沉在底部，与空气、水隔绝）。不能用四氯化碳（钠浮在上面），更不能用水或乙醇。</p>
+</div>
+
+<h4>钠与氧气的反应（条件不同，产物不同——高频考点）</h4>
+<span class="eq">4Na<span class="state">(s)</span> + O<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="常温">→</span> 2Na<sub>2</sub>O<span class="state">(s)</span>　（表面变暗，生成白色固体）</span>
+<span class="eq">2Na<span class="state">(s)</span> + O<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="点燃或加热">→</span> Na<sub>2</sub>O<sub>2</sub><span class="state">(s)</span>　（剧烈燃烧，黄色火焰，生成淡黄色固体）</span>
+<div class="card note">
+  <span class="tag">易混提醒</span>
+  <p>钠与氧气反应的产物<strong>取决于条件而不是氧气用量</strong>：常温生成 Na<sub>2</sub>O，加热/点燃生成 Na<sub>2</sub>O<sub>2</sub>。这与量无关，是「条件控制产物」的经典案例。</p>
+</div>
+
+<h4>钠与水的反应（现象口诀：浮、熔、游、响、红）</h4>
+<span class="eq">2Na<span class="state">(s)</span> + 2H<sub>2</sub>O<span class="state">(l)</span> <span class="eq-arrow" data-cond="">→</span> 2NaOH<span class="state">(aq)</span> + H<sub>2</sub><span class="state">(g)</span>↑</span>
+<table>
+  <tr><th>现象</th><th>原因（微观解释）</th></tr>
+  <tr><td><strong>浮</strong>：钠浮在水面上</td><td>钠的密度（0.97 g/cm³）比水小</td></tr>
+  <tr><td><strong>熔</strong>：熔成闪亮的小球</td><td>反应放热，钠的熔点低（97.8 ℃）</td></tr>
+  <tr><td><strong>游</strong>：小球四处游动</td><td>生成的 H<sub>2</sub> 推动小球，各方向受力不均</td></tr>
+  <tr><td><strong>响</strong>：发出嘶嘶响声</td><td>反应剧烈，H<sub>2</sub> 逸出并可能燃烧</td></tr>
+  <tr><td><strong>红</strong>：滴有酚酞的溶液变红</td><td>生成 NaOH，溶液呈碱性</td></tr>
+</table>
+<p>钠与<strong>酸溶液</strong>反应更剧烈（直接与 H<sup>+</sup> 反应）；钠投入<strong>盐溶液</strong>（如 CuSO<sub>4</sub> 溶液）时，钠先与水反应生成 NaOH 和 H<sub>2</sub>，NaOH 再与盐发生复分解反应（生成 Cu(OH)<sub>2</sub> 蓝色沉淀），<strong>不会置换出铜</strong>——因为钠太活泼，根本轮不到它与 Cu<sup>2+</sup> 直接交换电子。</p>
+
+<h4>钠与氯气、硫的反应</h4>
+<span class="eq">2Na<span class="state">(s)</span> + Cl<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="点燃">→</span> 2NaCl<span class="state">(s)</span>　（剧烈燃烧，黄色火焰，产生白烟）</span>
+
+<h3>2.2 氧化钠与过氧化钠：一对「颜色不同、脾气迥异」的兄弟</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>Na<sub>2</sub>O（白色固体）</strong>：典型的碱性氧化物，氧为 −2 价。与水、酸、酸性氧化物反应都只生成对应的碱或盐，<strong>不放氧气</strong>。</p>
+  <p><strong>Na<sub>2</sub>O<sub>2</sub>（淡黄色固体）</strong>：过氧化物，氧为 −1 价，既具有强氧化性（漂白、杀菌），又能在与水、CO<sub>2</sub> 反应时<strong>自身歧化</strong>放出 O<sub>2</sub>。它<strong>不是碱性氧化物</strong>（与酸反应除了生成盐和水，还生成 O<sub>2</sub>）。</p>
+  <p><strong>适用边界</strong>：Na<sub>2</sub>O<sub>2</sub> 可用作供氧剂（潜水艇、呼吸面具）、漂白剂；Na<sub>2</sub>O 没有这些用途。</p>
+  <p><strong>常见混淆</strong>：① 颜色混淆——Na<sub>2</sub>O 白色，Na<sub>2</sub>O<sub>2</sub> 淡黄色；② 氧元素化合价混淆——Na<sub>2</sub>O 中 −2 价，Na<sub>2</sub>O<sub>2</sub> 中 −1 价；③ 阴阳离子个数比——Na<sub>2</sub>O<sub>2</sub> 中阴离子是 O<sub>2</sub><sup>2−</sup>（过氧根，一个整体），所以 Na<sub>2</sub>O<sub>2</sub> 中阴阳离子个数比为 1:2，不是 1:1。</p>
+</div>
+<table>
+  <tr><th>对比项</th><th>Na<sub>2</sub>O</th><th>Na<sub>2</sub>O<sub>2</sub></th></tr>
+  <tr><td>颜色状态</td><td>白色固体</td><td>淡黄色固体</td></tr>
+  <tr><td>氧的化合价</td><td>−2</td><td>−1</td></tr>
+  <tr><td>类别</td><td>碱性氧化物</td><td>过氧化物（不是碱性氧化物）</td></tr>
+  <tr><td>与水反应</td><td>Na<sub>2</sub>O + H<sub>2</sub>O = 2NaOH</td><td>2Na<sub>2</sub>O<sub>2</sub> + 2H<sub>2</sub>O = 4NaOH + O<sub>2</sub>↑</td></tr>
+  <tr><td>与 CO<sub>2</sub> 反应</td><td>Na<sub>2</sub>O + CO<sub>2</sub> = Na<sub>2</sub>CO<sub>3</sub></td><td>2Na<sub>2</sub>O<sub>2</sub> + 2CO<sub>2</sub> = 2Na<sub>2</sub>CO<sub>3</sub> + O<sub>2</sub></td></tr>
+  <tr><td>漂白性</td><td>无</td><td>有（强氧化性漂白，永久褪色）</td></tr>
+</table>
+
+<h4>Na<sub>2</sub>O<sub>2</sub> 的「三大反应」（高考核心，必背）</h4>
+<span class="eq">2Na<sub>2</sub>O<sub>2</sub><span class="state">(s)</span> + 2H<sub>2</sub>O<span class="state">(l)</span> <span class="eq-arrow" data-cond="">→</span> 4NaOH<span class="state">(aq)</span> + O<sub>2</sub><span class="state">(g)</span>↑</span>
+<p>现象：淡黄色固体逐渐溶解，剧烈反应、放出大量的热，产生大量气泡，生成的气体能使<strong>带火星的木条复燃</strong>；滴入酚酞先变红后褪色（NaOH 使酚酞变红，Na<sub>2</sub>O<sub>2</sub> 的强氧化性/生成的 H<sub>2</sub>O<sub>2</sub> 中间产物使其漂白褪色）。</p>
+<span class="eq">2Na<sub>2</sub>O<sub>2</sub><span class="state">(s)</span> + 2CO<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="">→</span> 2Na<sub>2</sub>CO<sub>3</sub><span class="state">(s)</span> + O<sub>2</sub><span class="state">(g)</span></span>
+<p>此反应是呼吸面具和潜水艇中供氧的原理：吸收 CO<sub>2</sub>，放出 O<sub>2</sub>。</p>
+<span class="eq">2Na<sub>2</sub>O<sub>2</sub><span class="state">(s)</span> + 4HCl<span class="state">(aq)</span> <span class="eq-arrow" data-cond="">→</span> 4NaCl<span class="state">(aq)</span> + 2H<sub>2</sub>O<span class="state">(l)</span> + O<sub>2</sub><span class="state">(g)</span>↑</span>
+<div class="card violet">
+  <span class="tag">氧化还原视角</span>
+  <p>Na<sub>2</sub>O<sub>2</sub> 与 H<sub>2</sub>O、CO<sub>2</sub> 的反应都是<strong>歧化反应</strong>：−1 价的氧一部分升高到 0 价（O<sub>2</sub>），一部分降低到 −2 价（H<sub>2</sub>O/Na<sub>2</sub>CO<sub>3</sub> 中的氧）。每 2 mol Na<sub>2</sub>O<sub>2</sub> 反应转移 2 mol 电子，生成 1 mol O<sub>2</sub>。记住比例：<strong>2 Na<sub>2</sub>O<sub>2</sub> ~ 1 O<sub>2</sub> ~ 2 e<sup>−</sup></strong>，这是计算题的命脉。</p>
+</div>
+
+<h3>2.3 氢氧化钠（NaOH）：俗名最多的强碱</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>俗名</strong>：烧碱、火碱、苛性钠。白色固体，极易潮解（曝露在空气中吸收水分而逐渐溶解），易吸收 CO<sub>2</sub> 变质：2NaOH + CO<sub>2</sub> = Na<sub>2</sub>CO<sub>3</sub> + H<sub>2</sub>O，因此必须密封保存。</p>
+  <p><strong>强腐蚀性</strong>：称量 NaOH 固体要放在<strong>小烧杯或表面皿</strong>中（不能放在纸上，会腐蚀纸并沾连），且要快速称量（防止潮解）。</p>
+  <p><strong>试剂瓶</strong>：盛放 NaOH 溶液的试剂瓶用<strong>橡胶塞</strong>，不能用玻璃磨口塞——NaOH 与玻璃中的 SiO<sub>2</sub> 缓慢反应生成有黏性的 Na<sub>2</sub>SiO<sub>3</sub>，会把瓶塞粘住。</p>
+</div>
+
+<h3>2.4 碳酸钠与碳酸氢钠：「苏打兄弟」对比是必考点</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>Na<sub>2</sub>CO<sub>3</sub></strong>：俗名纯碱、苏打，白色粉末，易溶于水，水溶液呈碱性（CO<sub>3</sub><sup>2−</sup> 水解）。注意：纯碱不是碱，是<strong>盐</strong>。</p>
+  <p><strong>NaHCO<sub>3</sub></strong>：俗名小苏打，白色细小晶体，溶解度比 Na<sub>2</sub>CO<sub>3</sub> 小，水溶液也呈碱性（HCO<sub>3</sub><sup>−</sup> 水解程度大于电离程度），但碱性比 Na<sub>2</sub>CO<sub>3</sub> 弱。</p>
+  <p><strong>热稳定性</strong>：Na<sub>2</sub>CO<sub>3</sub> 受热难分解；NaHCO<sub>3</sub> 受热易分解：</p>
+</div>
+<span class="eq">2NaHCO<sub>3</sub><span class="state">(s)</span> <span class="eq-arrow" data-cond="加热">→</span> Na<sub>2</sub>CO<sub>3</sub><span class="state">(s)</span> + H<sub>2</sub>O<span class="state">(l)</span> + CO<sub>2</sub><span class="state">(g)</span>↑</span>
+<table>
+  <tr><th>对比项</th><th>Na<sub>2</sub>CO<sub>3</sub>（纯碱）</th><th>NaHCO<sub>3</sub>（小苏打）</th></tr>
+  <tr><td>溶解度</td><td>较大</td><td>较小（饱和 Na<sub>2</sub>CO<sub>3</sub> 溶液中通 CO<sub>2</sub> 会析出 NaHCO<sub>3</sub> 晶体）</td></tr>
+  <tr><td>热稳定性</td><td>稳定，受热不分解</td><td>不稳定，受热分解</td></tr>
+  <tr><td>与同浓度盐酸反应速率</td><td>较慢（分两步：CO<sub>3</sub><sup>2−</sup>→HCO<sub>3</sub><sup>−</sup>→CO<sub>2</sub>）</td><td>更快，立即产生气泡</td></tr>
+  <tr><td>与酸反应耗酸量</td><td>1 mol 耗 2 mol H<sup>+</sup></td><td>1 mol 耗 1 mol H<sup>+</sup></td></tr>
+  <tr><td>与 NaOH 反应</td><td>不反应</td><td>NaHCO<sub>3</sub> + NaOH = Na<sub>2</sub>CO<sub>3</sub> + H<sub>2</sub>O</td></tr>
+  <tr><td>与 Ca(OH)<sub>2</sub> 反应</td><td>Na<sub>2</sub>CO<sub>3</sub> + Ca(OH)<sub>2</sub> = CaCO<sub>3</sub>↓ + 2NaOH</td><td>也生成 CaCO<sub>3</sub>↓（量不同方程式不同，高三再深究）</td></tr>
+  <tr><td>相互转化</td><td colspan="2">Na<sub>2</sub>CO<sub>3</sub> + CO<sub>2</sub> + H<sub>2</sub>O = 2NaHCO<sub>3</sub>；2NaHCO<sub>3</sub> <span class="eq-arrow" data-cond="加热">→</span> Na<sub>2</sub>CO<sub>3</sub> + H<sub>2</sub>O + CO<sub>2</sub>↑</td></tr>
+</table>
+<div class="card note">
+  <span class="tag">鉴别方法</span>
+  <p>鉴别 Na<sub>2</sub>CO<sub>3</sub> 和 NaHCO<sub>3</sub> 的常用方法：① <strong>加热法</strong>：加热固体，产生使澄清石灰水变浑浊的气体的是 NaHCO<sub>3</sub>；② <strong>加 CaCl<sub>2</sub>/BaCl<sub>2</sub> 溶液</strong>：产生白色沉淀的是 Na<sub>2</sub>CO<sub>3</sub>（Ca<sup>2+</sup> + CO<sub>3</sub><sup>2−</sup> = CaCO<sub>3</sub>↓），NaHCO<sub>3</sub> 无现象；③ <strong>逐滴滴加盐酸</strong>：一开始无气泡、一段时间后才产生气泡的是 Na<sub>2</sub>CO<sub>3</sub>，立即产生气泡的是 NaHCO<sub>3</sub>。<strong>不能用 Ca(OH)<sub>2</sub> 溶液鉴别</strong>——两者都生成白色 CaCO<sub>3</sub> 沉淀。</p>
+</div>
+
+<h3>2.5 铝单质（Al）：地壳中含量最高的金属</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>是什么</strong>：银白色轻金属（密度 2.7 g/cm³），有良好的导电性、导热性、延展性。常温下铝表面生成致密的 Al<sub>2</sub>O<sub>3</sub> 薄膜，保护内部铝不被继续氧化（所以铝制品「耐腐蚀」）。</p>
+  <p><strong>为什么能与强碱反应</strong>：铝位于金属与非金属交界处附近，具有一定的非金属性，其氧化物、氢氧化物都是两性的，铝单质也能与强碱溶液反应放出 H<sub>2</sub>——这是铝区别于 Mg、Fe 等「普通金属」的标志性性质。</p>
+  <p><strong>常见混淆</strong>：铝与酸、碱反应都生成 H<sub>2</sub>，但产物不同：与盐酸生成 AlCl<sub>3</sub>，与 NaOH 生成 NaAlO<sub>2</sub>（偏铝酸钠）。2 mol Al 无论与足量酸还是足量碱反应，都生成 3 mol H<sub>2</sub>（Al 失去 3 个电子，2H<sup>+</sup>/2H<sub>2</sub>O 得电子生成 H<sub>2</sub>，电子守恒：2Al ~ 3H<sub>2</sub>）。</p>
+</div>
+<h4>铝的主要反应</h4>
+<span class="eq">4Al<span class="state">(s)</span> + 3O<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="点燃">→</span> 2Al<sub>2</sub>O<sub>3</sub><span class="state">(s)</span>　（剧烈燃烧，耀眼白光，放大量热）</span>
+<span class="eq">2Al<span class="state">(s)</span> + 6HCl<span class="state">(aq)</span> <span class="eq-arrow" data-cond="">→</span> 2AlCl<sub>3</sub><span class="state">(aq)</span> + 3H<sub>2</sub><span class="state">(g)</span>↑</span>
+<span class="eq">2Al<span class="state">(s)</span> + 2NaOH<span class="state">(aq)</span> + 2H<sub>2</sub>O<span class="state">(l)</span> <span class="eq-arrow" data-cond="">→</span> 2NaAlO<sub>2</sub><span class="state">(aq)</span> + 3H<sub>2</sub><span class="state">(g)</span>↑</span>
+<p>铝与 NaOH 溶液反应的离子方程式：<strong>2Al + 2OH<sup>−</sup> + 2H<sub>2</sub>O = 2AlO<sub>2</sub><sup>−</sup> + 3H<sub>2</sub>↑</strong>。注意水是反应物，H<sub>2</sub> 中的氢全部来自水。</p>
+<p><strong>铝热反应</strong>：铝粉与某些金属氧化物（如 Fe<sub>2</sub>O<sub>3</sub>）的混合物点燃，放出大量的热，可冶炼难熔金属或焊接钢轨：</p>
+<span class="eq">2Al<span class="state">(s)</span> + Fe<sub>2</sub>O<sub>3</sub><span class="state">(s)</span> <span class="eq-arrow" data-cond="高温">→</span> Al<sub>2</sub>O<sub>3</sub><span class="state">(s)</span> + 2Fe<span class="state">(l)</span>　（火星四射，放出大量热，生成熔融铁）</span>
+
+<h3>2.6 氧化铝与氢氧化铝：两性是高考题眼</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>两性氧化物的定义</strong>：既能与酸反应生成盐和水，又能与碱反应生成盐和水的氧化物。Al<sub>2</sub>O<sub>3</sub> 是最典型的两性氧化物。</p>
+  <p><strong>两性氢氧化物</strong>：Al(OH)<sub>3</sub> 是白色胶状沉淀，难溶于水，既能与酸反应（表现碱性），又能与强碱反应（表现酸性）。微观本质：Al(OH)<sub>3</sub> 存在两种电离方式——酸式电离（Al(OH)<sub>3</sub> ⇌ H<sup>+</sup> + AlO<sub>2</sub><sup>−</sup> + H<sub>2</sub>O）与碱式电离（Al(OH)<sub>3</sub> ⇌ Al<sup>3+</sup> + 3OH<sup>−</sup>），加酸平衡向碱式电离方向移动，加强碱向酸式电离方向移动。</p>
+  <p><strong>适用边界</strong>：Al(OH)<sub>3</sub> 只溶于<strong>强碱</strong>（NaOH、KOH），<strong>不溶于弱碱</strong>（如氨水）；Al<sub>2</sub>O<sub>3</sub> 同理。所以实验室制 Al(OH)<sub>3</sub> 用「铝盐 + 氨水」而不是「铝盐 + NaOH」（NaOH 过量会溶解沉淀）。</p>
+</div>
+<span class="eq">Al<sub>2</sub>O<sub>3</sub><span class="state">(s)</span> + 6HCl<span class="state">(aq)</span> <span class="eq-arrow" data-cond="">→</span> 2AlCl<sub>3</sub><span class="state">(aq)</span> + 3H<sub>2</sub>O<span class="state">(l)</span></span>
+<span class="eq">Al<sub>2</sub>O<sub>3</sub><span class="state">(s)</span> + 2NaOH<span class="state">(aq)</span> <span class="eq-arrow" data-cond="">→</span> 2NaAlO<sub>2</sub><span class="state">(aq)</span> + H<sub>2</sub>O<span class="state">(l)</span></span>
+<span class="eq">Al(OH)<sub>3</sub><span class="state">(s)</span> + 3HCl<span class="state">(aq)</span> <span class="eq-arrow" data-cond="">→</span> AlCl<sub>3</sub><span class="state">(aq)</span> + 3H<sub>2</sub>O<span class="state">(l)</span></span>
+<span class="eq">Al(OH)<sub>3</sub><span class="state">(s)</span> + NaOH<span class="state">(aq)</span> <span class="eq-arrow" data-cond="">→</span> NaAlO<sub>2</sub><span class="state">(aq)</span> + 2H<sub>2</sub>O<span class="state">(l)</span></span>
+<span class="eq">2Al(OH)<sub>3</sub><span class="state">(s)</span> <span class="eq-arrow" data-cond="加热">→</span> Al<sub>2</sub>O<sub>3</sub><span class="state">(s)</span> + 3H<sub>2</sub>O<span class="state">(l)</span></span>
+
+<h4>铝三角：Al<sup>3+</sup>、Al(OH)<sub>3</sub>、AlO<sub>2</sub><sup>−</sup> 的相互转化</h4>
+<div class="card violet">
+  <span class="tag">知识网络</span>
+  <p>铝三角是高考图像题、推断题、计算题的共同母体，务必把每条边对应的方程式背到条件反射：</p>
+  <ul>
+    <li><strong>Al<sup>3+</sup> → Al(OH)<sub>3</sub></strong>：加少量强碱或足量弱碱。Al<sup>3+</sup> + 3OH<sup>−</sup>（少量）= Al(OH)<sub>3</sub>↓；Al<sup>3+</sup> + 3NH<sub>3</sub>·H<sub>2</sub>O = Al(OH)<sub>3</sub>↓ + 3NH<sub>4</sub><sup>+</sup>（氨水过量沉淀也不溶解，实验室制法）。</li>
+    <li><strong>Al(OH)<sub>3</sub> → Al<sup>3+</sup></strong>：加足量酸。Al(OH)<sub>3</sub> + 3H<sup>+</sup> = Al<sup>3+</sup> + 3H<sub>2</sub>O。</li>
+    <li><strong>Al(OH)<sub>3</sub> → AlO<sub>2</sub><sup>−</sup></strong>：加足量强碱。Al(OH)<sub>3</sub> + OH<sup>−</sup> = AlO<sub>2</sub><sup>−</sup> + 2H<sub>2</sub>O。</li>
+    <li><strong>AlO<sub>2</sub><sup>−</sup> → Al(OH)<sub>3</sub></strong>：加少量强酸或通足量 CO<sub>2</sub>。AlO<sub>2</sub><sup>−</sup> + H<sup>+</sup>（少量）+ H<sub>2</sub>O = Al(OH)<sub>3</sub>↓；AlO<sub>2</sub><sup>−</sup> + CO<sub>2</sub>（足量）+ 2H<sub>2</sub>O = Al(OH)<sub>3</sub>↓ + HCO<sub>3</sub><sup>−</sup>。</li>
+    <li><strong>Al<sup>3+</sup> → AlO<sub>2</sub><sup>−</sup></strong>：加足量强碱（一步 4 份 OH<sup>−</sup>）。Al<sup>3+</sup> + 4OH<sup>−</sup>（足量）= AlO<sub>2</sub><sup>−</sup> + 2H<sub>2</sub>O。</li>
+    <li><strong>AlO<sub>2</sub><sup>−</sup> → Al<sup>3+</sup></strong>：加足量强酸（一步 4 份 H<sup>+</sup>）。AlO<sub>2</sub><sup>−</sup> + 4H<sup>+</sup>（足量）= Al<sup>3+</sup> + 2H<sub>2</sub>O。</li>
+  </ul>
+  <p>数量关系口诀：<strong>「三沉一溶四溶解」</strong>——Al<sup>3+</sup> 加 3 份 OH<sup>−</sup> 沉淀完全，再加 1 份（共 4 份）OH<sup>−</sup> 沉淀恰好溶解。</p>
+</div>
+<div class="card note">
+  <span class="tag">图像解读</span>
+  <p>向 AlCl<sub>3</sub> 溶液中逐滴滴加 NaOH 溶液：开始生成白色絮状沉淀并逐渐增多（Al<sup>3+</sup> + 3OH<sup>−</sup> = Al(OH)<sub>3</sub>↓），沉淀达到最大值后继续滴加 NaOH，沉淀逐渐溶解直至消失（Al(OH)<sub>3</sub> + OH<sup>−</sup> = AlO<sub>2</sub><sup>−</sup> + 2H<sub>2</sub>O）。前后两段消耗 NaOH 的体积比为 <strong>3:1</strong>。反过来向 NaAlO<sub>2</sub> 溶液中滴加盐酸，先沉淀后溶解，前后耗酸比为 <strong>1:3</strong>。</p>
+</div>
+
+<h3>2.7 铁单质（Fe）：变价金属的代表</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>是什么</strong>：银白色金属（粉末为黑色），能被磁铁吸引。铁有 +2、+3 两种常见化合价，遇到<strong>强氧化剂</strong>（Cl<sub>2</sub>、Br<sub>2</sub>、浓 H<sub>2</sub>SO<sub>4</sub>、HNO<sub>3</sub>）生成 +3 价，遇到<strong>弱氧化剂</strong>（H<sup>+</sup>、Cu<sup>2+</sup>、S、I<sub>2</sub>）生成 +2 价。</p>
+  <p><strong>为什么变价</strong>：铁原子可以失去最外层 2 个电子形成 Fe<sup>2+</sup>，也可以再失去次外层 1 个电子形成 Fe<sup>3+</sup>（Fe<sup>3+</sup> 的 3d 轨道半充满，更稳定）。</p>
+  <p><strong>钝化</strong>：常温下，铁、铝遇<strong>浓硫酸、浓硝酸</strong>表面生成致密氧化膜而「钝化」（化学变化！），所以可用铁罐车运输浓硫酸。</p>
+</div>
+<span class="eq">3Fe<span class="state">(s)</span> + 2O<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="点燃">→</span> Fe<sub>3</sub>O<sub>4</sub><span class="state">(s)</span>　（剧烈燃烧，火星四射，生成黑色固体，放出大量热）</span>
+<span class="eq">2Fe<span class="state">(s)</span> + 3Cl<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="点燃">→</span> 2FeCl<sub>3</sub><span class="state">(s)</span>　（生成棕褐色的烟）</span>
+<span class="eq">Fe<span class="state">(s)</span> + S<span class="state">(s)</span> <span class="eq-arrow" data-cond="加热">→</span> FeS<span class="state">(s)</span>　（放热反应，生成黑色固体）</span>
+<span class="eq">Fe<span class="state">(s)</span> + 2HCl<span class="state">(aq)</span> <span class="eq-arrow" data-cond="">→</span> FeCl<sub>2</sub><span class="state">(aq)</span> + H<sub>2</sub><span class="state">(g)</span>↑　（有气泡，溶液变浅绿色）</span>
+<span class="eq">Fe<span class="state">(s)</span> + CuSO<sub>4</sub><span class="state">(aq)</span> <span class="eq-arrow" data-cond="">→</span> FeSO<sub>4</sub><span class="state">(aq)</span> + Cu<span class="state">(s)</span>　（铁表面有红色物质析出，溶液由蓝色变浅绿色）</span>
+<span class="eq">3Fe<span class="state">(s)</span> + 4H<sub>2</sub>O<span class="state">(g)</span> <span class="eq-arrow" data-cond="高温">→</span> Fe<sub>3</sub>O<sub>4</sub><span class="state">(s)</span> + 4H<sub>2</sub><span class="state">(g)</span></span>
+<div class="card note">
+  <span class="tag">易混提醒</span>
+  <p>铁在纯氧中燃烧生成 Fe<sub>3</sub>O<sub>4</sub>（不是 Fe<sub>2</sub>O<sub>3</sub>！）；铁与氯气反应无论铁是否过量都生成 FeCl<sub>3</sub>（因为反应在固体表面进行，过量的 Fe 不会与 FeCl<sub>3</sub> 固体接触反应）；但 FeCl<sub>3</sub> 溶液中加入 Fe 粉会发生 2Fe<sup>3+</sup> + Fe = 3Fe<sup>2+</sup>。同样，铁与硫生成 FeS（+2 价），说明 S 的氧化性比 Cl<sub>2</sub> 弱。</p>
+</div>
+
+<h3>2.8 铁的氧化物与氢氧化物</h3>
+<table>
+  <tr><th>物质</th><th>俗名/颜色</th><th>铁的价态</th><th>与盐酸反应</th></tr>
+  <tr><td>FeO</td><td>黑色粉末</td><td>+2</td><td>FeO + 2H<sup>+</sup> = Fe<sup>2+</sup> + H<sub>2</sub>O</td></tr>
+  <tr><td>Fe<sub>2</sub>O<sub>3</sub></td><td>铁红，红棕色粉末</td><td>+3</td><td>Fe<sub>2</sub>O<sub>3</sub> + 6H<sup>+</sup> = 2Fe<sup>3+</sup> + 3H<sub>2</sub>O</td></tr>
+  <tr><td>Fe<sub>3</sub>O<sub>4</sub></td><td>磁性氧化铁，黑色晶体</td><td>+2、+3（可看作 FeO·Fe<sub>2</sub>O<sub>3</sub>）</td><td>Fe<sub>3</sub>O<sub>4</sub> + 8H<sup>+</sup> = Fe<sup>2+</sup> + 2Fe<sup>3+</sup> + 4H<sub>2</sub>O</td></tr>
+</table>
+<p>三种氧化物都不溶于水，都能被 CO、H<sub>2</sub>、Al 等还原为铁（高炉炼铁的原理）。FeO 不稳定，易被氧化。</p>
+
+<h4>Fe(OH)<sub>2</sub> 与 Fe(OH)<sub>3</sub>：一组颜色大戏</h4>
+<span class="eq">FeCl<sub>2</sub><span class="state">(aq)</span> + 2NaOH<span class="state">(aq)</span> <span class="eq-arrow" data-cond="">→</span> Fe(OH)<sub>2</sub><span class="state">(s)</span>↓ + 2NaCl<span class="state">(aq)</span></span>
+<span class="eq">4Fe(OH)<sub>2</sub><span class="state">(s)</span> + O<sub>2</sub><span class="state">(g)</span> + 2H<sub>2</sub>O<span class="state">(l)</span> <span class="eq-arrow" data-cond="">→</span> 4Fe(OH)<sub>3</sub><span class="state">(s)</span></span>
+<p>向 FeSO<sub>4</sub> 溶液中滴加 NaOH 溶液：<strong>先生成白色絮状沉淀（Fe(OH)<sub>2</sub>），沉淀迅速变成灰绿色，最终变成红褐色（Fe(OH)<sub>3</sub>）</strong>。这组颜色变化是高考实验题和推断题的「黄金题眼」，务必逐字背熟。</p>
+<span class="eq">FeCl<sub>3</sub><span class="state">(aq)</span> + 3NaOH<span class="state">(aq)</span> <span class="eq-arrow" data-cond="">→</span> Fe(OH)<sub>3</sub><span class="state">(s)</span>↓（红褐色） + 3NaCl<span class="state">(aq)</span></span>
+<span class="eq">2Fe(OH)<sub>3</sub><span class="state">(s)</span> <span class="eq-arrow" data-cond="加热">→</span> Fe<sub>2</sub>O<sub>3</sub><span class="state">(s)</span> + 3H<sub>2</sub>O<span class="state">(l)</span></span>
+<div class="card note">
+  <span class="tag">实验改进</span>
+  <p>制备 Fe(OH)<sub>2</sub> 并想长时间观察到白色，关键是<strong>隔绝氧气</strong>：① 所用蒸馏水先煮沸除 O<sub>2</sub>；② 胶头滴管伸入液面以下挤出 NaOH 溶液；③ 液面上加苯或煤油液封；④ 用 H<sub>2</sub> 排尽装置内空气（氢气还原氧化铜装置的改进思路）。</p>
+</div>
+
+<h3>2.9 Fe<sup>2+</sup> 与 Fe<sup>3+</sup>：检验与相互转化（铁三角核心）</h3>
+<table>
+  <tr><th>离子</th><th>溶液颜色</th><th>加 NaOH 溶液</th><th>检验方法</th></tr>
+  <tr><td>Fe<sup>2+</sup></td><td>浅绿色</td><td>白色沉淀→迅速灰绿→最终红褐</td><td>先加 KSCN 溶液无现象，再加氯水后变血红色；或加 K<sub>3</sub>[Fe(CN)<sub>6</sub>] 生成蓝色沉淀</td></tr>
+  <tr><td>Fe<sup>3+</sup></td><td>（棕）黄色</td><td>立即生成红褐色沉淀</td><td>加 KSCN 溶液，溶液变血红色：Fe<sup>3+</sup> + 3SCN<sup>−</sup> = Fe(SCN)<sub>3</sub>（最灵敏、最常用）</td></tr>
+</table>
+<div class="card violet">
+  <span class="tag">知识网络</span>
+  <p><strong>铁三角转化</strong>（Fe、Fe<sup>2+</sup>、Fe<sup>3+</sup>）：</p>
+  <ul>
+    <li><strong>Fe → Fe<sup>2+</sup></strong>：与弱氧化剂（H<sup>+</sup>、Cu<sup>2+</sup>、S、I<sub>2</sub>、Fe<sup>3+</sup>）反应。</li>
+    <li><strong>Fe → Fe<sup>3+</sup></strong>：与足量强氧化剂（Cl<sub>2</sub>、Br<sub>2</sub>、HNO<sub>3</sub>）反应。</li>
+    <li><strong>Fe<sup>2+</sup> → Fe<sup>3+</sup></strong>：加氧化剂（Cl<sub>2</sub>、Br<sub>2</sub>、H<sub>2</sub>O<sub>2</sub>、KMnO<sub>4</sub>、HNO<sub>3</sub>、O<sub>2</sub>/H<sup>+</sup>）。</li>
+    <li><strong>Fe<sup>3+</sup> → Fe<sup>2+</sup></strong>：加还原剂（Fe、Cu、H<sub>2</sub>S、SO<sub>2</sub>、I<sup>−</sup>、S<sup>2−</sup>）。</li>
+    <li><strong>Fe<sup>2+</sup> → Fe</strong>：被活泼金属（Zn、Al）置换或电解。</li>
+    <li><strong>Fe<sup>3+</sup> → Fe</strong>：先被 Zn 等还原为 Fe<sup>2+</sup>，再进一步被还原为 Fe（Zn 过量时一步完成）。</li>
+  </ul>
+</div>
+<span class="eq">2FeCl<sub>2</sub><span class="state">(aq)</span> + Cl<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="">→</span> 2FeCl<sub>3</span>　　<span class="formula">2Fe<sup>2+</sup> + Cl<sub>2</sub> = 2Fe<sup>3+</sup> + 2Cl<sup>−</sup></span>
+<span class="eq">2FeCl<sub>3</sub><span class="state">(aq)</span> + Fe<span class="state">(s)</span> <span class="eq-arrow" data-cond="">→</span> 3FeCl<sub>2</span>　　<span class="formula">2Fe<sup>3+</sup> + Fe = 3Fe<sup>2+</sup></span></span>
+<span class="eq">2FeCl<sub>3</sub><span class="state">(aq)</span> + Cu<span class="state">(s)</span> <span class="eq-arrow" data-cond="">→</span> 2FeCl<sub>2</span> + CuCl<sub>2</span>　　<span class="formula">2Fe<sup>3+</sup> + Cu = 2Fe<sup>2+</sup> + Cu<sup>2+</sup></span>（刻蚀印刷电路板原理）</span>
+<span class="eq">4Fe(OH)<sub>2</sub> + O<sub>2</sub> + 2H<sub>2</sub>O <span class="eq-arrow" data-cond="">→</span> 4Fe(OH)<sub>3</sub>　（Fe<sup>2+</sup> 在空气中即被缓慢氧化）</span>
+<div class="card note">
+  <span class="tag">除杂应用</span>
+  <p>① 除去 FeCl<sub>2</sub> 溶液中混有的 FeCl<sub>3</sub>：加足量<strong>铁粉</strong>，充分反应后过滤。② 除去 FeCl<sub>3</sub> 溶液中混有的 FeCl<sub>2</sub>：通入足量<strong>氯气</strong>或滴加适量 H<sub>2</sub>O<sub>2</sub> 溶液（不能用 KMnO<sub>4</sub>，会引入新杂质）。③ Fe<sup>2+</sup> 溶液保存：加少量铁粉防止氧化，并密封。</p>
+</div>
+
+<h3>2.10 铜及其化合物：颜色是它的名片</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>铜单质</strong>：紫红色金属，导电性仅次于银。化学性质比较稳定，不与非氧化性酸（稀盐酸、稀硫酸）反应，但能与强氧化性酸（浓硫酸、硝酸）反应，也能被 FeCl<sub>3</sub> 溶液腐蚀。</p>
+  <p><strong>颜色清单</strong>（推断题突破口）：Cu 紫红色；CuO 黑色；Cu<sub>2</sub>O 砖红色；Cu(OH)<sub>2</sub> 蓝色絮状；CuSO<sub>4</sub>·5H<sub>2</sub>O 蓝色晶体（胆矾/蓝矾）；无水 CuSO<sub>4</sub> 白色粉末（可检验水的存在）；Cu<sup>2+</sup> 溶液蓝色；[Cu(NH<sub>3</sub>)<sub>4</sub>]<sup>2+</sup> 深蓝色；Cu<sub>2</sub>(OH)<sub>2</sub>CO<sub>3</sub> 绿色（铜绿/铜锈）。</p>
+</div>
+<span class="eq">2Cu<span class="state">(s)</span> + O<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="加热">→</span> 2CuO<span class="state">(s)</span>　（紫红色固体逐渐变黑）</span>
+<span class="eq">2Cu<span class="state">(s)</span> + O<sub>2</sub><span class="state">(g)</span> + H<sub>2</sub>O<span class="state">(l)</span> + CO<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="">→</span> Cu<sub>2</sub>(OH)<sub>2</sub>CO<sub>3</sub><span class="state">(s)</span>　（铜在潮湿空气中生成铜绿）</span>
+<span class="eq">Cu<span class="state">(s)</span> + 2H<sub>2</sub>SO<sub>4</sub><span class="state">(浓)</span> <span class="eq-arrow" data-cond="加热">→</span> CuSO<sub>4</sub><span class="state">(aq)</span> + SO<sub>2</sub><span class="state">(g)</span>↑ + 2H<sub>2</sub>O<span class="state">(l)</span></span>
+<span class="eq">CuSO<sub>4</sub><span class="state">(aq)</span> + 2NaOH<span class="state">(aq)</span> <span class="eq-arrow" data-cond="">→</span> Cu(OH)<sub>2</sub><span class="state">(s)</span>↓（蓝色絮状） + Na<sub>2</sub>SO<sub>4</sub></span>
+<span class="eq">Cu(OH)<sub>2</sub><span class="state">(s)</span> <span class="eq-arrow" data-cond="加热">→</span> CuO<span class="state">(s)</span>（蓝色沉淀变黑） + H<sub>2</sub>O<span class="state">(l)</span></span>
+<p>向 CuSO<sub>4</sub> 溶液中滴加氨水：先生成蓝色 Cu(OH)<sub>2</sub> 沉淀，继续滴加氨水，沉淀溶解，得到<strong>深蓝色溶液</strong>（生成 [Cu(NH<sub>3</sub>)<sub>4</sub>]<sup>2+</sup> 配离子）——这是铜盐的特征反应之一，也常在推断题中出现。</p>
+
+<h3>2.11 金属活动性顺序与金属冶炼</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>金属活动性顺序</strong>：K Ca Na Mg Al ｜ Zn Fe Sn Pb (H) ｜ Cu Hg Ag ｜ Pt Au。</p>
+  <p><strong>三大应用</strong>：① 排在 H 前面的金属能与稀盐酸、稀硫酸反应放出 H<sub>2</sub>，排在 H 后面的不能；② 排在前面的金属（K、Ca、Na 除外）能把排在后面的金属从其盐溶液中置换出来；③ 金属越活泼，其阳离子越难被还原，冶炼越困难。</p>
+  <p><strong>为什么冶炼方法与活动性相关</strong>：冶炼的本质是把化合态的金属阳离子还原为单质。金属越活泼，阳离子得电子能力越弱，需要的还原手段越强——所以活泼金属只能用电解法（最强的「电子泵」）。</p>
+</div>
+<table>
+  <tr><th>金属</th><th>冶炼方法</th><th>原理方程式</th></tr>
+  <tr><td>K、Ca、Na、Mg、Al</td><td><strong>电解法</strong>（电解熔融化合物）</td><td>2NaCl<span class="state">(熔融)</span> <span class="eq-arrow" data-cond="通电">→</span> 2Na + Cl<sub>2</sub>↑；2Al<sub>2</sub>O<sub>3</sub><span class="state">(熔融)</span> <span class="eq-arrow" data-cond="通电（冰晶石助熔）">→</span> 4Al + 3O<sub>2</sub>↑</td></tr>
+  <tr><td>Zn、Fe、Sn、Pb、Cu</td><td><strong>热还原法</strong>（用 C、CO、H<sub>2</sub>、Al 作还原剂）</td><td>Fe<sub>2</sub>O<sub>3</sub> + 3CO <span class="eq-arrow" data-cond="高温">→</span> 2Fe + 3CO<sub>2</sub>；2CuO + C <span class="eq-arrow" data-cond="高温">→</span> 2Cu + CO<sub>2</sub>↑</td></tr>
+  <tr><td>Hg、Ag</td><td><strong>热分解法</strong></td><td>2HgO <span class="eq-arrow" data-cond="加热">→</span> 2Hg + O<sub>2</sub>↑</td></tr>
+  <tr><td>Pt、Au</td><td>自然界中以游离态存在</td><td>物理方法（沙里淘金）</td></tr>
+</table>
+<div class="card note">
+  <span class="tag">细节提醒</span>
+  <p>① 电解铝用 Al<sub>2</sub>O<sub>3</sub> 而不用 AlCl<sub>3</sub>，因为 AlCl<sub>3</sub> 是共价化合物，熔融时不导电；加入冰晶石（Na<sub>3</sub>AlF<sub>6</sub>）是为了降低 Al<sub>2</sub>O<sub>3</sub> 的熔化温度。② 电解镁用 MgCl<sub>2</sub> 而不用 MgO，因为 MgO 熔点太高（2852 ℃）。这两个「选择」都是常考题。③ 合金：由两种或两种以上的金属（或金属与非金属）熔合而成，一般硬度比成分金属大、熔点比成分金属低（如生铁、钢、硬铝、黄铜）。</p>
+</div>
+
+<h3>2.12 焰色反应：物理变化的「验身术」</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>是什么</strong>：某些金属或它们的化合物在灼烧时使火焰呈现特殊颜色的现象。钠<strong>黄色</strong>、钾<strong>紫色</strong>（透过蓝色钴玻璃观察，滤去钠的黄色干扰）、钙砖红色、锶洋红色、钡黄绿色、铜绿色。</p>
+  <p><strong>为什么是物理变化</strong>：焰色反应是原子中的电子吸收能量跃迁到高能级，再跃迁回低能级时放出特定波长的光，元素的种类没有改变，没有新物质生成，属于物理变化。</p>
+  <p><strong>操作要点</strong>：用铂丝（或洁净铁丝）蘸取试样，在无色火焰上灼烧；每测一次要用<strong>盐酸</strong>洗净铂丝并灼烧至无色（不用硫酸，因为硫酸盐沸点高不易挥发，会干扰下次测定）。</p>
+</div>
+
+<h3>2.13 合金：性能升级的「混合智慧」</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>是什么</strong>：由两种或两种以上的金属（或金属与非金属）熔合而成的具有金属特性的物质，属于<strong>混合物</strong>。</p>
+  <p><strong>性能规律</strong>：与成分金属相比，合金一般<strong>硬度更大、熔点更低、抗腐蚀性更好</strong>。微观解释：大小不同的原子混合后打乱了金属晶体中原有的规整排列，原子层之间更难滑动（硬度增大），金属键被削弱（熔点降低）。</p>
+  <p><strong>常见合金</strong>：① 铁合金——生铁（含碳 2%~4.3%，硬而脆）和钢（含碳 0.03%~2%，不锈钢中还含 Cr、Ni）；② 铝合金——硬铝（含 Cu、Mg、Mn，密度小强度大，用于飞机制造）；③ 铜合金——青铜（Cu-Sn）、黄铜（Cu-Zn）、白铜（Cu-Ni）；④ 新型合金——钛合金（生物相容性好，用于人造骨骼）、储氢合金（如 LaNi<sub>5</sub>）、形状记忆合金（Ni-Ti）。</p>
+  <p><strong>常见混淆</strong>：合金是混合物而不是化合物；「钢」不是纯铁；合金中各成分金属仍保持自身的化学性质（如铝合金中的铝仍能与盐酸反应放出 H<sub>2</sub>）。</p>
+</div>
+</section>
+
+<section>
+<h2>三、三重表征贯通</h2>
+<p>「宏观现象 — 微观粒子 — 符号表达」三位一体，是学好元素化合物的核心思维。本章六组经典反应，请反复对着表格默写、互查。</p>
+
+<h3>3.1 钠与水的反应</h3>
+<div class="triple">
+  <div class="cell"><h4>宏观现象</h4>
+    <p>金属钠<strong>浮</strong>在水面上，<strong>熔</strong>成闪亮的小球，四处<strong>游</strong>动，发出嘶嘶<strong>响</strong>声；反应后滴入酚酞，溶液变<strong>红</strong>。反应剧烈放热，钠块较大时甚至可使生成的 H<sub>2</sub> 燃烧。</p>
+  </div>
+  <div class="cell"><h4>微观粒子</h4>
+    <p>Na 原子把最外层 1 个电子转移给 H<sub>2</sub>O 中的 H（H<sup>+</sup>），Na 被氧化为 Na<sup>+</sup> 进入溶液；H 得到电子后两两结合成 H<sub>2</sub> 分子逸出；溶液中剩余大量 OH<sup>−</sup>，使酚酞变红。本质是 Na 与水电离出的 H<sup>+</sup> 之间的氧化还原反应。</p>
+  </div>
+  <div class="cell"><h4>符号表达</h4>
+    <p class="formula">2Na + 2H<sub>2</sub>O = 2NaOH + H<sub>2</sub>↑</p>
+    <p class="formula">离子方程式：2Na + 2H<sub>2</sub>O = 2Na<sup>+</sup> + 2OH<sup>−</sup> + H<sub>2</sub>↑</p>
+    <p class="formula">电子转移：2Na ~ 2e<sup>−</sup> ~ H<sub>2</sub></p>
+  </div>
+</div>
+
+<h3>3.2 过氧化钠与水的反应</h3>
+<div class="triple">
+  <div class="cell"><h4>宏观现象</h4>
+    <p>淡黄色固体与水接触即<strong>剧烈反应</strong>，放出大量的<strong>热</strong>，产生大量气泡；生成的气体能使<strong>带火星的木条复燃</strong>（O<sub>2</sub>）；反应后滴加酚酞，溶液先变红、后褪色（强氧化性漂白）。</p>
+  </div>
+  <div class="cell"><h4>微观粒子</h4>
+    <p>Na<sub>2</sub>O<sub>2</sub> 中 −1 价的过氧根（O<sub>2</sub><sup>2−</sup>）发生<strong>歧化</strong>：一部分 O 原子失电子升为 0 价，两两结合成 O<sub>2</sub> 逸出；另一部分得电子降为 −2 价，进入 OH<sup>−</sup>。Na<sub>2</sub>O<sub>2</sub> 既是氧化剂又是还原剂，每 2 mol Na<sub>2</sub>O<sub>2</sub> 转移 2 mol 电子。</p>
+  </div>
+  <div class="cell"><h4>符号表达</h4>
+    <p class="formula">2Na<sub>2</sub>O<sub>2</sub> + 2H<sub>2</sub>O = 4NaOH + O<sub>2</sub>↑</p>
+    <p class="formula">2Na<sub>2</sub>O<sub>2</sub> + 2CO<sub>2</sub> = 2Na<sub>2</sub>CO<sub>3</sub> + O<sub>2</sub></p>
+    <p class="formula">比例关系：2Na<sub>2</sub>O<sub>2</sub> ~ O<sub>2</sub> ~ 2e<sup>−</sup></p>
+  </div>
+</div>
+
+<h3>3.3 氢氧化亚铁被氧化的「颜色大戏」</h3>
+<div class="triple">
+  <div class="cell"><h4>宏观现象</h4>
+    <p>向 FeSO<sub>4</sub> 溶液中滴加 NaOH 溶液，立即生成<strong>白色絮状沉淀</strong>；沉淀在空气中<strong>迅速变为灰绿色</strong>（中间过渡色），<strong>最终变为红褐色</strong>。整个过程像一场「变色魔术」，是 Fe<sup>2+</sup> 的标志性实验现象。</p>
+  </div>
+  <div class="cell"><h4>微观粒子</h4>
+    <p>Fe<sup>2+</sup> 与 OH<sup>−</sup> 结合生成白色的 Fe(OH)<sub>2</sub> 沉淀；Fe(OH)<sub>2</sub> 中的 Fe 为 +2 价，还原性强，被溶解在溶液中的 O<sub>2</sub> 氧化，Fe 从 +2 价升到 +3 价，逐步转化为红褐色的 Fe(OH)<sub>3</sub>；灰绿色是白色 Fe(OH)<sub>2</sub> 与红褐色 Fe(OH)<sub>3</sub> 混合的中间颜色。</p>
+  </div>
+  <div class="cell"><h4>符号表达</h4>
+    <p class="formula">Fe<sup>2+</sup> + 2OH<sup>−</sup> = Fe(OH)<sub>2</sub>↓（白色）</p>
+    <p class="formula">4Fe(OH)<sub>2</sub> + O<sub>2</sub> + 2H<sub>2</sub>O = 4Fe(OH)<sub>3</sub>（红褐色）</p>
+    <p class="formula">现象链：白色 → 灰绿色 → 红褐色</p>
+  </div>
+</div>
+
+<h3>3.4 铝盐溶液中滴加强碱：沉淀的「先开后合」</h3>
+<div class="triple">
+  <div class="cell"><h4>宏观现象</h4>
+    <p>向 AlCl<sub>3</sub> 溶液中逐滴滴加 NaOH 溶液：立即出现<strong>白色胶状沉淀</strong>并逐渐增多；沉淀达到最大值后，继续滴加 NaOH，沉淀<strong>逐渐溶解</strong>，最终得到无色澄清溶液。若改滴氨水，则沉淀生成后不再溶解。</p>
+  </div>
+  <div class="cell"><h4>微观粒子</h4>
+    <p>第一阶段：Al<sup>3+</sup> 与 OH<sup>−</sup> 按 1:3 结合生成 Al(OH)<sub>3</sub> 胶状沉淀；第二阶段：过量的 OH<sup>−</sup> 进攻 Al(OH)<sub>3</sub>，使其酸式电离，生成可溶的 AlO<sub>2</sub><sup>−</sup>（偏铝酸根）而溶解。氨水中 NH<sub>3</sub>·H<sub>2</sub>O 电离出的 OH<sup>−</sup> 浓度太小，不足以让 Al(OH)<sub>3</sub> 酸式电离，故沉淀不溶。</p>
+  </div>
+  <div class="cell"><h4>符号表达</h4>
+    <p class="formula">Al<sup>3+</sup> + 3OH<sup>−</sup> = Al(OH)<sub>3</sub>↓</p>
+    <p class="formula">Al(OH)<sub>3</sub> + OH<sup>−</sup> = AlO<sub>2</sub><sup>−</sup> + 2H<sub>2</sub>O</p>
+    <p class="formula">总反应：Al<sup>3+</sup> + 4OH<sup>−</sup> = AlO<sub>2</sub><sup>−</sup> + 2H<sub>2</sub>O（两段耗碱比 3:1）</p>
+  </div>
+</div>
+
+<h3>3.5 Fe<sup>3+</sup> 的检验：一滴 KSCN 定乾坤</h3>
+<div class="triple">
+  <div class="cell"><h4>宏观现象</h4>
+    <p>向含 Fe<sup>3+</sup> 的（棕）黄色溶液中滴加 KSCN 溶液，溶液立即变为<strong>血红色</strong>（不是沉淀！是溶液整体显色）。Fe<sup>2+</sup> 的浅绿色溶液滴加 KSCN 无现象，再滴入氯水后变为血红色。</p>
+  </div>
+  <div class="cell"><h4>微观粒子</h4>
+    <p>Fe<sup>3+</sup> 与 SCN<sup>−</sup> 通过配位键结合，生成血红色的配合物 Fe(SCN)<sub>3</sub>（也可写作 [Fe(SCN)]<sup>2+</sup> 等一系列配离子），分散在溶液中使整体显色。Fe<sup>2+</sup> 不能与 SCN<sup>−</sup> 显色，但可被 Cl<sub>2</sub>、H<sub>2</sub>O<sub>2</sub> 氧化为 Fe<sup>3+</sup> 后显色。</p>
+  </div>
+  <div class="cell"><h4>符号表达</h4>
+    <p class="formula">Fe<sup>3+</sup> + 3SCN<sup>−</sup> = Fe(SCN)<sub>3</sub>（血红色）</p>
+    <p class="formula">2Fe<sup>2+</sup> + Cl<sub>2</sub> = 2Fe<sup>3+</sup> + 2Cl<sup>−</sup></p>
+    <p class="formula">检验 Fe<sup>2+</sup> 顺序：先 KSCN（无现象）→ 后加氯水（变红）</p>
+  </div>
+</div>
+
+<h3>3.6 铝与氢氧化钠溶液的反应</h3>
+<div class="triple">
+  <div class="cell"><h4>宏观现象</h4>
+    <p>铝片放入 NaOH 溶液中，开始时几乎无现象（表面的氧化膜先被溶解）；随后铝片表面不断产生<strong>无色气泡</strong>，铝片逐渐溶解，试管壁发热。点燃产生的气体，能安静燃烧（气体不纯时发出爆鸣声），证明是 H<sub>2</sub>。</p>
+  </div>
+  <div class="cell"><h4>微观粒子</h4>
+    <p>第一步：NaOH 溶解铝表面的 Al<sub>2</sub>O<sub>3</sub> 保护膜（Al<sub>2</sub>O<sub>3</sub> + 2OH<sup>−</sup> = 2AlO<sub>2</sub><sup>−</sup> + H<sub>2</sub>O），所以开始无气泡；第二步：裸露的 Al 原子把电子转移给 H<sub>2</sub>O 中的 H，Al 被氧化并以 AlO<sub>2</sub><sup>−</sup>（偏铝酸根）形式存在于碱性溶液中，H 得电子结合成 H<sub>2</sub> 逸出。该反应的氧化剂是<strong>水</strong>，NaOH 本身不得电子，只起溶解氧化膜、提供碱性环境的作用。</p>
+  </div>
+  <div class="cell"><h4>符号表达</h4>
+    <p class="formula">2Al + 2NaOH + 2H<sub>2</sub>O = 2NaAlO<sub>2</sub> + 3H<sub>2</sub>↑</p>
+    <p class="formula">离子方程式：2Al + 2OH<sup>−</sup> + 2H<sub>2</sub>O = 2AlO<sub>2</sub><sup>−</sup> + 3H<sub>2</sub>↑</p>
+    <p class="formula">电子转移：2Al ~ 6e<sup>−</sup> ~ 3H<sub>2</sub></p>
+  </div>
+</div>
+</section>
+
+<section>
+<h2>四、典型例题分步拆解</h2>
+
+<div class="card example">
+  <span class="tag">例题 1 · Na<sub>2</sub>CO<sub>3</sub> 与 NaHCO<sub>3</sub> 的鉴别与计算</span>
+  <p><strong>题目</strong>：现有两瓶失去标签的白色固体，分别是 Na<sub>2</sub>CO<sub>3</sub> 和 NaHCO<sub>3</sub>。（1）设计三种不同的实验方法鉴别它们（写出操作、现象和结论）。（2）取某 Na<sub>2</sub>CO<sub>3</sub> 和 NaHCO<sub>3</sub> 的混合物 19.0 g，加热至质量不再变化，剩余固体质量为 15.9 g。计算原混合物中 Na<sub>2</sub>CO<sub>3</sub> 的质量分数。</p>
+  <p>【思路点拨】（1）抓住二者性质差异：热稳定性、与 CaCl<sub>2</sub> 的反应、与酸反应的先后顺序。（2）加热时只有 NaHCO<sub>3</sub> 分解，质量减少的部分就是生成的 H<sub>2</sub>O 和 CO<sub>2</sub> 的质量，用差量法求解。</p>
+  <div class="step"><div class="no">1</div><p>方法一（加热法）：分别取少量固体加热，将产生的气体通入澄清石灰水。石灰水变浑浊（有 CO<sub>2</sub> 生成）的原固体是 NaHCO<sub>3</sub>；无明显现象的是 Na<sub>2</sub>CO<sub>3</sub>。</p></div>
+  <div class="step"><div class="no">2</div><p>方法二（加 CaCl<sub>2</sub> 溶液）：分别配成溶液，滴加 CaCl<sub>2</sub> 溶液。立即产生白色沉淀（CaCO<sub>3</sub>）的是 Na<sub>2</sub>CO<sub>3</sub>；无现象的是 NaHCO<sub>3</sub>。</p></div>
+  <div class="step"><div class="no">3</div><p>方法三（逐滴滴加稀盐酸）：向两种溶液中分别逐滴滴加稀盐酸。开始无气泡、滴加一定量后才开始产生气泡的是 Na<sub>2</sub>CO<sub>3</sub>（先发生 CO<sub>3</sub><sup>2−</sup> + H<sup>+</sup> = HCO<sub>3</sub><sup>−</sup>）；一滴入就立即产生气泡的是 NaHCO<sub>3</sub>。</p></div>
+  <div class="step"><div class="no">4</div><p>计算：设混合物中 NaHCO<sub>3</sub> 的质量为 x。加热时只有 NaHCO<sub>3</sub> 分解：2NaHCO<sub>3</sub> <span class="eq-arrow" data-cond="加热">→</span> Na<sub>2</sub>CO<sub>3</sub> + H<sub>2</sub>O + CO<sub>2</sub>↑。每 2 mol NaHCO<sub>3</sub>（2×84 = 168 g）分解，固体质量减少（18 + 44）= 62 g。</p></div>
+  <div class="step"><div class="no">5</div><p>质量减少量 = 19.0 g − 15.9 g = 3.1 g。列比例：168 g : 62 g = x : 3.1 g，解得 x = 8.4 g。</p></div>
+  <div class="step"><div class="no">6</div><p>则 Na<sub>2</sub>CO<sub>3</sub> 的质量 = 19.0 g − 8.4 g = 10.6 g，质量分数 = 10.6 g ÷ 19.0 g × 100% ≈ 55.8%。</p></div>
+  <div class="ans"><strong>【答案】</strong>（1）如上三种方法；（2）原混合物中 Na<sub>2</sub>CO<sub>3</sub> 的质量分数约为 <strong>55.8%</strong>。</div>
+  <p>【方法总结】差量法是处理「反应前后质量变化」问题的利器：先写出方程式，找出理论差量（每摩尔反应对应的质量变化），再用实际差量列比例。NaHCO<sub>3</sub> 分解类题目的差量恒为「H<sub>2</sub>O + CO<sub>2</sub> = 62 g/2 mol NaHCO<sub>3</sub>」。</p>
+</div>
+
+<div class="card example">
+  <span class="tag">例题 2 · 铝三角图像计算</span>
+  <p><strong>题目</strong>：向 100 mL 1.0 mol/L 的 AlCl<sub>3</sub> 溶液中滴加 1.0 mol/L 的 NaOH 溶液。（1）当加入 NaOH 溶液 250 mL 时，生成沉淀的质量是多少？（2）若要使生成的沉淀恰好完全溶解，至少需要加入 NaOH 溶液多少毫升？</p>
+  <p>【思路点拨】先算 Al<sup>3+</sup> 的物质的量，再按「先沉淀、后溶解」两段反应分步计算。关键比例：Al<sup>3+</sup> 沉淀完全需 3 份 OH<sup>−</sup>，沉淀全部溶解再需 1 份 OH<sup>−</sup>。</p>
+  <div class="step"><div class="no">1</div><p>n(Al<sup>3+</sup>) = 0.100 L × 1.0 mol/L = 0.10 mol。</p></div>
+  <div class="step"><div class="no">2</div><p>沉淀完全时需 OH<sup>−</sup>：0.10 mol × 3 = 0.30 mol（反应① Al<sup>3+</sup> + 3OH<sup>−</sup> = Al(OH)<sub>3</sub>↓），对应 NaOH 溶液 300 mL。</p></div>
+  <div class="step"><div class="no">3</div><p>第（1）问：加入 250 mL NaOH，n(OH<sup>−</sup>) = 0.250 L × 1.0 mol/L = 0.25 mol &lt; 0.30 mol，只发生反应①，OH<sup>−</sup> 不足，按 OH<sup>−</sup> 计算：n[Al(OH)<sub>3</sub>] = 0.25 mol ÷ 3 = 1/12 mol ≈ 0.0833 mol。</p></div>
+  <div class="step"><div class="no">4</div><p>沉淀质量 = 1/12 mol × 78 g/mol = 6.5 g。</p></div>
+  <div class="step"><div class="no">5</div><p>第（2）问：沉淀恰好完全溶解，总反应为 Al<sup>3+</sup> + 4OH<sup>−</sup> = AlO<sub>2</sub><sup>−</sup> + 2H<sub>2</sub>O，需 n(OH<sup>−</sup>) = 0.10 mol × 4 = 0.40 mol，V(NaOH) = 0.40 mol ÷ 1.0 mol/L = 0.40 L = 400 mL。</p></div>
+  <div class="ans"><strong>【答案】</strong>（1）生成 Al(OH)<sub>3</sub> 沉淀 <strong>6.5 g</strong>；（2）至少需要 NaOH 溶液 <strong>400 mL</strong>。</div>
+  <p>【方法总结】铝三角计算题的通用套路：① 求出 n(Al<sup>3+</sup>)；② 画出「沉淀量 — NaOH 体积」图像（先升后降，转折点在 3 份和 4 份处）；③ 判断所加 NaOH 落在哪一段，选对反应方程式计算。若 NaOH 体积在 300~400 mL 之间，说明先生成 0.10 mol 沉淀后又溶解了一部分，用总 OH<sup>−</sup> 减去沉淀用掉的 0.30 mol，剩余的用于溶解沉淀。</p>
+</div>
+
+<div class="card example">
+  <span class="tag">例题 3 · Na<sub>2</sub>O<sub>2</sub> 与 CO<sub>2</sub>、H<sub>2</sub>O 的增重计算</span>
+  <p><strong>题目</strong>：将 2.24 L（标准状况）由 CO<sub>2</sub> 和水蒸气组成的混合气体，缓缓通过足量的 Na<sub>2</sub>O<sub>2</sub> 固体，充分反应后固体质量增加了 3.0 g。求原混合气体中 CO<sub>2</sub> 的体积分数。</p>
+  <p>【思路点拨】写出两个反应方程式，找出「通入什么、放出什么、留下什么」：2Na<sub>2</sub>O<sub>2</sub> + 2CO<sub>2</sub> = 2Na<sub>2</sub>CO<sub>3</sub> + O<sub>2</sub>，相当于每吸收 2 mol CO<sub>2</sub>（88 g）只放出 1 mol O<sub>2</sub>（32 g），固体净增 56 g（即 2CO 的质量）；2Na<sub>2</sub>O<sub>2</sub> + 2H<sub>2</sub>O = 4NaOH + O<sub>2</sub>↑，每吸收 2 mol H<sub>2</sub>O（36 g）放出 1 mol O<sub>2</sub>（32 g），净增 4 g（即 2H<sub>2</sub> 的质量）。</p>
+  <div class="step"><div class="no">1</div><p>混合气体总物质的量 = 2.24 L ÷ 22.4 L/mol = 0.10 mol。设 CO<sub>2</sub> 为 a mol，H<sub>2</sub>O 为 b mol，则 a + b = 0.10。</p></div>
+  <div class="step"><div class="no">2</div><p>CO<sub>2</sub> 引起的增重：由方程式，每 2 mol CO<sub>2</sub> 使固体增重 56 g，即每 mol CO<sub>2</sub> 增重 28 g（相当于吸收了「CO」），故 CO<sub>2</sub> 贡献增重 28a g。</p></div>
+  <div class="step"><div class="no">3</div><p>H<sub>2</sub>O 引起的增重：每 2 mol H<sub>2</sub>O 使固体增重 4 g，即每 mol H<sub>2</sub>O 增重 2 g（相当于吸收了「H<sub>2</sub>」），故 H<sub>2</sub>O 贡献增重 2b g。</p></div>
+  <div class="step"><div class="no">4</div><p>列方程组：a + b = 0.10；28a + 2b = 3.0。由第一式 b = 0.10 − a，代入第二式：28a + 2(0.10 − a) = 3.0 → 26a = 2.8 → a ≈ 0.1077？检查：26a = 2.8，a = 0.1077 &gt; 0.10，不合理——重新核算数据。</p></div>
+  <div class="step"><div class="no">5</div><p>核算：若 a = 0.10 mol 全为 CO<sub>2</sub>，增重应为 2.8 g；实际增重 3.0 g 介于 0.2 g（全为 H<sub>2</sub>O 时）与 2.8 g 之间——3.0 g 超出上限，说明题目数据需修正。将混合气体体积改为 4.48 L（0.20 mol），增重仍为 3.0 g：a + b = 0.20；28a + 2b = 3.0 → 26a = 2.6 → a = 0.10 mol，b = 0.10 mol。数据自洽。</p></div>
+  <div class="step"><div class="no">6</div><p>CO<sub>2</sub> 体积分数 = 0.10 mol ÷ 0.20 mol × 100% = 50%。</p></div>
+  <div class="ans"><strong>【答案】</strong>原混合气体中 CO<sub>2</sub> 的体积分数为 <strong>50%</strong>（按 4.48 L 混合气体、增重 3.0 g 计算）。（本题原数据 2.24 L 与 3.0 g 不匹配，讲解时已修正为 4.48 L；同学们做题时也要养成「先验证数据合理性」的习惯。）</div>
+  <p>【方法总结】Na<sub>2</sub>O<sub>2</sub> 增重问题的万能结论：<strong>凡组成符合 (CO)<sub>m</sub>(H<sub>2</sub>)<sub>n</sub> 形式的气体（如 CO、H<sub>2</sub>、CH<sub>3</sub>COOH、葡萄糖等），完全燃烧产物通过足量 Na<sub>2</sub>O<sub>2</sub> 后，固体增重恰好等于原气体的质量</strong>——因为 CO<sub>2</sub> 留下的部分相当于「CO」，H<sub>2</sub>O 留下的部分相当于「H<sub>2</sub>」。记住「增重量 = 吸收的 CO + H<sub>2</sub> 的质量」即可秒杀此类题。</p>
+</div>
+
+<div class="card example">
+  <span class="tag">例题 4 · Fe<sup>2+</sup>/Fe<sup>3+</sup> 转化实验探究</span>
+  <p><strong>题目</strong>：某同学设计实验验证「Fe<sup>2+</sup> 具有还原性、Fe<sup>3+</sup> 具有氧化性」。供选试剂：FeSO<sub>4</sub> 溶液、FeCl<sub>3</sub> 溶液、氯水、KSCN 溶液、铜片、淀粉-KI 溶液、酸性 KMnO<sub>4</sub> 溶液。请完成下表：</p>
+  <table>
+    <tr><th>实验目的</th><th>实验操作</th><th>预期现象与结论</th></tr>
+    <tr><td>验证 Fe<sup>2+</sup> 有还原性</td><td>？</td><td>？</td></tr>
+    <tr><td>验证 Fe<sup>3+</sup> 有氧化性</td><td>？</td><td>？</td></tr>
+  </table>
+  <p>【思路点拨】验证某离子有还原性，就要加入氧化剂并证明它发生了化合价升高；验证有氧化性，就加入还原剂并证明它化合价降低。现象要「可视化」——借助 KSCN 显色、淀粉变蓝、KMnO<sub>4</sub> 褪色等。</p>
+  <div class="step"><div class="no">1</div><p>验证 Fe<sup>2+</sup> 有还原性：取 2 mL FeSO<sub>4</sub> 溶液于试管中，先滴加几滴 KSCN 溶液，溶液<strong>不变红</strong>（说明无 Fe<sup>3+</sup>）；再滴加少量氯水振荡，溶液<strong>变为血红色</strong>。说明 Fe<sup>2+</sup> 被 Cl<sub>2</sub> 氧化为 Fe<sup>3+</sup>：2Fe<sup>2+</sup> + Cl<sub>2</sub> = 2Fe<sup>3+</sup> + 2Cl<sup>−</sup>，Fe<sup>2+</sup> 表现了还原性。</p></div>
+  <div class="step"><div class="no">2</div><p>（替代方案）取 FeSO<sub>4</sub> 溶液滴加到酸性 KMnO<sub>4</sub> 溶液中，KMnO<sub>4</sub> 溶液紫色褪去：MnO<sub>4</sub><sup>−</sup> + 5Fe<sup>2+</sup> + 8H<sup>+</sup> = Mn<sup>2+</sup> + 5Fe<sup>3+</sup> + 4H<sub>2</sub>O，也证明 Fe<sup>2+</sup> 有还原性。</p></div>
+  <div class="step"><div class="no">3</div><p>验证 Fe<sup>3+</sup> 有氧化性（方法一）：取 2 mL FeCl<sub>3</sub> 溶液，加入一小片打磨过的铜片，振荡，铜片逐渐溶解，溶液由（棕）黄色逐渐变为蓝色（Cu<sup>2+</sup>）：2Fe<sup>3+</sup> + Cu = 2Fe<sup>2+</sup> + Cu<sup>2+</sup>，Fe<sup>3+</sup> 被还原为 Fe<sup>2+</sup>，表现了氧化性。</p></div>
+  <div class="step"><div class="no">4</div><p>验证 Fe<sup>3+</sup> 有氧化性（方法二）：取 FeCl<sub>3</sub> 溶液滴加到淀粉-KI 溶液中，溶液变蓝：2Fe<sup>3+</sup> + 2I<sup>−</sup> = 2Fe<sup>2+</sup> + I<sub>2</sub>，生成的 I<sub>2</sub> 遇淀粉变蓝，证明 Fe<sup>3+</sup> 有氧化性。</p></div>
+  <div class="ans"><strong>【答案】</strong>见上述步骤。核心方程式：2Fe<sup>2+</sup> + Cl<sub>2</sub> = 2Fe<sup>3+</sup> + 2Cl<sup>−</sup>；2Fe<sup>3+</sup> + Cu = 2Fe<sup>2+</sup> + Cu<sup>2+</sup>；2Fe<sup>3+</sup> + 2I<sup>−</sup> = 2Fe<sup>2+</sup> + I<sub>2</sub>。</div>
+  <p>【方法总结】「性质验证」类实验题的答题模板：取样（2 mL）→ 加试剂（几滴）→ 描述现象（具体到颜色变化）→ 得出结论（呼应题干）→ 写方程式。现象描述一定要写「谁在变」：溶液由 × 色变为 × 色、有无沉淀/气体生成。</p>
+</div>
+
+<div class="card example">
+  <span class="tag">例题 5 · 铁与稀硝酸反应的先后（拓展）</span>
+  <p><strong>题目</strong>：向含 0.3 mol HNO<sub>3</sub> 的稀硝酸中加入 5.6 g 铁粉，充分反应后，溶液中的溶质是什么？生成气体在标准状况下的体积是多少？（提示：稀硝酸的还原产物为 NO）</p>
+  <p>【思路点拨】Fe 与 HNO<sub>3</sub> 反应，HNO<sub>3</sub> 足量时生成 Fe(NO<sub>3</sub>)<sub>3</sub>；Fe 过量时，过量的 Fe 会把 Fe<sup>3+</sup> 还原为 Fe<sup>2+</sup>（2Fe<sup>3+</sup> + Fe = 3Fe<sup>2+</sup>）。先按「HNO<sub>3</sub> 全部生成 Fe<sup>3+</sup>」算一遍，再判断 Fe 是否过量。</p>
+  <div class="step"><div class="no">1</div><p>n(Fe) = 5.6 g ÷ 56 g/mol = 0.10 mol，n(HNO<sub>3</sub>) = 0.30 mol。</p></div>
+  <div class="step"><div class="no">2</div><p>假设生成 Fe(NO<sub>3</sub>)<sub>3</sub>：Fe + 4HNO<sub>3</sub><span class="state">(稀)</span> = Fe(NO<sub>3</sub>)<sub>3</sub> + NO↑ + 2H<sub>2</sub>O，0.10 mol Fe 需 0.40 mol HNO<sub>3</sub>，而只有 0.30 mol，酸不足。</p></div>
+  <div class="step"><div class="no">3</div><p>按酸计算：0.30 mol HNO<sub>3</sub> 可溶解 Fe 0.075 mol，生成 Fe(NO<sub>3</sub>)<sub>3</sub> 0.075 mol、NO 0.075 mol，剩余 Fe 0.025 mol。</p></div>
+  <div class="step"><div class="no">4</div><p>剩余的 Fe 继续与 Fe<sup>3+</sup> 反应：2Fe<sup>3+</sup> + Fe = 3Fe<sup>2+</sup>。0.025 mol Fe 恰好与 0.05 mol Fe<sup>3+</sup> 反应，生成 0.075 mol Fe<sup>2+</sup>，反应后 Fe<sup>3+</sup> 剩余 0.075 − 0.05 = 0.025 mol。铁粉恰好无剩余。</p></div>
+  <div class="step"><div class="no">5</div><p>所以溶液中溶质为 Fe(NO<sub>3</sub>)<sub>2</sub>（0.075 mol）和 Fe(NO<sub>3</sub>)<sub>3</sub>（0.025 mol）；气体 NO：0.075 mol × 22.4 L/mol = 1.68 L。</p></div>
+  <div class="ans"><strong>【答案】</strong>溶质为 Fe(NO<sub>3</sub>)<sub>2</sub> 和 Fe(NO<sub>3</sub>)<sub>3</sub>（物质的量之比 3:1）；生成 NO <strong>1.68 L</strong>（标准状况）。</div>
+  <p>【方法总结】「Fe + 氧化性酸」的计算遵循「反应顺序」思维：第一步永远是 Fe → Fe<sup>3+</sup>（HNO<sub>3</sub> 是强氧化剂），第二步才是过量的 Fe 把 Fe<sup>3+</sup> 还原为 Fe<sup>2+</sup>。用「区间法」判断终态：n(Fe)/n(HNO<sub>3</sub>) ≤ 1/4 全为 Fe<sup>3+</sup>；≥ 3/8 全为 Fe<sup>2+</sup>；介于两者之间则两种价态共存。</p>
+</div>
+
+<div class="card example">
+  <span class="tag">例题 6 · 工业流程：从铝土矿中提取铝</span>
+  <p><strong>题目</strong>：工业上以铝土矿（主要成分为 Al<sub>2</sub>O<sub>3</sub>，含 Fe<sub>2</sub>O<sub>3</sub>、SiO<sub>2</sub> 等杂质）为原料生产铝，流程如下：铝土矿 → 加足量 NaOH 溶液，过滤 → 滤液中通入足量 CO<sub>2</sub>，过滤 → 滤渣灼烧 → 电解熔融产物（加冰晶石）→ 铝。请回答：（1）加入 NaOH 溶液后，滤渣的主要成分是什么？写出溶解反应的化学方程式。（2）通入足量 CO<sub>2</sub> 时发生反应的离子方程式。（3）电解时加入冰晶石的作用是什么？</p>
+  <p>【思路点拨】流程题的核心是「看走向、找转化」：Al<sub>2</sub>O<sub>3</sub> 是两性氧化物，能溶于 NaOH 生成可溶的 NaAlO<sub>2</sub>；Fe<sub>2</sub>O<sub>3</sub> 是碱性氧化物，不与 NaOH 反应，成为滤渣除去；再向滤液中通 CO<sub>2</sub> 把 AlO<sub>2</sub><sup>−</sup>「变回」Al(OH)<sub>3</sub> 沉淀，灼烧得 Al<sub>2</sub>O<sub>3</sub>，电解得铝。</p>
+  <div class="step"><div class="no">1</div><p>（1）Al<sub>2</sub>O<sub>3</sub> 与 NaOH 反应：Al<sub>2</sub>O<sub>3</sub> + 2NaOH = 2NaAlO<sub>2</sub> + H<sub>2</sub>O；Fe<sub>2</sub>O<sub>3</sub> 不与 NaOH 反应，故滤渣的主要成分为 <strong>Fe<sub>2</sub>O<sub>3</sub></strong>（红色固体，工业上称为「赤泥」，可作炼铁原料）。</p></div>
+  <div class="step"><div class="no">2</div><p>（2）向 NaAlO<sub>2</sub> 溶液中通入足量 CO<sub>2</sub>：AlO<sub>2</sub><sup>−</sup> + CO<sub>2</sub> + 2H<sub>2</sub>O = Al(OH)<sub>3</sub>↓ + HCO<sub>3</sub><sup>−</sup>。注意 CO<sub>2</sub> <strong>足量</strong>时生成 HCO<sub>3</sub><sup>−</sup>，而不是 CO<sub>3</sub><sup>2−</sup>。</p></div>
+  <div class="step"><div class="no">3</div><p>（3）滤渣 Al(OH)<sub>3</sub> 灼烧：2Al(OH)<sub>3</sub> <span class="eq-arrow" data-cond="高温">→</span> Al<sub>2</sub>O<sub>3</sub> + 3H<sub>2</sub>O；电解：2Al<sub>2</sub>O<sub>3</sub><span class="state">(熔融)</span> <span class="eq-arrow" data-cond="通电">→</span> 4Al + 3O<sub>2</sub>↑。加入冰晶石（Na<sub>3</sub>AlF<sub>6</sub>）的作用是<strong>作助熔剂，降低 Al<sub>2</sub>O<sub>3</sub> 的熔化温度</strong>（从约 2050 ℃ 降到约 1000 ℃），从而节约能源、降低成本。</p></div>
+  <div class="ans"><strong>【答案】</strong>（1）Fe<sub>2</sub>O<sub>3</sub>；Al<sub>2</sub>O<sub>3</sub> + 2NaOH = 2NaAlO<sub>2</sub> + H<sub>2</sub>O。（2）AlO<sub>2</sub><sup>−</sup> + CO<sub>2</sub> + 2H<sub>2</sub>O = Al(OH)<sub>3</sub>↓ + HCO<sub>3</sub><sup>−</sup>。（3）作助熔剂，降低 Al<sub>2</sub>O<sub>3</sub> 的熔化温度。</div>
+  <p>【方法总结】工业流程题答题三问：每一步「加了什么、发生了什么、除掉了谁」。含铝流程的通用骨架是「溶（碱溶或酸溶）→ 滤（除去不溶杂质）→ 沉（通 CO<sub>2</sub> 或调 pH 得 Al(OH)<sub>3</sub>）→ 烧（得 Al<sub>2</sub>O<sub>3</sub>）→ 电解（得 Al）」，遇到流程变体也能对号入座。</p>
+</div>
+</section>
+
+<section>
+<h2>五、易错点与成因</h2>
+
+<div class="card trap">
+  <span class="tag">易错点 1</span>
+  <p><strong>易错表现</strong>：认为「钠与氧气反应，氧气足量生成 Na<sub>2</sub>O<sub>2</sub>，氧气不足生成 Na<sub>2</sub>O」。</p>
+  <p><strong>错误成因</strong>：把碳与氧气的反应（O<sub>2</sub> 足量生成 CO<sub>2</sub>、不足生成 CO）错误迁移过来，混淆了「用量控制产物」与「条件控制产物」两类反应。</p>
+  <p><strong>正确理解</strong>：钠与氧气的产物只由<strong>温度/点燃条件</strong>决定——常温生成 Na<sub>2</sub>O，加热或点燃生成 Na<sub>2</sub>O<sub>2</sub>，与氧气用量无关。Na<sub>2</sub>O 在加热条件下还能继续与 O<sub>2</sub> 反应生成 Na<sub>2</sub>O<sub>2</sub>。</p>
+  <p><strong>避坑口诀</strong>：「钠氧反应看温度，不看用量看条件。」</p>
+</div>
+
+<div class="card trap">
+  <span class="tag">易错点 2</span>
+  <p><strong>易错表现</strong>：把 Na<sub>2</sub>O<sub>2</sub> 当作碱性氧化物，认为它与酸反应只生成盐和水；或认为 Na<sub>2</sub>O<sub>2</sub> 中阴、阳离子个数比为 1:1。</p>
+  <p><strong>错误成因</strong>：只记住了「金属氧化物 = 碱性氧化物」的粗糙归类，没有从反应产物（是否只生成盐和水）这一判据出发；对过氧根 O<sub>2</sub><sup>2−</sup> 是一个<strong>整体</strong>缺乏认识。</p>
+  <p><strong>正确理解</strong>：碱性氧化物的定义是「与酸反应只生成盐和水的氧化物」。Na<sub>2</sub>O<sub>2</sub> 与酸反应除生成盐和水外还生成 O<sub>2</sub>，所以它是过氧化物而非碱性氧化物。Na<sub>2</sub>O<sub>2</sub> 由 2 个 Na<sup>+</sup> 和 1 个 O<sub>2</sub><sup>2−</sup> 构成，阴阳离子个数比为 1:2。</p>
+  <p><strong>避坑口诀</strong>：「过氧根是一个家，两个钠来陪着它；遇上酸水放出氧，碱性氧化物没它。」</p>
+</div>
+
+<div class="card trap">
+  <span class="tag">易错点 3</span>
+  <p><strong>易错表现</strong>：用 Ca(OH)<sub>2</sub> 溶液鉴别 Na<sub>2</sub>CO<sub>3</sub> 和 NaHCO<sub>3</sub>；或认为向 NaHCO<sub>3</sub> 溶液中滴加盐酸「先无现象后有气泡」。</p>
+  <p><strong>错误成因</strong>：没有真正理解 CO<sub>3</sub><sup>2−</sup> 与 H<sup>+</sup> 反应是分两步进行的（CO<sub>3</sub><sup>2−</sup> + H<sup>+</sup> = HCO<sub>3</sub><sup>−</sup>，HCO<sub>3</sub><sup>−</sup> + H<sup>+</sup> = H<sub>2</sub>O + CO<sub>2</sub>↑），把两步反应的顺序记反；也不知道 Ca(OH)<sub>2</sub> 与两者都生成 CaCO<sub>3</sub> 白色沉淀。</p>
+  <p><strong>正确理解</strong>：逐滴滴加盐酸时，Na<sub>2</sub>CO<sub>3</sub> 先转化为 HCO<sub>3</sub><sup>−</sup>（无气泡），再生成 CO<sub>2</sub>（有气泡）；NaHCO<sub>3</sub> 直接产生气泡。鉴别时应选 CaCl<sub>2</sub>/BaCl<sub>2</sub> 溶液（只与 Na<sub>2</sub>CO<sub>3</sub> 生成沉淀）或加热法，不能用 Ca(OH)<sub>2</sub> 溶液。</p>
+  <p><strong>避坑口诀</strong>：「碳酸根遇酸分两步，碳酸氢根一步到位；鉴别用氯化钙，不用石灰水。」</p>
+</div>
+
+<div class="card trap">
+  <span class="tag">易错点 4</span>
+  <p><strong>易错表现</strong>：认为 Al(OH)<sub>3</sub> 能溶于氨水，或实验室用「AlCl<sub>3</sub> + 过量 NaOH」制备 Al(OH)<sub>3</sub>。</p>
+  <p><strong>错误成因</strong>：把「Al(OH)<sub>3</sub> 是两性氢氧化物」绝对化，忽略了两性的边界——它只溶于<strong>强碱</strong>，不溶于弱碱；对「过量强碱会溶解产物」缺乏警觉。</p>
+  <p><strong>正确理解</strong>：Al(OH)<sub>3</sub> 只溶于强酸和强碱，不溶于氨水、碳酸等弱电解质。实验室制取 Al(OH)<sub>3</sub> 的最佳方案是 Al<sup>3+</sup> + 3NH<sub>3</sub>·H<sub>2</sub>O = Al(OH)<sub>3</sub>↓ + 3NH<sub>4</sub><sup>+</sup>（氨水过量沉淀也不溶解），或向 NaAlO<sub>2</sub> 溶液中通足量 CO<sub>2</sub>。</p>
+  <p><strong>避坑口诀</strong>：「两性有边界，弱碱靠边站；制取氢氧化铝，氨水最保险。」</p>
+</div>
+
+<div class="card trap">
+  <span class="tag">易错点 5</span>
+  <p><strong>易错表现</strong>：认为铁与氯气反应「铁过量时生成 FeCl<sub>2</sub>」；或认为 Fe<sup>2+</sup> 的溶液是黄色、Fe<sup>3+</sup> 是绿色。</p>
+  <p><strong>错误成因</strong>：把溶液中的均相反应规律（Fe 可把 Fe<sup>3+</sup> 还原为 Fe<sup>2+</sup>）错误套用到固气反应中——固体 Fe 与 Cl<sub>2</sub> 点燃反应时，生成的 FeCl<sub>3</sub> 覆盖在铁表面，过量的 Fe 接触不到 Cl<sub>2</sub> 之外已形成 FeCl<sub>3</sub> 中的 Fe<sup>3+</sup>，不会进一步反应；颜色记忆张冠李戴。</p>
+  <p><strong>正确理解</strong>：Fe 与 Cl<sub>2</sub> 反应的产物只有 FeCl<sub>3</sub>（Cl<sub>2</sub> 氧化性强，无论 Fe 是否过量）。Fe<sup>2+</sup> 溶液浅绿色、Fe<sup>3+</sup> 溶液（棕）黄色、Cu<sup>2+</sup> 溶液蓝色，这组「离子颜色三兄弟」必须记牢。</p>
+  <p><strong>避坑口诀</strong>：「氯气遇铁只认三价；亚铁浅绿铁黄铜蓝。」</p>
+</div>
+
+<div class="card trap">
+  <span class="tag">易错点 6</span>
+  <p><strong>易错表现</strong>：描述 Fe(OH)<sub>2</sub> 氧化过程的现象时写「白色沉淀直接变为红褐色」，漏掉灰绿色中间过程；或检验 Fe<sup>2+</sup> 时「先加氯水，后加 KSCN」。</p>
+  <p><strong>错误成因</strong>：对实验现象的记忆不够精确，把「渐变过程」简化为「一步到位」；检验顺序颠倒后，若原溶液中本就有 Fe<sup>3+</sup>，先加氯水再显色就无法判断 Fe<sup>3+</sup> 是原有的还是氧化生成的。</p>
+  <p><strong>正确理解</strong>：标准表述为「白色沉淀迅速变为灰绿色，最终变为红褐色」，三个颜色缺一不可。检验 Fe<sup>2+</sup> 的正确顺序：先加 KSCN 溶液<strong>无现象</strong>（排除原有 Fe<sup>3+</sup>），再加氯水（或 H<sub>2</sub>O<sub>2</sub>）后溶液<strong>变血红色</strong>，才能证明原溶液含 Fe<sup>2+</sup>。</p>
+  <p><strong>避坑口诀</strong>：「白灰红，三步走；先 KSCN 后氯水，顺序一错全白给。」</p>
+</div>
+
+<div class="card trap">
+  <span class="tag">易错点 7</span>
+  <p><strong>易错表现</strong>：认为「钠投入 CuSO<sub>4</sub> 溶液中，能置换出红色的铜」，把现象描述为「有红色固体析出」。</p>
+  <p><strong>错误成因</strong>：机械套用「活泼金属能把不活泼金属从其盐溶液中置换出来」的规律，忽略了钠的特殊性——它太活泼，一遇水就立即反应，根本轮不到与 Cu<sup>2+</sup> 直接接触交换电子。</p>
+  <p><strong>正确理解</strong>：钠投入任何水溶液中，第一步永远是 2Na + 2H<sub>2</sub>O = 2NaOH + H<sub>2</sub>↑，生成的 NaOH 再与溶质发生复分解反应。钠投入 CuSO<sub>4</sub> 溶液的现象是：钠浮在液面上、熔成小球、四处游动、嘶嘶作响，同时生成<strong>蓝色絮状沉淀</strong>（Cu(OH)<sub>2</sub>），溶液蓝色变浅——没有红色的铜析出。钠投入 FeCl<sub>3</sub> 溶液则生成红褐色沉淀，现象分析同理。</p>
+  <p><strong>避坑口诀</strong>：「钠入盐液先打水，碱再和盐来相会；要置换成金属单质，熔融介质才有机会。」</p>
+</div>
+
+<div class="card trap">
+  <span class="tag">易错点 8</span>
+  <p><strong>易错表现</strong>：认为「常温下铁、铝与浓硫酸、浓硝酸不反应，所以能用铁罐运输，这属于物理变化」；或把钝化理解为「什么也没发生」。</p>
+  <p><strong>错误成因</strong>：只看到宏观上「无明显现象」，就想当然地认为没有发生反应，忽视了金属表面发生的氧化成膜过程。</p>
+  <p><strong>正确理解</strong>：钝化是常温下铁、铝被浓硫酸/浓硝酸<strong>氧化</strong>，表面生成一层致密的氧化物薄膜（化学变化），这层膜把内部金属与酸隔开，阻止反应继续。加热或把酸稀释后，氧化膜被破坏，金属会继续反应。利用钝化，可用铁制或铝制容器运输、贮存浓硫酸和浓硝酸。</p>
+  <p><strong>避坑口诀</strong>：「钝化不是没反应，表面生成了保护膜；加热稀释膜一破，反应照样不停步。」</p>
+</div>
+</section>
+
+<section>
+<h2>六、与前后章节的联系及高考怎么考</h2>
+<ul>
+  <li><strong>承上</strong>：本章大量用到离子反应与氧化还原反应（第二章）的语言——每个转化都要能写出离子方程式并指出氧化剂、还原剂；物质的量计算（第一章）是本章计算题的工具。</li>
+  <li><strong>启下</strong>：Na<sub>2</sub>CO<sub>3</sub>/NaHCO<sub>3</sub> 溶液的碱性、铝盐与偏铝酸盐的水解，是「水溶液中的离子平衡」（选必 1）的前哨；Fe、Cu 与酸的反应将在「电化学」中升级为原电池、电解池问题；工业流程题（炼铁、炼铝、海水提镁）直接以本章知识为载体。</li>
+  <li><strong>高考怎么考</strong>：① 选择题中以「实验现象判断」「方程式正误」「离子共存」形式出现，如判断「Na<sub>2</sub>O<sub>2</sub> 与 CO<sub>2</sub> 反应的电子转移数」；② 工业流程题以 Fe、Al 的分离提纯为情境，考查两性、铁三角转化；③ 实验探究题考查 Fe(OH)<sub>2</sub> 的制备改进、Fe<sup>2+</sup>/Fe<sup>3+</sup> 的检验方案设计；④ 推断题以颜色（血红色、红褐色、淡黄色、蓝色絮状）为突破口。全章合计约 20 分，其中铁、铝两条线占一半以上。</li>
+</ul>
+</section>
+
+<section>
+<h2>七、章末自检清单</h2>
+<ul class="checklist">
+  <li>我能描述钠与水反应的五个现象（浮、熔、游、响、红），并解释每个现象对应的性质。</li>
+  <li>我能说出钠在常温与加热条件下与氧气反应的不同产物，并写出两个方程式。</li>
+  <li>我能写出 Na<sub>2</sub>O<sub>2</sub> 与水、CO<sub>2</sub>、盐酸反应的方程式，并说明电子转移情况（2Na<sub>2</sub>O<sub>2</sub> ~ O<sub>2</sub> ~ 2e<sup>−</sup>）。</li>
+  <li>我能用至少三种方法鉴别 Na<sub>2</sub>CO<sub>3</sub> 和 NaHCO<sub>3</sub>，并说明为什么不能用 Ca(OH)<sub>2</sub> 溶液。</li>
+  <li>我能写出铝与盐酸、NaOH 溶液反应的方程式（含离子方程式），并解释铝与碱反应中水的作用。</li>
+  <li>我能画出铝三角（Al<sup>3+</sup>—Al(OH)<sub>3</sub>—AlO<sub>2</sub><sup>−</sup>）转化图，写出六条边的离子方程式，并记住 3:1 的耗碱比。</li>
+  <li>我能完整描述 Fe(OH)<sub>2</sub> 被氧化的颜色变化（白→灰绿→红褐），写出两个方程式，并说出制备 Fe(OH)<sub>2</sub> 时隔绝空气的三条措施。</li>
+  <li>我能用 KSCN 溶液检验 Fe<sup>3+</sup>，用「先 KSCN 后氯水」检验 Fe<sup>2+</sup>，并说出顺序不能颠倒的原因。</li>
+  <li>我能写出铁三角转化的核心方程式（2Fe<sup>2+</sup>+Cl<sub>2</sub>、2Fe<sup>3+</sup>+Fe、2Fe<sup>3+</sup>+Cu），并用于除杂设计。</li>
+  <li>我能列举铜及其化合物的颜色（Cu 紫红、CuO 黑、Cu(OH)<sub>2</sub> 蓝、CuSO<sub>4</sub>·5H<sub>2</sub>O 蓝、无水 CuSO<sub>4</sub> 白、铜绿绿），并写出铜与浓硫酸、FeCl<sub>3</sub> 反应的方程式。</li>
+  <li>我能按金属活动性顺序说出电解法、热还原法、热分解法分别适用于哪些金属，并举出代表方程式（电解 Al<sub>2</sub>O<sub>3</sub>、CO 还原 Fe<sub>2</sub>O<sub>3</sub>、加热 HgO）。</li>
+  <li>我能说明焰色反应是物理变化的原因，记住钠黄、钾紫（透过蓝色钴玻璃）的颜色和操作要点。</li>
+</ul>
+</section>
+
+</main>
+<footer class="chap-foot">高考备考 · 化学 · 深度学习材料 · 2026</footer>
+</body>
+</html>

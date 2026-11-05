@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>静电场 - 深度学习材料</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover：替换 {{章节名}} {{模块定位与分值}} {{章节号}} -->
+<nav class="chap-nav">高考备考 · 物理 · 深度学习材料 ｜ 3.7 静电场</nav>
+<header class="chap-head">
+  <h1>静电场</h1>
+  <p class="chap-meta"></p>
+</header>
+  <div class="subtitle">深度学习材料 · 概念 · 推导 · 模型 · 方法</div>
+  <div class="meta">
+    <span>高中物理 · 电磁学模块 · 高考重中之重</span><br>
+    <span>依据：《高考物理95+分备考指南》3.7节要求</span><br>
+    <span>适用：高一同步学习 &amp; 高考一轮复习</span><br>
+    <span>学生：小兵</span>
+  </div>
+</div>
+
+<p class="hint">
+  💡 提示：所有公式由 MathJax 渲染；带推导的公式请合上书独立推一遍
+</p>
+
+<!-- 目录：与正文 h2 的 id 对应 -->
+<div class="toc">
+  <strong>目录</strong>
+  <ol>
+    <li><a href="#s1">一、本章总览</a></li>
+    <li><a href="#s2">二、核心概念与物理量</a></li>
+    <li><a href="#s3">三、公式与推导（含适用条件）</a></li>
+    <li><a href="#s4">四、典型例题</a></li>
+    <li><a href="#s5">五、易错点与成因分析</a></li>
+    <li><a href="#s6">六、章末自检清单</a></li>
+  </ol>
+</div>
+
+<h2 id="s1">一、本章总览</h2>
+
+<p>小兵，欢迎来到电磁学的世界！静电场是整个电磁学的<strong>开篇与基石</strong>——后面要学的恒定电流、磁场、电磁感应，全部建立在"电荷"与"场"这两个概念之上。本章学得不扎实，电磁学会处处卡壳；本章学得通透，后面就是顺水推舟。</p>
+
+<h3>1. 高考定位与分值</h3>
+<ul>
+  <li><strong>分值定位</strong>：云南高考物理满分 100 分，电磁学约占 40 分，是力学之外最大的板块。静电场本身通常以 <strong>1 道选择题（6 分）</strong> 保底，常与电容器、图象、带电粒子运动结合；带电粒子在电场中的加速与偏转还是计算题（12~16 分）的常客，并经常与磁场拼接成"组合场"压轴题。</li>
+  <li><strong>考查频率</strong>：近十年全国各卷中，"电场线/等势面性质判断""电容器动态分析""E-x / φ-x 图象"几乎是每年必考的选择题模型。</li>
+  <li><strong>学习阶段</strong>：本章属于高二上内容。你现在以高一视角自学，目标是<strong>把概念吃透、把公式推导独立走一遍</strong>，不必急于刷难题。概念这一关过了，高二课堂会非常轻松。</li>
+</ul>
+
+<h3>2. 本章的两条主线</h3>
+<p>静电场的全部内容，可以用两条线索串起来。学任何一节，都先问自己："这属于哪条线索？"</p>
+<table>
+  <tr><th style="width:16%">主线</th><th>链条</th><th style="width:30%">核心物理量</th></tr>
+  <tr>
+    <td class="l"><strong>力的性质</strong></td>
+    <td class="l">电荷 → 激发电场 → 电场对电荷施力</td>
+    <td class="l">电场强度 $\vec{E}$、电场力 $\vec{F}=q\vec{E}$</td>
+  </tr>
+  <tr>
+    <td class="l"><strong>能的性质</strong></td>
+    <td class="l">电场力做功 → 电势能变化 → 电势与电势差</td>
+    <td class="l">电势 $\varphi$、电势差 $U$、电势能 $E_{\text{p}}$</td>
+  </tr>
+</table>
+<p>两条线索由"电场力做功"焊接在一起：$W_{AB}=qU_{AB}=E_{\text{p}A}-E_{\text{p}B}$。这个公式是本章的"咽喉要道"，务必重点标记。</p>
+
+<h3>3. 本章知识图谱</h3>
+<div class="map">
+  <div class="row"><div class="node root">静电场</div></div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node">电荷与库仑定律</div>
+    <div class="node">电场强度</div>
+    <div class="node">电势与电势能</div>
+    <div class="node">电容器</div>
+    <div class="node">带电粒子的运动</div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node leaf">元电荷 · 电荷守恒 · 点电荷 · $F=k\dfrac{q_1q_2}{r^2}$</div>
+    <div class="node leaf">$E=\dfrac{F}{q}$ · $E=\dfrac{kQ}{r^2}$ · 叠加原理 · 电场线</div>
+    <div class="node leaf">$W=qU$ · $\varphi=\dfrac{E_{\text{p}}}{q}$ · 等势面 · $E=\dfrac{U}{d}$</div>
+    <div class="node leaf">$C=\dfrac{Q}{U}$ · 平行板 $C=\dfrac{\varepsilon_r S}{4\pi kd}$ · 两类动态变化</div>
+    <div class="node leaf">加速 $qU=\frac{1}{2}mv^2$ · 类平抛偏转 · 示波管</div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node view">综合与图象：E-x 图 · φ-x 图 · E_p-x 图（斜率与面积的物理意义）</div>
+  </div>
+</div>
+
+<div class="deep">
+<strong>深度思考：</strong>"场"是高中物理第一个真正抽象的概念。看不见摸不着，凭什么说它存在？——因为它对放入其中的电荷<strong>施加确定的力</strong>，这个力可以被测量。物理学判断一个东西"存在"的标准，从来不是肉眼可见，而是<strong>有可观测的效应</strong>。这种思维方式，将贯穿你整个高中物理。
+</div>
+
+<h2 id="s2">二、核心概念与物理量</h2>
+
+<h3>1. 物理量总表</h3>
+<table>
+  <tr><th>物理量</th><th>符号</th><th>定义 / 含义</th><th>单位</th><th>矢量 / 标量</th></tr>
+  <tr><td class="l">电荷量</td><td>$q$、$Q$</td><td class="l">物体带电多少，有正负之分</td><td>$\text{C}$（库仑）</td><td>标量（带正负号）</td></tr>
+  <tr><td class="l">元电荷</td><td>$e$</td><td class="l">最小电荷单位，$e=1.6\times10^{-19}\,\text{C}$</td><td>$\text{C}$</td><td>标量（常量）</td></tr>
+  <tr><td class="l">电场强度</td><td>$\vec{E}$</td><td class="l">试探电荷受力与其电荷量之比 $\vec{E}=\vec{F}/q$</td><td>$\text{N/C}$ 或 $\text{V/m}$</td><td><strong>矢量</strong></td></tr>
+  <tr><td class="l">电场力</td><td>$\vec{F}$</td><td class="l">电场对电荷的作用力 $\vec{F}=q\vec{E}$</td><td>$\text{N}$</td><td><strong>矢量</strong></td></tr>
+  <tr><td class="l">电势</td><td>$\varphi$</td><td class="l">电荷在某点的电势能与其电荷量之比 $\varphi=E_{\text{p}}/q$</td><td>$\text{V}$（伏特）</td><td>标量（带正负号）</td></tr>
+  <tr><td class="l">电势差（电压）</td><td>$U_{AB}$</td><td class="l">$U_{AB}=\varphi_A-\varphi_B$</td><td>$\text{V}$</td><td>标量（带正负号）</td></tr>
+  <tr><td class="l">电势能</td><td>$E_{\text{p}}$</td><td class="l">电荷在电场中具有的势能 $E_{\text{p}}=q\varphi$</td><td>$\text{J}$</td><td>标量（带正负号）</td></tr>
+  <tr><td class="l">电容</td><td>$C$</td><td class="l">电容器所带电荷量与两极板间电压之比 $C=Q/U$</td><td>$\text{F}$（法拉）</td><td>标量</td></tr>
+</table>
+
+<h3>2. 元电荷与电荷守恒</h3>
+<ul>
+  <li><strong>元电荷</strong> $e=1.6\times10^{-19}\,\text{C}$ 是自然界最小的电荷量单位。任何带电体的电荷量都是 $e$ 的<strong>整数倍</strong>（电荷的量子化）。注意：元电荷<strong>不是一个粒子</strong>，而是一个电荷量的数值；电子、质子所带电荷量的绝对值等于 $e$。</li>
+  <li><strong>电荷守恒定律</strong>：电荷既不能创生，也不能消灭，只能从一个物体转移到另一个物体，或从物体的一部分转移到另一部分；在转移过程中，电荷的总量保持不变。摩擦起电、感应起电、接触起电，本质都是电子的转移，且都遵守电荷守恒。</li>
+  <li><strong>比荷（荷质比）</strong>：电荷量与质量之比 $q/m$，是描述带电粒子的重要参数。电子比荷 $\dfrac{e}{m_e}=\dfrac{1.6\times10^{-19}\,\text{C}}{9.1\times10^{-31}\,\text{kg}}\approx1.76\times10^{11}\,\text{C/kg}$。</li>
+</ul>
+
+<h3>3. 点电荷——本章第一个理想模型</h3>
+<p>当带电体的形状、大小及电荷分布对研究问题的影响可以忽略时，可把它看作一个带电荷量的几何点，称为<strong>点电荷</strong>。它与质点一样，是理想化模型。能否视为点电荷，取决于<strong>带电体间距与自身线度的相对大小</strong>，而不是绝对大小——一个直径 1 cm 的带电小球，在相距 1 m 时是很好的点电荷，在相距 1 cm 时就不是了。</p>
+
+<h3>4. 电场强度及其方向约定 <span class="stars">★★★</span></h3>
+<p>电场强度定义为放入电场中某点的试探电荷所受电场力与其电荷量之比：</p>
+$$\vec{E}=\frac{\vec{F}}{q}$$
+<div class="key-point">
+<strong>方向约定（必须背到条件反射）：</strong>电场中某点场强 $\vec{E}$ 的方向，规定为<strong>正电荷</strong>在该点所受电场力的方向。因此：
+<ul>
+  <li>正电荷受力 $\vec{F}$ 与 $\vec{E}$ <strong>同向</strong>；</li>
+  <li>负电荷受力 $\vec{F}$ 与 $\vec{E}$ <strong>反向</strong>（这就是 $\vec{F}=q\vec{E}$ 中 $q$ 带负号的含义）。</li>
+</ul>
+判断"某点场强方向"时，与放不放试探电荷、放什么电荷都无关——场是源电荷产生的，试探电荷只是"检测工具"。
+</div>
+
+<h3>5. 电场线——描述场的假想曲线</h3>
+<p>电场线是为形象描述电场而<strong>人为画出</strong>的曲线，客观并不存在。它的六条性质是选择题的高频考点：</p>
+<ol>
+  <li>电场线上每点的<strong>切线方向</strong>即该点场强方向；</li>
+  <li>电场线的<strong>疏密</strong>表示场强大小（密大疏小）；</li>
+  <li>电场线起始于正电荷（或无穷远），终止于负电荷（或无穷远），<strong>不闭合</strong>；</li>
+  <li>任意两条电场线<strong>不相交</strong>（否则交点场强方向不唯一，矛盾）；</li>
+  <li>电场线<strong>不是</strong>电荷的运动轨迹（仅当电场线为直线、电荷初速为零或沿电场线方向、且只受电场力时，轨迹才与电场线重合）；</li>
+  <li>沿电场线方向，<strong>电势降低最快</strong>；电场线处处与等势面<strong>垂直</strong>。</li>
+</ol>
+
+<div style="text-align:center; margin: 18px 0;">
+<svg width="680" height="240" viewBox="0 0 680 240" xmlns="http://www.w3.org/2000/svg" style="max-width:100%; height:auto;">
+  <!-- 正点电荷 -->
+  <g stroke="#2b6cb0" stroke-width="1.6" fill="none">
+    <line x1="150" y1="60" x2="150" y2="18"/><polygon points="150,10 146,20 154,20" fill="#2b6cb0" stroke="none"/>
+    <line x1="150" y1="180" x2="150" y2="222"/><polygon points="150,230 146,220 154,220" fill="#2b6cb0" stroke="none"/>
+    <line x1="90" y1="120" x2="48" y2="120"/><polygon points="40,120 50,116 50,124" fill="#2b6cb0" stroke="none"/>
+    <line x1="210" y1="120" x2="252" y2="120"/><polygon points="260,120 250,116 250,124" fill="#2b6cb0" stroke="none"/>
+    <line x1="192" y1="78" x2="222" y2="48"/><polygon points="228,42 218,46 222,50" fill="#2b6cb0" stroke="none"/>
+    <line x1="192" y1="162" x2="222" y2="192"/><polygon points="228,198 222,190 218,194" fill="#2b6cb0" stroke="none"/>
+    <line x1="108" y1="78" x2="78" y2="48"/><polygon points="72,42 82,46 78,50" fill="#2b6cb0" stroke="none"/>
+    <line x1="108" y1="162" x2="78" y2="192"/><polygon points="72,198 78,190 82,194" fill="#2b6cb0" stroke="none"/>
+  </g>
+  <circle cx="150" cy="120" r="72" stroke="#dd6b20" stroke-width="1.2" stroke-dasharray="5,4" fill="none"/>
+  <circle cx="150" cy="120" r="42" stroke="#dd6b20" stroke-width="1.2" stroke-dasharray="5,4" fill="none"/>
+  <circle cx="150" cy="120" r="9" fill="#e53e3e"/>
+  <text x="150" y="124" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">+</text>
+  <text x="150" y="238" font-size="13" fill="#2d3748" text-anchor="middle">正点电荷：电场线放射向外，虚线为等势面（同心圆）</text>
+  <!-- 负点电荷 -->
+  <g stroke="#2b6cb0" stroke-width="1.6" fill="none">
+    <line x1="520" y1="18" x2="520" y2="60"/><polygon points="520,68 516,58 524,58" fill="#2b6cb0" stroke="none"/>
+    <line x1="520" y1="222" x2="520" y2="180"/><polygon points="520,172 516,182 524,182" fill="#2b6cb0" stroke="none"/>
+    <line x1="418" y1="120" x2="460" y2="120"/><polygon points="468,120 458,116 458,124" fill="#2b6cb0" stroke="none"/>
+    <line x1="622" y1="120" x2="580" y2="120"/><polygon points="572,120 582,116 582,124" fill="#2b6cb0" stroke="none"/>
+    <line x1="592" y1="48" x2="562" y2="78"/><polygon points="556,84 562,76 566,80" fill="#2b6cb0" stroke="none"/>
+    <line x1="592" y1="192" x2="562" y2="162"/><polygon points="556,156 566,160 562,164" fill="#2b6cb0" stroke="none"/>
+    <line x1="448" y1="48" x2="478" y2="78"/><polygon points="484,84 474,80 478,76" fill="#2b6cb0" stroke="none"/>
+    <line x1="448" y1="192" x2="478" y2="162"/><polygon points="484,156 478,164 474,160" fill="#2b6cb0" stroke="none"/>
+  </g>
+  <circle cx="520" cy="120" r="72" stroke="#dd6b20" stroke-width="1.2" stroke-dasharray="5,4" fill="none"/>
+  <circle cx="520" cy="120" r="42" stroke="#dd6b20" stroke-width="1.2" stroke-dasharray="5,4" fill="none"/>
+  <circle cx="520" cy="120" r="9" fill="#2b6cb0"/>
+  <text x="520" y="124" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">−</text>
+  <text x="520" y="238" font-size="13" fill="#2d3748" text-anchor="middle">负点电荷：电场线汇聚向内，等势面仍为同心圆</text>
+</svg>
+</div>
+
+<h3>6. 电势、电势差与零势面 <span class="stars">★★★</span></h3>
+<ul>
+  <li><strong>电势 $\varphi$</strong>：描述电场能的性质的物理量，$\varphi=\dfrac{E_{\text{p}}}{q}$。<strong>电势是相对的</strong>，某点电势的数值取决于零势面的选取；通常取无穷远处或大地的电势为零。</li>
+  <li><strong>电势差 $U_{AB}$</strong>：$U_{AB}=\varphi_A-\varphi_B$，是<strong>绝对的</strong>，与零势面选取无关。注意角标顺序：$U_{AB}=-U_{BA}$。</li>
+  <li><strong>沿电场线方向电势降低</strong>，且是降低最快的方向。由此：正电荷电场中离源越近 $\varphi$ 越高（取无穷远为零时 $\varphi&gt;0$）；负电荷电场中离源越近 $\varphi$ 越低（$\varphi&lt;0$）。</li>
+</ul>
+<div class="key-point">
+<strong>正负号约定（本章最容易晕的地方，单独强调）：</strong>
+<ul>
+  <li>$\varphi$ 的正负：表示该点电势比零势面<strong>高还是低</strong>，是标量的大小比较，$\varphi=3\,\text{V}&gt;\varphi=-5\,\text{V}$。</li>
+  <li>$E_{\text{p}}=q\varphi$ 的正负：<strong>正电荷</strong>在电势高处电势能大；<strong>负电荷恰恰相反</strong>——电势越高处电势能越小（越负）。记忆口诀："正电荷顺着高势走，负电荷反着来"。</li>
+  <li>$U_{AB}$ 的正负：只表示 $A$、$B$ 两点谁的电势高。计算 $W_{AB}=qU_{AB}$ 时，$q$、$U$ <strong>都带符号代入</strong>，算出的 $W$ 正表示电场力做正功，负表示做负功（克服电场力做功）。</li>
+</ul>
+</div>
+
+<h3>7. 电势能与电场力做功</h3>
+<p>电场力做功与路径无关（静电力是保守力），只由初末位置决定：</p>
+$$W_{AB}=E_{\text{p}A}-E_{\text{p}B}=-\Delta E_{\text{p}}$$
+<p>电场力做<strong>正功</strong>，电势能<strong>减少</strong>；做<strong>负功</strong>，电势能<strong>增加</strong>。这与重力做功和重力势能的关系完全同构——把"高度"换成"电势"，整套语言平移过来即可。这是你已有的力学功底在电场中的第一次"变现"。</p>
+
+<h3>8. 等势面</h3>
+<p>电场中电势相等的点构成的面。性质：</p>
+<ol>
+  <li>在同一等势面上移动电荷，电场力<strong>不做功</strong>（$W=qU=q\cdot0=0$）；</li>
+  <li>等势面处处与电场线<strong>垂直</strong>；</li>
+  <li>等势面越密处场强越大；相邻等势面电势差相等时，由疏密可直接判断 $E$ 的大小；</li>
+  <li>不同等势面不相交。</li>
+</ol>
+
+<div style="text-align:center; margin: 18px 0;">
+<svg width="640" height="220" viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg" style="max-width:100%; height:auto;">
+  <!-- 平行板匀强电场 -->
+  <line x1="80" y1="30" x2="80" y2="190" stroke="#e53e3e" stroke-width="6"/>
+  <line x1="560" y1="30" x2="560" y2="190" stroke="#2b6cb0" stroke-width="6"/>
+  <text x="80" y="20" font-size="14" fill="#e53e3e" text-anchor="middle" font-weight="bold">+ 极板</text>
+  <text x="560" y="20" font-size="14" fill="#2b6cb0" text-anchor="middle" font-weight="bold">− 极板</text>
+  <g stroke="#2b6cb0" stroke-width="1.8">
+    <line x1="100" y1="60" x2="530" y2="60"/><polygon points="540,60 528,56 528,64" fill="#2b6cb0" stroke="none"/>
+    <line x1="100" y1="110" x2="530" y2="110"/><polygon points="540,110 528,106 528,114" fill="#2b6cb0" stroke="none"/>
+    <line x1="100" y1="160" x2="530" y2="160"/><polygon points="540,160 528,156 528,164" fill="#2b6cb0" stroke="none"/>
+  </g>
+  <g stroke="#dd6b20" stroke-width="1.2" stroke-dasharray="6,4">
+    <line x1="200" y1="34" x2="200" y2="186"/>
+    <line x1="320" y1="34" x2="320" y2="186"/>
+    <line x1="440" y1="34" x2="440" y2="186"/>
+  </g>
+  <text x="320" y="52" font-size="13" fill="#2d3748" text-anchor="middle">$\vec{E}$</text>
+  <text x="200" y="205" font-size="12" fill="#dd6b20" text-anchor="middle">等势面</text>
+  <text x="440" y="205" font-size="12" fill="#dd6b20" text-anchor="middle">等势面</text>
+  <text x="320" y="122" font-size="0" fill="#2d3748">.</text>
+</svg>
+<p style="color: var(--muted); font-size: 0.9em; text-align: center;">匀强电场：电场线为等间距平行直线，等势面为与极板平行的等间距平面，二者互相垂直。</p>
+</div>
+
+<h3>9. 电容器与电容</h3>
+<ul>
+  <li><strong>电容器</strong>：两个彼此绝缘又相距很近的导体（极板）组成的储能元件。充电时两极板带等量异种电荷，电容器"所带电荷量 $Q$"指<strong>一个极板</strong>所带电荷量的绝对值。</li>
+  <li><strong>电容 $C$</strong>：$C=\dfrac{Q}{U}$，表示电容器<strong>容纳电荷本领</strong>的大小。$C$ 由电容器自身结构决定，与 $Q$、$U$ 无关——犹如水桶的容量由桶的粗细决定，与装不装水无关。</li>
+  <li>单位：法拉，$1\,\text{F}=1\,\text{C/V}$。常用单位：$1\,\text{F}=10^{6}\,\mu\text{F}=10^{12}\,\text{pF}$。</li>
+</ul>
+
+<blockquote>
+<strong>小结：两组"孪生"物理量对比</strong>
+<ul>
+  <li>$E$（力的性质）与 $\varphi$（能的性质）：都由电场本身决定，都与试探电荷无关；$E$ 是矢量，$\varphi$ 是标量。</li>
+  <li>$F=qE$ 与 $E_{\text{p}}=q\varphi$：都与试探电荷有关，都因 $q$ 的正负而改变符号——这正是"方向约定"和"正负约定"要单独强调的深层原因。</li>
+</ul>
+</blockquote>
+
+<h2 id="s3">三、公式与推导（含适用条件）</h2>
+
+<p>这一部分是全章的骨架。每个公式我都给出<strong>推导思路</strong>与<strong>适用条件</strong>——适用条件是高一自学最容易塌、而高考选择题最爱挖坑的地方，请逐条过关。</p>
+
+<h3>公式 1　库仑定律 <span class="stars">★★★</span></h3>
+$$F=k\frac{q_1q_2}{r^2},\qquad k=9.0\times10^{9}\,\text{N·m}^2/\text{C}^2$$
+<p><strong>推导思路</strong>：这是<strong>实验定律</strong>（库仑扭秤实验，1785 年），不是推导出来的。实验发现：真空中两个点电荷之间的相互作用力，与两电荷量的乘积成正比，与距离的平方成反比，方向沿二者连线（同性相斥、异性相吸）。</p>
+<div class="warn">
+<strong>适用条件与边界：</strong>
+<ul>
+  <li>只适用于<strong>真空</strong>中的<strong>点电荷</strong>（空气中近似适用）。</li>
+  <li>$r\to0$ 时 $F\to\infty$ 是<strong>错误推论</strong>——此时带电体不再能看成点电荷，公式本身已失效。这是经典选择题陷阱。</li>
+  <li>两个均匀带电球体，可把电荷视为集中在球心，$r$ 取球心距；但<strong>带电导体球</strong>靠近时电荷会重新分布，不能简单取球心距。</li>
+  <li>$k$ 是有单位的常量，代入数值时所有量一律用国际单位（$\text{C}$、$\text{m}$、$\text{N}$）。</li>
+</ul>
+</div>
+
+<h3>公式 2　电场强度的三个表达式 <span class="stars">★★★</span></h3>
+$$E=\frac{F}{q}\qquad E=\frac{kQ}{r^2}\qquad E=\frac{U}{d}$$
+<table>
+  <tr><th>表达式</th><th>性质</th><th>适用范围</th><th class="l">要点</th></tr>
+  <tr><td>$E=\dfrac{F}{q}$</td><td><strong>定义式</strong>（比值定义）</td><td>一切电场</td><td class="l">$E$ 由电场本身决定，与 $F$、$q$ 无关；不能反过来说"$E$ 与 $F$ 成正比、与 $q$ 成反比"</td></tr>
+  <tr><td>$E=\dfrac{kQ}{r^2}$</td><td><strong>决定式</strong></td><td>真空中点电荷 $Q$</td><td class="l">$Q$ 是<strong>场源</strong>电荷；$E$ 与 $Q$ 成正比、与 $r^2$ 成反比</td></tr>
+  <tr><td>$E=\dfrac{U}{d}$</td><td>关系式</td><td>匀强电场</td><td class="l">$d$ 是沿<strong>场强方向</strong>的距离；给出单位换算 $1\,\text{N/C}=1\,\text{V/m}$</td></tr>
+</table>
+<div class="deep">
+<strong>推导思路（点电荷场强）：</strong>把试探电荷 $q$ 放在距场源 $Q$ 为 $r$ 处，由库仑定律 $F=\dfrac{kQq}{r^2}$，代入定义式 $E=\dfrac{F}{q}=\dfrac{kQ}{r^2}$。$q$ 约掉——这正是"场强与试探电荷无关"的数学体现。
+</div>
+
+<h3>公式 3　场强叠加原理</h3>
+$$\vec{E}=\vec{E}_1+\vec{E}_2+\cdots\quad(\text{矢量和})$$
+<p><strong>思路</strong>：多个点电荷在空间某点产生的场强，等于各点电荷<strong>单独存在</strong>时在该点场强的矢量和。合成用平行四边形定则或正交分解——力学里练过的矢量合成全套照搬。<strong>注意</strong>：叠加的是矢量，绝不能把大小直接相加（除非恰好共线同向）。</p>
+
+<h3>公式 4　电场力做功与电势差 <span class="stars">★★★</span></h3>
+$$W_{AB}=qU_{AB}\qquad U_{AB}=\frac{W_{AB}}{q}\qquad W_{AB}=E_{\text{p}A}-E_{\text{p}B}$$
+<p><strong>推导思路</strong>：先看匀强电场的特例——电荷 $q$ 沿场强方向从 $A$ 移到 $B$，位移 $d$，则 $W=Fd=qEd$。又因为静电力是保守力、做功与路径无关，任何路径从 $A$ 到 $B$ 做功相同，把这个功记为 $qU_{AB}$，于是 $qU_{AB}=qEd$，即 $U_{AB}=Ed$。对非匀强电场，把路径切成无数小段微元求和（微元思想），结论 $W_{AB}=qU_{AB}$ 依然成立，故它适用于<strong>一切静电场</strong>。</p>
+<div class="warn">
+<strong>使用边界：</strong>$W=qEd$（或 $W=qEl\cos\theta$）<strong>只适用匀强电场</strong>；$W=qU$ 才普适。三个量 $W$、$q$、$U$ 全部带符号运算，结果的正负直接给出功的正负，不要中途人为加绝对值。
+</div>
+
+<h3>公式 5　电势与电势差</h3>
+$$\varphi=\frac{E_{\text{p}}}{q},\qquad U_{AB}=\varphi_A-\varphi_B,\qquad U_{AB}=-U_{BA}$$
+<p><strong>思路</strong>：$\varphi$ 与 $E$ 一样采用<strong>比值定义</strong>：某点电势由电场与零势面决定，与是否放入电荷无关。$U_{AB}$ 是两点电势之差，与零势面无关——正如两地的高度差与海拔零点选在哪里无关。</p>
+
+<h3>公式 6　场强与电势差的关系 <span class="stars">★★</span></h3>
+$$E=\frac{U}{d}\quad\Longleftrightarrow\quad U=Ed\qquad(\text{仅匀强电场})$$
+<p><strong>推导</strong>：见公式 4 的推导，由 $W=qU=qEd$ 约去 $q$ 即得。<strong>几何含义</strong>：在 $\varphi\text{-}x$ 图象中，$E=-\dfrac{\text{d}\varphi}{\text{d}x}$，即<strong>场强等于电势沿空间的变化率（斜率的相反数）</strong>。电势变化越快（等势面越密）处，场强越大——这把"力的线索"与"能的线索"在定量上焊死了。</p>
+<div class="deep">
+<strong>深度思考：</strong>$E$ 大 $\varphi$ 未必大，$\varphi=0$ 处 $E$ 未必为零。例如等量异种电荷连线的中点，$E$ 很大而 $\varphi=0$（连线中垂面是无穷远的零势面）；等量同种正电荷连线中点，$E=0$ 而 $\varphi$ 很高。原因：$E$ 反映的是 $\varphi$ 的<strong>变化率</strong>，不是 $\varphi$ 本身——正如速度大不代表位置坐标大。
+</div>
+
+<h3>公式 7　电容 <span class="stars">★★★</span></h3>
+$$C=\frac{Q}{U}\qquad C=\frac{\varepsilon_r S}{4\pi kd}$$
+<table>
+  <tr><th>表达式</th><th>性质</th><th>适用范围</th><th class="l">要点</th></tr>
+  <tr><td>$C=\dfrac{Q}{U}$</td><td><strong>定义式</strong></td><td>一切电容器</td><td class="l">$C$ 由电容器本身决定，与 $Q$、$U$ 无关</td></tr>
+  <tr><td>$C=\dfrac{\varepsilon_r S}{4\pi kd}$</td><td><strong>决定式</strong></td><td>平行板电容器</td><td class="l">$\varepsilon_r$ 为相对介电常数（真空为 1），$S$ 为正对面积，$d$ 为板间距</td></tr>
+</table>
+<p><strong>平行板电容器两类动态变化（高考选择题王牌考点）：</strong></p>
+<table>
+  <tr><th>情形</th><th>不变量</th><th>分析链条</th><th class="l">结论（以增大 $d$ 为例）</th></tr>
+  <tr><td class="l">A. 始终与电源相连</td><td>$U$ 不变</td><td>$C\downarrow \Rightarrow Q=CU\downarrow$，$E=\dfrac{U}{d}\downarrow$</td><td class="l">$C$、$Q$、$E$ 都减小</td></tr>
+  <tr><td class="l">B. 充电后与电源断开</td><td>$Q$ 不变</td><td>$C\downarrow \Rightarrow U=\dfrac{Q}{C}\uparrow$，$E=\dfrac{U}{d}=\dfrac{4\pi kQ}{\varepsilon_r S}$ <strong>不变</strong></td><td class="l">$U$ 增大，$E$ 不变</td></tr>
+</table>
+<div class="key-point">
+<strong>情形 B 中 $E$ 与 $d$ 无关的推导：</strong>$E=\dfrac{U}{d}=\dfrac{Q}{Cd}=\dfrac{Q}{\dfrac{\varepsilon_r S}{4\pi kd}\cdot d}=\dfrac{4\pi kQ}{\varepsilon_r S}$。$d$ 恰好约掉！物理图像：$Q$ 不变、$S$ 不变，则板间电场线的"总根数"不变，疏密不变，故 $E$ 不变。记住这个结论，考场可省 3 分钟。
+</div>
+
+<h3>公式 8　带电粒子的加速</h3>
+$$qU=\frac{1}{2}mv^2-\frac{1}{2}mv_0^2\quad\xrightarrow{\ v_0=0\ }\quad v=\sqrt{\frac{2qU}{m}}$$
+<p><strong>推导</strong>：对粒子用动能定理，电场力做功 $W=qU$（普适公式，加速电场不必匀强）。<strong>适用条件</strong>：粒子只受电场力（重力远小于电场力，见下方判据）。结果 $v=\sqrt{2qU/m}$ 与加速电场的形状、极板间距均无关，只由 $U$ 决定。</p>
+
+<h3>公式 9　带电粒子的偏转（类平抛）<span class="stars">★★★</span></h3>
+<p>粒子以 $v_0$ 垂直射入长 $l$、间距 $d$、电压 $U_2$ 的平行板匀强电场（忽略重力）：</p>
+<ul>
+  <li>平行板方向（匀速）：$l=v_0t$</li>
+  <li>垂直板方向（匀加速）：$a=\dfrac{qU_2}{md}$，侧移 $y=\dfrac{1}{2}at^2$，$v_y=at$</li>
+</ul>
+<p>联立消去 $t$，并代入加速电压关系 $qU_1=\frac{1}{2}mv_0^2$，得</p>
+$$y=\frac{qU_2l^2}{2mdv_0^2}=\frac{U_2l^2}{4dU_1},\qquad \tan\theta=\frac{v_y}{v_0}=\frac{U_2l}{2dU_1}$$
+<div class="deep">
+<strong>推导要点与惊人结论：</strong>把 $y$ 的表达式中的 $mv_0^2$ 换成 $2qU_1$ 后，$q$、$m$ <strong>同时消失</strong>！同一套"加速 + 偏转"装置，对任何（经同一电压加速的）带电粒子，侧移 $y$ 与偏转角 $\theta$ 完全相同。这是示波管能对电子稳定成像的理论基础。另有二级结论：粒子射出时速度的反向延长线过水平位移的中点（$\dfrac{l}{2}$ 处），与平抛运动完全一致——类平抛就是平抛，只是"$g$"换成了 $\dfrac{qU_2}{md}$。
+</div>
+<div class="warn">
+<strong>重力忽略与否的判据：</strong>电子、质子、$\alpha$ 粒子等<strong>微观粒子</strong>，$mg\sim10^{-30}\,\text{N}$ 而 $qE\sim10^{-15}\,\text{N}$，相差十几个数量级，<strong>一律忽略重力</strong>；而带电油滴、尘埃、小球等<strong>宏观带电体</strong>，重力与电场力可相比，<strong>必须考虑</strong>。题目出现"油滴""液滴""尘埃""悬浮"字样时立刻警觉。
+</div>
+
+<h3>公式 10　图象问题的斜率与面积 <span class="stars">★★</span></h3>
+<table>
+  <tr><th>图象</th><th>斜率的物理意义</th><th class="l">面积 / 其他的物理意义</th></tr>
+  <tr><td>$E\text{-}x$ 图</td><td>（斜率无常用意义）</td><td class="l">图线与 $x$ 轴围成的<strong>面积 = 电势差</strong> $U=\int E\,\text{d}x$（注意带正负号）</td></tr>
+  <tr><td>$\varphi\text{-}x$ 图</td><td>$k=\dfrac{\Delta\varphi}{\Delta x}=-E_x$（斜率的相反数 = 场强）</td><td class="l">斜率正负定场强方向：$\varphi$ 沿 $x$ 降，则 $E$ 沿 $+x$</td></tr>
+  <tr><td>$E_{\text{p}}\text{-}x$ 图</td><td>$k=\dfrac{\Delta E_{\text{p}}}{\Delta x}=-F_x$（斜率的相反数 = 电场力）</td><td class="l">判断粒子运动：总能量守恒时 $E_{\text{k}}=E_{\text{总}}-E_{\text{p}}$</td></tr>
+</table>
+
+<h2 id="s4">四、典型例题</h2>
+
+<h3>例 1　库仑定律的矢量叠加 <span class="stars">★★★</span></h3>
+<p>真空中，$A$、$B$ 两点相距 $r=20\,\text{cm}$，分别固定点电荷 $q_A=+4.0\times10^{-8}\,\text{C}$、$q_B=-4.0\times10^{-8}\,\text{C}$。$C$ 点与 $A$、$B$ 构成等边三角形。在 $C$ 点放入 $q_C=+1.0\times10^{-10}\,\text{C}$ 的试探电荷。求：</p>
+<p>(1) $q_C$ 所受静电力的大小和方向；(2) $C$ 点的场强大小和方向。</p>
+<div class="deep">
+<strong>过程拆解：</strong>
+<p><strong>第 1 步：算两个分力的大小。</strong>等边三角形，$r_{AC}=r_{BC}=0.20\,\text{m}$。</p>
+$$F_{AC}=k\frac{|q_Aq_C|}{r^2}=9.0\times10^{9}\times\frac{4.0\times10^{-8}\times1.0\times10^{-10}}{(0.20)^2}\,\text{N}=9.0\times10^{-7}\,\text{N}$$
+<p>$|q_A|=|q_B|$ 且距离相等，故 $F_{BC}=9.0\times10^{-7}\,\text{N}$，与 $F_{AC}$ 大小相等。</p>
+<p><strong>第 2 步：定方向。</strong>$q_A$、$q_C$ 同为正 → 斥力，$F_{AC}$ 沿 $A\to C$ 连线的延长方向；$q_B$ 为负 → 引力，$F_{BC}$ 沿 $C\to B$ 方向。二力关于"$AB$ 的平行线"对称，夹角 $120^\circ$。</p>
+<p><strong>第 3 步：矢量合成。</strong>两个大小相等、夹角 $120^\circ$ 的力，合力沿角平分线方向，大小</p>
+$$F=2F_{AC}\cos60^\circ=2\times9.0\times10^{-7}\times0.5\,\text{N}=9.0\times10^{-7}\,\text{N}$$
+<p>方向<strong>平行于 $AB$ 连线、由 $A$ 指向 $B$</strong>（由正电荷一侧指向负电荷一侧）。</p>
+<p><strong>第 4 步：求场强。</strong>由定义式 $E=\dfrac{F}{q_C}=\dfrac{9.0\times10^{-7}\,\text{N}}{1.0\times10^{-10}\,\text{C}}=9.0\times10^{3}\,\text{N/C}$，方向与 $F$ 相同（$q_C$ 为正）。注意：场强 $E$ 由 $q_A$、$q_B$ 决定，把 $q_C$ 撤走，$E$ 不变。</p>
+</div>
+<p><strong>答案</strong>：(1) $F=9.0\times10^{-7}\,\text{N}$，方向平行 $AB$ 由 $A$ 指向 $B$；(2) $E=9.0\times10^{3}\,\text{N/C}$，方向同 (1)。</p>
+<div class="key-point"><strong>方法提炼：</strong>库仑定律叠加题 = "逐个算力（大小+方向）→ 画受力图 → 矢量合成"。最忌只算大小直接相加。电荷量的<strong>正负只用于定方向</strong>，算大小时代入绝对值。</div>
+
+<h3>例 2　$\varphi\text{-}x$ 图象综合判断 <span class="stars">★★</span></h3>
+<p>某静电场中，电势 $\varphi$ 沿 $x$ 轴分布，在 $0\leqslant x\leqslant3\,\text{m}$ 范围内满足 $\varphi=(6-2x)\,\text{V}$（$x$ 以 $\text{m}$ 为单位），即 $x=0$ 处 $\varphi=6\,\text{V}$，$x=3\,\text{m}$ 处 $\varphi=0$。求：</p>
+<p>(1) 该区域的电场强度；(2) 把 $q=+2.0\times10^{-8}\,\text{C}$ 的电荷放在 $x=1\,\text{m}$ 处，它的电势能和所受电场力；(3) 该电荷从 $x=1\,\text{m}$ 移到 $x=2\,\text{m}$，电场力做多少功？</p>
+<div class="deep">
+<strong>过程拆解：</strong>
+<p><strong>第 1 步：由斜率求场强。</strong>$\varphi$ 随 $x$ 线性减小，斜率 $k_\varphi=\dfrac{\Delta\varphi}{\Delta x}=\dfrac{0-6}{3-0}=-2\,\text{V/m}$，故</p>
+$$E_x=-\frac{\text{d}\varphi}{\text{d}x}=+2\,\text{V/m}=2\,\text{N/C}$$
+<p>$E$ 为常量（匀强电场），方向沿 $+x$（电势沿 $+x$ 降低，电场线指向电势降低方向）。</p>
+<p><strong>第 2 步：电势能与电场力。</strong>$x=1\,\text{m}$ 处 $\varphi_1=(6-2\times1)\,\text{V}=4\,\text{V}$。</p>
+$$E_{\text{p}}=q\varphi_1=2.0\times10^{-8}\times4\,\text{J}=8.0\times10^{-8}\,\text{J}$$
+$$F=qE=2.0\times10^{-8}\times2\,\text{N}=4.0\times10^{-8}\,\text{N},\ \text{方向沿 }+x$$
+<p><strong>第 3 步：求功。</strong>$x=2\,\text{m}$ 处 $\varphi_2=(6-2\times2)\,\text{V}=2\,\text{V}$，$U_{12}=\varphi_1-\varphi_2=2\,\text{V}$。</p>
+$$W_{12}=qU_{12}=2.0\times10^{-8}\times2\,\text{J}=4.0\times10^{-8}\,\text{J}$$
+<p>$W&gt;0$，电场力做正功，电势能减少 $4.0\times10^{-8}\,\text{J}$（$8.0\times10^{-8}\to4.0\times10^{-8}\,\text{J}$，自洽 ✓）。也可用 $W=Fx=4.0\times10^{-8}\times1\,\text{J}=4.0\times10^{-8}\,\text{J}$ 交叉验证。</p>
+</div>
+<div class="key-point"><strong>方法提炼：</strong>$\varphi\text{-}x$ 图"斜率定场强、高低定方向"；$W=qU$ 与 $W=Fx$（匀强）双路互验，是考场防错的标配动作。</div>
+
+<h3>例 3　平行板电容器的两类动态分析 <span class="stars">★★★</span></h3>
+<p>一平行板电容器，电容 $C=50\,\text{pF}$，两极板间距 $d=1.0\,\text{mm}$，接在 $U=60\,\text{V}$ 的电源两端达到稳定。</p>
+<p>(1) 求此时极板所带电荷量 $Q$ 和板间场强 $E$。</p>
+<p>(2) <strong>保持与电源连接</strong>，把板间距增大为 $d'=2.0\,\text{mm}$，求 $C'$、$Q'$、$E'$。</p>
+<p>(3) 若改为<strong>充电后断开电源</strong>，再把板间距增大为 $2.0\,\text{mm}$，求 $C''$、$U''$、$E''$。</p>
+<div class="deep">
+<strong>过程拆解：</strong>
+<p><strong>(1) 初始状态：</strong></p>
+$$Q=CU=50\times10^{-12}\times60\,\text{C}=3.0\times10^{-9}\,\text{C}$$
+$$E=\frac{U}{d}=\frac{60\,\text{V}}{1.0\times10^{-3}\,\text{m}}=6.0\times10^{4}\,\text{V/m}$$
+<p><strong>(2) 与电源相连（$U$ 不变）：</strong>$d$ 加倍，由 $C=\dfrac{\varepsilon_r S}{4\pi kd}$，$C$ 与 $d$ 成反比：</p>
+$$C'=\frac{C}{2}=25\,\text{pF},\qquad Q'=C'U=25\times10^{-12}\times60\,\text{C}=1.5\times10^{-9}\,\text{C}$$
+$$E'=\frac{U}{d'}=\frac{60}{2.0\times10^{-3}}\,\text{V/m}=3.0\times10^{4}\,\text{V/m}$$
+<p>极板上的电荷减少了一半——多余的电荷经电源"流回去了"。</p>
+<p><strong>(3) 断开电源（$Q$ 不变）：</strong>电荷无处可去，$Q''=Q=3.0\times10^{-9}\,\text{C}$。</p>
+$$C''=25\,\text{pF},\qquad U''=\frac{Q''}{C''}=\frac{3.0\times10^{-9}}{25\times10^{-12}}\,\text{V}=120\,\text{V}$$
+$$E''=\frac{U''}{d'}=\frac{120}{2.0\times10^{-3}}\,\text{V/m}=6.0\times10^{4}\,\text{V/m}\ (\text{不变！})$$
+<p>与结论 $E=\dfrac{4\pi kQ}{\varepsilon_r S}$ 一致：$Q$、$S$ 没变，$E$ 就不变。</p>
+</div>
+<div class="key-point"><strong>方法提炼：</strong>动态分析先问"谁不变"——<strong>连电源 $U$ 不变，断电源 $Q$ 不变</strong>。然后按 "$C$（结构）$\to$ $Q/U$（定义）$\to$ $E=U/d$" 三步走，步步有公式支撑，绝不凭感觉。</div>
+
+<h3>例 4　示波管：加速 + 类平抛偏转 <span class="stars">★★★</span></h3>
+<p>示波管中，电子（$m=9.1\times10^{-31}\,\text{kg}$，$e=1.6\times10^{-19}\,\text{C}$，初速为零，重力忽略不计）经加速电压 $U_1=1000\,\text{V}$ 加速后，垂直射入偏转极板间的匀强电场。偏转极板长 $l=5.0\,\text{cm}$，板间距 $d=2.0\,\text{cm}$，偏转电压 $U_2=200\,\text{V}$。求：</p>
+<p>(1) 电子进入偏转电场时的速度 $v_0$；(2) 电子在偏转电场中运动的时间与侧移量 $y$；(3) 射出偏转电场时速度偏转角 $\theta$ 的正切值；(4) 若荧光屏到偏转极板右端的距离 $L=10\,\text{cm}$，求电子在屏上的偏移距离 $Y$。</p>
+<div class="deep">
+<strong>过程拆解：</strong>
+<p><strong>第 1 步：加速阶段（动能定理）。</strong></p>
+$$eU_1=\frac{1}{2}mv_0^2\Rightarrow v_0=\sqrt{\frac{2eU_1}{m}}=\sqrt{\frac{2\times1.6\times10^{-19}\times1000}{9.1\times10^{-31}}}\,\text{m/s}\approx1.88\times10^{7}\,\text{m/s}$$
+<p><strong>第 2 步：偏转阶段（类平抛分解）。</strong>水平方向匀速：</p>
+$$t=\frac{l}{v_0}=\frac{0.050}{1.88\times10^{7}}\,\text{s}\approx2.7\times10^{-9}\,\text{s}$$
+<p>竖直方向匀加速，$a=\dfrac{eU_2}{md}=\dfrac{1.6\times10^{-19}\times200}{9.1\times10^{-31}\times0.020}\,\text{m/s}^2\approx1.76\times10^{15}\,\text{m/s}^2$，</p>
+$$y=\frac{1}{2}at^2=\frac{1}{2}\times1.76\times10^{15}\times(2.7\times10^{-9})^2\,\text{m}\approx6.3\times10^{-3}\,\text{m}$$
+<p>检核：用公式 $y=\dfrac{U_2l^2}{4dU_1}=\dfrac{200\times(0.050)^2}{4\times0.020\times1000}\,\text{m}=6.25\times10^{-3}\,\text{m}$ ✓。且 $y&lt;\dfrac{d}{2}=1.0\times10^{-2}\,\text{m}$，电子没有打到极板上，能顺利飞出（这一步检验在考试里必须写！）。</p>
+<p><strong>第 3 步：偏转角。</strong></p>
+$$\tan\theta=\frac{U_2l}{2dU_1}=\frac{200\times0.050}{2\times0.020\times1000}=0.25$$
+<p><strong>第 4 步：屏上偏移。</strong>出偏转场后电子做匀速直线运动；由"速度反向延长线过水平位移中点"，把出射速度反向延长交于偏转板中央，于是</p>
+$$Y=\left(\frac{l}{2}+L\right)\tan\theta=(0.025+0.10)\times0.25\,\text{m}\approx3.1\times10^{-2}\,\text{m}$$
+<p>（验证：$Y=y+L\tan\theta=6.25\times10^{-3}+0.10\times0.25=3.125\times10^{-2}\,\text{m}$ ✓ 两法一致。）</p>
+</div>
+<div class="key-point"><strong>方法提炼：</strong>示波管问题的标准流程——"加速用动能定理，偏转用类平抛分解，屏上用几何外推"。三个量级感受：$v_0\sim10^{7}\,\text{m/s}$、$t\sim10^{-9}\,\text{s}$、$a\sim10^{15}\,\text{m/s}^2$，数量级离谱时先怀疑自己算错。另外注意 (2)(3) 的最终表达式都不含 $e$、$m$：同一装置对所有粒子给出相同偏转。</div>
+
+<h2 id="s5">五、易错点与成因分析</h2>
+
+<div class="warn">
+<strong>易错点 1：认为"$E$ 大处 $\varphi$ 一定高，$\varphi=0$ 处 $E$ 一定为零"。</strong><br>
+<strong>成因</strong>：把"场强"与"电势"当成同一个量。实际上 $E$ 是 $\varphi$ 的<strong>空间变化率</strong>（$E=-\text{d}\varphi/\text{d}x$），二者无大小对应关系，正如速度大不代表位置坐标大。反例：等量异种电荷连线中点 $E$ 大而 $\varphi=0$；等量同种正电荷连线中点 $E=0$ 而 $\varphi$ 很高。<br>
+<strong>对策</strong>：判断 $\varphi$ 用"沿电场线电势降低"，判断 $E$ 用"电场线/等势面疏密"，两套判据分开用。
+</div>
+
+<div class="warn">
+<strong>易错点 2：负电荷电势能的正负判断出错。</strong><br>
+<strong>成因</strong>：死记"电势高处电势能大"，忘了 $E_{\text{p}}=q\varphi$ 里 $q$ 带符号。负电荷在电势<strong>越高</strong>处，$E_{\text{p}}$ 反而<strong>越小（越负）</strong>。<br>
+<strong>对策</strong>：一律代数运算：$E_{\text{p}}=q\varphi$，$q$、$\varphi$ 带号代入；或用物理图像——负电荷受力与 $\vec{E}$ 反向，它"喜欢"往低电势处跑，往低处跑电场力做正功、电势能减小，自洽检验。
+</div>
+
+<div class="warn">
+<strong>易错点 3：电容器两类动态变化张冠李戴。</strong><br>
+<strong>成因</strong>：没有先判断"电路状态"就直接套公式。与电源相连时 $U$ 被电源钳住不变；断开后极板上的 $Q$ 无路可走、保持不变。不变量找错，后面全盘皆错。<br>
+<strong>对策</strong>：动笔前写一句"本题中 $\underline{\quad}$ 不变"。记住断电源时 $E=\dfrac{4\pi kQ}{\varepsilon_r S}$ 与 $d$ 无关这个秒杀结论（见公式 7）。
+</div>
+
+<div class="warn">
+<strong>易错点 4：类平抛中重力忽略与否的误判。</strong><br>
+<strong>成因</strong>：把"带电粒子"和"带电体"混为一谈。电子、质子等微观粒子 $mg\ll qE$，忽略重力；油滴、小球等宏观带电体，重力不可忽略。还有反向错误：把电子的重力也老老实实算上，纯属自找麻烦。<br>
+<strong>对策</strong>：看研究对象的<strong>名称</strong>（粒子 or 液滴/小球/尘埃），再看题干是否给出质量量级或"悬浮""匀速"等暗示。
+</div>
+
+<div class="warn">
+<strong>易错点 5：由库仑定律得出"$r\to0$ 时 $F\to\infty$"。</strong><br>
+<strong>成因</strong>：忽略公式适用条件。$r$ 小到与带电体线度相当时，点电荷模型失效，库仑定律不再成立；且电荷分布会因静电感应改变。<br>
+<strong>对策</strong>：凡遇"$r\to0$""$r\to\infty$"的极限讨论，先检查模型与公式的适用前提。
+</div>
+
+<div class="warn">
+<strong>易错点 6：把电场线当成电荷的运动轨迹。</strong><br>
+<strong>成因</strong>：电场线画的是$E$ 的方向场，轨迹由<strong>初速度方向 + 受力方向</strong>共同决定。仅当电场线为直线、且电荷初速度为零或沿电场线、且只受电场力时，轨迹才与电场线重合。曲线电场中轨迹必定与电场线"分道扬镳"（轨迹夹在初速方向与力方向之间）。<br>
+<strong>对策</strong>：轨迹问题先标出该点 $\vec{E}$（切线方向）与初速度 $\vec{v}_0$，用"曲线运动合力指向凹侧"判断弯曲方向。
+</div>
+
+<div class="warn">
+<strong>易错点 7：$W=qEd$ 乱用于非匀强电场。</strong><br>
+<strong>成因</strong>：$W=qEd$ 由 $F=qE$ 恒定推出，只在匀强场成立；非匀强场中 $E$ 处处不同，必须用 $W=qU$。<br>
+<strong>对策</strong>：看到"点电荷的电场"中求功，立刻切换到 $W_{AB}=q(\varphi_A-\varphi_B)$ 或动能定理。
+</div>
+
+<div class="warn">
+<strong>易错点 8：矢量叠加算成标量相加；$U_{AB}$ 角标颠倒。</strong><br>
+<strong>成因</strong>：多个场源求合场强时直接 $E=E_1+E_2$，忘记矢量性；写电势差时 $U_{AB}$ 与 $U_{BA}$ 混用导致功的正负恰好相反。<br>
+<strong>对策</strong>：合成必画矢量图；写 $W_{AB}=qU_{AB}$ 时核对角标"$A\to B$"，初减末。
+</div>
+
+<h2 id="s6">六、章末自检清单</h2>
+
+<p>合上书本，逐项打勾。任何一项犹豫超过 10 秒，回到对应小节重学。</p>
+
+<h4>概念理解</h4>
+<ul style="list-style:none; margin-left:8px;">
+  <li>☐ 能说出元电荷 $e=1.6\times10^{-19}\,\text{C}$ 的含义，知道元电荷不是粒子</li>
+  <li>☐ 能解释为什么可以/不可以把带电体看成点电荷</li>
+  <li>☐ 能准确复述场强方向约定（正电荷受力方向），知道 $E$ 与试探电荷无关</li>
+  <li>☐ 能默写电场线的六条性质，画出正负点电荷、等量同/异种电荷、匀强电场的电场线与等势面</li>
+  <li>☐ 理解电势的相对性与电势差的绝对性，会选零势面</li>
+  <li>☐ 能分清 $E$、$\varphi$、$E_{\text{p}}$ 三者的决定因素与正负含义</li>
+</ul>
+
+<h4>公式掌握（能独立推导）</h4>
+<ul style="list-style:none; margin-left:8px;">
+  <li>☐ 库仑定律 $F=kq_1q_2/r^2$，说得出两条适用条件</li>
+  <li>☐ $E=F/q$、$E=kQ/r^2$、$E=U/d$ 三式的区别与适用范围</li>
+  <li>☐ 由 $W=Fd$ 推出 $W=qU$ 与 $U=Ed$，知道 $W=qU$ 普适、$W=qEd$ 仅限匀强场</li>
+  <li>☐ $\varphi=E_{\text{p}}/q$、$U_{AB}=\varphi_A-\varphi_B$、$W_{AB}=-\Delta E_{\text{p}}$</li>
+  <li>☐ $C=Q/U$ 与 $C=\varepsilon_rS/(4\pi kd)$ 的区别；推导断电源时 $E=4\pi kQ/(\varepsilon_r S)$ 与 $d$ 无关</li>
+  <li>☐ 由动能定理与运动学推出 $v_0=\sqrt{2qU/m}$、$y=\dfrac{U_2l^2}{4dU_1}$、$\tan\theta=\dfrac{U_2l}{2dU_1}$</li>
+</ul>
+
+<h4>模型与方法</h4>
+<ul style="list-style:none; margin-left:8px;">
+  <li>☐ 库仑力矢量叠加：逐个算力 → 受力图 → 平行四边形/正交分解</li>
+  <li>☐ 电场线与等势面综合判断：疏密定 $E$、走向定 $\varphi$ 升降、力指向凹侧</li>
+  <li>☐ 电容器动态分析：先判 $U$ 不变还是 $Q$ 不变，再走"$C\to Q/U\to E$"三步</li>
+  <li>☐ 类平抛偏转：分解为匀速 + 匀加速，会做"$y&lt;d/2$ 能飞出"的检验</li>
+  <li>☐ 会读 $E\text{-}x$（面积 = 电势差）、$\varphi\text{-}x$（斜率 = $-E$）、$E_{\text{p}}\text{-}x$（斜率 = $-F$）图象</li>
+</ul>
+
+<h4>易错点免疫</h4>
+<ul style="list-style:none; margin-left:8px;">
+  <li>☐ 不犯"$E$ 大 $\varphi$ 一定大"的错误，能举出两个反例</li>
+  <li>☐ 负电荷电势能判断一律带号运算或做自洽检验</li>
+  <li>☐ 能一句话说清"$r\to0$ 时库仑定律为何失效"</li>
+  <li>☐ 看到"油滴/小球/尘埃"自动考虑重力，看到"电子/质子"自动忽略重力</li>
+  <li>☐ 非匀强电场求功只认 $W=qU$</li>
+</ul>
+
+<hr>
+<p style="color: var(--muted); text-align: center; font-size: 0.9em;">
+静电场是电磁学的地基，地基打得深，楼才盖得高。<br>
+—— 为小兵 2029 云南高考加油 💪
+</p>
+
+</body>
+</html>

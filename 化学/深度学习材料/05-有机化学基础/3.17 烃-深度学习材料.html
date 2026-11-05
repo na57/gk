@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.17 烃-深度学习材料</title>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#0e7c7b; --subject-soft:#eef7f6;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 化学点缀层（无 JS，纯文本方程式） ===== */
+/* 语义卡片（例题=紫 / 易错=琥珀 / 概念=蓝 / 提示=科目色 / 结构=中性墨） */
+.card { border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 18px; margin: 14px 0; page-break-inside: avoid; }
+.card .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
+.card.concept { background: var(--c-concept-bg); } .card.concept .tag { background: var(--c-concept); color: #fff; }
+.card.example { background: var(--c-example-bg); } .card.example .tag { background: var(--c-example); color: #fff; }
+.card.trap { background: var(--c-trap-bg); } .card.trap .tag { background: var(--c-trap); color: #fff; }
+.card.note { background: var(--subject-soft); } .card.note .tag { background: var(--subject); color: #fff; }
+.card.violet { background: var(--canvas); } .card.violet .tag { background: var(--ink); color: #fff; }
+/* 方程式容器（统一灰底盒 + 科目色左边条） */
+.eq { display: block; background: var(--formula-bg); border: 1px solid var(--line); border-left: 4px solid var(--subject); border-radius: 8px; padding: var(--formula-pad); margin: 10px 0; font-size: 16px; text-align: center; letter-spacing: .3px; page-break-inside: avoid; }
+.eq-arrow { position: relative; display: inline-block; margin: 0 6px; font-weight: 600; }
+.eq-arrow::before { content: attr(data-cond); position: absolute; left: 50%; transform: translateX(-50%); top: -1.05em; font-size: 10.5px; font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
+.state { font-size: .72em; font-style: italic; color: var(--ink-soft); }
+sub, sup { font-size: .72em; line-height: 0; }
+.formula { font-size: 1.05em; }
+.kbd { background: #f0f2f5; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 13px; }
+/* 三栏对比 */
+.triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; page-break-inside: avoid; }
+.triple .cell { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: 14px; }
+.triple .cell h4 { margin: 0 0 8px; font-size: 13.5px; text-align: center; padding: 4px 0; border-radius: 6px; color: #fff; }
+.triple .cell:nth-child(1) h4 { background: var(--c-trap); }
+.triple .cell:nth-child(2) h4 { background: var(--c-example); }
+.triple .cell:nth-child(3) h4 { background: var(--subject); }
+/* 步骤与答案 */
+.step { display: flex; gap: 10px; margin: 8px 0; }
+.step .no { flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--c-method); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.ans { background: #fff; border: 1px dashed var(--c-method); border-radius: 8px; padding: 8px 14px; margin: 8px 0; }
+.chap-foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-soft); text-align: center; }
+@media (max-width: 640px) { .triple { grid-template-columns: 1fr; } }
+@media print {
+  .card { border: 1px solid #999; background: #fff !important; }
+  .card .tag { border: 1px solid #333; background: #fff !important; color: #000; }
+  .eq { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .chap-foot { border-top: none; }
+}
+</style>
+</head>
+<body>
+<nav class="chap-nav">高考备考 · 化学 · 深度学习材料 ｜ 有机化学基础 ｜ 3.17 烃</nav>
+<header class="chap-head">
+  <h1>3.17 烃（烷烃、烯烃、炔烃、芳香烃）</h1>
+  <p class="chap-meta">高中化学 · 深度学习材料 · 面向 2029 届云南高考</p>
+  <p class="chap-intro">烃是只含碳、氢两种元素的有机物，是一切有机物的"母体"。本章沿着"结构 → 性质 → 用途"的主线学习四类烃：烷烃、烯烃、炔烃、芳香烃。抓住一条主线——<strong>碳碳键的类型决定了烃的化学性格</strong>，再把燃烧计算这一高频考点练到"又快又准"。</p>
+  <p class="chap-intro" style="margin-top:6px">学习建议：本章方程式多、实验细节多，建议边看边动手——每学一类烃就默写它的通式、代表物结构和特征反应；每个实验按"药品—条件—装置—现象—注意事项"五栏整理成卡片。两类功夫下足，本章没有难点。</p>
+</header>
+<main>
+
+<section>
+<h2>一、知识全景</h2>
+<table>
+<tr><th>知识点</th><th>核心内容</th><th>高考要求</th></tr>
+<tr><td>烷烃</td><td>通式 C<sub>n</sub>H<sub>2n+2</sub>；甲烷正四面体结构；取代反应（光照、连锁、产物为混合物）；燃烧</td><td>理解取代反应特点，会写分步取代方程式</td></tr>
+<tr><td>烯烃</td><td>通式 C<sub>n</sub>H<sub>2n</sub>；乙烯平面结构；加成反应与马氏规则；加聚反应；使溴水、酸性 KMnO<sub>4</sub> 褪色</td><td>加成取向判断、加聚产物书写熟练</td></tr>
+<tr><td>炔烃</td><td>通式 C<sub>n</sub>H<sub>2n−2</sub>；乙炔直线形结构；实验室制法与注意事项；加成反应</td><td>制法实验（饱和食盐水、除杂、不用启普发生器）清楚</td></tr>
+<tr><td>芳香烃</td><td>苯的特殊结构（介于单双键之间）；苯的溴代与硝化实验；苯的同系物侧链氧化</td><td>两个实验的原理、装置、现象、注意事项全掌握</td></tr>
+<tr><td>烃类燃烧规律</td><td>C<sub>x</sub>H<sub>y</sub> 燃烧通式、耗氧量计算、体积变化规律</td><td>能用规律快速解题，数值算对</td></tr>
+</table>
+<div class="card note">
+<span class="tag">学法提示</span>
+<p>学每一类烃都按同一模板自问自答：<strong>通式是什么？代表物的空间结构如何？特征反应是什么类型？实验现象与条件是什么？</strong>四类烃学完后，自己画一张对比表，会发现规律极其整齐：单键—取代，双键三键—加成，苯环—易取代难加成。</p>
+</div>
+<h3>四类烃性质速查与鉴别总表</h3>
+<table>
+<tr><th>试剂/操作</th><th>烷烃</th><th>烯烃</th><th>炔烃</th><th>苯及其同系物</th></tr>
+<tr><td>溴水</td><td>不反应（可萃取褪色，物理变化）</td><td>加成褪色（化学变化）</td><td>加成褪色（化学变化）</td><td>苯：只萃取；甲苯：只萃取</td></tr>
+<tr><td>酸性 KMnO<sub>4</sub></td><td>不褪色</td><td>褪色（氧化）</td><td>褪色（氧化）</td><td>苯不褪色；甲苯等带 α-H 的同系物褪色</td></tr>
+<tr><td>液溴 + FeBr<sub>3</sub></td><td>不反应（取代需光照、用纯卤素蒸气）</td><td>发生加成</td><td>发生加成</td><td>苯：取代生成溴苯 + HBr</td></tr>
+<tr><td>点燃现象</td><td>淡蓝色火焰，无烟或少烟</td><td>火焰明亮，少量黑烟</td><td>火焰明亮，浓烈黑烟</td><td>火焰明亮，浓烟（含碳量高）</td></tr>
+</table>
+<p>规律：含碳量越高（CH<sub>4</sub> 75% &lt; C<sub>2</sub>H<sub>4</sub> 85.7% &lt; C<sub>2</sub>H<sub>2</sub>、C<sub>6</sub>H<sub>6</sub> 92.3%），燃烧时黑烟越浓——因为碳来不及完全燃烧就析出炭黑。</p>
+</section>
+
+<section>
+<h2>二、核心概念精讲</h2>
+
+<h3>2.1 烃的分类总览</h3>
+<table>
+<tr><th>类别</th><th>通式（n≥…）</th><th>碳碳键特点</th><th>代表物</th><th>特征反应</th></tr>
+<tr><td>烷烃（饱和烃）</td><td>C<sub>n</sub>H<sub>2n+2</sub>（n≥1）</td><td>全部是 C—C 单键</td><td>甲烷 CH<sub>4</sub></td><td>取代反应</td></tr>
+<tr><td>烯烃（不饱和烃）</td><td>C<sub>n</sub>H<sub>2n</sub>（n≥2）</td><td>含一个 C=C 双键</td><td>乙烯 CH<sub>2</sub>=CH<sub>2</sub></td><td>加成、加聚、氧化</td></tr>
+<tr><td>炔烃（不饱和烃）</td><td>C<sub>n</sub>H<sub>2n−2</sub>（n≥2）</td><td>含一个 C≡C 三键</td><td>乙炔 CH≡CH</td><td>加成、氧化</td></tr>
+<tr><td>苯及其同系物（芳香烃）</td><td>C<sub>n</sub>H<sub>2n−6</sub>（n≥6）</td><td>苯环：介于单双键之间的特殊键</td><td>苯 C<sub>6</sub>H<sub>6</sub></td><td>易取代、难加成</td></tr>
+</table>
+<p>注意：通式只反映"氢的饱和程度"，同一通式可能对应不同类别——C<sub>n</sub>H<sub>2n</sub> 既是单烯烃也是环烷烃的通式，C<sub>n</sub>H<sub>2n−2</sub> 既是炔烃也是二烯烃的通式。判断类别还要看结构。</p>
+<div class="card violet">
+<span class="tag">方法模型</span>
+<h4>不饱和度 Ω 与烃的分类</h4>
+<p>不饱和度 Ω = (2n<sub>C</sub> + 2 − n<sub>H</sub>) / 2，表示分子比同碳数烷烃少的氢原子对数。对烃而言：</p>
+<ul>
+<li>Ω = 0 → 烷烃（链状饱和）；</li>
+<li>Ω = 1 → 单烯烃或环烷烃；</li>
+<li>Ω = 2 → 炔烃、二烯烃或环烯烃；</li>
+<li>Ω = 4 → 苯及其同系物（一个苯环贡献 Ω = 4：三个双键 + 一个环）。</li>
+</ul>
+<p>用 Ω 可以快速核对燃烧计算推出的分子式属于哪类烃，也能预判它能使哪些试剂褪色——Ω ≥ 1 且含 C=C/C≡C 的能使溴水褪色，苯环（Ω = 4）却不能。</p>
+</div>
+
+<h3>2.2 烷烃：甲烷与取代反应</h3>
+<p>烷烃是结构最简单的一类烃，分子中只含 C—C 单键和 C—H 键，"吃饱"了氢原子，故称饱和烃。甲烷是烷烃的"老大哥"，学透甲烷就抓住了烷烃的共性。</p>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>甲烷的结构——正四面体</h4>
+<p>甲烷 CH<sub>4</sub> 中，碳原子以 4 个等同的 C—H 键与氢相连，4 个氢位于<strong>正四面体</strong>的四个顶点，碳在中心，键角 109°28′。</p>
+<p><strong>甲烷的物理性质</strong>：无色、无味的气体，极难溶于水，密度比空气小（M = 16），可用排水法或向下排空气法收集。</p>
+<p><strong>证据</strong>：若 CH<sub>4</sub> 是平面正方形，则 CH<sub>2</sub>Cl<sub>2</sub> 应有"两个 Cl 相邻"和"两个 Cl 相对"两种结构；实验上 CH<sub>2</sub>Cl<sub>2</sub> <strong>只有一种</strong>结构，证明 CH<sub>4</sub> 是正四面体构型（这是经典的结构推断证据，选择题常考）。</p>
+<h4>取代反应——烷烃的"招牌反应"</h4>
+<p><strong>定义</strong>：有机物分子里的某些原子或原子团被其他原子或原子团所替代的反应。</p>
+<p>甲烷与氯气在<strong>光照</strong>下发生取代：</p>
+<span class="eq">CH<sub>4</sub> + Cl<sub>2</sub> <span class="eq-arrow" data-cond="光照">→</span> CH<sub>3</sub>Cl + HCl</span>
+<p>反应并不会停在第一步，而是<strong>连锁进行</strong>：</p>
+<span class="eq">CH<sub>3</sub>Cl <span class="eq-arrow" data-cond="Cl<sub>2</sub>、光照">→</span> CH<sub>2</sub>Cl<sub>2</sub> <span class="eq-arrow" data-cond="Cl<sub>2</sub>、光照">→</span> CHCl<sub>3</sub> <span class="eq-arrow" data-cond="Cl<sub>2</sub>、光照">→</span> CCl<sub>4</sub></span>
+<p><strong>取代反应四大特点</strong>（理解性记忆）：</p>
+<ul>
+<li><strong>条件</strong>：光照（或加热），与纯卤素单质（Cl<sub>2</sub>、Br<sub>2</sub>）反应，<strong>与氯水、溴水不反应</strong>；</li>
+<li><strong>连锁性</strong>：一旦开始就逐步取代，产物是 CH<sub>3</sub>Cl、CH<sub>2</sub>Cl<sub>2</sub>、CHCl<sub>3</sub>、CCl<sub>4</sub> 与 HCl 的<strong>混合物</strong>，无法控制只生成一种；</li>
+<li><strong>定量关系</strong>：每取代 1 mol H，消耗 1 mol Cl<sub>2</sub>，同时生成 1 mol HCl——"下一个氢，上一分子氯"；</li>
+<li><strong>本质</strong>：自由基链式反应，H 被逐个"顶掉"，C 骨架不变。</li>
+</ul>
+<p><strong>烷烃的通性</strong>：性质稳定（不与强酸、强碱、酸性 KMnO<sub>4</sub> 反应）；可燃；随碳数增多熔沸点升高（C<sub>1</sub>~C<sub>4</sub> 为气体）。</p>
+<p><strong>烷烃物理性质递变规律</strong>（分子间作用力随相对分子质量增大而增强）：</p>
+<table>
+<tr><th>碳原子数</th><th>常温状态</th><th>实例</th></tr>
+<tr><td>C<sub>1</sub>~C<sub>4</sub></td><td>气态</td><td>CH<sub>4</sub>、C<sub>2</sub>H<sub>6</sub>、C<sub>3</sub>H<sub>8</sub>、C<sub>4</sub>H<sub>10</sub></td></tr>
+<tr><td>C<sub>5</sub>~C<sub>16</sub></td><td>液态</td><td>戊烷、己烷（注意：新戊烷沸点 9.5℃，常温为气体）</td></tr>
+<tr><td>C<sub>17</sub> 及以上</td><td>固态</td><td>石蜡的主要成分</td></tr>
+</table>
+<p>同碳数时，支链越多，沸点越低（正戊烷 &gt; 异戊烷 &gt; 新戊烷）。</p>
+<p><strong>甲烷的存在与用途</strong>：甲烷是天然气、沼气、煤层气和"可燃冰"（天然气水合物）的主要成分；是高效、较清洁的燃料。煤矿井下的"瓦斯爆炸"就是甲烷与空气混合遇明火爆炸——可燃气体点燃前必须<strong>验纯</strong>。</p>
+<h4>甲烷的燃烧</h4>
+<span class="eq">CH<sub>4</sub><span class="state">(g)</span> + 2O<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="点燃">→</span> CO<sub>2</sub><span class="state">(g)</span> + 2H<sub>2</sub>O<span class="state">(l)</span></span>
+<p>现象：安静地燃烧，发出<strong>淡蓝色火焰</strong>，放出大量的热；火焰上方罩干冷烧杯，内壁出现<strong>水雾</strong>；倒入澄清石灰水振荡，石灰水<strong>变浑浊</strong>。此性质可用于甲烷的检验（对比：H<sub>2</sub> 只生成水，CO 只生成 CO<sub>2</sub>，CH<sub>4</sub> 两者都生成）。</p>
+<h4>取代反应与置换反应的辨析</h4>
+<table>
+<tr><th>对比项</th><th>取代反应</th><th>置换反应</th></tr>
+<tr><td>定义范围</td><td>有机化学中的概念，分子中的原子（团）被替换</td><td>无机反应类型：单质 + 化合物 → 新单质 + 新化合物</td></tr>
+<tr><td>反应物要求</td><td>可以是单质（Cl<sub>2</sub>）也可以是化合物（HNO<sub>3</sub>）</td><td>必须有单质参加</td></tr>
+<tr><td>产物</td><td>两种化合物，常为多步混合物</td><td>一种单质和一种化合物，单一确定</td></tr>
+<tr><td>电子转移</td><td>不一定有明显的电子得失（非氧化还原角度讨论）</td><td>一定是氧化还原反应</td></tr>
+</table>
+<p>判断口诀：置换看"单换单"，取代看"团换团"；CH<sub>4</sub> 与 Cl<sub>2</sub> 的反应是取代不是置换（无新单质生成，HCl 是化合物）。</p>
+</div>
+
+<h3>2.3 烯烃：乙烯、加成、马氏规则与加聚</h3>
+<p>烯烃因含 C=C 双键而"不饱和"，化学性质比烷烃活泼得多。乙烯是最简单的烯烃，也是最重要的化工原料之一。</p>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>乙烯的结构——平面形</h4>
+<p>乙烯 CH<sub>2</sub>=CH<sub>2</sub> 中 6 个原子<strong>共平面</strong>，键角约 120°。C=C 双键由 1 个 σ 键和 1 个 <strong>π 键</strong>组成；π 键重叠程度小、键能较低，<strong>容易断裂</strong>——这就是烯烃化学性质活泼的微观根源。</p>
+<p><strong>乙烯的物理性质</strong>：无色、稍有气味的气体，难溶于水，密度比空气略小（M = 28，与空气接近，故不能用排空气法收集）。</p>
+<h4>加成反应——烯烃的"招牌反应"</h4>
+<p><strong>定义</strong>：不饱和键两端的碳原子与其他原子或原子团直接结合生成新化合物的反应。</p>
+<span class="eq">CH<sub>2</sub>=CH<sub>2</sub> + Br<sub>2</sub> <span class="eq-arrow" data-cond="">→</span> CH<sub>2</sub>Br—CH<sub>2</sub>Br</span>
+<p>（溴的 CCl<sub>4</sub> 溶液或溴水均可，<strong>常温、无需催化剂</strong>；现象：橙红色褪去。可用于鉴别烷烃与烯烃）</p>
+<span class="eq">CH<sub>2</sub>=CH<sub>2</sub> + H<sub>2</sub> <span class="eq-arrow" data-cond="催化剂、加热">→</span> CH<sub>3</sub>—CH<sub>3</sub></span>
+<span class="eq">CH<sub>2</sub>=CH<sub>2</sub> + H<sub>2</sub>O <span class="eq-arrow" data-cond="催化剂、加热加压">→</span> CH<sub>3</sub>CH<sub>2</sub>OH</span>
+<h4>马氏规则（不对称烯烃加成的取向）</h4>
+<p>丙烯 CH<sub>3</sub>—CH=CH<sub>2</sub> 与 HBr 加成时，H 加在<strong>含氢较多</strong>的双键碳上，Br 加在含氢较少的双键碳上，主产物为 2-溴丙烷 CH<sub>3</sub>—CHBr—CH<sub>3</sub>，而非 1-溴丙烷。</p>
+<p><strong>微观解释</strong>：反应经过碳正离子中间体，烷基多的碳正离子更稳定（甲基的供电子作用），故 Br<sup>−</sup> 优先与含氢少的碳结合。</p>
+<p><strong>口诀</strong>："氢上加氢"——H 加到 H 多的碳上。</p>
+<h4>加聚反应（加成聚合）</h4>
+<span class="eq">n CH<sub>2</sub>=CH<sub>2</sub> <span class="eq-arrow" data-cond="催化剂">→</span> [—CH<sub>2</sub>—CH<sub>2</sub>—]<sub>n</sub>（聚乙烯）</span>
+<p><strong>书写三要点</strong>：双键打开变单键；链节写在方括号内，<strong>两端的半键伸出括号</strong>；下标 n 表示聚合度（高分子是 n 值不同的混合物）。</p>
+<p><strong>由聚合物反推单体</strong>：去掉方括号与 n，把链节两端伸出的半键"收拢"还原成双键即可。如 [—CH<sub>2</sub>—CHCl—]<sub>n</sub>（聚氯乙烯）的单体是 CH<sub>2</sub>=CHCl；[—CH<sub>2</sub>—CH=CH—CH<sub>2</sub>—]<sub>n</sub>（顺丁橡胶）的链节含双键，收拢时把中间双键拆开向两端各借半键，还原出 1,3-丁二烯 CH<sub>2</sub>=CH—CH=CH<sub>2</sub>。</p>
+<p><strong>烯烃的氧化</strong>：烯烃能被酸性 KMnO<sub>4</sub> 氧化，使其紫色褪去——可鉴别烯烃与烷烃；但注意：用酸性 KMnO<sub>4</sub> 除去烷烃中的烯烃会引入 CO<sub>2</sub> 等新杂质，<strong>除杂应用溴水</strong>。</p>
+<h4>乙烯的实验室制法（消去反应，实验考点）</h4>
+<span class="eq">CH<sub>3</sub>CH<sub>2</sub>OH <span class="eq-arrow" data-cond="浓硫酸、170℃">→</span> CH<sub>2</sub>=CH<sub>2</sub>↑ + H<sub>2</sub>O</span>
+<ul>
+<li><strong>装置</strong>：液液加热型；温度计水银球<strong>插入反应液中</strong>（测反应液温度，这是它与蒸馏装置的关键区别）；加<strong>碎瓷片</strong>防暴沸。</li>
+<li><strong>温度控制</strong>：迅速升至 170℃。140℃ 时发生分子间脱水生成<strong>乙醚</strong>（副反应），所以温度宁可高不能低。</li>
+<li><strong>浓硫酸的角色</strong>：催化剂 + 脱水剂。浓硫酸有强氧化性，会使乙醇炭化（液体变黑），生成的 C 继续被氧化为 CO<sub>2</sub>，浓硫酸被还原为 <strong>SO<sub>2</sub></strong>——故粗乙烯中混有 SO<sub>2</sub>、CO<sub>2</sub>，检验乙烯性质前须先通过 NaOH 溶液除去（SO<sub>2</sub> 也能使溴水和酸性 KMnO<sub>4</sub> 褪色，会干扰检验！）。</li>
+<li><strong>收集</strong>：排水集气法（乙烯难溶于水，密度与空气接近，不用排空气法）。</li>
+</ul>
+<p><strong>乙烯的地位与用途</strong>：乙烯产量是衡量一个国家石油化工发展水平的标志；乙烯可作水果催熟剂（植物生长调节剂），是制聚乙烯、乙醇、环氧乙烷等的基本原料。</p>
+<h4>拓展：二烯烃的 1,2-加成与 1,4-加成</h4>
+<p>含两个双键的二烯烃（如 1,3-丁二烯 CH<sub>2</sub>=CH—CH=CH<sub>2</sub>）与 Br<sub>2</sub> 加成时有两种方式：<strong>1,2-加成</strong>（Br 加在同一个双键两端，得 CH<sub>2</sub>Br—CHBr—CH=CH<sub>2</sub>）和 <strong>1,4-加成</strong>（Br 加在 1、4 号碳上，双键移到中间，得 CH<sub>2</sub>Br—CH=CH—CH<sub>2</sub>Br）。1,3-丁二烯是合成橡胶（顺丁橡胶）的单体，其加聚按 1,4-加成方式进行。</p>
+<h4>拓展：烯烃的顺反异构（选考常考）</h4>
+<p>当双键两端的每个碳原子上都连着两个<strong>不同</strong>的原子或原子团时，由于 C=C 不能自由旋转，会产生顺反异构：相同基团在双键同侧为<strong>顺式</strong>，分居两侧为<strong>反式</strong>。如 2-丁烯 CH<sub>3</sub>CH=CHCH<sub>3</sub> 有顺-2-丁烯与反-2-丁烯两种（沸点不同）；而 1-丁烯 CH<sub>2</sub>=CHCH<sub>2</sub>CH<sub>3</sub> 因 1 号碳上两个 H 相同，<strong>没有</strong>顺反异构。判断口诀：双键两碳"各挂两样"，才有顺反。</p>
+</div>
+
+<h3>2.4 炔烃：乙炔的结构与实验室制法</h3>
+<p>炔烃含 C≡C 三键，不饱和程度更高。乙炔俗称电石气，是炔烃的代表，其实验室制法是本章装置类考题的核心。</p>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>乙炔的结构——直线形</h4>
+<p>乙炔 CH≡CH 中 4 个原子在<strong>同一直线</strong>上，键角 180°。C≡C 三键由 1 个 σ 键和 2 个 π 键组成，π 键更易断裂，故乙炔性质比乙烯更活泼，可发生加成（可分步进行）：</p>
+<p><strong>乙炔的物理性质</strong>：纯乙炔是无色、无味的气体（市售乙炔因含 H<sub>2</sub>S、PH<sub>3</sub> 杂质而有臭味），微溶于水，易溶于有机溶剂，密度比空气略小。</p>
+<span class="eq">CH≡CH + Br<sub>2</sub> <span class="eq-arrow" data-cond="">→</span> CHBr=CHBr <span class="eq-arrow" data-cond="Br<sub>2</sub>">→</span> CHBr<sub>2</sub>—CHBr<sub>2</sub></span>
+<span class="eq">CH≡CH + HCl <span class="eq-arrow" data-cond="催化剂、加热">→</span> CH<sub>2</sub>=CHCl（氯乙烯，制聚氯乙烯的单体）</span>
+<p>乙炔还能与 HCN 加成生成丙烯腈 CH<sub>2</sub>=CHCN（合成腈纶的单体）；乙炔在氧气中燃烧放出大量的热，火焰温度可达 3000℃ 以上，称<strong>氧炔焰</strong>，用于切割和焊接金属：</p>
+<span class="eq">2C<sub>2</sub>H<sub>2</sub><span class="state">(g)</span> + 5O<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="点燃">→</span> 4CO<sub>2</sub><span class="state">(g)</span> + 2H<sub>2</sub>O<span class="state">(l)</span></span>
+<p>乙炔含碳量高（92.3%），空气中燃烧火焰明亮并伴有<strong>浓烈黑烟</strong>（碳不完全燃烧），这是炔烃燃烧的共性特征，可作为与甲烷（淡蓝色、无烟）区分的直观现象。</p>
+<h4>乙炔的实验室制法（实验考点密集）</h4>
+<span class="eq">CaC<sub>2</sub> + 2H<sub>2</sub>O <span class="eq-arrow" data-cond="">→</span> Ca(OH)<sub>2</sub> + C<sub>2</sub>H<sub>2</sub>↑</span>
+<ul>
+<li><strong>药品</strong>：电石（CaC<sub>2</sub>，块状固体）+ <strong>饱和食盐水</strong>。用饱和食盐水而不用纯水，是为了<strong>减缓反应速率</strong>（电石与水反应极剧烈，放热多）。</li>
+<li><strong>装置</strong>：固液不加热型，但<strong>不能用启普发生器</strong>——原因有三：反应放热剧烈，可能炸裂仪器；生成的 Ca(OH)<sub>2</sub> 呈糊状，易堵塞导管；电石遇水即反应，无法实现"随开随停"的固液分离。</li>
+<li><strong>除杂</strong>：电石中含 CaS、Ca<sub>3</sub>P<sub>2</sub> 等杂质，制得的乙炔常混有 <strong>H<sub>2</sub>S、PH<sub>3</sub></strong>（有臭味），需通过 CuSO<sub>4</sub> 溶液除去：H<sub>2</sub>S + CuSO<sub>4</sub> → CuS↓（黑色）+ H<sub>2</sub>SO<sub>4</sub>。注意不能用酸性 KMnO<sub>4</sub> 除杂——它会把乙炔也氧化。</li>
+<li><strong>收集</strong>：排水集气法（乙炔微溶于水；密度与空气接近，不宜排空气法）。</li>
+</ul>
+<p><strong>常见混淆</strong>：乙炔使溴水褪色是<strong>加成</strong>反应，使酸性 KMnO<sub>4</sub> 褪色是<strong>氧化</strong>反应——褪色的原因不同，答题要分清。</p>
+</div>
+
+<h3>2.5 芳香烃：苯的特殊结构与两大实验</h3>
+<p>芳香烃以苯为代表。苯的结构"反常"——有双键的分子式，却没有双键的典型性质，这种"矛盾"正是理解苯的切入点，也是命题人最爱的设问角度。</p>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>苯的结构——介于单双键之间的特殊键</h4>
+<p>苯 C<sub>6</sub>H<sub>6</sub> 是平面正六边形，12 个原子共平面，键角 120°。6 个碳碳键<strong>完全相同</strong>，是一种介于单键与双键之间的独特键（大 π 键，电子云均匀分布）。</p>
+<p><strong>苯的物理性质</strong>：无色、有特殊气味的液体，密度比水小，不溶于水，易挥发，<strong>有毒</strong>（是良好的有机溶剂，使用时注意通风）；熔点 5.5℃，冬季可能凝结成无色晶体。</p>
+<p><strong>苯的燃烧</strong>：2C<sub>6</sub>H<sub>6</sub> + 15O<sub>2</sub> <span class="eq-arrow" data-cond="点燃">→</span> 12CO<sub>2</sub> + 6H<sub>2</sub>O；因含碳量高，燃烧时<strong>火焰明亮、产生大量浓烟</strong>。</p>
+<p><strong>结构证据</strong>（常考）：</p>
+<ul>
+<li>苯<strong>不能</strong>使溴水褪色（不发生加成），也<strong>不能</strong>使酸性 KMnO<sub>4</sub> 褪色——说明苯环中没有典型的 C=C；</li>
+<li>苯的邻位二取代物只有一种——说明 6 个碳碳键完全等同；</li>
+<li>苯与 H<sub>2</sub> 加成需要 Ni 催化、加热，且 1 mol 苯加成 3 mol H<sub>2</sub>——说明不饱和但加成困难。</li>
+</ul>
+<p>由此概括苯的化学性格：<strong>易取代、难加成、难氧化</strong>（"饱和烃的性质它学取代，不饱和烃的骨架它能加氢"）。</p>
+<h4>实验一：苯的溴代（制溴苯）</h4>
+<span class="eq">C<sub>6</sub>H<sub>6</sub> + Br<sub>2</sub> <span class="eq-arrow" data-cond="FeBr<sub>3</sub>">→</span> C<sub>6</sub>H<sub>5</sub>Br + HBr</span>
+<ul>
+<li><strong>药品关键</strong>：必须用<strong>液溴</strong>（纯溴），不能用溴水；催化剂是 FeBr<sub>3</sub>（实际起催化作用的是 Fe 与 Br<sub>2</sub> 反应生成的 FeBr<sub>3</sub>，故可直接加铁屑）。</li>
+<li><strong>现象</strong>：反应剧烈放热、液体微沸（苯与溴易挥发）；导管口有<strong>白雾</strong>（HBr 遇水蒸气）；将产物倒入水中，得到<strong>褐色油状液体</strong>沉在水底（溴苯密度大于水；褐色来自溶有的 Br<sub>2</sub>，可用 NaOH 溶液洗涤除去）。</li>
+<li><strong>验证取代而非加成</strong>：检验产物中有 HBr 生成——将导出的气体通入 AgNO<sub>3</sub> 溶液，产生淡黄色 AgBr 沉淀即可证明发生了取代（导管不能插入液面下，防倒吸）。</li>
+<li><strong>长导管作用</strong>：导气 + 冷凝回流（苯和溴易挥发，减少损失）。</li>
+</ul>
+<h4>实验二：苯的硝化（制硝基苯）</h4>
+<span class="eq">C<sub>6</sub>H<sub>6</sub> + HNO<sub>3</sub>（浓） <span class="eq-arrow" data-cond="浓硫酸、50~60℃">→</span> C<sub>6</sub>H<sub>5</sub>NO<sub>2</sub> + H<sub>2</sub>O</span>
+<ul>
+<li><strong>条件</strong>：浓硫酸作<strong>催化剂和吸水剂</strong>；温度控制在 <strong>50~60℃</strong>，用<strong>水浴加热</strong>（受热均匀、便于控温；温度过高苯易挥发、硝酸易分解，且会生成多硝基取代物）。</li>
+<li><strong>混酸配制</strong>：将浓硫酸<strong>缓缓注入</strong>浓硝酸中，边加边振荡冷却——类比浓硫酸稀释，防止液体飞溅。</li>
+<li><strong>产物</strong>：硝基苯是<strong>无色油状液体，密度比水大，有苦杏仁气味，有毒</strong>；粗产品因溶有 NO<sub>2</sub> 而显黄色，可用 NaOH 溶液洗涤提纯。</li>
+<li><strong>长导管</strong>：同样是冷凝回流作用。</li>
+</ul>
+<h4>苯的同系物</h4>
+<ul>
+<li>通式 C<sub>n</sub>H<sub>2n−6</sub>（n≥7），如甲苯 C<sub>6</sub>H<sub>5</sub>CH<sub>3</sub>；</li>
+<li><strong>与苯的关键差异</strong>：甲苯能被酸性 KMnO<sub>4</sub> 氧化为苯甲酸 C<sub>6</sub>H<sub>5</sub>COOH（苯环"活化"了侧链），而苯不能——利用这一点可鉴别苯与甲苯；</li>
+<li>同时，甲基也活化了苯环，使甲苯的硝化比苯更容易（可生成三硝基甲苯 TNT）。<strong>苯环与侧链相互影响</strong>是重要考点。</li>
+</ul>
+<h4>芳香烃的来源</h4>
+<table>
+<tr><th>来源</th><th>原理</th><th>产物中与芳香烃相关的部分</th></tr>
+<tr><td>煤的干馏（隔绝空气加强热，化学变化）</td><td>煤分解为焦炭、煤焦油、焦炉煤气等</td><td>煤焦油中含苯、甲苯、二甲苯等，经分馏提取</td></tr>
+<tr><td>石油的催化重整（化学变化）</td><td>在催化剂作用下，链烃转化为芳香烃和环烷烃</td><td>获得苯、甲苯等芳香烃，同时提高汽油辛烷值</td></tr>
+<tr><td>石油分馏（物理变化）</td><td>按沸点范围分离</td><td>直接得到的芳香烃很少，主要靠催化重整</td></tr>
+</table>
+<h4>石油的加工方式对比（烃的工业来源，拓展了解）</h4>
+<table>
+<tr><th>加工方式</th><th>变化类型</th><th>目的与产物</th></tr>
+<tr><td>分馏（常压/减压）</td><td>物理变化</td><td>按沸点分出石油气、汽油、煤油、柴油、润滑油、沥青等</td></tr>
+<tr><td>裂化</td><td>化学变化</td><td>把大分子烃断裂为小分子，提高汽油等轻质油产量（得到含烯烃的裂化汽油——能使溴水褪色，不可作萃取剂）</td></tr>
+<tr><td>裂解</td><td>化学变化（深度裂化）</td><td>更高温度下深度断裂，获得乙烯、丙烯等化工基本原料</td></tr>
+<tr><td>催化重整</td><td>化学变化</td><td>链烃转为芳香烃、环烷烃，提高汽油品质并制取苯、甲苯</td></tr>
+</table>
+<p><strong>煤的干馏产物速记</strong>：焦炭（冶金）、煤焦油（芳香烃宝库）、焦炉煤气（H<sub>2</sub>、CH<sub>4</sub>、CO 等燃料气）、粗氨水。"干馏出三宝：炭、油、气。"</p>
+<p><strong>常见混淆</strong>：分馏是物理变化，干馏、裂化、裂解、催化重整都是化学变化；"煤中含苯"的说法错误——煤中不含苯，苯是煤干馏后煤焦油的成分。</p>
+</div>
+
+<h3>2.6 烃类燃烧规律（计算高频）</h3>
+<p>烃完全燃烧的产物只有 CO<sub>2</sub> 和 H<sub>2</sub>O，原子守恒关系极其简洁，因此燃烧数据成为"反推分子式、比较耗氧量、分析体积变化"三类计算的统一出发点。</p>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>燃烧通式与耗氧量</h4>
+<span class="eq">C<sub>x</sub>H<sub>y</sub> + (x + y/4) O<sub>2</sub> <span class="eq-arrow" data-cond="点燃">→</span> x CO<sub>2</sub> + y/2 H<sub>2</sub>O</span>
+<ul>
+<li><strong>耗氧量</strong>：1 mol C<sub>x</sub>H<sub>y</sub> 完全燃烧耗 O<sub>2</sub> (x + y/4) mol——碳耗氧 1∶1，氢耗氧 4∶1（4 个 H 耗 1 个 O<sub>2</sub>）。</li>
+<li><strong>等物质的量</strong>比较：直接比 (x + y/4)，值越大耗氧越多；</li>
+<li><strong>等质量</strong>比较：y/x 越大（含氢量越高），耗氧越多——故等质量时 CH<sub>4</sub> 是所有烃中耗氧最多的。</li>
+<li><strong>气态烃体积变化</strong>（温度 &gt;100℃，水为气体）：1 体积烃燃烧，ΔV = y/4 − 1。y=4 时 ΔV=0（如 CH<sub>4</sub>、C<sub>2</sub>H<sub>4</sub> 燃烧前后气体总体积不变）；y&gt;4 体积增大；y&lt;4（只有 C<sub>2</sub>H<sub>2</sub>）体积减小。</li>
+<li>由燃烧产物反推分子式：n(C) = n(CO<sub>2</sub>)，n(H) = 2n(H<sub>2</sub>O)。</li>
+</ul>
+<h4>混合烃的平均分子式法</h4>
+<p>两种气态烃混合燃烧时，可先求出<strong>平均分子式</strong> C<sub>x̄</sub>H<sub>ȳ</sub>（x̄、ȳ 为小数也可以），再据此讨论组成：</p>
+<ul>
+<li>若 x̄ = 1.5，则混合物中必有一个烃的碳数 &lt; 1.5，即<strong>必含 CH<sub>4</sub></strong>（碳数小于 2 的烃只有甲烷）；</li>
+<li>若 ȳ &lt; 4，则混合物中必含 H 数小于 4 的烃，常见为 <strong>C<sub>2</sub>H<sub>2</sub></strong>（乙炔）；</li>
+<li>再由氢（或碳）的平均值用<strong>十字交叉法</strong>求两组分的体积比。</li>
+</ul>
+<p>示例：平均分子式 C<sub>1.5</sub>H<sub>4</sub> 的混合烃，必为 CH<sub>4</sub> 与 C<sub>2</sub>H<sub>4</sub> 按碳原子十字交叉：CH<sub>4</sub>(1) 距 1.5 差 0.5，C<sub>2</sub>H<sub>4</sub>(2) 距 1.5 差 0.5 → 体积比 1∶1，且氢平均恰为 4，自洽。</p>
+</div>
+<div class="card note">
+<span class="tag">本节小结</span>
+<p>四类烃一张网：<strong>单键烷烃只取代（光照、纯卤素、混合物），双键三键爱加成（常温溴水即褪色、可加聚），苯环特殊易取代难加成（液溴 FeBr<sub>3</sub>、浓硝酸浓硫酸水浴），侧链带氢可被氧化（甲苯使 KMnO<sub>4</sub> 褪色）</strong>。燃烧计算抓通式 C<sub>x</sub>H<sub>y</sub> + (x+y/4)O<sub>2</sub> → xCO<sub>2</sub> + y/2H<sub>2</sub>O，等量比 x+y/4、等质比 y/x、体积变化看 y/4−1（水为气态时）。</p>
+</div>
+<div class="card note">
+<span class="tag">本章方程式汇总</span>
+<p>学完整章后，盖住右栏默写左栏，是检验本章是否通关的最快方式：</p>
+<table>
+<tr><th>反应</th><th>条件/类型要点</th></tr>
+<tr><td>CH<sub>4</sub> + Cl<sub>2</sub> → CH<sub>3</sub>Cl + HCl（及后续三步至 CCl<sub>4</sub>）</td><td>光照；取代；连锁、混合物</td></tr>
+<tr><td>CH<sub>4</sub> + 2O<sub>2</sub> → CO<sub>2</sub> + 2H<sub>2</sub>O</td><td>点燃；淡蓝色火焰，先验纯</td></tr>
+<tr><td>CH<sub>2</sub>=CH<sub>2</sub> + Br<sub>2</sub> → CH<sub>2</sub>BrCH<sub>2</sub>Br</td><td>常温无需催化剂；加成；溴水褪色</td></tr>
+<tr><td>CH<sub>2</sub>=CH<sub>2</sub> + H<sub>2</sub>O → CH<sub>3</sub>CH<sub>2</sub>OH</td><td>催化剂、加热加压；加成（工业制乙醇）</td></tr>
+<tr><td>n CH<sub>2</sub>=CH<sub>2</sub> → [—CH<sub>2</sub>—CH<sub>2</sub>—]<sub>n</sub></td><td>催化剂；加聚；双键打开、半键出括号</td></tr>
+<tr><td>CH<sub>3</sub>CH<sub>2</sub>OH → CH<sub>2</sub>=CH<sub>2</sub>↑ + H<sub>2</sub>O</td><td>浓硫酸、170℃；消去；温度计插液面下</td></tr>
+<tr><td>CaC<sub>2</sub> + 2H<sub>2</sub>O → Ca(OH)<sub>2</sub> + C<sub>2</sub>H<sub>2</sub>↑</td><td>用饱和食盐水减缓；不用启普发生器</td></tr>
+<tr><td>CH≡CH + 2Br<sub>2</sub> → CHBr<sub>2</sub>CHBr<sub>2</sub></td><td>加成；可分步进行</td></tr>
+<tr><td>CH≡CH + HCl → CH<sub>2</sub>=CHCl</td><td>催化剂、加热；制 PVC 单体</td></tr>
+<tr><td>C<sub>6</sub>H<sub>6</sub> + Br<sub>2</sub> → C<sub>6</sub>H<sub>5</sub>Br + HBr</td><td>FeBr<sub>3</sub> 催化、液溴；取代；白雾</td></tr>
+<tr><td>C<sub>6</sub>H<sub>6</sub> + HNO<sub>3</sub>（浓） → C<sub>6</sub>H<sub>5</sub>NO<sub>2</sub> + H<sub>2</sub>O</td><td>浓硫酸、50~60℃ 水浴；取代（硝化）</td></tr>
+<tr><td>C<sub>6</sub>H<sub>6</sub> + 3H<sub>2</sub> → C<sub>6</sub>H<sub>12</sub>（环己烷）</td><td>Ni 催化、加热；加成（难，需催化剂）</td></tr>
+<tr><td>C<sub>6</sub>H<sub>5</sub>CH<sub>3</sub> → C<sub>6</sub>H<sub>5</sub>COOH</td><td>酸性 KMnO<sub>4</sub>；侧链氧化；鉴别苯与甲苯</td></tr>
+</table>
+<p>提示：默写时每个方程式都要带上条件——有机方程式"条件占一半分"。</p>
+</div>
+</section>
+
+<section>
+<h2>三、三重表征贯通</h2>
+<p>烃的化学变化现象鲜明，是训练"宏观—微观—符号"三重表征的绝佳素材。以下四组反应覆盖了本章最重要的四个考点：甲烷取代、乙烯加成、苯的取代、甲苯氧化。</p>
+
+<h3>第一组：甲烷与氯气的取代反应</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>光照混合气体：黄绿色逐渐<strong>变浅直至消失</strong>；试管内壁出现<strong>油状液滴</strong>（CH<sub>2</sub>Cl<sub>2</sub>、CHCl<sub>3</sub>、CCl<sub>4</sub> 的混合物）；试管内液面<strong>上升</strong>；有少量白雾（HCl 遇水蒸气）。注意：无光照时几乎不反应。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>光照下 Cl—Cl 键先断裂生成氯自由基；自由基夺取 CH<sub>4</sub> 上的 H 生成 HCl，同时产生 ·CH<sub>3</sub>，再与 Cl<sub>2</sub> 结合生成 CH<sub>3</sub>Cl——链式传递，四步取代同时进行，故得到<strong>混合物</strong>。每断 1 个 C—H 键，形成 1 个 C—Cl 键和 1 个 H—Cl 键。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p><span class="eq">CH<sub>4</sub> + Cl<sub>2</sub> <span class="eq-arrow" data-cond="光照">→</span> CH<sub>3</sub>Cl + HCl</span></p>
+<p>后续：CH<sub>3</sub>Cl → CH<sub>2</sub>Cl<sub>2</sub> → CHCl<sub>3</sub> → CCl<sub>4</sub>（各步均消耗 Cl<sub>2</sub>、生成 HCl）。</p>
+</div>
+</div>
+<p>贯通要点："颜色变浅 + 油状液滴 + 液面上升"三个宏观信号，分别对应"Cl<sub>2</sub> 被消耗""生成液态氯代物""气体分子数减少（HCl 极易溶于水）"。</p>
+
+<h3>第二组：乙烯使溴水褪色（加成反应）</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>将乙烯通入溴水（或溴的 CCl<sub>4</sub> 溶液），橙红色<strong>逐渐褪去</strong>，得到无色液体；用溴水时分层，下层为无色油状的 1,2-二溴乙烷（密度大于水）。常温即可，无需光照或催化剂。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>C=C 中的 π 键较弱，受 Br<sub>2</sub> 分子进攻后断裂，两个双键碳各结合 1 个 Br 原子，形成两个 C—Br σ 键。<strong>不饱和度下降</strong>，分子由"扁平"变"立体"。这与烷烃取代需要光照、且逐个换氢有本质区别。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p><span class="eq">CH<sub>2</sub>=CH<sub>2</sub> + Br<sub>2</sub> <span class="eq-arrow" data-cond="">→</span> CH<sub>2</sub>Br—CH<sub>2</sub>Br</span></p>
+<p>对比：CH<sub>4</sub> + Br<sub>2</sub>（蒸气）<span class="eq-arrow" data-cond="光照">→</span> CH<sub>3</sub>Br + HBr（取代，有 HBr 生成）。</p>
+</div>
+</div>
+<p>贯通要点：同样遇到溴，<strong>烯烃常温加成使溴水褪色，烷烃光照取代且有 HBr 副产物，苯则根本不反应（只萃取）</strong>——三类烃遇溴的不同表现是鉴别的核心依据。</p>
+
+<h3>第三组：苯与液溴的取代反应</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>苯 + 液溴 + 铁屑混合后：液体微沸、有红棕色蒸气（Br<sub>2</sub> 挥发）；长导管口出现<strong>白雾</strong>（HBr）；将反应液倒入水中，得到褐色油状液体（溶有 Br<sub>2</sub> 的溴苯）沉在水底；气体通入 AgNO<sub>3</sub> 溶液生成<strong>淡黄色沉淀</strong>。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>Fe 与 Br<sub>2</sub> 生成 FeBr<sub>3</sub>，FeBr<sub>3</sub> 使 Br<sub>2</sub> 分子极化出 Br<sup>+</sup> 进攻苯环的大 π 电子云；苯环上一个 H 被 Br 替代，脱下的 H 与另一半 Br 结合成 HBr。<strong>苯环骨架与大 π 键保持完整</strong>——所以是取代而非加成，这正体现了苯环的特殊稳定性。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p><span class="eq">C<sub>6</sub>H<sub>6</sub> + Br<sub>2</sub> <span class="eq-arrow" data-cond="FeBr<sub>3</sub>">→</span> C<sub>6</sub>H<sub>5</sub>Br + HBr</span></p>
+<p>检验：HBr + AgNO<sub>3</sub> → AgBr↓（淡黄色）+ HNO<sub>3</sub>。</p>
+</div>
+</div>
+<p>贯通要点：苯与液溴在催化剂下"取代"，与乙烯和溴水"加成"条件与产物都不同；而苯与溴水只发生物理萃取。AgBr 淡黄色沉淀是"取代"成立的判决性证据。</p>
+
+<h3>第四组：苯环活化侧链——甲苯使酸性高锰酸钾溶液褪色</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>向酸性 KMnO<sub>4</sub> 溶液（紫红色）中分别加入苯和甲苯，振荡：苯的试管<strong>分层不褪色</strong>（苯在上层）；甲苯的试管<strong>紫红色褪去</strong>。同样条件下，苯环本身岿然不动，甲基却被"点名"氧化。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>甲苯中苯环的大 π 电子云"推"向侧链，使甲基上的 C—H 键变弱、易被氧化——甲基最终被氧化为羧基 —COOH，生成苯甲酸。苯分子中 6 个 C—H 等同且受大 π 键保护，故不被氧化。<strong>基团之间相互影响</strong>，是有机物性质的重要规律。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p>C<sub>6</sub>H<sub>5</sub>CH<sub>3</sub> <span class="eq-arrow" data-cond="酸性 KMnO<sub>4</sub>">→</span> C<sub>6</sub>H<sub>5</sub>COOH</p>
+<p>（苯的同系物侧链被氧化为羧基；前提：与苯环直接相连的碳上必须有 H）</p>
+</div>
+</div>
+<p>贯通要点：同一支 KMnO<sub>4</sub> 溶液，苯不褪色、甲苯褪色——宏观差异来自"苯环是否带有可被氧化的侧链"这一微观结构差异。该反应可用于鉴别苯与苯的同系物。</p>
+</section>
+
+<section>
+<h2>四、典型例题分步拆解</h2>
+<p>以下 7 道例题覆盖本章三大考法：燃烧计算（例 1、2、5、7）、实验分析（例 3）、反应类型与产物判断（例 4、6）。燃烧计算务必动手算出数值再核对。</p>
+
+<div class="card example">
+<span class="tag">例题 1 · 烃的燃烧计算（确定分子式）</span>
+<h4>题目</h4>
+<p>0.1 mol 某烃完全燃烧，生成 0.3 mol CO<sub>2</sub> 和 7.2 g H<sub>2</sub>O。（1）求该烃的分子式；（2）0.1 mol 该烃完全燃烧消耗 O<sub>2</sub> 的物质的量是多少？在标准状况下的体积是多少？（相对原子质量：H1 O16 C12）</p>
+<p><strong>【思路点拨】</strong>由 n(CO<sub>2</sub>) 定碳、由 n(H<sub>2</sub>O) 定氢；耗氧量用通式 (x + y/4)。</p>
+<div class="step"><div class="no">1</div><div><strong>求水的物质的量</strong>：n(H<sub>2</sub>O) = 7.2 g ÷ 18 g/mol = <strong>0.4 mol</strong>。</div></div>
+<div class="step"><div class="no">2</div><div><strong>定碳、氢原子数</strong>：1 mol 烃中含 C：0.3 ÷ 0.1 = <strong>3</strong>；含 H：0.4 × 2 ÷ 0.1 = <strong>8</strong>。分子式为 C<sub>3</sub>H<sub>8</sub>（验算：符合烷烃通式 C<sub>n</sub>H<sub>2n+2</sub>，合理）。</div></div>
+<div class="step"><div class="no">3</div><div><strong>算耗氧量</strong>：1 mol C<sub>3</sub>H<sub>8</sub> 耗 O<sub>2</sub> = x + y/4 = 3 + 8/4 = <strong>5 mol</strong>；故 0.1 mol 烃耗 O<sub>2</sub> = 0.1 × 5 = <strong>0.5 mol</strong>。</div></div>
+<div class="step"><div class="no">4</div><div><strong>换算体积</strong>：V(O<sub>2</sub>) = 0.5 mol × 22.4 L/mol = <strong>11.2 L</strong>（标准状况）。</div></div>
+<div class="ans"><strong>【答案】</strong>（1）分子式为 C<sub>3</sub>H<sub>8</sub>（丙烷）；（2）耗 O<sub>2</sub> 0.5 mol，标准状况下体积为 11.2 L。</div>
+<p><strong>【方法总结】</strong>燃烧定式三步：CO<sub>2</sub> 给碳、水给氢、通式给耗氧。注意水给的是 H<sub>2</sub>O 的物质的量，氢原子要 ×2；用烷烃/烯烃通式验算分子式是否合理。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 2 · 等质量烃燃烧耗氧量比较</span>
+<h4>题目</h4>
+<p>等质量的下列烃完全燃烧，消耗 O<sub>2</sub> 最多的是哪一种？请通过计算说明：CH<sub>4</sub>、C<sub>2</sub>H<sub>6</sub>、C<sub>2</sub>H<sub>4</sub>、C<sub>3</sub>H<sub>8</sub>。</p>
+<p><strong>【思路点拨】</strong>等质量时不能直接用 (x + y/4) 比较（那是等物质的量的算法），应取相同质量（如 1 g）分别计算，或比较 y/x（含氢量）。</p>
+<div class="step"><div class="no">1</div><div><strong>统一取 1 g 样品</strong>，各烃的物质的量 = 1/M。</div></div>
+<div class="step"><div class="no">2</div><div><strong>逐个计算耗氧量</strong>（单位：mol）：<br>CH<sub>4</sub>：M=16，n=1/16 mol，x+y/4 = 1+1 = 2 → (1/16)×2 = 0.1250<br>C<sub>2</sub>H<sub>6</sub>：M=30，n=1/30 mol，x+y/4 = 2+1.5 = 3.5 → (1/30)×3.5 ≈ 0.1167<br>C<sub>3</sub>H<sub>8</sub>：M=44，n=1/44 mol，x+y/4 = 3+2 = 5 → (1/44)×5 ≈ 0.1136<br>C<sub>2</sub>H<sub>4</sub>：M=28，n=1/28 mol，x+y/4 = 2+1 = 3 → (1/28)×3 ≈ 0.1071</div></div>
+<div class="step"><div class="no">3</div><div><strong>比较排序</strong>：0.1250 &gt; 0.1167 &gt; 0.1136 &gt; 0.1071。</div></div>
+<div class="step"><div class="no">4</div><div><strong>用规律复核</strong>：y/x 依次为 4、3、2.67、2，含氢量 CH<sub>4</sub> 最高 → 耗氧最多，与计算一致。</div></div>
+<div class="ans"><strong>【答案】</strong>CH<sub>4</sub> 耗氧最多；顺序为 CH<sub>4</sub> &gt; C<sub>2</sub>H<sub>6</sub> &gt; C<sub>3</sub>H<sub>8</sub> &gt; C<sub>2</sub>H<sub>4</sub>。</div>
+<p><strong>【方法总结】</strong>等物质的量 → 比 (x+y/4)；等质量 → 比 y/x（或直接取 1 g 计算）。务必看清题目给的是"等物质的量"还是"等质量"，这是出题人最爱设的陷阱。</p>
+<p><strong>【对照验证】</strong>若改为<strong>等物质的量</strong>比较：直接看 x+y/4——CH<sub>4</sub>(2) &lt; C<sub>2</sub>H<sub>4</sub>(3) &lt; C<sub>2</sub>H<sub>6</sub>(3.5) &lt; C<sub>3</sub>H<sub>8</sub>(5)，顺序完全颠倒。同一组物质、两种问法、两套答案，这就是必须审题的原因。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 3 · 乙炔的实验室制法（实验题）</span>
+<h4>题目</h4>
+<p>实验室用电石（主要成分为 CaC<sub>2</sub>）制取乙炔。（1）写出反应的化学方程式；（2）为什么用饱和食盐水代替水？为什么不能用启普发生器？（3）制得的乙炔常有臭味，是什么杂质引起的？用什么试剂除去？</p>
+<p><strong>【思路点拨】</strong>每个"为什么"都要落到"反应剧烈放热 + 产物糊状"这一组事实上。</p>
+<div class="step"><div class="no">1</div><div><strong>写方程式</strong>：<span class="eq">CaC<sub>2</sub> + 2H<sub>2</sub>O <span class="eq-arrow" data-cond="">→</span> Ca(OH)<sub>2</sub> + C<sub>2</sub>H<sub>2</sub>↑</span>（常温即剧烈反应，无需加热条件）。</div></div>
+<div class="step"><div class="no">2</div><div><strong>答"饱和食盐水"</strong>：电石与水反应过于剧烈且大量放热，用饱和食盐水可<strong>降低水的浓度、减缓反应速率</strong>，使气流平稳，便于控制。</div></div>
+<div class="step"><div class="no">3</div><div><strong>答"不能用启普发生器"</strong>：① 反应放热剧烈，启普发生器不能承受骤热，可能炸裂；② 生成的 Ca(OH)<sub>2</sub> 是糊状物，易堵塞容器颈部与导管；③ 电石遇水即快速反应且逐渐粉化，不能保持块状停留在隔板上，无法实现固液分离、随开随停。</div></div>
+<div class="step"><div class="no">4</div><div><strong>答除杂</strong>：臭味来自电石中 CaS、Ca<sub>3</sub>P<sub>2</sub> 等杂质与水反应生成的 <strong>H<sub>2</sub>S、PH<sub>3</sub></strong>；使气体通过 <strong>CuSO<sub>4</sub> 溶液</strong>除去：H<sub>2</sub>S + CuSO<sub>4</sub> → CuS↓（黑色）+ H<sub>2</sub>SO<sub>4</sub>。不能用酸性 KMnO<sub>4</sub> 或溴水——它们会同时氧化/加成乙炔。</div></div>
+<div class="ans"><strong>【答案】</strong>（1）CaC<sub>2</sub> + 2H<sub>2</sub>O → Ca(OH)<sub>2</sub> + C<sub>2</sub>H<sub>2</sub>↑；（2）饱和食盐水减缓反应速率；不能用启普发生器（放热剧烈、Ca(OH)<sub>2</sub> 糊状堵塞、电石粉化无法固液分离）；（3）H<sub>2</sub>S、PH<sub>3</sub> 等杂质；用 CuSO<sub>4</sub> 溶液除去。</div>
+<p><strong>【方法总结】</strong>实验题的"为什么"按"性质 → 后果 → 措施"三段作答：先说物质有什么性质（反应剧烈放热），再说会导致什么后果（气流不稳/堵塞/炸裂），最后点明措施如何解决。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 4 · 马氏规则应用</span>
+<h4>题目</h4>
+<p>丙烯 CH<sub>3</sub>—CH=CH<sub>2</sub> 与 HBr 发生加成反应，写出主要产物的结构简式和名称，并说明理由。</p>
+<p><strong>【思路点拨】</strong>不对称烯烃 + 不对称试剂（HX）→ 用马氏规则定取向。</p>
+<div class="step"><div class="no">1</div><div><strong>分析双键两端</strong>：C1（=CH<sub>2</sub> 端）含 2 个 H，C2（—CH= 端）含 1 个 H——两端不对称。</div></div>
+<div class="step"><div class="no">2</div><div><strong>应用马氏规则</strong>：H 加在含氢较多的 C1 上，Br 加在含氢较少的 C2 上。</div></div>
+<div class="step"><div class="no">3</div><div><strong>写产物</strong>：CH<sub>3</sub>—CH<sub>2</sub>—CH<sub>2</sub>Br（1-溴丙烷）是次要产物；<strong>CH<sub>3</sub>—CHBr—CH<sub>3</sub>（2-溴丙烷）是主要产物</strong>。</div></div>
+<div class="step"><div class="no">4</div><div><strong>微观理由</strong>：加成经碳正离子中间体进行，Br<sup>−</sup> 进攻更稳定的碳正离子。H 加到 C1 后，正电荷落在 C2（连两个甲基，仲碳正离子），比落在 C1（伯碳正离子）更稳定，故主产物为 2-溴丙烷。</div></div>
+<div class="ans"><strong>【答案】</strong>主要产物为 CH<sub>3</sub>—CHBr—CH<sub>3</sub>，名称 2-溴丙烷；依据马氏规则（H 加在含氢较多的双键碳上）。</div>
+<p><strong>【方法总结】</strong>判断取向口诀"氢上加氢"；本质记一句"生成更稳定的碳正离子"。对称烯烃（如 2-丁烯）加成只有一种产物，无需讨论取向。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 5 · 由燃烧产物体积推分子式</span>
+<h4>题目</h4>
+<p>某气态烃 10 mL 与足量氧气混合后点燃，完全燃烧后恢复到 120℃（此时水为气态），测得生成 CO<sub>2</sub> 30 mL、水蒸气 40 mL。（1）求该烃的分子式；（2）10 mL 该烃完全燃烧消耗 O<sub>2</sub> 多少毫升？</p>
+<p><strong>【思路点拨】</strong>同温同压下气体体积比 = 物质的量之比 = 化学计量数之比，可直接用体积代替物质的量代入燃烧通式。</p>
+<div class="step"><div class="no">1</div><div><strong>定碳</strong>：10 mL 烃生成 30 mL CO<sub>2</sub> → 1 体积烃含 C：30÷10 = <strong>3</strong>。</div></div>
+<div class="step"><div class="no">2</div><div><strong>定氢</strong>：10 mL 烃生成 40 mL H<sub>2</sub>O(g)，1 体积烃含 H：40×2÷10 = <strong>8</strong>。</div></div>
+<div class="step"><div class="no">3</div><div><strong>写分子式并验算</strong>：C<sub>3</sub>H<sub>8</sub>，符合烷烃通式 C<sub>n</sub>H<sub>2n+2</sub>（2×3+2=8），合理。</div></div>
+<div class="step"><div class="no">4</div><div><strong>算耗氧</strong>：x + y/4 = 3 + 2 = 5 → 10 mL 烃耗 O<sub>2</sub> = 10×5 = <strong>50 mL</strong>。复核：C<sub>3</sub>H<sub>8</sub> + 5O<sub>2</sub> → 3CO<sub>2</sub> + 4H<sub>2</sub>O，10 mL 烃恰好生成 30 mL CO<sub>2</sub> 与 40 mL 水蒸气，自洽。</div></div>
+<div class="ans"><strong>【答案】</strong>（1）C<sub>3</sub>H<sub>8</sub>（丙烷）；（2）消耗 O<sub>2</sub> 50 mL。</div>
+<p><strong>【方法总结】</strong>气体烃的燃烧题，先确认水的状态（&gt;100℃ 为气体，可计入体积；常温为液体，体积忽略不计），再用"体积比 = 计量数比"直接列式，避免绕到物质的量再换算。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 6 · 三种烃的鉴别方案设计</span>
+<h4>题目</h4>
+<p>现有三瓶无色液体：己烷、己烯、苯，另有一瓶气态烃样品。请设计实验鉴别三种液体试剂；并说明如何用简单实验初步判断气态烃是甲烷还是乙烯。</p>
+<p><strong>【思路点拨】</strong>鉴别题按"一种试剂分组 → 再用第二种试剂区分"的思路设计；每组现象必须互不重叠。</p>
+<div class="step"><div class="no">1</div><div><strong>液体鉴别第一步：加溴水</strong>。各取少量样品于试管，分别滴加溴水、振荡：褪色（发生加成，溶液褪为无色）的是<strong>己烯</strong>；不褪色但分层的进入下一步。</div></div>
+<div class="step"><div class="no">2</div><div><strong>区分己烷与苯：看萃取后有色层位置</strong>。己烷和苯都萃取溴使水层褪色（物理变化），但二者密度都小于水，有色层都在上层——单靠溴水无法区分。改用<strong>酸性 KMnO<sub>4</sub> 溶液</strong>：均不褪色，仍无法区分。</div></div>
+<div class="step"><div class="no">3</div><div><strong>换用液溴 + 铁屑</strong>：取少量样品加液溴和少许铁屑，剧烈反应、导管口有白雾（HBr，可使湿润蓝色石蕊试纸变红）的是<strong>苯</strong>（取代反应）；无明显现象的是己烷（光照下才缓慢取代）。</div></div>
+<div class="step"><div class="no">4</div><div><strong>气体鉴别</strong>：将气体分别通入溴水（或酸性 KMnO<sub>4</sub> 溶液）：使溴水褪色的是<strong>乙烯</strong>（加成），不褪色的是甲烷。注意点燃法现象不如试剂法明确（乙烯火焰更亮、有黑烟），答题优先写试剂法。</div></div>
+<div class="ans"><strong>【答案】</strong>溴水褪色者为己烯；剩余两者用液溴+铁屑，产生白雾者为苯，无现象者为己烷。气体样品通入溴水：褪色为乙烯，不褪色为甲烷。</div>
+<p><strong>【方法总结】</strong>鉴别方案要"现象互斥、操作最简、结论明确"；规范表述格式：取样 → 加试剂 → 描述现象 → 得出结论。凡是"不褪色"也要写明"无明显现象"，不能只写现象成立的那一半。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 7 · 混合烃的平均分子式与讨论</span>
+<h4>题目</h4>
+<p>两种气态烃组成的混合气体 0.5 mol，完全燃烧后生成 0.9 mol CO<sub>2</sub> 和 1.0 mol H<sub>2</sub>O。推断混合气体的可能组成，并求对应体积比。</p>
+<p><strong>【思路点拨】</strong>先求平均分子式 C<sub>x̄</sub>H<sub>ȳ</sub>；再利用"平均碳数小于 2 必含 CH<sub>4</sub>"锁定一种组分；最后分别用碳、氢平均值列方程（或十字交叉）求比例并检验自洽。</p>
+<div class="step"><div class="no">1</div><div><strong>求平均分子式</strong>：x̄ = 0.9÷0.5 = 1.8；ȳ = 1.0×2÷0.5 = 4 → 平均分子式 <strong>C<sub>1.8</sub>H<sub>4</sub></strong>。</div></div>
+<div class="step"><div class="no">2</div><div><strong>锁定必含组分</strong>：x̄ = 1.8 &lt; 2，而碳数小于 2 的烃只有 CH<sub>4</sub> → <strong>必含 CH<sub>4</sub></strong>，另一组分记为 C<sub>m</sub>H<sub>n</sub>（m ≥ 2）。</div></div>
+<div class="step"><div class="no">3</div><div><strong>用氢平均值约束另一组分</strong>：ȳ = 4，CH<sub>4</sub> 的氢数恰好也是 4 → 要使混合氢平均仍为 4，另一组分的氢数 <strong>n 必须等于 4</strong>。故候选为 C<sub>2</sub>H<sub>4</sub>（乙烯）或 C<sub>3</sub>H<sub>4</sub>（丙炔）。</div></div>
+<div class="step"><div class="no">4</div><div><strong>分别求体积比</strong>（碳十字交叉）：<br>若为 CH<sub>4</sub> 与 C<sub>2</sub>H<sub>4</sub>：(2 − 1.8) ∶ (1.8 − 1) = 0.2 ∶ 0.8 = <strong>1 ∶ 4</strong>；<br>若为 CH<sub>4</sub> 与 C<sub>3</sub>H<sub>4</sub>：(3 − 1.8) ∶ (1.8 − 1) = 1.2 ∶ 0.8 = <strong>3 ∶ 2</strong>。<br>检验：CH<sub>4</sub>/C<sub>2</sub>H<sub>4</sub> 按 1∶4 混合，碳平均 = (1+8)/5 = 1.8 ✓，氢平均 = 4 ✓；CH<sub>4</sub>/C<sub>3</sub>H<sub>4</sub> 按 3∶2 混合，碳平均 = (3+6)/5 = 1.8 ✓，氢平均 = (12+8)/5 = 4 ✓。两组解均自洽。</div></div>
+<div class="ans"><strong>【答案】</strong>混合气体为 CH<sub>4</sub> 与 C<sub>2</sub>H<sub>4</sub> 按体积比 1∶4 混合，或 CH<sub>4</sub> 与 C<sub>3</sub>H<sub>4</sub> 按体积比 3∶2 混合。</div>
+<p><strong>【方法总结】</strong>混合烃推断三句诀："平均碳数小于 2，必有甲烷"；"氢数平均 4 且一组分为 CH<sub>4</sub>，另一组分氢必为 4"；"求比用十字交叉，结果必须代回验算"。当两组数据给出多种组合时，<strong>所有自洽组合都是答案</strong>，漏答是这类题最常见的失分点。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 8 · 甲苯的氯代物计数（结构 + 反应综合）</span>
+<h4>题目</h4>
+<p>甲苯 C<sub>6</sub>H<sub>5</sub>CH<sub>3</sub> 与氯气反应：（1）在光照条件下，最多可生成几种一氯代物？（2）在 FeCl<sub>3</sub> 催化条件下，苯环上的一氯代物有几种？分别写出名称。</p>
+<p><strong>【思路点拨】</strong>同一物质在不同条件下取代位置不同：光照取代侧链（类比甲烷），催化剂取代苯环（类比苯的溴代）。计数时按等效氢分析。</p>
+<div class="step"><div class="no">1</div><div><strong>分析甲苯的等效氢</strong>：侧链 —CH<sub>3</sub> 上 3 个 H 等效（一种）；苯环上对位（4 号位）一种、邻位（2、6 号位）对称等效一种、间位（3、5 号位）对称等效一种。共 <strong>4 种等效氢</strong>。</div></div>
+<div class="step"><div class="no">2</div><div><strong>光照条件</strong>：取代发生在侧链甲基上（自由基机理，与 CH<sub>4</sub> 氯代同类），一氯代物只有 <strong>1 种</strong>：C<sub>6</sub>H<sub>5</sub>CH<sub>2</sub>Cl（苄氯）。若氯气过量可继续取代生成 C<sub>6</sub>H<sub>5</sub>CHCl<sub>2</sub>、C<sub>6</sub>H<sub>5</sub>CCl<sub>3</sub>。</div></div>
+<div class="step"><div class="no">3</div><div><strong>FeCl<sub>3</sub> 催化条件</strong>：取代发生在苯环上（亲电取代，与苯的溴代同类），甲基是邻对位定位基 → 一氯代物有 <strong>2 种</strong>：邻氯甲苯（2-氯甲苯）、对氯甲苯（4-氯甲苯）。间位产物很少，中学阶段不计。</div></div>
+<div class="step"><div class="no">4</div><div><strong>汇总结论</strong>：若题目问"甲苯的一氯代物共几种"（不限定条件），应包括侧链 1 种 + 苯环邻、间、对 3 种 = <strong>4 种</strong>。审题时务必看清条件限定。</div></div>
+<div class="ans"><strong>【答案】</strong>（1）光照下 1 种（C<sub>6</sub>H<sub>5</sub>CH<sub>2</sub>Cl，氯化苄/苄氯）；（2）FeCl<sub>3</sub> 催化下苯环一氯代物 2 种（邻氯甲苯、对氯甲苯）；不限条件时共 4 种。</div>
+<p><strong>【方法总结】</strong>"条件定位置"：光照（或高温）→ 侧链取代；FeX<sub>3</sub> 催化 → 苯环取代。这是芳香烃取代反应最重要的条件—位置对应关系，与"甲烷光照取代、乙烯常温加成"同属"条件—反应类型"记忆组块。</p>
+</div>
+</section>
+
+<section>
+<h2>五、易错点与成因</h2>
+<p>烃这一章的失分大多不是"不会"，而是"条件张冠李戴、细节似是而非"。以下 10 条易错点按考查频率排序，每条都附成因分析与避坑口诀。</p>
+<p>共 10 条，覆盖：取代/加成条件、苯与溴水、硝化实验细节、燃烧规律前提、加聚书写、鉴别与除杂、侧链氧化条件、烯烃命名、气体验纯、苯环结构。</p>
+
+<div class="card trap">
+<span class="tag">易错点 1</span>
+<h4>混淆取代与加成的反应条件</h4>
+<p><strong>易错表现</strong>：写"CH<sub>4</sub> 与溴水反应褪色"；或写"乙烯与 Cl<sub>2</sub> 光照取代"。</p>
+<p><strong>错误成因</strong>：把"遇到卤素"当成一回事，没有建立"试剂状态 + 条件 + 反应类型"的对应关系。</p>
+<p><strong>正确理解</strong>：烷烃取代——纯卤素（蒸气/液）+ 光照（或加热），产物是混合物且有 HX；烯炔加成——溴水或溴的 CCl<sub>4</sub> 溶液常温即可，无 HX 生成。鉴别甲烷与乙烯用溴水：褪色的是乙烯。</p>
+<p><strong>避坑口诀</strong>：取代要光要纯卤，加成溴水常温足。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 2</span>
+<h4>认为苯能使溴水褪色（发生化学反应）</h4>
+<p><strong>易错表现</strong>：把"苯加入溴水，振荡后水层褪色"描述为"苯与溴发生了加成反应"。</p>
+<p><strong>错误成因</strong>：只看到"褪色"这个结果，没有区分褪色机理——物理萃取与化学反应都会让水层颜色变浅。</p>
+<p><strong>正确理解</strong>：苯与溴水<strong>不反应</strong>，褪色是苯把 Br<sub>2</sub> 萃取到有机层（苯密度小于水，橙红色在上层）；苯只有与<strong>液溴</strong>在 FeBr<sub>3</sub> 催化下才发生取代。同理，苯也不能使酸性 KMnO<sub>4</sub> 褪色——这两条正是苯环"没有典型双键"的证据。</p>
+<p><strong>避坑口诀</strong>：苯遇溴水只萃取，液溴催化才取代。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 3</span>
+<h4>苯的硝化实验细节张冠李戴</h4>
+<p><strong>易错表现</strong>：把温度写成 70~80℃、把浓硫酸作用只写"催化剂"、把混酸顺序写成"浓硝酸倒入浓硫酸"、认为硝基苯密度比水小。</p>
+<p><strong>错误成因</strong>：与溴代实验、浓硫酸稀释操作混在一起记，缺乏对每个细节"为什么"的理解。</p>
+<p><strong>正确理解</strong>：硝化 50~60℃ 水浴（温控精确、防止硝酸分解和苯挥发）；浓硫酸 = 催化剂 + 吸水剂（吸收生成的水，使平衡右移）；混酸配制是<strong>浓硫酸缓缓注入浓硝酸</strong>中（密度大的注入密度小的，散热安全）；硝基苯无色油状、密度大于水、苦杏仁味。</p>
+<p><strong>避坑口诀</strong>：五六水浴硝化温，酸入酸中记心间，硝基苯重沉水底。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 4</span>
+<h4>燃烧体积变化规律用错条件</h4>
+<p><strong>易错表现</strong>：不分温度直接用"ΔV = y/4 − 1"；或把"等物质的量"与"等质量"的耗氧规律用反。</p>
+<p><strong>错误成因</strong>：死记公式却忽略公式成立的前提——水为气态（温度 ≥100℃）时才能用体积公式；比较基准不同结论完全不同。</p>
+<p><strong>正确理解</strong>：T ≥100℃ 时，气态烃燃烧 ΔV = y/4 − 1：y=4 体积不变（CH<sub>4</sub>、C<sub>2</sub>H<sub>4</sub>、C<sub>3</sub>H<sub>4</sub>），y&gt;4 增大，y&lt;4 减小（仅 C<sub>2</sub>H<sub>2</sub>）。耗氧量：等物质的量比 (x+y/4)，等质量比 y/x。</p>
+<p><strong>避坑口诀</strong>：体积变化看水温，耗氧先问"量比还是质比"。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 5</span>
+<h4>加聚产物书写不规范</h4>
+<p><strong>易错表现</strong>：聚乙烯写成 [CH<sub>2</sub>=CH<sub>2</sub>]<sub>n</sub>（双键没打开）；或链节两端的键不伸出括号；或漏写下标 n。</p>
+<p><strong>错误成因</strong>：对"双键打开、彼此相连成链"的微观过程没有理解，只当符号游戏。</p>
+<p><strong>正确理解</strong>：加聚时每个单体的 π 键断裂，伸出两只"手"与相邻单体相连。书写时：双键变单键、两端半键伸出方括号、右下角写 n。由聚合物反推单体则反向操作："括号去掉、半键合拢成双键"。</p>
+<p><strong>避坑口诀</strong>：双键打开伸两手，括号外面牵着走。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 6</span>
+<h4>用酸性 KMnO<sub>4</sub> 除去烷烃中的烯烃</h4>
+<p><strong>易错表现</strong>：设计"除去乙烷中混有的乙烯"时，选用酸性 KMnO<sub>4</sub> 溶液。</p>
+<p><strong>错误成因</strong>：只记得"KMnO<sub>4</sub> 能鉴别烯烃"，忘了鉴别与除杂的要求不同——除杂要求<strong>不引入新杂质</strong>。</p>
+<p><strong>正确理解</strong>：酸性 KMnO<sub>4</sub> 把乙烯氧化成 CO<sub>2</sub> 等气体，混入乙烷中形成新杂质；正确做法是将混合气通过<strong>溴水</strong>（或溴的 CCl<sub>4</sub> 溶液），乙烯加成生成液态的 1,2-二溴乙烷留在洗气瓶中，乙烷不反应逸出。</p>
+<p><strong>避坑口诀</strong>：鉴别可以用 KMnO<sub>4</sub>，除杂只能用溴水。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 7</span>
+<h4>以为苯的同系物都能被酸性 KMnO<sub>4</sub> 氧化</h4>
+<p><strong>易错表现</strong>：认为叔丁基苯 C<sub>6</sub>H<sub>5</sub>C(CH<sub>3</sub>)<sub>3</sub> 也能使酸性 KMnO<sub>4</sub> 褪色。</p>
+<p><strong>错误成因</strong>：只记了"苯的同系物能被氧化"，忽略了反应的微观前提——与苯环直接相连的那个碳上必须有氢原子（α-H），氧化才能从这个 C—H 键入手。</p>
+<p><strong>正确理解</strong>：苯的同系物被酸性 KMnO<sub>4</sub> 氧化的条件是<strong>侧链与苯环相连的碳上有 H</strong>；产物规律是"无论侧链多长，都氧化为 —COOH"（如乙苯 → 苯甲酸）。叔丁基苯的 α-碳上没有 H，不能被氧化。</p>
+<p><strong>避坑口诀</strong>：侧链氧化看 α-H，有氢才能变羧基。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 8</span>
+<h4>烯烃命名时选了不含双键的"最长链"</h4>
+<p><strong>易错表现</strong>：把 CH<sub>2</sub>=C(CH<sub>3</sub>)CH<sub>2</sub>CH<sub>3</sub> 命名为"2-乙基-1-丙烯"之类的错误名称，主链选了不含双键的长链。</p>
+<p><strong>错误成因</strong>：把烷烃"主链最长"的规则机械照搬到烯烃，忘了烯烃的第一优先级是"主链必须含双键"。</p>
+<p><strong>正确理解</strong>：烯烃选主链的第一标准是<strong>含双键的最长碳链</strong>（可以不是全分子最长的链）；编号从离双键最近的一端开始。CH<sub>2</sub>=C(CH<sub>3</sub>)CH<sub>2</sub>CH<sub>3</sub> 应命名为 2-甲基-1-丁烯（主链 4 个碳含双键）。</p>
+<p><strong>避坑口诀</strong>：烯炔选链先含键，编号靠近官能团。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 9</span>
+<h4>点燃可燃性气体前忘记验纯</h4>
+<p><strong>易错表现</strong>：实验题中"点燃 CH<sub>4</sub>/C<sub>2</sub>H<sub>4</sub>/C<sub>2</sub>H<sub>2</sub> 前"不写验纯操作；或认为只有 H<sub>2</sub> 需要验纯。</p>
+<p><strong>错误成因</strong>：把验纯当成氢气的"专属操作"，没有理解其本质——一切可燃性气体与空气（氧气）混合达到爆炸极限时遇明火都会爆炸。</p>
+<p><strong>正确理解</strong>：CH<sub>4</sub>、C<sub>2</sub>H<sub>2</sub>、H<sub>2</sub>、CO 等所有可燃性气体，点燃或加热前都必须<strong>先验纯</strong>。答题规范写法："收集一试管气体，用拇指堵住管口移近火焰，若发出轻微'噗'声则纯净；若发出尖锐爆鸣声则不纯，需重新收集检验。"</p>
+<p><strong>避坑口诀</strong>：可燃气体见明火，先验纯来再点火。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 10</span>
+<h4>把苯当作单双键交替的"环己三烯"</h4>
+<p><strong>易错表现</strong>：认为苯分子是单双键交替结构，推出"苯的邻二氯代物有两种"、"苯能使溴水褪色"等错误结论。</p>
+<p><strong>错误成因</strong>：被凯库勒式的画法误导，以为画出来的双键就是真实存在的独立 C=C；没有理解苯环 6 个碳碳键是完全等同的大 π 键。</p>
+<p><strong>正确理解</strong>：苯环中不存在独立的单双键。三条判决性证据：① 苯不能使溴水、酸性 KMnO<sub>4</sub> 褪色；② 邻位二取代物只有一种；③ 苯环碳碳键长完全相等（介于单键与双键之间）。写结构时用圆圈或交替画法都可以，但心里要清楚那是"表示符号"而非"真实结构"。</p>
+<p><strong>避坑口诀</strong>：苯环无单双，六个碳碳一个样。</p>
+</div>
+</section>
+
+<section>
+<h2>六、与前后章节的联系 &amp; 高考怎么考</h2>
+<table>
+<tr><th>章节</th><th>联系点</th></tr>
+<tr><td>向前：3.16 有机物分类与结构</td><td>烃的同分异构体（如 C<sub>5</sub>H<sub>12</sub> 三种、C<sub>4</sub>H<sub>8</sub> 的烯烃三种）直接用上一章的有序书写法</td></tr>
+<tr><td>向后：3.18 烃的衍生物</td><td>烃是衍生物的"母体"：烯烃水合制醇、醇消去制烯烃、苯卤代制卤代烃——官能团的引入都从烃出发</td></tr>
+<tr><td>向后：3.20 有机合成与推断</td><td>"溴水褪色""KMnO<sub>4</sub> 褪色""燃烧数据"是推断题最常用的突破口</td></tr>
+</table>
+<p><strong>高考定位</strong>：本章在选考《有机化学基础》大题中承担"官能团引入与反应类型判断"的功能；选择题中常见"下列关于甲烷/乙烯/苯的说法正确的是"这类正误判断（每题 3 分）；燃烧计算既可能出现在选择题，也常作为推断题的已知条件。苯的溴代与硝化两个实验是实验题的高频素材。</p>
+<p><strong>高频设问清单</strong>（每一条都应能秒答）：</p>
+<ul>
+<li>"能证明甲烷是正四面体结构的事实是？"——CH<sub>2</sub>Cl<sub>2</sub> 只有一种结构。</li>
+<li>"能证明苯环不是单双键交替的事实有？"——不使溴水/KMnO<sub>4</sub> 褪色、邻二取代物一种、键长相等。</li>
+<li>"除去甲烷中的乙烯用什么试剂？"——溴水（不是酸性 KMnO<sub>4</sub>）。</li>
+<li>"实验室制乙炔为什么用饱和食盐水、为什么不用启普发生器？"——减缓反应；放热剧烈、Ca(OH)<sub>2</sub> 糊状堵塞、电石粉化无法固液分离。</li>
+<li>"制硝基苯为什么要水浴加热、浓硫酸起什么作用？"——控温 50~60℃ 防副反应与挥发；催化剂 + 吸水剂。</li>
+<li>"1 mol 某烃燃烧耗氧如何算？"——x + y/4；等质量比较看 y/x。</li>
+</ul>
+</section>
+
+<section>
+<h2>七、章末自检清单</h2>
+<p>合上材料逐条自测，答不上来的条目回到对应小节重学。本清单覆盖本章全部高考考点，通关后方可进入 3.18。</p>
+<ul class="checklist">
+<li>我能写出四类烃的通式，并说明同一通式可能对应的不同类别。</li>
+<li>我能描述甲烷的正四面体结构，并用 CH<sub>2</sub>Cl<sub>2</sub> 只有一种结构作为证据。</li>
+<li>我能写出甲烷与氯气取代的四步方程式，并说出取代反应的连锁特点和定量关系（1 mol H↔1 mol Cl<sub>2</sub>↔1 mol HCl）。</li>
+<li>我能写出乙烯与 Br<sub>2</sub>、H<sub>2</sub>、H<sub>2</sub>O、HCl 加成的方程式并注明条件。</li>
+<li>我能用马氏规则判断不对称烯烃加 HBr 的主产物，并说出碳正离子稳定性的理由。</li>
+<li>我能规范书写加聚反应方程式，并能在单体与聚合物之间互相推导。</li>
+<li>我能写出电石制乙炔的方程式，说清用饱和食盐水的原因、不用启普发生器的原因、除 H<sub>2</sub>S 的试剂。</li>
+<li>我能列举苯环"介于单双键之间"的三条实验证据。</li>
+<li>我能完整复述苯的溴代实验：药品（液溴+Fe/FeBr<sub>3</sub>）、现象（白雾、褐色油状液体）、HBr 的检验、长导管作用。</li>
+<li>我能完整复述苯的硝化实验：浓硫酸作用、50~60℃ 水浴原因、混酸配制顺序、硝基苯的物理性质。</li>
+<li>我能用通式 C<sub>x</sub>H<sub>y</sub> + (x+y/4)O<sub>2</sub> → xCO<sub>2</sub> + y/2H<sub>2</sub>O 完成燃烧计算，并区分等物质的量与等质量的比较方法。</li>
+<li>我能判断气态烃燃烧后体积变化（T≥100℃ 时 ΔV = y/4 − 1）。</li>
+</ul>
+<div class="card note">
+<span class="tag">章末小结</span>
+<p>本章主线一句话：<strong>碳碳键的类型决定烃的性格——单键稳、双键活、三键更活、苯环特殊</strong>。把"四类烃性质速查与鉴别总表"默写下来，把例 1、例 2、例 7 三道燃烧计算亲手重算一遍，把苯的溴代、硝化两个实验的"药品—条件—现象—注意"四要素各写一遍，本章即告通关。下一章 3.18 我们将给烃接上各种官能团，进入烃的衍生物世界。</p>
+</div>
+</section>
+
+</main>
+<footer class="chap-foot">高考备考 · 化学 · 深度学习材料 · 2026</footer>
+</body>
+</html>

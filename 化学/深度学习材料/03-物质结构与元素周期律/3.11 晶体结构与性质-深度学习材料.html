@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.11 晶体结构与性质-深度学习材料</title>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#0e7c7b; --subject-soft:#eef7f6;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 化学点缀层（无 JS，纯文本方程式） ===== */
+/* 语义卡片（例题=紫 / 易错=琥珀 / 概念=蓝 / 提示=科目色 / 结构=中性墨） */
+.card { border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 18px; margin: 14px 0; page-break-inside: avoid; }
+.card .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
+.card.concept { background: var(--c-concept-bg); } .card.concept .tag { background: var(--c-concept); color: #fff; }
+.card.example { background: var(--c-example-bg); } .card.example .tag { background: var(--c-example); color: #fff; }
+.card.trap { background: var(--c-trap-bg); } .card.trap .tag { background: var(--c-trap); color: #fff; }
+.card.note { background: var(--subject-soft); } .card.note .tag { background: var(--subject); color: #fff; }
+.card.violet { background: var(--canvas); } .card.violet .tag { background: var(--ink); color: #fff; }
+/* 方程式容器（统一灰底盒 + 科目色左边条） */
+.eq { display: block; background: var(--formula-bg); border: 1px solid var(--line); border-left: 4px solid var(--subject); border-radius: 8px; padding: var(--formula-pad); margin: 10px 0; font-size: 16px; text-align: center; letter-spacing: .3px; page-break-inside: avoid; }
+.eq-arrow { position: relative; display: inline-block; margin: 0 6px; font-weight: 600; }
+.eq-arrow::before { content: attr(data-cond); position: absolute; left: 50%; transform: translateX(-50%); top: -1.05em; font-size: 10.5px; font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
+.state { font-size: .72em; font-style: italic; color: var(--ink-soft); }
+sub, sup { font-size: .72em; line-height: 0; }
+.formula { font-size: 1.05em; }
+.kbd { background: #f0f2f5; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 13px; }
+/* 三栏对比 */
+.triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; page-break-inside: avoid; }
+.triple .cell { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: 14px; }
+.triple .cell h4 { margin: 0 0 8px; font-size: 13.5px; text-align: center; padding: 4px 0; border-radius: 6px; color: #fff; }
+.triple .cell:nth-child(1) h4 { background: var(--c-trap); }
+.triple .cell:nth-child(2) h4 { background: var(--c-example); }
+.triple .cell:nth-child(3) h4 { background: var(--subject); }
+/* 步骤与答案 */
+.step { display: flex; gap: 10px; margin: 8px 0; }
+.step .no { flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--c-method); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.ans { background: #fff; border: 1px dashed var(--c-method); border-radius: 8px; padding: 8px 14px; margin: 8px 0; }
+.chap-foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-soft); text-align: center; }
+@media (max-width: 640px) { .triple { grid-template-columns: 1fr; } }
+@media print {
+  .card { border: 1px solid #999; background: #fff !important; }
+  .card .tag { border: 1px solid #333; background: #fff !important; color: #000; }
+  .eq { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .chap-foot { border-top: none; }
+}
+</style>
+</head>
+<body>
+<nav class="chap-nav">高考备考 · 化学 · 深度学习材料 ｜ 物质结构与元素周期律 ｜ 3.11 晶体结构与性质</nav>
+<header class="chap-head">
+  <h1>3.11 晶体结构与性质</h1>
+  <p class="chap-meta">高中化学 · 深度学习材料 · 面向 2029 届云南高考</p>
+  <p class="chap-intro">
+    上一章我们知道了原子如何结合成分子，本章回答的问题是：无数粒子如何"排队"成固体，排队方式又如何决定熔点、硬度与导电性。
+    四种晶体类型 + 六种典型晶体结构是骨架，均摊法与晶胞密度计算是高考选考题的"常驻嘉宾"，也是本章必须拿满分的硬功夫。
+  </p>
+</header>
+<main>
+
+<section>
+<h2>一、本章知识全景</h2>
+<p>本章知识地图如下，先看清全貌，再逐个击破：</p>
+<table>
+<tr>
+<th>知识点</th>
+<th>核心内容</th>
+<th>高考要求</th>
+</tr>
+<tr>
+<td>晶体与非晶体</td>
+<td>自范性、各向异性、固定熔点；X 射线衍射鉴别</td>
+<td>能区分晶体与非晶体（玻璃、石蜡是非晶体）</td>
+</tr>
+<tr>
+<td>四种晶体类型</td>
+<td>离子晶体、分子晶体、原子晶体、金属晶体的构成粒子与作用力</td>
+<td>结构特点与性质差异清楚，能据性质反推晶体类型</td>
+</tr>
+<tr>
+<td>熔沸点比较</td>
+<td>先比类型，同类再比作用力强弱；注意氢键特例</td>
+<td>熟练掌握比较规律，正确率 100%</td>
+</tr>
+<tr>
+<td>典型晶体结构</td>
+<td>NaCl、CsCl、金刚石、SiO<sub>2</sub>、干冰、石墨的堆积方式与配位数</td>
+<td>记住各结构特点、配位数、最小环、键数等细节</td>
+</tr>
+<tr>
+<td>金属晶体堆积</td>
+<td>简单立方、体心立方、面心立方；配位数与空间利用率</td>
+<td>知道三种堆积的配位数（6、8、12）与代表金属</td>
+</tr>
+<tr>
+<td>均摊法</td>
+<td>顶点 ×1/8、棱 ×1/4、面心 ×1/2、体内 ×1</td>
+<td>运用熟练，能确定任意晶胞的化学式</td>
+</tr>
+<tr>
+<td>晶胞密度计算</td>
+<td>ρ = n·M / (N<sub>A</sub>·V)，注意 pm/cm 单位换算</td>
+<td>完整数值过程，结果准确</td>
+</tr>
+<tr>
+<td>晶格能</td>
+<td>概念、影响因素（电荷、半径）、与离子晶体性质的关系</td>
+<td>理解意义，能比较晶格能大小并解释熔点差异</td>
+</tr>
+</table>
+<p><strong>本章主线</strong>：</p>
+<p>晶体类型（谁在排队、靠什么粘住）→ 宏观性质（熔点/硬度/导电）→ 典型结构（六种模型）→ 定量计算（均摊法、密度）→ 晶格能（离子晶体强弱的度量）。</p>
+</section>
+
+<section>
+<h2>二、核心概念精讲</h2>
+
+<h3>2.1 晶体与非晶体</h3>
+<div class="card concept">
+<span class="tag">概念 1 · 晶体与非晶体</span>
+<p><strong>是什么</strong>：</p>
+<p>内部粒子（原子、离子或分子）在三维空间呈<strong>周期性有序排列</strong>的固体叫晶体；粒子排列相对无序的为<strong>非晶体</strong>（玻璃体），如玻璃、石蜡、松香、橡胶。</p>
+<p><strong>晶体的三大特征</strong>：</p>
+<ul>
+<li><strong>自范性</strong>——能自发呈现规则的几何外形（如 NaCl 晶体呈立方体），条件是生长速率适当；</li>
+<li><strong>各向异性</strong>——不同方向上物理性质（导热、折光、导电、机械强度）不同；</li>
+<li><strong>有固定熔点</strong>——非晶体只有一段软化温度区间，没有固定熔点。</li>
+</ul>
+<p><strong>鉴别</strong>：</p>
+<p>最可靠的科学方法是 <strong>X 射线衍射实验</strong>：晶体产生分立的衍射斑点或谱线，非晶体没有。</p>
+<p><strong>常见混淆</strong>：</p>
+<ul>
+<li>有规则外形的不一定是晶体（玻璃可加工成规则形状）；</li>
+<li>没有规则外形的也可能是晶体（粉末状 NaCl 仍是晶体）——外形是充分条件而非必要条件，内部粒子有序排列才是本质。</li>
+</ul>
+</div>
+
+<h3>2.2 四种晶体类型对比（本章总纲）</h3>
+<div class="card concept">
+<span class="tag">概念 2 · 四种晶体类型</span>
+<table>
+<tr>
+<th>类型</th>
+<th>构成粒子</th>
+<th>粒子间作用力</th>
+<th>熔沸点</th>
+<th>硬度</th>
+<th>导电性</th>
+<th>典型实例</th>
+</tr>
+<tr>
+<td>离子晶体</td>
+<td>阴、阳离子</td>
+<td>离子键（晶格能）</td>
+<td>较高（数百~上千 ℃）</td>
+<td>硬而脆</td>
+<td>固态不导电，熔融或溶于水导电</td>
+<td>NaCl、CsCl、CaF<sub>2</sub>、Na<sub>2</sub>O</td>
+</tr>
+<tr>
+<td>分子晶体</td>
+<td>分子（含稀有气体单原子分子）</td>
+<td>分子间作用力（有的含氢键）</td>
+<td>低（多数 &lt; 300 ℃）</td>
+<td>小</td>
+<td>固态、熔融均不导电（部分溶于水导电）</td>
+<td>干冰、冰、I<sub>2</sub>、蔗糖、AlCl<sub>3</sub></td>
+</tr>
+<tr>
+<td>原子晶体（共价晶体）</td>
+<td>原子</td>
+<td>共价键（空间网状）</td>
+<td>很高（&gt; 1000 ℃）</td>
+<td>很大</td>
+<td>一般不导电（Si 为半导体）</td>
+<td>金刚石、SiO<sub>2</sub>、SiC、晶体硅</td>
+</tr>
+<tr>
+<td>金属晶体</td>
+<td>金属阳离子 + 自由电子</td>
+<td>金属键</td>
+<td>差异大（Hg −39 ℃，W 3410 ℃）</td>
+<td>多数较大，延展性好</td>
+<td>固态、熔融均导电</td>
+<td>Na、Fe、Cu、Al</td>
+</tr>
+</table>
+<p><strong>判断晶体类型的两条路径</strong>：</p>
+<ul>
+<li>看构成粒子与作用力（本质路径）；</li>
+<li>看物理性质（现象路径）——熔点很高 + 不导电 → 原子晶体；熔点较高 + 熔融能导电 → 离子晶体；熔点低 → 分子晶体；能导电 + 有延展性 → 金属晶体。</li>
+</ul>
+<p><strong>特别提示</strong>：AlCl<sub>3</sub> 虽含金属元素，却是<strong>分子晶体</strong>（熔点低、熔融不导电）；石墨兼具共价键、范德华力与离域电子，是<strong>混合型（过渡型）晶体</strong>。</p>
+</div>
+
+<h3>2.3 熔沸点比较的"三步法"</h3>
+<div class="card concept">
+<span class="tag">概念 3 · 熔沸点比较</span>
+<p><strong>第一步：先比晶体类型。</strong></p>
+<p>一般规律：<strong>原子晶体 &gt; 离子晶体 &gt; 分子晶体</strong>。</p>
+<p>金属晶体跨度很大，做题时具体对待（W 高于多数原子晶体，Na 低于多数离子晶体）。</p>
+<p><strong>第二步：同类型内比作用力。</strong></p>
+<ul>
+<li><strong>原子晶体</strong>：比共价键键能——原子半径越小、键长越短、键能越大，熔点越高。如金刚石（C—C）&gt; 碳化硅（Si—C）&gt; 晶体硅（Si—Si），因为键长 C—C &lt; C—Si &lt; Si—Si。</li>
+<li><strong>离子晶体</strong>：比晶格能——离子所带<strong>电荷越多、半径越小，晶格能越大，熔点越高</strong>。如 MgO（约 2800 ℃）&gt; NaCl（801 ℃）；NaCl &gt; KCl &gt; RbCl（阳离子半径递增）。</li>
+<li><strong>分子晶体</strong>：① 先看氢键——能形成分子间氢键的（H<sub>2</sub>O、HF、NH<sub>3</sub>）反常升高；② 组成结构相似的，相对分子质量越大，范德华力越强，熔沸点越高（F<sub>2</sub> &lt; Cl<sub>2</sub> &lt; Br<sub>2</sub> &lt; I<sub>2</sub>）；③ 相对分子质量相近时，分子极性越大熔沸点越高（CO &gt; N<sub>2</sub>）；互为同分异构体时，支链越多沸点越低。</li>
+<li><strong>金属晶体</strong>：阳离子半径越小、价电子越多，金属键越强：Na &lt; Mg &lt; Al；Li &gt; Na &gt; K &gt; Rb &gt; Cs。</li>
+</ul>
+<p><strong>第三步：氢键特例优先。</strong></p>
+<p>凡涉及氢化物熔沸点排序，先把 H<sub>2</sub>O、HF、NH<sub>3</sub> 挑出来放最前，其余按相对分子质量排。</p>
+</div>
+
+<h3>2.4 六种典型晶体结构（必须"背图"）</h3>
+<div class="card concept">
+<span class="tag">概念 4 · 典型晶体结构</span>
+<table>
+<tr>
+<th>晶体</th>
+<th>类型</th>
+<th>结构要点</th>
+<th>配位数</th>
+<th>细节考点</th>
+</tr>
+<tr>
+<td>NaCl</td>
+<td>离子</td>
+<td>Cl<sup>−</sup> 面心立方堆积，Na<sup>+</sup> 填充全部八面体空隙（棱心 + 体心）</td>
+<td>Na<sup>+</sup> 为 6，Cl<sup>−</sup> 为 6</td>
+<td>每个晶胞含 4 个 Na<sup>+</sup>、4 个 Cl<sup>−</sup>；每个 Na<sup>+</sup> 周围最近的 Na<sup>+</sup> 有 12 个</td>
+</tr>
+<tr>
+<td>CsCl</td>
+<td>离子</td>
+<td>Cl<sup>−</sup> 简单立方堆积，Cs<sup>+</sup> 占据体心的立方体空隙</td>
+<td>Cs<sup>+</sup> 为 8，Cl<sup>−</sup> 为 8</td>
+<td>每个晶胞含 1 个 Cs<sup>+</sup>、1 个 Cl<sup>−</sup></td>
+</tr>
+<tr>
+<td>金刚石</td>
+<td>原子</td>
+<td>每个 C 与 4 个 C 以 sp<sup>3</sup> 杂化形成空间网状正四面体结构</td>
+<td>C 为 4</td>
+<td>最小环为 6 元环；1 mol C 含 2 mol C—C 键（4÷2）；键角 109°28′</td>
+</tr>
+<tr>
+<td>SiO<sub>2</sub></td>
+<td>原子</td>
+<td>每个 Si 连 4 个 O 成四面体，每个 O 连接 2 个 Si</td>
+<td>Si 为 4，O 为 2</td>
+<td>1 mol SiO<sub>2</sub> 含 <strong>4 mol Si—O 键</strong>；最小环含 6 个 Si + 6 个 O（12 元环）；SiO<sub>2</sub> 只是比例式，不存在单个 SiO<sub>2</sub> 分子</td>
+</tr>
+<tr>
+<td>干冰（CO<sub>2</sub>）</td>
+<td>分子</td>
+<td>CO<sub>2</sub> 分子按面心立方堆积</td>
+<td>每个 CO<sub>2</sub> 分子最近邻 12 个</td>
+<td>晶胞含 4 个 CO<sub>2</sub> 分子；升华只破坏分子间作用力</td>
+</tr>
+<tr>
+<td>石墨</td>
+<td>混合型（过渡型）</td>
+<td>层内 C 以 sp<sup>2</sup> 杂化连成平面六元环巨网，层间靠范德华力；每个 C 还有 1 个离域自由电子</td>
+<td>层内为 3</td>
+<td>层内共价键 + 层间范德华力 + 离域电子 → 能导电；1 mol 石墨含 1.5 mol C—C 键（3÷2）；质软，作润滑剂与电极</td>
+</tr>
+</table>
+<p><strong>为什么 NaCl 与 CsCl 配位数不同</strong>：</p>
+<p>二者同为离子晶体，配位数 6 与 8 的差异来自<strong>阴、阳离子的半径比</strong>——Cs<sup>+</sup> 半径大，周围能"塞下" 8 个 Cl<sup>−</sup>；Na<sup>+</sup> 半径小，只容纳 6 个。几何决定堆积，堆积决定性质。</p>
+</div>
+
+<h3>2.5 金属晶体的三种堆积模型</h3>
+<div class="card concept">
+<span class="tag">概念 5 · 金属晶体堆积</span>
+<table>
+<tr>
+<th>堆积方式</th>
+<th>配位数</th>
+<th>空间利用率</th>
+<th>代表金属</th>
+</tr>
+<tr>
+<td>简单立方堆积</td>
+<td>6</td>
+<td>52%</td>
+<td>Po（钋）</td>
+</tr>
+<tr>
+<td>体心立方堆积</td>
+<td>8</td>
+<td>68%</td>
+<td>Na、K、Fe（常温）</td>
+</tr>
+<tr>
+<td>面心立方最密堆积</td>
+<td>12</td>
+<td>74%</td>
+<td>Cu、Ag、Au、Al</td>
+</tr>
+</table>
+<p><strong>理解要点</strong>：</p>
+<ul>
+<li>配位数越高、空间利用率越大，堆积越紧密；面心立方与六方最密堆积（Mg、Zn，配位数也是 12）同为"最密堆积"。</li>
+<li>金属键无方向性、无饱和性，所以金属原子倾向尽可能紧密地堆积——这解释了金属普遍密度较大、有延展性。</li>
+<li>考试若给出"某金属晶胞中体对角线相切"等描述，对应体心立方（4r = √3a）；"面对角线相切"对应面心立方（4r = √2a）。</li>
+</ul>
+</div>
+
+<h3>2.6 均摊法：数清一个晶胞里有几个粒子</h3>
+<div class="card concept">
+<span class="tag">概念 6 · 均摊法</span>
+<p><strong>为什么粒子要"打折"</strong>：</p>
+<p>晶胞是晶体的最小重复单元，处于晶胞表面上的粒子同时被相邻多个晶胞共用，只属于本晶胞的一部分。立方晶胞的共用规则：</p>
+<table>
+<tr>
+<th>粒子位置</th>
+<th>被几个晶胞共用</th>
+<th>属于本晶胞的比例</th>
+</tr>
+<tr>
+<td>顶点</td>
+<td>8 个</td>
+<td>1/8</td>
+</tr>
+<tr>
+<td>棱上（棱心）</td>
+<td>4 个</td>
+<td>1/4</td>
+</tr>
+<tr>
+<td>面上（面心）</td>
+<td>2 个</td>
+<td>1/2</td>
+</tr>
+<tr>
+<td>体内（体心）</td>
+<td>1 个（独享）</td>
+<td>1</td>
+</tr>
+</table>
+<p><strong>口诀</strong>：顶八棱四面二中，体内独占一个整。</p>
+<p><strong>示范 1（NaCl 晶胞）</strong>：</p>
+<p>Cl<sup>−</sup> 位于 8 个顶点与 6 个面心：8 × 1/8 + 6 × 1/2 = 1 + 3 = <strong>4</strong>；</p>
+<p>Na<sup>+</sup> 位于 12 条棱的棱心与 1 个体心：12 × 1/4 + 1 = 3 + 1 = <strong>4</strong>。</p>
+<p>Na<sup>+</sup> ∶ Cl<sup>−</sup> = 4 ∶ 4 = 1 ∶ 1，与化学式 NaCl 一致 ✔。</p>
+<p><strong>示范 2（CsCl 晶胞）</strong>：</p>
+<p>Cl<sup>−</sup> 在 8 个顶点：8 × 1/8 = 1；Cs<sup>+</sup> 在体心：1 × 1 = 1。比例 1 ∶ 1 ✔。</p>
+<p><strong>示范 3（干冰晶胞）</strong>：</p>
+<p>CO<sub>2</sub> 分子在 8 个顶点与 6 个面心：8 × 1/8 + 6 × 1/2 = 4 → 每个晶胞含 4 个 CO<sub>2</sub> 分子。</p>
+<p><strong>边界提醒</strong>：</p>
+<p>均摊法数出的粒子数之比给出的是晶体的<strong>最简化学式</strong>；对分子晶体（如干冰），数出的"4"表示每个晶胞真实含有 4 个 CO<sub>2</sub> 分子，而不是比例。</p>
+</div>
+
+<h3>2.7 晶胞密度计算</h3>
+<div class="card concept">
+<span class="tag">概念 7 · 晶胞密度</span>
+<p><strong>基本思路</strong>：把晶胞当作一个"微观盒子"——密度 = 盒内粒子总质量 ÷ 盒子体积。</p>
+<span class="eq">ρ = <span class="formula">n × M / (N<sub>A</sub> × V)</span></span>
+<p>其中 n 为晶胞中化学式单位的个数（均摊法数出），M 为摩尔质量，V 为晶胞体积。</p>
+<p><strong>单位换算（最大的失分点）</strong>：</p>
+<p>晶胞边长常以 pm 或 nm 给出，而密度要求 g/cm<sup>3</sup>，必须先换算：</p>
+<ul>
+<li>1 cm = 10<sup>10</sup> pm，即 <strong>1 pm = 10<sup>−10</sup> cm</strong>；</li>
+<li>1 cm = 10<sup>7</sup> nm，即 <strong>1 nm = 10<sup>−7</sup> cm</strong>；</li>
+<li>立方晶胞 V = a<sup>3</sup>：若 a = x pm，则 V = (x × 10<sup>−10</sup>)<sup>3</sup> cm<sup>3</sup> = x<sup>3</sup> × 10<sup>−30</sup> cm<sup>3</sup>；若 a = x nm，则 V = x<sup>3</sup> × 10<sup>−21</sup> cm<sup>3</sup>。</li>
+</ul>
+<p><strong>反向考查</strong>：</p>
+<p>题目也可能给密度反求晶胞参数 a、最近邻距离或 N<sub>A</sub>。同一公式变形即可：V = nM/(ρN<sub>A</sub>)，a = V<sup>1/3</sup>。</p>
+<p><strong>常见几何关系（求原子半径或最近邻距离时用）</strong>：</p>
+<ul>
+<li>简单立方：棱 a = 2r；</li>
+<li>体心立方：体对角线 4r = √3a；</li>
+<li>面心立方：面对角线 4r = √2a，最近邻距离 = √2a/2。</li>
+</ul>
+</div>
+
+<h3>2.8 晶格能</h3>
+<div class="card concept">
+<span class="tag">概念 8 · 晶格能</span>
+<p><strong>是什么</strong>：</p>
+<p>气态阴、阳离子形成 1 mol 离子晶体时所释放的能量（或拆开 1 mol 离子晶体使之变为气态离子所吸收的能量），单位 kJ/mol。晶格能越大，离子键越强，晶体越稳定。</p>
+<p><strong>影响因素（两条，有主次）</strong>：</p>
+<ul>
+<li>① <strong>离子所带电荷</strong>越多，晶格能越大（起主导作用）——MgO（±2 电荷，晶格能约 3791 kJ/mol）≫ NaCl（±1 电荷，约 786 kJ/mol）；</li>
+<li>② <strong>离子半径</strong>越小，晶格能越大——LiF &gt; NaF &gt; KF；NaF &gt; NaCl &gt; NaBr &gt; NaI。</li>
+</ul>
+<p><strong>决定什么性质</strong>：</p>
+<p>晶格能越大 → 熔点越高、硬度越大。MgO 熔点高达 2800 ℃（用作耐火材料），远高于 NaCl 的 801 ℃，主因就是电荷翻倍使晶格能剧增。</p>
+<p><strong>常见混淆</strong>：</p>
+<p>晶格能是<strong>离子晶体</strong>专属概念，不能用于分子晶体或原子晶体；比较熔点时先确认晶体类型，再谈晶格能。</p>
+</div>
+</section>
+
+<section>
+<h2>三、三重表征贯通</h2>
+<p>晶体的宏观性质全都写在微观排列里——本章三重表征的核心训练是：看到"熔点高/导电/脆"，能立刻说出粒子种类与作用力，并写出对应的符号表达。</p>
+
+<h3>表征组 1：NaCl——固态不导电，熔融与溶液导电</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>食盐是白色立方体小晶体，质硬但脆，敲击易碎；熔点 801 ℃（较高）。</p>
+<p>固态食盐不导电；熔融食盐通直流电能电解出金属钠（阴极有银白色小球）和黄绿色氯气（阳极）；食盐易溶于水，溶液能导电。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>NaCl 晶体中 Na<sup>+</sup> 与 Cl<sup>−</sup> 按配位数 6 交替排列在晶格结点上，靠离子键（晶格能）结合。</p>
+<p>固态时离子只能在结点附近振动，没有自由移动的电荷 → 不导电；熔融或溶于水后离子脱离晶格束缚自由移动 → 导电。</p>
+<p>离子键强，故熔点高；受冲击时同号离子相遇相斥，层间滑动断裂，故硬而脆。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<span class="eq">2NaCl<span class="state">(l)</span> <span class="eq-arrow" data-cond="通电">→</span> 2Na<span class="state">(l)</span> + Cl<sub>2</sub>↑<span class="state">(g)</span></span>
+<p>晶胞计数：Na<sup>+</sup>：12 × 1/4 + 1 = 4；Cl<sup>−</sup>：8 × 1/8 + 6 × 1/2 = 4。</p>
+<p>晶格能：NaCl 约 786 kJ/mol &lt; MgO 约 3791 kJ/mol → 熔点 NaCl 801 ℃ &lt; MgO 2800 ℃。</p>
+</div>
+</div>
+
+<h3>表征组 2：干冰升华与 SiO<sub>2</sub> 熔化的本质差异</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>干冰在 −78.5 ℃ 直接升华，产生大量白雾（舞台效果、人工降雨），无残留液体。</p>
+<p>石英（SiO<sub>2</sub>）熔点高达约 1710 ℃，熔制石英玻璃需在高温炉中长时间加热。二者化学式同为"XO<sub>2</sub> 型"，物理性质却天壤之别。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>干冰是<strong>分子晶体</strong>：一个个独立的 CO<sub>2</sub> 分子（O=C=O 直线形）靠微弱范德华力堆在面心立方格点上；升华只克服分子间作用力，CO<sub>2</sub> 分子本身完好无损。</p>
+<p>SiO<sub>2</sub> 是<strong>原子晶体</strong>：每个 Si 与 4 个 O 以共价键连成空间四面体网络，不存在单个"SiO<sub>2</sub>"分子；熔化必须打断强大的 Si—O 共价键，故熔点极高。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<span class="eq">CO<sub>2</sub><span class="state">(s)</span> <span class="eq-arrow" data-cond="升华吸热">→</span> CO<sub>2</sub><span class="state">(g)</span>（物理变化，分子不变）</span>
+<p>SiO<sub>2</sub> 中 Si 与 O 个数比：每个 Si 连 4 个 O、每个 O 被 2 个 Si 共用 → 1 ∶ (4 × 1/2) = 1 ∶ 2。</p>
+<p>1 mol SiO<sub>2</sub> 含 4 mol Si—O 键；1 mol 金刚石含 2 mol C—C 键。</p>
+</div>
+</div>
+
+<h3>表征组 3：石墨与金刚石——同为碳，一软一硬</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>石墨是灰黑色、有金属光泽的鳞片状固体，质软（铅笔芯在纸上划出痕迹）、滑腻（润滑剂）、能导电（电极），熔点很高。</p>
+<p>金刚石无色透明，是自然界最硬的物质，不导电。二者互为同素异形体，性质截然不同。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>石墨层内每个 C 以 sp<sup>2</sup> 杂化与 3 个 C 形成共价键，铺成平面六元环巨网；每个 C 还剩 1 个未杂化的 p 电子在层内离域自由移动 → 导电；层与层之间只靠范德华力结合，容易滑动 → 质软、滑腻。</p>
+<p>金刚石中每个 C 以 sp<sup>3</sup> 杂化连 4 个 C 成空间网状结构，无自由电子 → 不导电、极硬。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<p>石墨：层内 C—C 共价键 + 层间范德华力 + 离域电子（兼具三类作用，称混合型晶体）。</p>
+<p>键数：1 mol 石墨含 C—C 键 3 × 1/2 = 1.5 mol；1 mol 金刚石含 4 × 1/2 = 2 mol。</p>
+<p>互称：C<sub>(石墨)</sub> 与 C<sub>(金刚石)</sub> 互为同素异形体。</p>
+</div>
+</div>
+
+<h3>表征组 4：铜导线——金属晶体导电的微观图景</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>铜是紫红色金属，有金属光泽，是优良的导体（导线内芯），能被拉成细丝、压成薄片（延展性好），熔点 1083 ℃，导热性也好（炊具、散热器）。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>铜为面心立方堆积（配位数 12）。Cu 原子的价电子脱离原子成为"自由电子"，Cu<sup>+</sup>/Cu<sup>2+</sup> 阳离子沉浸在电子气中，靠金属键结合。</p>
+<p>通电时自由电子定向移动 → 导电；自由电子碰撞传递能量 → 导热；金属键无方向性，受外力时离子层相对滑动而键不断 → 延展性。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<p>金属晶体组成表示：金属阳离子 + 自由电子（电子气）。</p>
+<p>晶胞计数（面心立方）：8 × 1/8 + 6 × 1/2 = 4 个 Cu 原子。</p>
+<p>几何关系：面对角线 4r = √2a（原子半径 r = √2a/4）。</p>
+</div>
+</div>
+</section>
+
+<section>
+<h2>四、典型例题分步拆解</h2>
+
+<div class="card example">
+<span class="tag">例 1 · 均摊法确定化学式（NaCl 型晶胞）</span>
+<p><strong>题目</strong>：NaCl 晶胞中，Cl<sup>−</sup> 位于立方体的 8 个顶点和 6 个面的面心，Na<sup>+</sup> 位于 12 条棱的棱心和体心。试计算一个 NaCl 晶胞中 Na<sup>+</sup>、Cl<sup>−</sup> 的数目，写出晶胞对应的化学式；另问：Na<sup>+</sup> 的配位数是多少？</p>
+<p><strong>【思路点拨】</strong></p>
+<p>背口诀"顶八棱四面二中，体内独占一个整"，按"顶点 → 棱 → 面 → 体"的顺序逐个打折求和；配位数 = 某离子周围距离最近且相等的<strong>异号</strong>离子数。</p>
+<div class="step"><div class="no">1</div>
+<p>数 Na<sup>+</sup>：棱心 12 个 × 1/4 + 体心 1 个 × 1 = 3 + 1 = <strong>4</strong>。</p>
+</div>
+<div class="step"><div class="no">2</div>
+<p>数 Cl<sup>−</sup>：顶点 8 个 × 1/8 + 面心 6 个 × 1/2 = 1 + 3 = <strong>4</strong>。</p>
+</div>
+<div class="step"><div class="no">3</div>
+<p>Na<sup>+</sup> ∶ Cl<sup>−</sup> = 4 ∶ 4 = 1 ∶ 1，化学式为 NaCl ✔（与事实相符，交叉验证成功）。</p>
+</div>
+<div class="step"><div class="no">4</div>
+<p>配位数：取体心的 Na<sup>+</sup>，与它最近的 Cl<sup>−</sup> 在上、下、前、后、左、右 6 个面心，距离均为 a/2，共 6 个 → Na<sup>+</sup> 配位数为 <strong>6</strong>（同理 Cl<sup>−</sup> 配位数也是 6）。</p>
+</div>
+<div class="ans">
+<strong>【答案】</strong>每个晶胞含 Na<sup>+</sup> 4 个、Cl<sup>−</sup> 4 个；化学式 NaCl；Na<sup>+</sup> 配位数为 6。
+</div>
+<p><strong>【方法总结】</strong></p>
+<p>均摊法三步：定位 → 打折 → 化简比。数完一定要与已知化学式对照验证；配位数要数"最近且等距的异号离子"，不要数成同号离子。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 2 · 晶胞密度计算（完整数值过程）</span>
+<p><strong>题目</strong>：已知 NaCl 晶体的晶胞是边长 a = 564 pm 的立方体，每个晶胞含 4 个"NaCl"单位。求 NaCl 晶体的密度。（相对原子质量：Na 23，Cl 35.5；N<sub>A</sub> = 6.02 × 10<sup>23</sup> mol<sup>−1</sup>）</p>
+<p><strong>【思路点拨】</strong></p>
+<p>ρ = n·M/(N<sub>A</sub>·V)。先把边长单位换算成 cm（1 pm = 10<sup>−10</sup> cm），再算体积，最后代数；中间步骤保留足够有效数字，算完与常识（2~5 g/cm<sup>3</sup>）对照。</p>
+<div class="step"><div class="no">1</div>
+<p>摩尔质量：M(NaCl) = 23 + 35.5 = 58.5 g/mol。</p>
+</div>
+<div class="step"><div class="no">2</div>
+<p>一个晶胞的质量：m = n·M/N<sub>A</sub> = 4 × 58.5 / (6.02 × 10<sup>23</sup>) = 234 / (6.02 × 10<sup>23</sup>) ≈ 3.887 × 10<sup>−22</sup> g。</p>
+</div>
+<div class="step"><div class="no">3</div>
+<p>边长换算：a = 564 pm = 564 × 10<sup>−10</sup> cm = 5.64 × 10<sup>−8</sup> cm。</p>
+</div>
+<div class="step"><div class="no">4</div>
+<p>晶胞体积：V = a<sup>3</sup> = (5.64 × 10<sup>−8</sup>)<sup>3</sup> = 5.64<sup>3</sup> × 10<sup>−24</sup> ≈ 179.4 × 10<sup>−24</sup> = 1.794 × 10<sup>−22</sup> cm<sup>3</sup>。（验算：5.64<sup>2</sup> = 31.81；31.81 × 5.64 ≈ 179.4 ✔）</p>
+</div>
+<div class="step"><div class="no">5</div>
+<p>密度：ρ = m/V = 3.887 × 10<sup>−22</sup> / 1.794 × 10<sup>−22</sup> ≈ 2.17 g/cm<sup>3</sup>。</p>
+</div>
+<div class="ans">
+<strong>【答案】</strong>ρ ≈ 2.17 g/cm<sup>3</sup>（与 NaCl 密度的实测值一致，计算正确）。
+</div>
+<p><strong>【方法总结】</strong></p>
+<p>晶胞密度万能式 ρ = nM/(N<sub>A</sub>a<sup>3</sup>)。三个抓手：① n 用均摊法数准；② pm → cm 是 10<sup>−10</sup>（立方后是 10<sup>−30</sup>），nm → cm 是 10<sup>−7</sup>（立方后是 10<sup>−21</sup>）；③ 算完用常识验数量级，离子晶体密度多在 2~5 g/cm<sup>3</sup>，数量级不对立刻回查单位。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 3 · 熔点比较（含氢键特例）</span>
+<p><strong>题目</strong>：将下列各组物质的熔点（或沸点）按由高到低排序，并说明理由：</p>
+<p>① NaCl、MgO、干冰、金刚石；② H<sub>2</sub>O、H<sub>2</sub>S、H<sub>2</sub>Se、H<sub>2</sub>Te。</p>
+<p><strong>【思路点拨】</strong></p>
+<p>第①组跨晶体类型——先分类型排大序，再在同类型内比晶格能；第②组同为分子晶体——先找氢键，再按相对分子质量。</p>
+<div class="step"><div class="no">1</div>
+<p>① 分类：金刚石——原子晶体；NaCl、MgO——离子晶体；干冰——分子晶体。总序：原子晶体 &gt; 离子晶体 &gt; 分子晶体。</p>
+</div>
+<div class="step"><div class="no">2</div>
+<p>两个离子晶体之间比晶格能：Mg<sup>2+</sup> 与 O<sup>2−</sup> 均带 2 个电荷且半径小，晶格能远大于 NaCl（Na<sup>+</sup>、Cl<sup>−</sup> 只带 1 个电荷）→ MgO &gt; NaCl。合并：金刚石 &gt; MgO &gt; NaCl &gt; 干冰。实际数据：金刚石 &gt; 3550 ℃、MgO 2800 ℃、NaCl 801 ℃、干冰 −78.5 ℃（升华），完全吻合。</p>
+</div>
+<div class="step"><div class="no">3</div>
+<p>② 先挑氢键：H<sub>2</sub>O 分子间有氢键，沸点反常最高（100 ℃）。其余无氢键、结构相似，相对分子质量越大范德华力越强：H<sub>2</sub>Te(130) &gt; H<sub>2</sub>Se(81) &gt; H<sub>2</sub>S(34)。合并：H<sub>2</sub>O &gt; H<sub>2</sub>Te &gt; H<sub>2</sub>Se &gt; H<sub>2</sub>S。</p>
+</div>
+<div class="ans">
+<strong>【答案】</strong>① 金刚石 &gt; MgO &gt; NaCl &gt; 干冰；② H<sub>2</sub>O &gt; H<sub>2</sub>Te &gt; H<sub>2</sub>Se &gt; H<sub>2</sub>S。
+</div>
+<p><strong>【方法总结】</strong></p>
+<p>熔沸点排序三句话：先看类型（原子 &gt; 离子 &gt; 分子）；同类再比作用力强弱（原子晶体比键长、离子晶体比晶格能、分子晶体比氢键和相对分子质量、金属晶体比价电子与半径）；遇氢化物先抓 H<sub>2</sub>O、HF、NH<sub>3</sub> 三个"特例分子"。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 4 · 晶体类型与键数计算综合</span>
+<p><strong>题目</strong>：下列说法正确的是（　　）</p>
+<p>A．1 mol 金刚石中含有 4 mol C—C 键</p>
+<p>B．1 mol SiO<sub>2</sub> 晶体中含有 4 mol Si—O 键</p>
+<p>C．干冰升华时破坏了 CO<sub>2</sub> 分子内的共价键</p>
+<p>D．NaCl 晶体熔化时只需要克服分子间作用力</p>
+<p><strong>【思路点拨】</strong></p>
+<p>键数计算用"分摊法"：一个原子伸出的键数 ÷ 2（每条键被两端共用）；物理变化破坏什么作用力，取决于晶体类型。</p>
+<div class="step"><div class="no">1</div>
+<p>A 项：金刚石中每个 C 连 4 个 C，每条 C—C 键被 2 个 C 共用 → 1 mol C 对应 4 ÷ 2 = <strong>2</strong> mol C—C 键，不是 4 mol ✘。</p>
+</div>
+<div class="step"><div class="no">2</div>
+<p>B 项：SiO<sub>2</sub> 中每个 Si 连 4 个 O，每条 Si—O 键只归属 1 个 Si → 1 mol SiO<sub>2</sub>（含 1 mol Si）含 <strong>4</strong> mol Si—O 键 ✔。</p>
+</div>
+<div class="step"><div class="no">3</div>
+<p>C 项：干冰是分子晶体，升华只克服分子间作用力，CO<sub>2</sub> 分子内共价键不受影响 ✘。</p>
+</div>
+<div class="step"><div class="no">4</div>
+<p>D 项：NaCl 是离子晶体，晶体中不存在分子，熔化克服的是离子键（晶格能），不是分子间作用力 ✘。</p>
+</div>
+<div class="ans">
+<strong>【答案】</strong>B。
+</div>
+<p><strong>【方法总结】</strong></p>
+<p>记牢三组数字：金刚石/晶体硅 1 mol 原子 → 2 mol 键；石墨 1 mol C → 1.5 mol 键；SiO<sub>2</sub> 1 mol → 4 mol Si—O 键。</p>
+<p>"熔化破坏什么"对照表：原子晶体破共价键、离子晶体破离子键、分子晶体破分子间作用力（含氢键）、金属晶体破金属键——物理变化中分子内部的共价键始终安然无恙。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 5 · 均摊法确定未知晶体化学式</span>
+<p><strong>题目</strong>：某离子晶体的晶胞中，A<sup>2+</sup> 位于立方体的 8 个顶点，B<sup>−</sup> 位于 12 条棱的棱心和 1 个体心。写出该晶体的化学式，并求晶胞中 A、B 粒子的实际数目。</p>
+<p><strong>【思路点拨】</strong></p>
+<p>按位置打折：顶点 ×1/8，棱心 ×1/4，体心 ×1；求出各粒子数后化最简整数比，即得化学式。注意与电荷守恒（化合物整体电中性）互相验证。</p>
+<div class="step"><div class="no">1</div>
+<p>数 A<sup>2+</sup>：顶点 8 个 × 1/8 = <strong>1</strong>。</p>
+</div>
+<div class="step"><div class="no">2</div>
+<p>数 B<sup>−</sup>：棱心 12 个 × 1/4 + 体心 1 个 × 1 = 3 + 1 = <strong>4</strong>。</p>
+</div>
+<div class="step"><div class="no">3</div>
+<p>比例 A ∶ B = 1 ∶ 4，故化学式为 AB<sub>4</sub>。</p>
+</div>
+<div class="step"><div class="no">4</div>
+<p>电荷验证：1 个 A<sup>2+</sup> 与 4 个 B<sup>−</sup> 组合为 AB<sub>4</sub>，电荷为 (+2) + 4 × (−1) = −2 ≠ 0，<strong>电中性不成立</strong>——说明题目设定的离子电荷与位置数据不符，实际晶体中不存在该组合；若 B 为 B<sup>2−</sup> 或 A 为 A<sup>4+</sup> 则合理。做题时务必做这一步验证。</p>
+</div>
+<div class="ans">
+<strong>【答案】</strong>晶胞中含 A 1 个、B 4 个；粒子数之比 1 ∶ 4，按题给条件化学式写作 AB<sub>4</sub>（但 A<sup>2+</sup> 与 B<sup>−</sup> 的电荷不匹配，真实晶体不存在，命题数据应修正为 A<sup>4+</sup> 或 B 带 1/2 单位电荷的情形）。
+</div>
+<p><strong>【方法总结】</strong></p>
+<p>均摊法 + 电荷守恒双验证，是解"确定化学式"类题目的保险栓：先数粒子个数比，再检查阴阳离子总电荷是否抵消。高考真题中两套数据必然自洽，若不自洽，多半是自己数错了位置。</p>
+</div>
+</section>
+
+<section>
+<h2>五、易错点与成因</h2>
+
+<div class="card trap">
+<span class="tag">易错 1 · 均摊法把"共用比例"记混或漏数位置</span>
+<p><strong>易错表现</strong>：把面心当 1/4、棱心当 1/2；或数 NaCl 晶胞时漏掉体心、漏掉棱心，得到错误的粒子数。</p>
+<p><strong>错误成因</strong>：没有在脑中建立"晶胞堆叠"的空间图景——顶点被上下前后左右 8 个晶胞包围、棱被 4 个、面被 2 个；靠背表不理解来源，一紧张就记串。</p>
+<p><strong>正确理解</strong>：共用数 = 该位置被几个晶胞共享。想一堆魔方堆在一起：角块被 8 个魔方共用（×1/8）、棱块被 4 个共用（×1/4）、面块被 2 个共用（×1/2）、中心块独享（×1）。数粒子时按"顶点 → 棱 → 面 → 体"的固定顺序清点，不漏不重。</p>
+<p><strong>一句话避坑口诀</strong>：顶八棱四面二中，体心独享一个整；按序清点不回头。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错 2 · 密度计算中 pm / nm 与 cm 的单位换算出错</span>
+<p><strong>易错表现</strong>：把 1 pm = 10<sup>−10</sup> cm 误用为 10<sup>−12</sup> cm（把 pm 与 m 的换算直接搬过来），或立方时忘记对 10 的幂次也立方，导致密度差 10<sup>6</sup> 倍甚至更多。</p>
+<p><strong>错误成因</strong>：长度换算链不熟悉——1 m = 100 cm，1 m = 10<sup>12</sup> pm，故 1 pm = 10<sup>−12</sup> m = 10<sup>−10</sup> cm；立方换算时 (10<sup>−10</sup>)<sup>3</sup> = 10<sup>−30</sup> 被误写成 10<sup>−10</sup> 或 10<sup>−20</sup>。</p>
+<p><strong>正确理解</strong>：先换长度、再立方，一步到位：a = x pm → V = x<sup>3</sup> × 10<sup>−30</sup> cm<sup>3</sup>；a = x nm → V = x<sup>3</sup> × 10<sup>−21</sup> cm<sup>3</sup>。算完密度用常识验算：常见晶体密度在 1~10 g/cm<sup>3</sup> 区间，出现 10<sup>−6</sup> 或 10<sup>20</sup> 必是单位错了。</p>
+<p><strong>一句话避坑口诀</strong>：pm 到 cm 十的负十，立方之后再运算；答案超出常识圈，立刻回查换算关。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错 3 · 认为 SiO<sub>2</sub>、NaCl 是一个个"分子"</span>
+<p><strong>易错表现</strong>：说"1 个 SiO<sub>2</sub> 分子含 2 个 Si—O 键"、"NaCl 分子"、"干冰熔化破坏共价键"等错误表述。</p>
+<p><strong>错误成因</strong>：把化学式等同于分子式。化学式只表示粒子个数的最简比；只有分子晶体（CO<sub>2</sub>、H<sub>2</sub>O 等）的化学式才对应真实分子。</p>
+<p><strong>正确理解</strong>：原子晶体（SiO<sub>2</sub>、SiC、金刚石）与离子晶体（NaCl、CaO）中不存在单个分子，化学式是比例式；金属晶体也谈不上分子。只有分子晶体里才有独立分子，且分子晶体的物理变化（熔化、升华）只破坏分子间作用力，分子内共价键不变。</p>
+<p><strong>一句话避坑口诀</strong>：原子离子无分子，化学式只表比例。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错 4 · 比较熔沸点时忽视晶体类型这个"总闸门"</span>
+<p><strong>易错表现</strong>：直接用相对分子质量比较 SiO<sub>2</sub>（60）与 CO<sub>2</sub>（44）的熔点，得出"相差不大"的错误结论；或认为 MgO 与 NaCl 的熔点差异来自相对分子质量。</p>
+<p><strong>错误成因</strong>：只记住了"相对分子质量大熔点高"这条分子晶体内部规律，把它越界推广到所有物质。</p>
+<p><strong>正确理解</strong>：熔沸点首先由晶体类型决定：原子晶体（破共价键）&gt; 离子晶体（破离子键）&gt; 分子晶体（破分子间作用力），不同类型之间能量差 1~2 个数量级。SiO<sub>2</sub> 熔点约 1710 ℃，而 CO<sub>2</sub> 在 −78.5 ℃ 就升华。同类型内部才能用相对分子质量、晶格能、键长等细分规则。</p>
+<p><strong>一句话避坑口诀</strong>：先分类型再排队，越界比质量必翻车。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错 5 · 混淆"晶格能"的适用对象与影响因素主次</span>
+<p><strong>易错表现</strong>：① 用晶格能解释金刚石熔点高（金刚石是原子晶体，无晶格能可言）；② 认为"半径越小晶格能越小"（方向记反）；③ 忽视电荷的主导作用，在 MgO 与 NaCl 的比较中纠结半径而答错。</p>
+<p><strong>错误成因</strong>：概念适用边界不清；对"库仑作用 ∝ 电荷乘积 ÷ 距离"的物理图像没有建立，导致电荷与半径两个因素的主次颠倒。</p>
+<p><strong>正确理解</strong>：晶格能只属于离子晶体；离子电荷越多、半径越小，静电吸引越强，晶格能越大，熔点越高。电荷的影响是平方级的（±2 电荷的 MgO 晶格能约为 ±1 电荷 NaCl 的近 5 倍），通常起决定作用。</p>
+<p><strong>一句话避坑口诀</strong>：晶格能管离子晶体，电荷为王半径为辅。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错 6 · 配位数数错对象（数成同号粒子）</span>
+<p><strong>易错表现</strong>：问"NaCl 晶体中 Na<sup>+</sup> 的配位数"时，答成 12——把"每个 Na<sup>+</sup> 周围最近的 Na<sup>+</sup> 数"（12 个，面心方向）当成了配位数。</p>
+<p><strong>错误成因</strong>：没有理解配位数的定义对象是<strong>异号离子</strong>（离子晶体中）或最近邻成键原子（原子晶体中）；把两个不同的几何问题混为一谈。</p>
+<p><strong>正确理解</strong>：离子晶体的配位数 = 某离子周围最近且等距的<strong>异号</strong>离子数：NaCl 中为 6（面心方向 6 个 Cl<sup>−</sup>），CsCl 中为 8（8 个顶点方向）。而"Na<sup>+</sup> 周围最近的 Na<sup>+</sup> 有 12 个"是同号粒子的最近邻数，是两道不同的题。</p>
+<p><strong>一句话避坑口诀</strong>：配位数数异号，同号近邻另起灶。</p>
+</div>
+</section>
+
+<section>
+<h2>六、章末自检清单</h2>
+<p>合上书本，逐条自测；任何一条犹豫，就回到对应小节重读。</p>
+<ul class="checklist">
+<li>我能说出晶体的三大特征（自范性、各向异性、固定熔点），并知道 X 射线衍射是最可靠的鉴别方法。</li>
+<li>我能从构成粒子与作用力两个角度说出四种晶体类型的本质区别，并各举 3 个实例。</li>
+<li>我能根据熔点高低、导电性、延展性等宏观性质反推晶体类型（含 AlCl<sub>3</sub> 是分子晶体、石墨是混合型晶体这两个特例）。</li>
+<li>我能熟练执行熔沸点"三步法"：先比类型、同类比作用力、氢键特例优先。</li>
+<li>我能默写六种典型晶体（NaCl、CsCl、金刚石、SiO<sub>2</sub>、干冰、石墨）的结构要点与配位数：6/6、8/8、4、4 与 2、12、层内 3。</li>
+<li>我能说出金刚石最小环为六元环、1 mol 金刚石含 2 mol C—C 键、1 mol SiO<sub>2</sub> 含 4 mol Si—O 键、1 mol 石墨含 1.5 mol C—C 键。</li>
+<li>我能说出金属晶体三种堆积（简单立方、体心立方、面心立方）的配位数 6、8、12 与代表金属。</li>
+<li>我能用"顶八棱四面二中、体内为 1"的均摊法数出任意立方晶胞中各粒子的数目并化简出化学式，并用电荷守恒验证。</li>
+<li>我能独立完成 ρ = nM/(N<sub>A</sub>a<sup>3</sup>) 的密度计算，正确处理 pm/nm 与 cm 的单位换算（10<sup>−30</sup> / 10<sup>−21</sup>）。</li>
+<li>我能由密度公式变形反求晶胞参数 a 或最近邻距离，知道面心立方中 4r = √2a、体心立方中 4r = √3a。</li>
+<li>我能说清晶格能的定义、两个影响因素（电荷为主、半径为辅），并用晶格能解释 MgO 熔点远高于 NaCl。</li>
+<li>我能区分"物理变化破坏的作用力"：分子晶体破分子间作用力、离子晶体破离子键、原子晶体破共价键、金属晶体破金属键，分子内共价键在物理变化中不变。</li>
+</ul>
+</section>
+
+<section>
+<h2>七、与前后章节的联系 · 高考怎么考</h2>
+<p><strong>承上</strong>：本章是 3.10（化学键与分子结构）的"宏观落地"——离子键的强弱用晶格能度量并直接决定离子晶体熔点，分子间作用力与氢键决定分子晶体熔沸点，共价键的键长与键能决定原子晶体熔点。</p>
+<p><strong>启下</strong>：晶胞计算中 n、M、N<sub>A</sub> 的运用衔接"物质的量"计算模块；石墨导电、半导体硅等内容与后续电化学、元素化合物模块呼应。</p>
+<p><strong>高考怎么考</strong>：本章是"物质结构与性质"选考题（全国卷约 15 分）的核心命题区，常见设问：</p>
+<ul>
+<li>晶体类型判断与熔点比较（2~4 分）；</li>
+<li>均摊法确定化学式或晶胞中粒子数（2~3 分）；</li>
+<li>晶胞密度或晶胞参数计算（3~4 分，单位换算是官方设置的区分度）；</li>
+<li>配位数、最近邻距离等几何细节（1~2 分）。</li>
+</ul>
+<p>计算题务必写完整步骤，步骤分比结果分更多；把 NaCl 晶胞密度计算（例 2）当作模板反复演练，考场上就能举一反三。</p>
+</section>
+
+</main>
+<footer class="chap-foot">高考备考 · 化学 · 深度学习材料 · 2026</footer>
+</body>
+</html>

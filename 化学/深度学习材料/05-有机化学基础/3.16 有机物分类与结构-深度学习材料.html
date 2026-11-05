@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.16 有机物分类与结构-深度学习材料</title>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#0e7c7b; --subject-soft:#eef7f6;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 化学点缀层（无 JS，纯文本方程式） ===== */
+/* 语义卡片（例题=紫 / 易错=琥珀 / 概念=蓝 / 提示=科目色 / 结构=中性墨） */
+.card { border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 18px; margin: 14px 0; page-break-inside: avoid; }
+.card .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
+.card.concept { background: var(--c-concept-bg); } .card.concept .tag { background: var(--c-concept); color: #fff; }
+.card.example { background: var(--c-example-bg); } .card.example .tag { background: var(--c-example); color: #fff; }
+.card.trap { background: var(--c-trap-bg); } .card.trap .tag { background: var(--c-trap); color: #fff; }
+.card.note { background: var(--subject-soft); } .card.note .tag { background: var(--subject); color: #fff; }
+.card.violet { background: var(--canvas); } .card.violet .tag { background: var(--ink); color: #fff; }
+/* 方程式容器（统一灰底盒 + 科目色左边条） */
+.eq { display: block; background: var(--formula-bg); border: 1px solid var(--line); border-left: 4px solid var(--subject); border-radius: 8px; padding: var(--formula-pad); margin: 10px 0; font-size: 16px; text-align: center; letter-spacing: .3px; page-break-inside: avoid; }
+.eq-arrow { position: relative; display: inline-block; margin: 0 6px; font-weight: 600; }
+.eq-arrow::before { content: attr(data-cond); position: absolute; left: 50%; transform: translateX(-50%); top: -1.05em; font-size: 10.5px; font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
+.state { font-size: .72em; font-style: italic; color: var(--ink-soft); }
+sub, sup { font-size: .72em; line-height: 0; }
+.formula { font-size: 1.05em; }
+.kbd { background: #f0f2f5; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 13px; }
+/* 三栏对比 */
+.triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; page-break-inside: avoid; }
+.triple .cell { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: 14px; }
+.triple .cell h4 { margin: 0 0 8px; font-size: 13.5px; text-align: center; padding: 4px 0; border-radius: 6px; color: #fff; }
+.triple .cell:nth-child(1) h4 { background: var(--c-trap); }
+.triple .cell:nth-child(2) h4 { background: var(--c-example); }
+.triple .cell:nth-child(3) h4 { background: var(--subject); }
+/* 步骤与答案 */
+.step { display: flex; gap: 10px; margin: 8px 0; }
+.step .no { flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--c-method); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.ans { background: #fff; border: 1px dashed var(--c-method); border-radius: 8px; padding: 8px 14px; margin: 8px 0; }
+.chap-foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-soft); text-align: center; }
+@media (max-width: 640px) { .triple { grid-template-columns: 1fr; } }
+@media print {
+  .card { border: 1px solid #999; background: #fff !important; }
+  .card .tag { border: 1px solid #333; background: #fff !important; color: #000; }
+  .eq { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .chap-foot { border-top: none; }
+}
+</style>
+</head>
+<body>
+<nav class="chap-nav">高考备考 · 化学 · 深度学习材料 ｜ 有机化学基础 ｜ 3.16 有机物分类与结构</nav>
+<header class="chap-head">
+  <h1>3.16 有机物分类与结构</h1>
+  <p class="chap-meta">高中化学 · 深度学习材料 · 面向 2029 届云南高考</p>
+  <p class="chap-intro">这一章是整个有机化学的"地基"：分类标准、结构表示、同分异构体、命名和研究方法，后面每一章都要用到。同分异构体的数目判断是高考有机题的"钉子户"，学这一章就要把"有序书写"的习惯练好，做到不遗漏、不重复。本章概念密度大，建议慢读两遍：第一遍通读建立框架，第二遍配合例题逐条落实。</p>
+</header>
+<main>
+
+<section>
+<h2>一、知识全景</h2>
+<p>本章围绕两个问题展开：<strong>有机物怎么分类、怎么表示</strong>，以及<strong>科学家怎么研究一种陌生的有机物</strong>。先看全局地图，再逐个击破。</p>
+<p><strong>学习目标</strong>（对照课程标准与本章高考要求）：① 能辨识常见官能团并按骨架与官能团分类；② 能正确书写与判读结构式、结构简式、键线式；③ 能辨析四"同"概念并有序书写、计数同分异构体；④ 能用系统命名法命名常见有机物；⑤ 能说明研究有机物的分离提纯与结构测定流程，读懂质谱、红外、核磁氢谱给出的关键信息。</p>
+<table>
+<tr><th>知识点</th><th>核心内容</th><th>高考要求</th></tr>
+<tr><td>有机物的分类</td><td>按碳骨架分类（链状/环状）、按官能团分类（羟基、羧基、醛基、羰基、酯基、氨基等）</td><td>给出结构能判断所属类别，常见官能团的名称与结构一一对应</td></tr>
+<tr><td>有机物结构的表示</td><td>分子式、结构式、结构简式、键线式</td><td>三种表示方法熟练互转，由键线式快速确定碳、氢原子数</td></tr>
+<tr><td>同系物</td><td>结构相似、分子组成相差一个或若干个 CH<sub>2</sub> 原子团</td><td>会判断，抓住"结构相似"这一前提</td></tr>
+<tr><td>同分异构体</td><td>分子式相同、结构不同；碳链异构→位置异构→官能团异构</td><td>按固定顺序书写，做到不重不漏，会数数目</td></tr>
+<tr><td>有机物的命名</td><td>烷烃系统命名、烯烃/炔烃命名、苯的同系物命名</td><td>能由结构写名称、由名称写结构</td></tr>
+<tr><td>研究有机物的方法</td><td>分离提纯（蒸馏、重结晶、萃取）、元素分析、质谱、红外光谱、核磁共振氢谱</td><td>说清每种方法的原理与用途，能从谱图读信息</td></tr>
+</table>
+<div class="card note">
+<span class="tag">学法提示</span>
+<p>本章的学习方法是"三个一"：<strong>一张官能团表</strong>（默写到条件反射）、<strong>一条书写顺序</strong>（碳链→位置→官能团）、<strong>一套研究流程</strong>（分离提纯→定组成→定结构）。把这三样练熟，后面烃和烃的衍生物会轻松很多。</p>
+<p>给高一同学的建议：有机化学与必修无机化学的思维方式不同——无机重"通性递变"，有机重"官能团与结构"。从现在开始准备一本"结构积累本"，每学一种物质就画下它的结构简式、写出它的特征反应，三年后会成为你最有价值的复习资料。</p>
+</div>
+</section>
+
+<section>
+<h2>二、核心概念精讲</h2>
+
+<h3>2.1 有机物与有机化学</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>什么是有机物</h4>
+<p><strong>定义</strong>：含碳元素的化合物（除 CO、CO<sub>2</sub>、碳酸及碳酸盐、碳酸氢盐、氰化物、碳化物等少数简单含碳物质外）称为有机化合物，简称有机物。</p>
+<p><strong>为什么碳能形成如此庞大的家族</strong>（微观解释）：</p>
+<ul>
+<li>碳原子最外层有 <strong>4 个电子</strong>，既不容易得电子也不容易失电子，倾向于通过<strong>共价键</strong>与其他原子结合；</li>
+<li>碳原子之间可以形成 <strong>C—C 单键、C=C 双键、C≡C 三键</strong>，还能连成<strong>链状或环状</strong>，骨架变化极多；</li>
+<li>碳不仅能与 H、O、N、S、卤素等成键，而且键的稳定性适中，既能存在又能发生反应。</li>
+</ul>
+<p><strong>常见混淆</strong>：CO<sub>2</sub>、H<sub>2</sub>CO<sub>3</sub>、CaCO<sub>3</sub> 虽含碳，但性质与无机物相近，属于<strong>无机物</strong>；而 CH<sub>4</sub>、C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>（葡萄糖）是典型的有机物。</p>
+<p><strong>有机物的一般特点</strong>（与无机物对比理解）：</p>
+<table>
+<tr><th>性质</th><th>有机物</th><th>无机物（多数）</th></tr>
+<tr><td>熔沸点</td><td>较低（分子间作用力弱）</td><td>多数较高</td></tr>
+<tr><td>溶解性</td><td>多数难溶于水、易溶于有机溶剂</td><td>多数易溶于水</td></tr>
+<tr><td>可燃性</td><td>多数易燃</td><td>多数不可燃</td></tr>
+<tr><td>导电性</td><td>多为非电解质，熔融/溶液不导电</td><td>酸、碱、盐水溶液导电</td></tr>
+<tr><td>反应特点</td><td>慢、常有副反应，方程式用"→"</td><td>快、较完全，方程式用"="</td></tr>
+</table>
+<p>注意"多数"二字——乙醇与水任意比互溶、乙酸易溶于水，例外很多，判断时以具体物质为准。</p>
+</div>
+
+<h3>2.2 按碳骨架分类</h3>
+<p>先看碳原子"搭"成的骨架形状，有机物可分为两大类：</p>
+<table>
+<tr><th>类别</th><th>骨架特点</th><th>举例</th></tr>
+<tr><td>链状化合物</td><td>碳原子连成链（可带支链），首尾不相接</td><td>CH<sub>3</sub>CH<sub>2</sub>CH<sub>3</sub>（丙烷）、CH<sub>3</sub>CH<sub>2</sub>OH（乙醇）</td></tr>
+<tr><td>环状化合物</td><td>碳原子首尾相连成环，分脂环与芳香环</td><td>环己烷 C<sub>6</sub>H<sub>12</sub>、苯 C<sub>6</sub>H<sub>6</sub></td></tr>
+</table>
+<p>芳香族化合物特指<strong>含苯环</strong>的化合物，如甲苯 C<sub>6</sub>H<sub>5</sub>CH<sub>3</sub>；不含苯环的环状化合物叫脂环化合物。判断时只看骨架上有没有苯环。</p>
+<p><strong>快速归类自测</strong>（先想后看）：</p>
+<table>
+<tr><th>物质</th><th>骨架类别</th><th>官能团类别</th></tr>
+<tr><td>CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>OH</td><td>链状</td><td>醇</td></tr>
+<tr><td>环己烷 C<sub>6</sub>H<sub>12</sub></td><td>脂环</td><td>环烷烃（无官能团）</td></tr>
+<tr><td>苯酚 C<sub>6</sub>H<sub>5</sub>OH</td><td>芳香族</td><td>酚（—OH 直接连苯环，不是醇！）</td></tr>
+<tr><td>苯甲醇 C<sub>6</sub>H<sub>5</sub>CH<sub>2</sub>OH</td><td>芳香族</td><td>醇（—OH 连在侧链碳上）</td></tr>
+</table>
+<p>注意醇与酚的分界：<strong>—OH 直接连苯环是酚，连在烃基碳上是醇</strong>，二者性质差别很大。</p>
+
+<h3>2.3 按官能团分类（本章第一重点）</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>官能团：决定有机物"性格"的原子团</h4>
+<p><strong>定义</strong>：决定有机化合物<strong>化学特性</strong>的原子或原子团，叫官能团。</p>
+<p><strong>为什么官能团决定性质</strong>：有机反应中，分子中大部分的 C—C、C—H 键比较稳定，反应往往集中发生在官能团处。官能团相同 → 主要化学性质相似 → 归为同一类。这就是"结构决定性质"在有机化学中的体现。</p>
+<p><strong>常见官能团速查表</strong>（必须能默写）：</p>
+<table>
+<tr><th>官能团名称</th><th>结构</th><th>对应类别</th><th>代表物</th></tr>
+<tr><td>碳碳双键</td><td>C=C</td><td>烯烃</td><td>CH<sub>2</sub>=CH<sub>2</sub> 乙烯</td></tr>
+<tr><td>碳碳三键</td><td>C≡C</td><td>炔烃</td><td>CH≡CH 乙炔</td></tr>
+<tr><td>羟基</td><td>—OH</td><td>醇、酚</td><td>CH<sub>3</sub>CH<sub>2</sub>OH 乙醇</td></tr>
+<tr><td>醛基</td><td>—CHO</td><td>醛</td><td>CH<sub>3</sub>CHO 乙醛</td></tr>
+<tr><td>羰基</td><td>C=O（两端连碳）</td><td>酮</td><td>CH<sub>3</sub>COCH<sub>3</sub> 丙酮</td></tr>
+<tr><td>羧基</td><td>—COOH</td><td>羧酸</td><td>CH<sub>3</sub>COOH 乙酸</td></tr>
+<tr><td>酯基</td><td>—COO—</td><td>酯</td><td>CH<sub>3</sub>COOCH<sub>2</sub>CH<sub>3</sub> 乙酸乙酯</td></tr>
+<tr><td>氨基</td><td>—NH<sub>2</sub></td><td>胺、氨基酸</td><td>CH<sub>3</sub>NH<sub>2</sub> 甲胺</td></tr>
+<tr><td>醚键</td><td>—O—（两端连碳）</td><td>醚</td><td>CH<sub>3</sub>OCH<sub>3</sub> 二甲醚</td></tr>
+<tr><td>卤原子</td><td>—X（F、Cl、Br、I）</td><td>卤代烃</td><td>CH<sub>3</sub>CH<sub>2</sub>Br 溴乙烷</td></tr>
+</table>
+<p><strong>适用边界</strong>：烷基（如 —CH<sub>3</sub>）<strong>不是</strong>官能团；苯环<strong>不是</strong>官能团（苯的同系物的性质由苯环与侧链共同体现）。</p>
+<p><strong>常见混淆</strong>：</p>
+<ul>
+<li><strong>羟基 —OH 与氢氧根 OH<sup>−</sup></strong>：羟基是电中性的原子团，连在碳上；OH<sup>−</sup> 是带负电的阴离子，可独立存在于溶液中。两者电性、存在形式完全不同。</li>
+<li><strong>醛基与羰基</strong>：醛基是 —CHO，羰基碳上还连一个 H，必在链端；羰基（酮）的 C=O 两端都连碳，只能在链中间。</li>
+<li><strong>羧基与酯基</strong>：羧基含 —OH，显酸性；酯基是羧酸的 —OH 被 —OR 取代后的结构，不显酸性。</li>
+</ul>
+</div>
+
+<h3>2.4 结构式、结构简式、键线式</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>三种表示方法的"详"与"简"</h4>
+<p>以 2-丁醇（CH<sub>3</sub>CH(OH)CH<sub>2</sub>CH<sub>3</sub>）为例对比：</p>
+<table>
+<tr><th>表示法</th><th>写法特点</th><th>优点</th><th>缺点</th></tr>
+<tr><td>分子式</td><td>C<sub>4</sub>H<sub>10</sub>O</td><td>最简，能算相对分子质量</td><td>看不出结构，无法区分同分异构体</td></tr>
+<tr><td>结构式</td><td>画出每一根键（C—H 也画）</td><td>最完整</td><td>书写繁琐</td></tr>
+<tr><td>结构简式</td><td>省略 C—H 键，相同基团合并</td><td>简洁又能看清官能团</td><td>书写时官能团不能随意省略</td></tr>
+<tr><td>键线式</td><td>只画碳骨架：端点、拐点都是碳，氢按四价补齐</td><td>最快，复杂分子首选</td><td>需要会"读"碳数和氢数</td></tr>
+</table>
+<p><strong>键线式读法三规则</strong>（高考高频）：</p>
+<ul>
+<li>每个<strong>端点</strong>和<strong>拐点（折点）</strong>都是一个碳原子；</li>
+<li>每条线表示一个碳碳键，双线表示 C=C，三线表示 C≡C；</li>
+<li>碳的 4 个键不够用 H 补齐，<strong>H 一律不写</strong>；其他原子（O、N、Cl 等）必须标出，其上的 H 也要写（如 —OH 写作 OH）。</li>
+</ul>
+<p><strong>常见混淆</strong>：结构简式中"CH<sub>3</sub>CH<sub>2</sub>OH"不能写成"C<sub>2</sub>H<sub>5</sub>OH"吗？可以，两者都算结构简式；但不能写成"C<sub>2</sub>H<sub>6</sub>O"——那是分子式，丢掉了结构信息。</p>
+<p><strong>互转小练</strong>（先遮住右栏自测）：</p>
+<table>
+<tr><th>给出</th><th>要求</th><th>结果</th></tr>
+<tr><td>结构简式 CH<sub>3</sub>CH=CHCH<sub>3</sub></td><td>写分子式</td><td>C<sub>4</sub>H<sub>8</sub>（4 个碳、一个双键，符合 C<sub>n</sub>H<sub>2n</sub>）</td></tr>
+<tr><td>键线式："∧"形（2 个拐点、2 个端点、4 条单键）</td><td>写分子式与名称</td><td>共 4 个碳 → C<sub>4</sub>H<sub>10</sub>，正丁烷</td></tr>
+<tr><td>分子式 C<sub>3</sub>H<sub>6</sub></td><td>写可能的结构简式</td><td>CH<sub>2</sub>=CHCH<sub>3</sub>（丙烯）或环丙烷（C<sub>3</sub>H<sub>6</sub> 环状）</td></tr>
+</table>
+</div>
+
+<h3>2.5 同系物</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>同系物：结构相似的"一家人"</h4>
+<p><strong>定义</strong>：<strong>结构相似</strong>，在分子组成上相差一个或若干个 <strong>CH<sub>2</sub></strong> 原子团的化合物互称同系物。</p>
+<p><strong>两个缺一不可的条件</strong>：</p>
+<ul>
+<li>结构相似——官能团的<strong>种类和数目</strong>都相同（即属于同一类物质），如都是一元醇、都含一个 C=C；</li>
+<li>分子组成相差 n 个 CH<sub>2</sub>（n≥1），即分子式不能相同。</li>
+</ul>
+<p><strong>为什么性质相似</strong>：官能团相同决定了化学性质相似；碳链逐渐变长使物理性质（熔沸点、密度）呈规律性递变。</p>
+<p><strong>常见混淆（易错）</strong>：</p>
+<ul>
+<li>CH<sub>2</sub>=CH<sub>2</sub>（乙烯）与环丙烷 C<sub>3</sub>H<sub>6</sub>：通式都符合 C<sub>n</sub>H<sub>2n</sub>，但一个是烯烃、一个是环烷烃，<strong>结构不相似，不是同系物</strong>；</li>
+<li>CH<sub>3</sub>OH（甲醇）与乙二醇 HOCH<sub>2</sub>CH<sub>2</sub>OH：—OH 数目不同，分子组成不是相差 CH<sub>2</sub>，<strong>不是同系物</strong>；</li>
+<li>分子式相同的物质（如正丁烷和异丁烷）不可能互为同系物，它们是同分异构体。</li>
+</ul>
+<p><strong>同系物的性质递变</strong>：同系物化学性质相似（官能团相同），物理性质随碳原子数增多呈规律性变化——熔沸点逐渐升高、密度逐渐增大、状态由气态→液态→固态过渡。烷烃同系物是最典型的例子：甲烷（气）→ 戊烷（液）→ 十七烷（固）。</p>
+</div>
+
+<h3>2.6 同分异构体（本章最大难点）</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>同分异构现象与有序书写法</h4>
+<p><strong>定义</strong>：分子式相同、结构不同的化合物互为同分异构体。</p>
+<p><strong>异构的三个层次</strong>（书写顺序就是这三步）：</p>
+<ol>
+<li><strong>碳链异构</strong>：碳骨架不同（直链、带支链），如正丁烷与异丁烷；</li>
+<li><strong>位置异构</strong>：官能团或取代基在碳链上位置不同，如 1-丁烯与 2-丁烯、1-丙醇与 2-丙醇；</li>
+<li><strong>官能团异构</strong>（类别异构）：官能团种类不同，如乙醇 CH<sub>3</sub>CH<sub>2</sub>OH 与二甲醚 CH<sub>3</sub>OCH<sub>3</sub>（C<sub>2</sub>H<sub>6</sub>O），乙酸与甲酸甲酯（C<sub>2</sub>H<sub>4</sub>O<sub>2</sub>）。</li>
+</ol>
+<p><strong>"不重不漏"操作口诀</strong>：主链由长到短，支链由整到散，位置由心到边，排布邻间对（苯环）。每写一个就检查一遍：分子式对不对？和已写的是不是同一个？</p>
+<p><strong>四"同"概念对比表</strong>（高考选择题常客）：</p>
+<table>
+<tr><th>概念</th><th>研究对象</th><th>相同点</th><th>不同点</th><th>实例</th></tr>
+<tr><td>同位素</td><td>原子（核素）</td><td>质子数相同</td><td>中子数不同</td><td><sup>1</sup>H、<sup>2</sup>H、<sup>3</sup>H</td></tr>
+<tr><td>同素异形体</td><td>单质</td><td>同种元素</td><td>结构不同</td><td>O<sub>2</sub> 与 O<sub>3</sub>；金刚石与石墨</td></tr>
+<tr><td>同系物</td><td>有机化合物</td><td>结构相似</td><td>相差 n 个 CH<sub>2</sub></td><td>CH<sub>4</sub> 与 C<sub>2</sub>H<sub>6</sub></td></tr>
+<tr><td>同分异构体</td><td>有机化合物</td><td>分子式相同</td><td>结构不同</td><td>正丁烷与异丁烷</td></tr>
+</table>
+</div>
+
+<h3>2.7 有机物的命名</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>烷烃系统命名四步法</h4>
+<ol>
+<li><strong>选主链</strong>：选含碳原子最多的碳链作主链，按碳数称"某烷"（十个碳以内用天干：甲乙丙丁戊己庚辛壬癸）；</li>
+<li><strong>编号定位</strong>：从离支链最近的一端起编号；若两端等近，使各支链位次之和最小（最低系列原则）；</li>
+<li><strong>写支链</strong>：支链名称写在主链名称前，位次用阿拉伯数字标出，数字与汉字之间用半字线"-"隔开；</li>
+<li><strong>合并相同</strong>：相同支链合并，用"二、三"表示个数，位次间用逗号隔开；不同支链按先简后繁排列。</li>
+</ol>
+<p>示例：CH<sub>3</sub>—CH(CH<sub>3</sub>)—CH<sub>2</sub>—CH(CH<sub>3</sub>)—CH<sub>2</sub>—CH<sub>3</sub> 命名为 <strong>2,4-二甲基己烷</strong>。</p>
+<h4>烯烃、炔烃命名（在烷烃基础上改两点）</h4>
+<ul>
+<li>主链必须<strong>包含双键或三键</strong>在内（不一定是最长碳链，而是含官能团的最长链）；</li>
+<li>编号从<strong>离双键/三键最近</strong>的一端开始，并标明官能团位次，如 CH<sub>3</sub>CH=CHCH<sub>3</sub> 命名为 2-丁烯。</li>
+</ul>
+<h4>苯的同系物命名</h4>
+<ul>
+<li>以苯环为母体，侧链作取代基：C<sub>6</sub>H<sub>5</sub>CH<sub>3</sub> 叫甲苯；</li>
+<li>两个取代基时用邻（1,2-）、间（1,3-）、对（1,4-）表示相对位置，如邻二甲苯（1,2-二甲苯）。</li>
+</ul>
+<p><strong>常见俗名与系统名对照</strong>（选择题偶尔出现，眼熟即可）：酒精—乙醇 CH<sub>3</sub>CH<sub>2</sub>OH；醋酸—乙酸 CH<sub>3</sub>COOH；甘油—丙三醇；福尔马林—甲醛 HCHO 的水溶液；电石气—乙炔 CH≡CH；石炭酸—苯酚 C<sub>6</sub>H<sub>5</sub>OH。</p>
+<p><strong>常见混淆</strong>："2-乙基戊烷"是错误名称——选了含乙基的最长链其实是己烷，应重新选主链命名为 3-甲基己烷。出现"1-甲基""2-乙基"这类位次，十有八九是主链选错了。</p>
+<p><strong>常见错误命名辨析表</strong>：</p>
+<table>
+<tr><th>错误命名</th><th>错因</th><th>正确命名</th></tr>
+<tr><td>2-乙基戊烷</td><td>主链未选最长（应为 6 个碳）</td><td>3-甲基己烷</td></tr>
+<tr><td>3,4-二甲基己烷</td><td>编号未取最低系列（2+3=5 &lt; 3+4=7）</td><td>2,3-二甲基己烷</td></tr>
+<tr><td>1-甲基环己烷写作"邻甲基环己烷"</td><td>环上只有一个取代基时无需位次词</td><td>甲基环己烷</td></tr>
+<tr><td>3-丁烯</td><td>双键位次未取最小（应从靠近双键端编号）</td><td>1-丁烯</td></tr>
+<tr><td>2,2-二甲基-3-戊醇编号从醇端反了</td><td>醇命名应使 —OH 位次最小</td><td>4,4-二甲基-2-戊醇</td></tr>
+</table>
+</div>
+
+<h3>2.8 研究有机物的一般方法</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>四步流程：分离提纯 → 定实验式 → 定分子式 → 定结构</h4>
+<p><strong>第一步：分离提纯</strong></p>
+<table>
+<tr><th>方法</th><th>适用对象</th><th>原理</th><th>关键操作</th></tr>
+<tr><td>蒸馏</td><td>互溶但沸点相差较大（一般 ≥30℃）的液体</td><td>沸点不同，先后汽化再冷凝</td><td>温度计水银球在蒸馏烧瓶支管口；冷凝水下进上出；加沸石防暴沸</td></tr>
+<tr><td>重结晶</td><td>溶解度随温度变化大的固体（如苯甲酸）</td><td>热时全溶、冷时目标物大量析出，杂质留在母液</td><td>趁热过滤除不溶杂质；冷却结晶；溶剂要"冷热溶解度差别大"</td></tr>
+<tr><td>萃取分液</td><td>溶质在两种互不相溶溶剂中溶解度差异大</td><td>溶质从溶解度小的溶剂转移到溶解度大的溶剂</td><td>分液漏斗振荡后静置分层；下层下口放出，上层上口倒出</td></tr>
+</table>
+<p><strong>第二步：元素分析 → 实验式（最简式）</strong></p>
+<ul>
+<li>燃烧法：有机物完全燃烧，测生成的 CO<sub>2</sub>（得碳量）和 H<sub>2</sub>O（得氢量），氧由差量法求得；</li>
+<li>各元素原子个数比的最简整数比即实验式，如实验式 CH<sub>2</sub>O 可能对应甲醛、乙酸、葡萄糖等。</li>
+</ul>
+<p><strong>第三步：质谱法 → 相对分子质量 → 分子式</strong></p>
+<ul>
+<li>原理：分子被打成碎片离子，按质荷比（m/z）分离检测；</li>
+<li>读图：质荷比<strong>最大</strong>的峰（分子离子峰）的数值 = 该物质的相对分子质量；</li>
+<li>结合实验式与相对分子质量即可确定分子式。</li>
+</ul>
+<p><strong>第四步：红外光谱 + 核磁共振氢谱 → 结构式</strong></p>
+<ul>
+<li><strong>红外光谱</strong>：识别分子中有哪些化学键或官能团（如 —OH、C=O 的特征吸收峰），回答"含什么官能团"；</li>
+<li><strong>核磁共振氢谱（<sup>1</sup>H-NMR）</strong>：有几个峰（吸收峰）就有几种化学环境不同的氢原子；峰面积之比 = 各类氢原子个数之比。如乙醇 CH<sub>3</sub>CH<sub>2</sub>OH 有 3 组峰，面积比 3∶2∶1；而它的同分异构体二甲醚 CH<sub>3</sub>OCH<sub>3</sub> 只有 1 组峰——借此可把二者区分开。</li>
+</ul>
+<p><strong>常见混淆</strong>：质谱给的是相对分子质量（定分子式），红外给官能团信息，核磁给氢的种类与比例。三者分工不同，题目常把功能张冠李戴来设错。</p>
+<p><strong>研究流程一图流</strong>：粗有机物 →【分离提纯：蒸馏/重结晶/萃取】→ 纯净物 →【燃烧法元素分析】→ 实验式 →【质谱：相对分子质量】→ 分子式 →【红外：官能团；核磁：氢的种类与比例】→ 结构式。每一步都回答一个层次的问题：<strong>纯不纯 → 含什么元素 → 有几个原子 → 原子怎么连</strong>。</p>
+</div>
+
+<h3>2.9 同分异构体专项突破（高考压轴小问的主战场）</h3>
+<div class="card violet">
+<span class="tag">方法模型</span>
+<h4>必备工具一：烷基的种数（醇、卤代烃、醛、羧酸计数的"钥匙"）</h4>
+<p>凡是可以写成"R—X"形式的一元取代物（R 为烷基，X 为 —OH、—Cl、—CHO、—COOH 等），其同分异构体数目 = <strong>烷基 R 的种数</strong>。</p>
+<table>
+<tr><th>烷基</th><th>对应碳数</th><th>种数</th><th>具体结构</th></tr>
+<tr><td>甲基 —CH<sub>3</sub></td><td>1</td><td>1</td><td>—CH<sub>3</sub></td></tr>
+<tr><td>乙基 —C<sub>2</sub>H<sub>5</sub></td><td>2</td><td>1</td><td>—CH<sub>2</sub>CH<sub>3</sub></td></tr>
+<tr><td>丙基 —C<sub>3</sub>H<sub>7</sub></td><td>3</td><td>2</td><td>—CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub>（正丙基）、—CH(CH<sub>3</sub>)<sub>2</sub>（异丙基）</td></tr>
+<tr><td>丁基 —C<sub>4</sub>H<sub>9</sub></td><td>4</td><td>4</td><td>正丁基、异丁基、仲丁基、叔丁基</td></tr>
+<tr><td>戊基 —C<sub>5</sub>H<sub>11</sub></td><td>5</td><td>8</td><td>（建议自己推一遍验证）</td></tr>
+</table>
+<p>记忆：<strong>1、1、2、4、8</strong>。如 C<sub>5</sub>H<sub>10</sub>O 的醛类 = 丁醛类 = 丁基种数 = 4 种；C<sub>5</sub>H<sub>10</sub>O<sub>2</sub> 的羧酸类同理也是 4 种。</p>
+</div>
+<div class="card violet">
+<span class="tag">方法模型</span>
+<h4>必备工具二：等效氢判断（一氯代物数目 = 等效氢种数）</h4>
+<p>分子中<strong>化学环境相同的氢</strong>叫等效氢，取代它们得到的是同一种一氯代物。判断三规则：</p>
+<ul>
+<li>同一碳上的氢等效（如 —CH<sub>3</sub> 中 3 个 H 等效）；</li>
+<li>连在同一碳上的甲基等效（如 C(CH<sub>3</sub>)<sub>4</sub> 中 4 个甲基、12 个 H 全部等效）；</li>
+<li>处于对称位置的氢等效（沿对称轴/对称中心互换的氢等效）。</li>
+</ul>
+<p>应用：CH<sub>4</sub>、C<sub>2</sub>H<sub>6</sub>、新戊烷 C(CH<sub>3</sub>)<sub>4</sub> 的一氯代物都只有 1 种；丙烷有 2 种等效氢 → 一氯代物 2 种；2-甲基丙烷 (CH<sub>3</sub>)<sub>3</sub>CH 有 2 种等效氢 → 一氯代物 2 种。</p>
+</div>
+<div class="card violet">
+<span class="tag">方法模型</span>
+<h4>必备工具三：苯环上的取代计数</h4>
+<ul>
+<li><strong>苯环一取代</strong>：只有 1 种（6 个氢全等效）；</li>
+<li><strong>两个相同取代基</strong>：邻、间、对 <strong>3 种</strong>；两个不同取代基同样是邻、间、对 3 种；</li>
+<li><strong>三个相同取代基</strong>：连（1,2,3-）、偏（1,2,4-）、均（1,3,5-）<strong>3 种</strong>；</li>
+<li><strong>苯环侧链与苯环同时考虑</strong>：如 C<sub>8</sub>H<sub>10</sub> 的芳香烃有 4 种——乙苯、邻二甲苯、间二甲苯、对二甲苯；</li>
+<li><strong>苯环上有 3 个取代基（2 同 1 异）时共 6 种</strong>，如二甲苯的一氯代物（氯取代苯环氢）：邻二甲苯 2 种、间二甲苯 3 种、对二甲苯 1 种。</li>
+</ul>
+</div>
+<div class="card violet">
+<span class="tag">方法模型</span>
+<h4>必备工具四：不饱和度 Ω——分子式的"体检指标"</h4>
+<p><strong>定义</strong>：不饱和度 Ω 表示分子比同碳数烷烃"少了几对氢"：<span class="formula">Ω = (2n<sub>C</sub> + 2 − n<sub>H</sub>) / 2</span>（卤素当氢算，氧硫不计，氮每个减一个氢再算）。</p>
+<p><strong>结构含义</strong>：Ω = 1 → 一个双键或一个环；Ω = 2 → 一个三键、两个双键、双键+环或两个环；Ω = 4 → 高度怀疑含一个苯环（苯环 Ω = 4）。</p>
+<p><strong>用法示例</strong>：C<sub>4</sub>H<sub>6</sub> 的 Ω = (8+2−6)/2 = 2，可能是炔烃（2-丁炔）、二烯烃（1,3-丁二烯）、环烯烃（环丁烯）——先算 Ω 再分类讨论，书写方向立刻清晰；C<sub>8</sub>H<sub>8</sub> 的 Ω = 5 = 4 + 1，常见为苯乙烯（苯环 + 一个双键）。</p>
+</div>
+<div class="card violet">
+<span class="tag">方法模型</span>
+<h4>必备工具五：二氯代物计数——"定一移一"法</h4>
+<p>求烷烃<strong>二氯代物</strong>数目时，先固定第一个 Cl 在某种等效氢位置上，再移动第二个 Cl，注意排除重复（两个 Cl 等同时，要除以对称造成的重复）。</p>
+<p>示例：丙烷 C<sub>3</sub>H<sub>8</sub> 的二氯代物（以碳位标记）：</p>
+<ul>
+<li>第一个 Cl 固定在 1 号碳：第二个 Cl 可在 1、2、3 号碳 → 1,1-、1,2-、1,3-二氯丙烷，3 种；</li>
+<li>第一个 Cl 固定在 2 号碳：第二个 Cl 只能还在 2 号碳（放在 1、3 号位与上面重复）→ 2,2-二氯丙烷，1 种；</li>
+<li>合计 <strong>4 种</strong>。</li>
+</ul>
+<p>书写完后逐一命名查重，是"定一移一"法的标准收尾动作。</p>
+</div>
+<div class="card note">
+<span class="tag">本节小结</span>
+<p>核心概念部分信息量大，归结起来是"四张牌"：<strong>分类牌</strong>（骨架 + 官能团两个标准）、<strong>表示牌</strong>（分子式/结构式/简式/键线式互转）、<strong>异构牌</strong>（同系物辨析 + 同分异构体有序书写与计数）、<strong>研究牌</strong>（分离提纯 → 实验式 → 分子式 → 结构式的谱图流程）。任何一张牌不熟，后面烃和烃的衍生物都会卡住——建议合上材料，把四张牌各默写一遍再进入例题。</p>
+</div>
+<h4>常见分子式的同分异构体数目速查表</h4>
+<table>
+<tr><th>分子式</th><th>限定类别</th><th>数目</th><th>计数思路</th></tr>
+<tr><td>C<sub>4</sub>H<sub>10</sub></td><td>烷烃</td><td>2</td><td>正丁烷、异丁烷（碳链异构）</td></tr>
+<tr><td>C<sub>5</sub>H<sub>12</sub></td><td>烷烃</td><td>3</td><td>正戊烷、异戊烷、新戊烷</td></tr>
+<tr><td>C<sub>4</sub>H<sub>8</sub></td><td>烯烃</td><td>3</td><td>1-丁烯、2-丁烯、2-甲基丙烯（碳链+位置）</td></tr>
+<tr><td>C<sub>4</sub>H<sub>8</sub></td><td>烯烃+环烷烃</td><td>5</td><td>再加环丁烷、甲基环丙烷（官能团异构）</td></tr>
+<tr><td>C<sub>5</sub>H<sub>10</sub></td><td>烯烃</td><td>5</td><td>戊烯 2 + 甲基丁烯 3</td></tr>
+<tr><td>C<sub>4</sub>H<sub>10</sub>O</td><td>醇+醚</td><td>7</td><td>醇 = 丁基 4 种；醚 = 1+3（2种）、2+2（1种）共 3 种</td></tr>
+<tr><td>C<sub>4</sub>H<sub>8</sub>O<sub>2</sub></td><td>羧酸+酯</td><td>6</td><td>羧酸 = 丙基 2 种；酯 = 甲酸丙酯 2 + 乙酸乙酯 1 + 丙酸甲酯 1 = 4 种</td></tr>
+<tr><td>C<sub>8</sub>H<sub>10</sub></td><td>芳香烃</td><td>4</td><td>乙苯 1 + 二甲苯 3（邻间对）</td></tr>
+</table>
+<p>使用说明：速查表用来<strong>检验</strong>你书写的结果是否漏写，而不是代替书写。考场上先按"碳链→位置→官能团"写出来，再对照数目自查。</p>
+<p>进阶提示：限定条件计数题（如"C<sub>4</sub>H<sub>8</sub>O<sub>2</sub> 中能与 NaHCO<sub>3</sub> 反应放出气体的有几种"）的解法是"条件筛类别，剩余排碳架"——能与 NaHCO<sub>3</sub> 放气的必含 —COOH，即羧酸类，等于丙基种数 = 2 种。先把官能团"扣掉"，剩下的碳骨架用本章的烷基/骨架工具计数，万变不离其宗。</p>
+</section>
+
+<section>
+<h2>三、三重表征贯通</h2>
+<p>有机化学同样要从"宏观现象—微观粒子—符号表达"三个层面打通。下面三组示例帮你建立这种思维方式。</p>
+<p>三组示例分别对应本章的三条主线：官能团体现性质（乙酸）、结构决定溶解性（萃取）、官能团定量测定（乙醇与钠）。读每组卡片时，请按"宏观 → 微观 → 符号"的顺序各复述一遍，再合起来串讲。</p>
+
+<h3>第一组：官能团决定性质——乙酸与碳酸钠反应</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>向盛有 Na<sub>2</sub>CO<sub>3</sub> 溶液的试管中滴加乙酸溶液，立即有<strong>大量无色气泡</strong>冒出，气体能使澄清石灰水变浑浊（生成 CO<sub>2</sub>）。说明乙酸有酸性，且酸性强于碳酸。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>乙酸分子中的<strong>羧基 —COOH</strong> 发生部分电离，释放出 H<sup>+</sup>；H<sup>+</sup> 与 CO<sub>3</sub><sup>2−</sup> 结合生成不稳定的 H<sub>2</sub>CO<sub>3</sub>，分解为 CO<sub>2</sub> 和 H<sub>2</sub>O。反应发生在官能团上，烃基部分不变。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p><span class="eq">2CH<sub>3</sub>COOH + Na<sub>2</sub>CO<sub>3</sub> <span class="eq-arrow" data-cond="">→</span> 2CH<sub>3</sub>COONa + H<sub>2</sub>O + CO<sub>2</sub>↑</span></p>
+<p>电离式：CH<sub>3</sub>COOH ⇌ CH<sub>3</sub>COO<sup>−</sup> + H<sup>+</sup></p>
+</div>
+</div>
+<p>贯通要点：宏观上"冒气泡"的现象，微观上是羧基给出的 H<sup>+</sup> 与碳酸根的结合，符号上落实在 —COOH 这个官能团中。<strong>看见 —COOH 就想到酸性</strong>，这就是官能团思维。同理类推：看见 —CHO 想到银镜反应，看见 C=C 想到加成褪色，看见 —OH 想到与 Na 放氢——把每个官能团都绑定一个"条件反射式"的宏观现象，是本章要养成的核心习惯。</p>
+
+<h3>第二组：结构决定溶解性——用四氯化碳萃取溴水中的溴</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>向橙色溴水中加入 CCl<sub>4</sub>，振荡后静置，液体<strong>分两层</strong>：上层（水层）颜色明显变浅接近无色，下层（CCl<sub>4</sub> 层，密度大于水）变为<strong>橙红色</strong>。过程无气泡、无沉淀，是物理变化。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>Br<sub>2</sub> 是非极性分子，在极性溶剂水中溶解度较小，在非极性溶剂 CCl<sub>4</sub> 中溶解度大得多——"相似相溶"。振荡时 Br<sub>2</sub> 分子从水层"搬家"进入 CCl<sub>4</sub> 层，Br<sub>2</sub> 分子本身没有变化，没有新物质生成。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p>Br<sub>2</sub>（水层）<span class="eq-arrow" data-cond="CCl<sub>4</sub> 萃取">→</span> Br<sub>2</sub>（CCl<sub>4</sub> 层）</p>
+<p>（物理过程，无化学方程式；萃取剂选择依据：与原溶剂互不相溶、对溶质溶解度大、不与溶质反应）</p>
+</div>
+</div>
+<p>贯通要点：颜色的迁移是宏观信号，背后是分子极性差异导致的溶解度差异。注意苯也能萃取溴（苯的密度小于水，有色层在上层），但<strong>酒精、乙酸与水互溶，不能作萃取剂</strong>。</p>
+
+<h3>第三组：官能团的微观体现——乙醇与金属钠反应</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>向无水乙醇中投入绿豆大小的金属钠：钠块<strong>沉在液面下</strong>（钠密度大于乙醇），表面缓慢产生<strong>无色气泡</strong>，钠块逐渐变小直至消失；反应平缓、不熔成小球（对比：钠与水反应剧烈，浮、熔、游、响）。气体能点燃，安静地燃烧或发出轻微爆鸣。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>乙醇 CH<sub>3</sub>CH<sub>2</sub>—OH 中，羟基 O—H 键有一定极性，钠夺取羟基上的 H 生成 H<sub>2</sub>，自身被氧化为 Na<sup>+</sup>。反应只发生在<strong>羟基</strong>上，乙基部分的 C—H 键不参与——这正说明"官能团决定性质"；羟基氢的活泼性：水 &gt; 乙醇（乙醇中乙基供电子使 O—H 更稳定），故反应比水缓和。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p><span class="eq">2CH<sub>3</sub>CH<sub>2</sub>OH + 2Na <span class="eq-arrow" data-cond="">→</span> 2CH<sub>3</sub>CH<sub>2</sub>ONa + H<sub>2</sub>↑</span></p>
+<p>定量关系：2 mol —OH（醇）~ 1 mol H<sub>2</sub>；用于测定分子中羟基个数。</p>
+</div>
+</div>
+<p>贯通要点："沉底缓冒泡"的宏观现象对应"羟基氢不如水活泼"的微观事实，符号上 2—OH ~ H<sub>2</sub> 的定量关系可用于测定一个分子中羟基的数目（如某醇 0.1 mol 生成 0.15 mol H<sub>2</sub>，说明每个分子含 3 个 —OH）。</p>
+</section>
+
+<section>
+<h2>四、典型例题分步拆解</h2>
+<p>以下 6 道例题覆盖本章三大考法：同分异构体计数与书写、键线式/结构互转与命名、谱图推断结构。请先自己动笔做，再对照分步解析找差距。</p>
+
+<div class="card example">
+<span class="tag">例题 1 · 同分异构体数目判断</span>
+<h4>题目</h4>
+<p>分子式为 C<sub>4</sub>H<sub>10</sub>O 的有机物中，属于醇类的同分异构体有几种？属于醚类的有几种？共有几种同分异构体？</p>
+<p><strong>【思路点拨】</strong>按"碳链异构 → 位置异构 → 官能团异构"的顺序有序书写。C<sub>4</sub>H<sub>10</sub>O 符合饱和一元含氧有机物通式 C<sub>n</sub>H<sub>2n+2</sub>O，只可能是醇（—OH 取代一个 H）或醚（—O— 插入 C—C 之间）。</p>
+<div class="step"><div class="no">1</div><div><strong>先确定碳骨架（碳链异构）</strong>。4 个碳的骨架有 2 种：<br>① 直链：C—C—C—C（正丁基骨架）<br>② 带支链：C—C(C)—C（异丁基骨架，中间碳上带一个甲基）</div></div>
+<div class="step"><div class="no">2</div><div><strong>醇类：看 —OH 在每种骨架上的不同位置</strong>（注意对称碳只算一次）。<br>骨架①有两种不同的碳：端位碳和中间碳 → —OH 放上去得 2 种：CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>OH（1-丁醇）、CH<sub>3</sub>CH<sub>2</sub>CH(OH)CH<sub>3</sub>（2-丁醇）；<br>骨架②有两种不同的碳：三个等同的 —CH<sub>3</sub> 上的碳、中间次甲基碳 → 得 2 种：(CH<sub>3</sub>)<sub>2</sub>CHCH<sub>2</sub>OH（2-甲基-1-丙醇）、(CH<sub>3</sub>)<sub>3</sub>COH（2-甲基-2-丙醇）。<br>醇类共 <strong>4 种</strong>。</div></div>
+<div class="step"><div class="no">3</div><div><strong>醚类：把 O 插在 C—C 键之间</strong>，碳骨架两部分的碳数组合为 1+3、2+2。<br>1+3（甲基 + 丙基，丙基有正丙基、异丙基 2 种）：CH<sub>3</sub>OCH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub>、CH<sub>3</sub>OCH(CH<sub>3</sub>)<sub>2</sub>，共 2 种；<br>2+2（乙基 + 乙基）：CH<sub>3</sub>CH<sub>2</sub>OCH<sub>2</sub>CH<sub>3</sub>，共 1 种。<br>醚类共 <strong>3 种</strong>。</div></div>
+<div class="step"><div class="no">4</div><div><strong>核对</strong>：逐一核对分子式均为 C<sub>4</sub>H<sub>10</sub>O，且无重复结构。</div></div>
+<div class="ans"><strong>【答案】</strong>醇类 4 种，醚类 3 种，共 7 种同分异构体。</div>
+<p><strong>【方法总结】</strong>醇的异构数 = 该碳数烷基的种类数（丁基 —C<sub>4</sub>H<sub>9</sub> 恰有 4 种，记牢：甲基 1、乙基 1、丙基 2、丁基 4、戊基 8）；醚用"碳数拆分法"按 1+3、2+2 等组合分类讨论。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 2 · 由键线式确定分子式</span>
+<h4>题目</h4>
+<p>某烃的键线式呈"W"形：由 4 条线段组成（含 3 个拐点、2 个端点），且最左侧的一条线段为双线（表示 C=C 双键）。写出该烃的分子式，并写出它的结构简式与名称。</p>
+<p><strong>【思路点拨】</strong>键线式中"端点 + 拐点 = 碳原子数"；双键、三键直接数线数；氢不写，按"每个碳共 4 键"用氢补齐。</p>
+<div class="step"><div class="no">1</div><div><strong>数碳</strong>：端点 2 个 + 拐点 3 个 = <strong>5 个碳</strong>，碳骨架为 C—C—C—C—C 直链。</div></div>
+<div class="step"><div class="no">2</div><div><strong>定双键位置</strong>：最左侧线段为双线，即 C1 与 C2 之间是 C=C：<span class="formula">CH<sub>2</sub>=CH—CH<sub>2</sub>—CH<sub>2</sub>—CH<sub>3</sub></span>。</div></div>
+<div class="step"><div class="no">3</div><div><strong>补氢验证</strong>：C1 有双键（占 2 键）+ 连 C2，还需 2 个 H → CH<sub>2</sub>=；C2 有双键 + 连 C3，还需 1 个 H → =CH—；C3、C4 各为 —CH<sub>2</sub>—；C5 为 —CH<sub>3</sub>。合计 H = 2+1+2+2+3 = 10。</div></div>
+<div class="step"><div class="no">4</div><div><strong>用通式复核</strong>：5 个碳、一个 C=C，符合烯烃通式 C<sub>n</sub>H<sub>2n</sub> → C<sub>5</sub>H<sub>10</sub>，一致。</div></div>
+<div class="ans"><strong>【答案】</strong>分子式 C<sub>5</sub>H<sub>10</sub>；结构简式 CH<sub>2</sub>=CHCH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub>；名称：1-戊烯。</div>
+<p><strong>【方法总结】</strong>键线式题三步走：数碳（端点+拐点）→ 数不饱和键 → 用通式 C<sub>n</sub>H<sub>2n+2−2×不饱和度</sub> 验证氢数。每出现一个双键（或环）氢数比烷烃少 2，出现一个三键少 4。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 3 · 系统命名</span>
+<h4>题目</h4>
+<p>命名下列有机物：CH<sub>3</sub>—CH(CH<sub>3</sub>)—CH<sub>2</sub>—CH(CH<sub>3</sub>)—CH<sub>2</sub>—CH<sub>3</sub>；并写出"3-甲基-1-丁烯"的结构简式。</p>
+<p><strong>【思路点拨】</strong>命名按"选主链 → 编号 → 写支链"三步；由名称写结构则反过来：先画主链，再标官能团位置，最后挂支链、补氢。</p>
+<div class="step"><div class="no">1</div><div><strong>选主链</strong>：最长连续碳链含 6 个碳 → 母体为"己烷"。</div></div>
+<div class="step"><div class="no">2</div><div><strong>编号</strong>：从左端编号，两个甲基分别在 2、4 号位；从右端编号则在 3、5 号位。位次和 2+4=6 ＜ 3+5=8，取从左编号（最低系列原则）。</div></div>
+<div class="step"><div class="no">3</div><div><strong>书写</strong>：相同支链合并，位次用逗号隔开 → <strong>2,4-二甲基己烷</strong>。</div></div>
+<div class="step"><div class="no">4</div><div><strong>由名称写结构</strong>："1-丁烯"主链 4 个碳、双键在 1 号位：CH<sub>2</sub>=CH—CH<sub>2</sub>—CH<sub>3</sub>；3 号位加一个甲基 → <span class="formula">CH<sub>2</sub>=CH—CH(CH<sub>3</sub>)—CH<sub>3</sub></span>。核对碳数 5、氢数 10，符合 C<sub>5</sub>H<sub>10</sub>。</div></div>
+<div class="ans"><strong>【答案】</strong>2,4-二甲基己烷；CH<sub>2</sub>=CH—CH(CH<sub>3</sub>)—CH<sub>3</sub>。</div>
+<p><strong>【方法总结】</strong>自检口诀："主链最长、编号最小、官能团优先"。写完后反向验证：按你写出的结构重新命名，看能否回到题目给定的名称。若回不去，说明命名过程中丢了信息（常见：支链位置、双键位置、取代基个数）。命名与写结构互为逆运算，这是最廉价的自查手段。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 4 · 谱图推断结构</span>
+<h4>题目</h4>
+<p>某有机物 A 的质谱图中最大质荷比为 46；元素分析表明其实验式为 C<sub>2</sub>H<sub>6</sub>O。A 的核磁共振氢谱有 3 组吸收峰，峰面积之比为 3∶2∶1。推断 A 的分子式与结构简式，并说明 A 的一种同分异构体在核磁氢谱上与此有何不同。（相对原子质量：H1 C12 O16）</p>
+<p><strong>【思路点拨】</strong>实验式给原子比例、质谱给相对分子质量、核磁给氢的种类与个数比——三条信息按顺序使用，每个数据都要"用上且自洽"。</p>
+<div class="step"><div class="no">1</div><div><strong>由质谱定相对分子质量</strong>：最大质荷比对应分子离子峰，M<sub>r</sub> = <strong>46</strong>。</div></div>
+<div class="step"><div class="no">2</div><div><strong>由实验式定分子式</strong>：实验式 C<sub>2</sub>H<sub>6</sub>O 的式量 = 2×12 + 6×1 + 16 = 46；46÷46 = 1 → 分子式即 <strong>C<sub>2</sub>H<sub>6</sub>O</strong>。</div></div>
+<div class="step"><div class="no">3</div><div><strong>列候选结构</strong>：C<sub>2</sub>H<sub>6</sub>O 只有两种合理结构——CH<sub>3</sub>CH<sub>2</sub>OH（乙醇，羟基连碳链）和 CH<sub>3</sub>OCH<sub>3</sub>（二甲醚，氧插在两个碳之间）。</div></div>
+<div class="step"><div class="no">4</div><div><strong>用核磁筛选</strong>：CH<sub>3</sub>CH<sub>2</sub>OH 中有三种不同化学环境的氢：—CH<sub>3</sub>（3H）、—CH<sub>2</sub>—（2H）、—OH（1H），共 <strong>3 组峰、面积比 3∶2∶1</strong>，与题设完全吻合；CH<sub>3</sub>OCH<sub>3</sub> 中 6 个氢完全等效，只有 1 组峰。故 A 为乙醇。</div></div>
+<div class="ans"><strong>【答案】</strong>分子式 C<sub>2</sub>H<sub>6</sub>O；结构简式 CH<sub>3</sub>CH<sub>2</sub>OH。其同分异构体 CH<sub>3</sub>OCH<sub>3</sub>（二甲醚）核磁氢谱只有 1 组峰（6 个氢等效），借此可区分二者。</div>
+<p><strong>【方法总结】</strong>谱图推断四步：质谱定 M<sub>r</sub> → 实验式定倍数 → 分子式定候选 → 核磁（峰组数与面积比）和红外（官能团）定唯一结构。先数"峰组数 = 氢的种类数"，再看"面积比 = 氢个数比"，两条都要满足。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 5 · 等效氢与一氯代物计数</span>
+<h4>题目</h4>
+<p>（1）下列烷烃中，一氯代物只有一种的是：CH<sub>4</sub>、C<sub>2</sub>H<sub>6</sub>、C<sub>3</sub>H<sub>8</sub>、C(CH<sub>3</sub>)<sub>4</sub>（新戊烷）。<br>（2）写出 2-甲基丁烷 (CH<sub>3</sub>)<sub>2</sub>CHCH<sub>2</sub>CH<sub>3</sub> 的一氯代物数目。</p>
+<p><strong>【思路点拨】</strong>一氯代物数目 = 等效氢种数。逐个分子找对称性，数出"几种不同环境的氢"。</p>
+<div class="step"><div class="no">1</div><div><strong>CH<sub>4</sub></strong>：4 个 H 全等效 → 1 种；<strong>C<sub>2</sub>H<sub>6</sub></strong>：两个碳完全对称，6 个 H 全等效 → 1 种；<strong>C(CH<sub>3</sub>)<sub>4</sub></strong>：4 个甲基连在同一碳上，12 个 H 全等效 → 1 种。</div></div>
+<div class="step"><div class="no">2</div><div><strong>C<sub>3</sub>H<sub>8</sub></strong>：两端的 —CH<sub>3</sub> 对称等效（6H），中间 —CH<sub>2</sub>— 为一种（2H）→ 共 2 种等效氢 → 一氯代物 2 种（1-氯丙烷、2-氯丙烷）。</div></div>
+<div class="step"><div class="no">3</div><div><strong>2-甲基丁烷</strong>：逐碳分析——(CH<sub>3</sub>)<sub>2</sub> 中两个甲基连在同一碳上等效（6H，第 1 种）；次甲基 —CH— 上 1 个 H（第 2 种）；—CH<sub>2</sub>— 上 2 个 H（第 3 种）；末端 —CH<sub>3</sub> 上 3 个 H（第 4 种）。共 <strong>4 种等效氢 → 一氯代物 4 种</strong>。</div></div>
+<div class="ans"><strong>【答案】</strong>（1）CH<sub>4</sub>、C<sub>2</sub>H<sub>6</sub>、C(CH<sub>3</sub>)<sub>4</sub>；（2）4 种。</div>
+<p><strong>【方法总结】</strong>数等效氢三规则：同碳氢等效、同碳甲基等效、对称位置等效。一氯代物只有一种的烷烃都是高度对称分子（CH<sub>4</sub>、C<sub>2</sub>H<sub>6</sub>、新戊烷），这类结论也常用来反推结构。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 6 · 限定类别书写同分异构体</span>
+<h4>题目</h4>
+<p>写出分子式为 C<sub>5</sub>H<sub>10</sub> 且属于烯烃的所有同分异构体的结构简式，并命名。</p>
+<p><strong>【思路点拨】</strong>限定"烯烃"即限定官能团为一个 C=C（不考虑环烷烃）。顺序：先排碳骨架（戊烷系 3 种骨架），再在每种骨架上移动双键位置，注意对称位去重。</p>
+<div class="step"><div class="no">1</div><div><strong>骨架一：直链 C—C—C—C—C</strong>。双键可放在 1 号位（C1—C2）或 2 号位（C2—C3）；3 号位与 2 号位对称、4 号位与 1 号位对称，去重。得 2 种：CH<sub>2</sub>=CHCH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub>（1-戊烯）、CH<sub>3</sub>CH=CHCH<sub>2</sub>CH<sub>3</sub>（2-戊烯）。</div></div>
+<div class="step"><div class="no">2</div><div><strong>骨架二：带一个支链（2-甲基丁烷骨架）</strong>。双键可放位置：C1=C2（C2 上带甲基）：CH<sub>2</sub>=C(CH<sub>3</sub>)CH<sub>2</sub>CH<sub>3</sub>（2-甲基-1-丁烯）；C2=C3：CH<sub>3</sub>C(CH<sub>3</sub>)=CHCH<sub>3</sub>（2-甲基-2-丁烯）；C3=C4（即端位，甲基在 3 号碳）：CH<sub>2</sub>=CHCH(CH<sub>3</sub>)<sub>2</sub>（3-甲基-1-丁烯）。注意 C2 上不能再放"双键在 C2 与甲基之间"——甲基碳是 CH<sub>3</sub>，C2 已无空余价键形成第二个双键位置。得 3 种。</div></div>
+<div class="step"><div class="no">3</div><div><strong>骨架三：新戊烷骨架 C(CH<sub>3</sub>)<sub>4</sub></strong>。中心碳已满 4 键，无法形成 C=C，此骨架下无烯烃。</div></div>
+<div class="step"><div class="no">4</div><div><strong>汇总核对</strong>：2 + 3 = <strong>5 种</strong>，逐一核对分子式均为 C<sub>5</sub>H<sub>10</sub>、均只含一个 C=C。</div></div>
+<div class="ans"><strong>【答案】</strong>共 5 种：1-戊烯 CH<sub>2</sub>=CHCH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub>；2-戊烯 CH<sub>3</sub>CH=CHCH<sub>2</sub>CH<sub>3</sub>；2-甲基-1-丁烯 CH<sub>2</sub>=C(CH<sub>3</sub>)CH<sub>2</sub>CH<sub>3</sub>；2-甲基-2-丁烯 CH<sub>3</sub>C(CH<sub>3</sub>)=CHCH<sub>3</sub>；3-甲基-1-丁烯 CH<sub>2</sub>=CHCH(CH<sub>3</sub>)<sub>2</sub>。</div>
+<p><strong>【方法总结】</strong>限定类别书写 = 碳链异构 → 位置异构两步走；每换一个骨架先想"这个骨架上哪些位置等效、哪些位置放不下官能团"。若题目改问"C<sub>5</sub>H<sub>10</sub> 的所有同分异构体"，还要补环烷烃（环戊烷、甲基环丁烷、乙基环丙烷、1,1-二甲基环丙烷、1,2-二甲基环丙烷）5 种，共 10 种。</p>
+</div>
+</section>
+
+<section>
+<h2>五、易错点与成因</h2>
+<p>本章的易错点高度集中在"书写习惯"和"概念边界"两类问题上。每条都给出易错表现、深层成因、正确理解与避坑口诀，建议对照自己的错题本逐条核查。</p>
+<p>共 10 条，覆盖：同分异构体书写、同系物判断、键线式读数、命名规则、官能团辨析、谱学功能、等效氢、溶剂选择、概念对象、简式书写。</p>
+
+<div class="card trap">
+<span class="tag">易错点 1</span>
+<h4>同分异构体书写漏写或重复</h4>
+<p><strong>易错表现</strong>：写 C<sub>4</sub>H<sub>10</sub>O、C<sub>5</sub>H<sub>10</sub> 这类题时随手写，要么漏掉醚类、要么把 2-丁醇写两遍。</p>
+<p><strong>错误成因</strong>：没有固定的书写顺序，靠"想到一个写一个"，必然遗漏；对"同一个分子的不同画法"缺乏辨认能力（把旋转后的同一结构当成新异构体）。</p>
+<p><strong>正确理解</strong>：严格执行"碳链异构 → 位置异构 → 官能团异构"三级顺序；写完用系统命名法给每个结构命名，<strong>名字相同就是同一个</strong>，立即去重。</p>
+<p><strong>避坑口诀</strong>：先骨架、再位置、后类别；写完命名来查重。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 2</span>
+<h4>同系物只看"差几个 CH<sub>2</sub>"，忽略"结构相似"</h4>
+<p><strong>易错表现</strong>：认为"分子式相差 n 个 CH<sub>2</sub> 就是同系物"，把乙烯与环丙烷、甲醇与乙二醇判为同系物。</p>
+<p><strong>错误成因</strong>：只记了定义的后半句（相差 CH<sub>2</sub>），丢了前提"结构相似"。两个条件缺一不可。</p>
+<p><strong>正确理解</strong>：先判断是否同类物质（官能团种类、数目都相同），再看是否相差 n 个 CH<sub>2</sub>。环烷烃与单烯烃通式相同（C<sub>n</sub>H<sub>2n</sub>）但类别不同，永远不是同系物。</p>
+<p><strong>避坑口诀</strong>：先同类、再差 CH<sub>2</sub>；类别不同，免谈同系。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 3</span>
+<h4>键线式数错碳、氢原子</h4>
+<p><strong>易错表现</strong>：把拐点漏数、把端点多算，或忘记碳四价原则导致氢数算错。</p>
+<p><strong>错误成因</strong>：对"端点、拐点都是碳，氢不画但要补"的规则不熟；遇到环状、带 O/N 的键线式更慌。</p>
+<p><strong>正确理解</strong>：碳数 = 端点数 + 拐点数（成环处同样数）；每个碳补足 4 键，双键算 2、三键算 3；O、N 等杂原子要标出，其连接的 H 也写出来。最后用不饱和度公式复核氢数。</p>
+<p><strong>避坑口诀</strong>：端点拐点都是碳，四键不够氢来填。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 4</span>
+<h4>命名时主链选错、编号方向选错</h4>
+<p><strong>易错表现</strong>：把 3-甲基己烷错命名为"2-乙基戊烷"；或编号不取最小位次组合。</p>
+<p><strong>错误成因</strong>：只盯着"横着写的那条链"当主链，忽略了拐弯的碳链可能更长；编号时只看"离支链近"，没有比较位次之和。</p>
+<p><strong>正确理解</strong>：主链必须"最长"，允许拐弯选链；含官能团时主链必须含官能团且编号使官能团位次最小。出现"1-甲基""2-乙基"必是主链选错的信号。</p>
+<p><strong>避坑口诀</strong>：主链拐弯也要最长，位次之和要比大小。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 5</span>
+<h4>混淆羟基与氢氧根、羧基与羰基</h4>
+<p><strong>易错表现</strong>：写"乙醇分子中含 OH<sup>−</sup>"；把酮的羰基写成醛基，或把羧酸官能团只写成 C=O。</p>
+<p><strong>错误成因</strong>：对原子团的电性、连接方式没有建立微观图像，只记形状相似的"符号外壳"。</p>
+<p><strong>正确理解</strong>：羟基 —OH 电中性、必须连在碳上；OH<sup>−</sup> 是离子。羰基 C=O 两端连碳（酮）；羰基一端连 H 是醛基 —CHO（必在链端）；羰基连 —OH 才是羧基 —COOH，显酸性。</p>
+<p><strong>避坑口诀</strong>：羟基中性连着碳，氢氧根带电能独立；羰连羟基成羧基，羰连氢是醛基。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 6</span>
+<h4>质谱、红外、核磁的功能张冠李戴</h4>
+<p><strong>易错表现</strong>：认为"红外光谱可测相对分子质量""核磁共振可确定官能团种类"。</p>
+<p><strong>错误成因</strong>：三种谱学的原理没有理解，只背名词，考试时相互混淆。</p>
+<p><strong>正确理解</strong>：质谱——最大质荷比 = 相对分子质量（定分子式）；红外——特征吸收峰对应化学键/官能团（定官能团）；核磁氢谱——峰组数 = 氢的种类、峰面积比 = 氢个数比（定氢的分布）。三者是"接力"关系，缺一不可。</p>
+<p><strong>避坑口诀</strong>：质谱称质量，红外看官能，核磁数氢种。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 7</span>
+<h4>等效氢数错：把"连在同一个碳上的甲基"当成不同</h4>
+<p><strong>易错表现</strong>：把 2-甲基丙烷 (CH<sub>3</sub>)<sub>3</sub>CH 的一氯代物数成 4 种（把三个甲基当成三种氢），或把新戊烷的一氯代物数成 2 种。</p>
+<p><strong>错误成因</strong>：只看到"几个甲基"，没看甲基连在哪个碳上、分子有没有对称性；对"等效"的微观含义（旋转、对称操作后完全重合）没有建立空间图像。</p>
+<p><strong>正确理解</strong>：连在<strong>同一个碳</strong>上的甲基一定等效；(CH<sub>3</sub>)<sub>3</sub>CH 中三个甲基绕中心碳可互换，故只有 2 种等效氢；C(CH<sub>3</sub>)<sub>4</sub> 中四个甲基全等效，只有 1 种氢。</p>
+<p><strong>避坑口诀</strong>：同碳甲基必等效，对称位置莫重数。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 8</span>
+<h4>萃取剂与重结晶溶剂的选择条件记混</h4>
+<p><strong>易错表现</strong>：用酒精萃取溴水中的溴；重结晶苯甲酸时选"冷水中溶解度也很大"的溶剂。</p>
+<p><strong>错误成因</strong>：只记了操作名称，没有记住各自对溶剂的三条硬性要求。</p>
+<p><strong>正确理解</strong>：萃取剂必须同时满足——① 与原溶剂<strong>互不相溶</strong>（酒精与水互溶，直接排除）；② 溶质在其中的溶解度<strong>远大于</strong>在原溶剂中；③ <strong>不与溶质反应</strong>。重结晶溶剂必须——① 高温时溶质溶解度大、低温时溶解度小（温差越大越好）；② 杂质在冷热时都易溶或都不溶（留在母液或趁热过滤除去）；③ 不与溶质反应。</p>
+<p><strong>避坑口诀</strong>：萃取三看"不互溶、溶得多、不反应"；重结晶看"热溶冷不溶"。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 9</span>
+<h4>把"同分异构体"用错对象</h4>
+<p><strong>易错表现</strong>：说"金刚石和石墨互为同分异构体"、"<sup>12</sup>C 与 <sup>13</sup>C 互为同分异构体"。</p>
+<p><strong>错误成因</strong>：四"同"概念的研究对象没分清——同分异构体的研究对象只能是<strong>化合物</strong>（分子），且要求分子式相同。</p>
+<p><strong>正确理解</strong>：金刚石与石墨是<strong>同素异形体</strong>（对象是单质）；<sup>12</sup>C 与 <sup>13</sup>C 是<strong>同位素</strong>（对象是原子）；CH<sub>3</sub>CH<sub>2</sub>OH 与 CH<sub>3</sub>OCH<sub>3</sub> 才是同分异构体。做题先看对象：原子→同位素，单质→同素异形体，化合物→同系物或同分异构体。</p>
+<p><strong>避坑口诀</strong>：先看对象再贴标签，单质不配"异构体"。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 10</span>
+<h4>结构简式书写丢三落四</h4>
+<p><strong>易错表现</strong>：把丙烯写成 CH<sub>3</sub>CHCH<sub>2</sub>（漏写双键）；把乙醛写成 CH<sub>3</sub>COH（醛基写成 —COH，看不出 O—H 不存在）；把乙酸写成 CH<sub>3</sub>CO<sub>2</sub>H 不规范处不标官能团。</p>
+<p><strong>错误成因</strong>：以为"简式 = 随便省"，不知道哪些能省（C—H 单键）哪些不能省（C=C、C≡C 及官能团的连接方式）。</p>
+<p><strong>正确理解</strong>：结构简式中<strong>碳碳双键、三键必须写出</strong>（CH<sub>2</sub>=CH<sub>2</sub> 不能写成 CH<sub>2</sub>CH<sub>2</sub>）；官能团要写清连接方式：醛基写 —CHO（不写 —COH，避免误读为 C—O—H）；羧基写 —COOH；酯基写 —COO—。</p>
+<p><strong>避坑口诀</strong>：简式可省碳氢键，双键三键官能团不能省。</p>
+</div>
+</section>
+
+<section>
+<h2>六、与前后章节的联系 &amp; 高考怎么考</h2>
+<table>
+<tr><th>章节</th><th>联系点</th></tr>
+<tr><td>向前：物质结构（必修）</td><td>碳的成键特点、共价键类型（σ键、π键）是理解有机结构的微观基础</td></tr>
+<tr><td>向后：3.17 烃、3.18 烃的衍生物</td><td>本章的分类标准、官能团概念、命名规则、同分异构体写法将在每一类有机物中反复使用</td></tr>
+<tr><td>向后：3.20 有机合成与推断</td><td>谱图（质谱/红外/核磁）读数与实验式→分子式→结构式的流程，是推断大题的标准工具</td></tr>
+</table>
+<p><strong>高考定位</strong>：本章内容在选考《有机化学基础》大题中常以第 (1)(2) 小问出现（写分子式、数同分异构体、命名），约 4~6 分；选择题中"四同概念辨析""键线式读数""官能团识别"也是高频考点。同分异构体数目判断常作为压轴小问，区分度高。</p>
+<p><strong>常见考查形式与应对</strong>：</p>
+<table>
+<tr><th>考查形式</th><th>典型设问</th><th>应对策略</th></tr>
+<tr><td>选择题·概念辨析</td><td>"下列物质互为同系物/同分异构体的是"</td><td>先定对象，再套两个必要条件，逐一验证</td></tr>
+<tr><td>选择题·键线式读数</td><td>"某物质的键线式如图，其分子式为"</td><td>端点+拐点数碳，不饱和度定氢，通式复核</td></tr>
+<tr><td>推断大题·第(1)问</td><td>"A 的分子式为___，所含官能团名称为___"</td><td>谱图流程四步走，官能团写名称不写符号</td></tr>
+<tr><td>推断大题·压轴问</td><td>"符合条件的同分异构体有___种，写出其中核磁氢谱有 X 组峰的结构简式"</td><td>按题给条件（官能团、等效氢数）筛选，先分类再计数</td></tr>
+<tr><td>实验题·分离提纯</td><td>"从粗产品中提纯某物质应选用的方法"</td><td>看物性差异：沸点差→蒸馏；溶解度温差→重结晶；分配差异→萃取</td></tr>
+</table>
+<p>同分异构体压轴问的一般模板：题目给出分子式 + 限定条件（如"能发生银镜反应""属于酯类""苯环上只有两个取代基"），先按条件确定官能团组合，再对剩余碳骨架分类计数，最后按要求写出指定结构。</p>
+</section>
+
+<section>
+<h2>七、章末自检清单</h2>
+<p>合上材料，逐条自测。任何一条答不上来，回到对应小节重新学习后再测一次，直到全部通关。</p>
+<ul class="checklist">
+<li>我能说出碳原子成键的四个特点，并解释有机物种类繁多的原因。</li>
+<li>我能按碳骨架和官能团两个标准对给定有机物分类，并指出其官能团名称。</li>
+<li>我能默写羟基、醛基、羰基、羧基、酯基、氨基、醚键的结构，并区分羟基与氢氧根。</li>
+<li>我能在结构式、结构简式、键线式之间自由转换，并由键线式正确数出碳、氢原子数。</li>
+<li>我能准确辨析同位素、同素异形体、同系物、同分异构体四组概念并各举一例。</li>
+<li>我能按"碳链→位置→官能团"的顺序书写同分异构体，做到不重不漏（如 C<sub>4</sub>H<sub>10</sub>O 共 7 种）。</li>
+<li>我能用系统命名法给烷烃、烯烃、炔烃命名，并由名称反写结构简式。</li>
+<li>我能给苯的同系物用邻、间、对或数字位次命名。</li>
+<li>我能说出蒸馏、重结晶、萃取分液各自的适用对象与关键操作。</li>
+<li>我能描述"实验式→质谱定分子式→红外/核磁定结构"的完整研究流程。</li>
+<li>我能读懂核磁氢谱：峰组数=氢的种类数，峰面积比=氢原子个数比，并用于区分同分异构体。</li>
+<li>我能用"定一移一"法数二氯代物（如丙烷二氯代物 4 种），并用命名法查重。</li>
+</ul>
+<div class="card note">
+<span class="tag">章末小结</span>
+<p>本章用一句话概括：<strong>官能团定类别，碳骨架定异构，谱图流程定结构。</strong>同分异构体的"碳链→位置→官能团"书写顺序、等效氢判断、键线式读数这三项技能，将贯穿整个有机化学的学习，务必在本章练到熟练。建议每天抽 5 分钟默写一遍官能团表，坚持一周形成肌肉记忆。</p>
+</div>
+</section>
+
+</main>
+<footer class="chap-foot">高考备考 · 化学 · 深度学习材料 · 2026</footer>
+</body>
+</html>

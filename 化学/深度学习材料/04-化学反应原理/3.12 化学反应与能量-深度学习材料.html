@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.12 化学反应与能量-深度学习材料</title>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#0e7c7b; --subject-soft:#eef7f6;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 化学点缀层（无 JS，纯文本方程式） ===== */
+/* 语义卡片（例题=紫 / 易错=琥珀 / 概念=蓝 / 提示=科目色 / 结构=中性墨） */
+.card { border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 18px; margin: 14px 0; page-break-inside: avoid; }
+.card .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
+.card.concept { background: var(--c-concept-bg); } .card.concept .tag { background: var(--c-concept); color: #fff; }
+.card.example { background: var(--c-example-bg); } .card.example .tag { background: var(--c-example); color: #fff; }
+.card.trap { background: var(--c-trap-bg); } .card.trap .tag { background: var(--c-trap); color: #fff; }
+.card.note { background: var(--subject-soft); } .card.note .tag { background: var(--subject); color: #fff; }
+.card.violet { background: var(--canvas); } .card.violet .tag { background: var(--ink); color: #fff; }
+/* 方程式容器（统一灰底盒 + 科目色左边条） */
+.eq { display: block; background: var(--formula-bg); border: 1px solid var(--line); border-left: 4px solid var(--subject); border-radius: 8px; padding: var(--formula-pad); margin: 10px 0; font-size: 16px; text-align: center; letter-spacing: .3px; page-break-inside: avoid; }
+.eq-arrow { position: relative; display: inline-block; margin: 0 6px; font-weight: 600; }
+.eq-arrow::before { content: attr(data-cond); position: absolute; left: 50%; transform: translateX(-50%); top: -1.05em; font-size: 10.5px; font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
+.state { font-size: .72em; font-style: italic; color: var(--ink-soft); }
+sub, sup { font-size: .72em; line-height: 0; }
+.formula { font-size: 1.05em; }
+.kbd { background: #f0f2f5; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 13px; }
+/* 三栏对比 */
+.triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; page-break-inside: avoid; }
+.triple .cell { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: 14px; }
+.triple .cell h4 { margin: 0 0 8px; font-size: 13.5px; text-align: center; padding: 4px 0; border-radius: 6px; color: #fff; }
+.triple .cell:nth-child(1) h4 { background: var(--c-trap); }
+.triple .cell:nth-child(2) h4 { background: var(--c-example); }
+.triple .cell:nth-child(3) h4 { background: var(--subject); }
+/* 步骤与答案 */
+.step { display: flex; gap: 10px; margin: 8px 0; }
+.step .no { flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--c-method); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.ans { background: #fff; border: 1px dashed var(--c-method); border-radius: 8px; padding: 8px 14px; margin: 8px 0; }
+.chap-foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-soft); text-align: center; }
+@media (max-width: 640px) { .triple { grid-template-columns: 1fr; } }
+@media print {
+  .card { border: 1px solid #999; background: #fff !important; }
+  .card .tag { border: 1px solid #333; background: #fff !important; color: #000; }
+  .eq { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .chap-foot { border-top: none; }
+}
+</style>
+</head>
+<body>
+<nav class="chap-nav">高考备考 · 化学 · 深度学习材料 ｜ 化学反应原理 ｜ 3.12 化学反应与能量</nav>
+<header class="chap-head">
+  <h1>3.12 化学反应与能量</h1>
+  <p class="chap-meta">高中化学 · 深度学习材料 · 面向 2029 届云南高考</p>
+  <p class="chap-intro">
+    从这一章开始，我们正式进入高考分值最高的模块——化学反应原理。本章回答一个核心问题：化学反应为什么会"发热"或"吸热"，这个热量能不能算出来？
+    ΔH 的正负判断、热化学方程式书写、盖斯定律计算是高考的"三件套"，几乎每年都考。小兵，这一章计算不难，但细节极多，拼的是规范和细心。
+  </p>
+</header>
+<main>
+
+<section>
+<h2>一、本章知识全景</h2>
+<p>先看知识地图，明确每个知识点要学到什么程度：</p>
+<table>
+<tr>
+<th>知识点</th>
+<th>核心内容</th>
+<th>高考要求</th>
+</tr>
+<tr>
+<td>反应热与焓变</td>
+<td>反应热的概念；焓变 ΔH 的符号、单位（kJ/mol）；吸热反应与放热反应</td>
+<td>理解 ΔH 的含义，能根据键能、能量图判断吸放热，正负号零失误</td>
+</tr>
+<tr>
+<td>吸放热的微观本质</td>
+<td>断裂化学键吸收能量，形成化学键放出能量；ΔH = 反应物总键能 − 生成物总键能</td>
+<td>能用键能定量计算 ΔH，数值算对</td>
+</tr>
+<tr>
+<td>热化学方程式</td>
+<td>书写规则：标状态、ΔH 与系数对应、ΔH 带正负号和单位</td>
+<td>书写与正误判断完全规范，细节不丢分</td>
+</tr>
+<tr>
+<td>盖斯定律</td>
+<td>反应热只与始态和终态有关，与途径无关；利用已知热化学方程式求目标 ΔH</td>
+<td>必考点，能熟练通过方程式的加减、倍数、调向求 ΔH</td>
+</tr>
+<tr>
+<td>燃烧热</td>
+<td>101 kPa 时，1 mol 纯物质完全燃烧生成稳定氧化物所放出的热量</td>
+<td>准确理解概念要点，注意产物必须是稳定氧化物（H<sub>2</sub>O 为液态）</td>
+</tr>
+<tr>
+<td>中和热</td>
+<td>稀溶液中强酸与强碱反应生成 1 mol H<sub>2</sub>O 所放出的热量（57.3 kJ/mol）；中和热测定实验</td>
+<td>概念要点清楚，测定实验的仪器、操作、误差分析全掌握</td>
+</tr>
+<tr>
+<td>能源常识</td>
+<td>化石能源（煤、石油、天然气）与新能源（氢能、太阳能等）；能源的综合利用</td>
+<td>了解常见能源特点，能应对选择题中的情境判断</td>
+</tr>
+</table>
+<div class="card note">
+<span class="tag">高考怎么考</span>
+<p>本章在高考中以两种方式出现：一是选择题中的 1 个小题（ΔH 判断、热化学方程式正误），二是反应原理大题（第 17 题）的第 1~2 问——盖斯定律计算 ΔH 几乎是"开幕题"，分值约 2~4 分。这部分是"必须拿满分"的基本盘。</p>
+</div>
+<div class="card violet">
+<span class="tag">学法建议</span>
+<p>本章内容不难但细节密集，建议用"三关训练法"：</p>
+<ul>
+<li><strong>书写关</strong>：每天默写 2 个热化学方程式（燃烧热、中和热各一），写完用"五条军规"自查；</li>
+<li><strong>计算关</strong>：盖斯定律题每天 1 道，坚持"先对齐物质、再定倍数方向、后消去验证"的固定流程，形成肌肉记忆；</li>
+<li><strong>概念关</strong>：把燃烧热、中和热的"三要素"抄成卡片贴在错题本首页，每周自测一次。</li>
+</ul>
+<p>小兵，这一章是反应原理模块的"热身章"，把规范习惯在这里养好，后面的平衡、电化学会轻松很多。</p>
+</div>
+</section>
+
+<section>
+<h2>二、核心概念精讲</h2>
+
+<h3>2.1 反应热与焓变（ΔH）</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：化学反应过程中吸收或放出的热量叫做反应热。在恒温恒压条件下，反应热等于体系的焓变，用符号 <strong>ΔH</strong> 表示，单位是 <strong>kJ/mol</strong>。</p>
+<p><strong>正负规定（死规矩，必须记牢）</strong>：</p>
+<ul>
+<li>放热反应：ΔH <strong>&lt; 0</strong>，为负值（体系把热量"给了"环境，自己能量降低）；</li>
+<li>吸热反应：ΔH <strong>&gt; 0</strong>，为正值（体系从环境"拿走"热量，自己能量升高）。</li>
+</ul>
+<p><strong>为什么（能量视角）</strong>：把反应物和生成物分别想象成站在不同高度的台阶上。生成物总能量低于反应物总能量时，多余的能量以热的形式释放——放热；反之则要吸热。能量图上看：反应物在上、生成物在下 → 放热；反应物在下、生成物在上 → 吸热。</p>
+<p><strong>常见混淆</strong>：</p>
+<ul>
+<li>ΔH 的单位 kJ/mol 中的"mol"指"每摩尔反应进度"，即按方程式系数发生一次反应，<strong>不是指某物质的 1 mol</strong>；</li>
+<li>反应热是过程量，不能说"某物质含有多少热量"，只能说"某反应的 ΔH 是多少"。</li>
+</ul>
+</div>
+
+<h4>常见放热反应与吸热反应（要能举出例子）</h4>
+<table>
+<tr>
+<th>类型</th>
+<th>常见反应</th>
+<th>典型实例</th>
+</tr>
+<tr>
+<td>放热反应</td>
+<td>燃烧、酸碱中和、金属与酸（或水）反应、大多数化合反应、铝热反应</td>
+<td>H<sub>2</sub> 在 Cl<sub>2</sub> 中燃烧；NaOH 与盐酸中和；CaO 与水反应</td>
+</tr>
+<tr>
+<td>吸热反应</td>
+<td>大多数分解反应、C 与 CO<sub>2</sub> 反应、C 与水蒸气反应、Ba(OH)<sub>2</sub>·8H<sub>2</sub>O 与 NH<sub>4</sub>Cl 反应</td>
+<td>CaCO<sub>3</sub> 高温分解；C + CO<sub>2</sub> <span class="eq-arrow" data-cond="高温">→</span> 2CO</td>
+</tr>
+</table>
+<div class="card note">
+<span class="tag">提醒</span>
+<p>"需要加热的反应不一定是吸热反应"。例如煤的燃烧需要先点燃，但燃烧本身是放热反应。加热只是提供"启动能量"（活化能），反应一旦被引发，放出的热量足以维持反应继续进行。判断吸放热的唯一标准是 ΔH 的正负，而不是反应条件。</p>
+</div>
+
+<div class="card concept">
+<span class="tag">拓展识图</span>
+<p><strong>能量变化图象的识读（选择题常考）</strong>：能量图以"反应进程"为横坐标、"能量"为纵坐标，画出台阶状的能量变化。读图三看：</p>
+<ol>
+<li><strong>看起点与终点的高低</strong>：反应物能量高于生成物 → 放热（ΔH &lt; 0）；反之 → 吸热（ΔH &gt; 0）；</li>
+<li><strong>看中间有没有"山头"</strong>：山头的高度差就是活化能，催化剂的作用是降低山头，但<strong>不改变起点和终点的高度差</strong>，即不改变 ΔH；</li>
+<li><strong>看 ΔH 对应哪一段</strong>：ΔH 是起点到终点的能量差，与山头高度无关。</li>
+</ol>
+<table>
+<tr>
+<th>图象特征</th>
+<th>能量关系</th>
+<th>ΔH 符号</th>
+<th>实例</th>
+</tr>
+<tr>
+<td>反应物在上、生成物在下</td>
+<td>E(反应物) &gt; E(生成物)</td>
+<td>ΔH &lt; 0（放热）</td>
+<td>所有燃烧反应</td>
+</tr>
+<tr>
+<td>反应物在下、生成物在上</td>
+<td>E(反应物) &lt; E(生成物)</td>
+<td>ΔH &gt; 0（吸热）</td>
+<td>CaCO<sub>3</sub> 高温分解</td>
+</tr>
+</table>
+</div>
+
+<h3>2.2 吸放热的微观本质：键能计算</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：化学反应的本质是旧键断裂和新键形成。断裂化学键要<strong>吸收</strong>能量，形成化学键要<strong>放出</strong>能量。反应是吸热还是放热，取决于两者的差值：</p>
+<p class="eq"><span class="formula">ΔH = 反应物断键吸收的总能量 − 生成物成键放出的总能量</span></p>
+<p>即 <strong>ΔH = E(反应物总键能) − E(生成物总键能)</strong>。</p>
+<p><strong>为什么</strong>：键能是"拆开 1 mol 化学键所需的能量"。断键像拆房子要花力气（吸热），成键像磁铁吸上会释放能量（放热）。拆房子花的力气比盖房子放出的多，整个过程就得从外面"借"能量——吸热反应。</p>
+<p><strong>适用边界</strong>：此公式与"ΔH = 生成物总能量 − 反应物总能量"方向相反，千万别记串。口诀：<strong>键能"反减生"，能量"生减反"</strong>。</p>
+</div>
+
+<h3>2.3 热化学方程式</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：既能表示物质变化、又能表示能量变化的化学方程式。例如：</p>
+<p class="eq"><span class="formula">H<sub>2</sub>(g) + 1/2O<sub>2</sub>(g) <span class="eq-arrow">→</span> H<sub>2</sub>O(l)　ΔH = −285.8 kJ/mol</span></p>
+<p><strong>书写五条军规（每一条都是判分点）</strong>：</p>
+<ol>
+<li><strong>标状态</strong>：每种物质后用 (s)(l)(g)(aq) 标明聚集状态。状态不同，ΔH 不同（H<sub>2</sub>O 是气是液，数值差 44 kJ/mol）；</li>
+<li><strong>ΔH 写在方程式右侧</strong>，带"+"或"−"号，单位 kJ/mol，与方程式之间留空或用分号隔开；</li>
+<li><strong>ΔH 与系数对应</strong>：系数加倍，ΔH 数值也加倍；方向反转，ΔH 符号反转、数值不变；</li>
+<li><strong>系数可以是分数</strong>：热化学方程式的系数只表示物质的量，不表示分子个数，所以允许出现 1/2；</li>
+<li><strong>不写反应条件</strong>：热化学方程式中的 ΔH 一般指 25 ℃、101 kPa 下的数据，通常不写"点燃""加热"等条件，也不用标 ↑↓。</li>
+</ol>
+<p><strong>意义</strong>：上式表示"1 mol H<sub>2</sub>(g) 与 0.5 mol O<sub>2</sub>(g) 完全反应生成 1 mol 液态水时，放出 285.8 kJ 的热量"。</p>
+</div>
+
+<div class="card note">
+<span class="tag">书写示范</span>
+<p>对照练习，体会"同一种反应、不同写法、不同 ΔH"：</p>
+<table>
+<tr>
+<th>情形</th>
+<th>热化学方程式</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>1 mol H<sub>2</sub> 燃烧生成液态水</td>
+<td>H<sub>2</sub>(g) + 1/2O<sub>2</sub>(g) → H<sub>2</sub>O(l)　ΔH = −285.8 kJ/mol</td>
+<td>系数可取分数，ΔH 对应这组系数</td>
+</tr>
+<tr>
+<td>2 mol H<sub>2</sub> 燃烧生成液态水</td>
+<td>2H<sub>2</sub>(g) + O<sub>2</sub>(g) → 2H<sub>2</sub>O(l)　ΔH = −571.6 kJ/mol</td>
+<td>系数加倍，ΔH 也加倍</td>
+</tr>
+<tr>
+<td>1 mol H<sub>2</sub> 燃烧生成气态水</td>
+<td>H<sub>2</sub>(g) + 1/2O<sub>2</sub>(g) → H<sub>2</sub>O(g)　ΔH = −241.8 kJ/mol</td>
+<td>状态不同，ΔH 不同（相差 44 kJ/mol）</td>
+</tr>
+<tr>
+<td>水的分解（逆过程）</td>
+<td>H<sub>2</sub>O(l) → H<sub>2</sub>(g) + 1/2O<sub>2</sub>(g)　ΔH = +285.8 kJ/mol</td>
+<td>方向反转，符号反转、数值不变</td>
+</tr>
+</table>
+</div>
+
+<h3>2.4 盖斯定律</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：一个化学反应，不管是一步完成还是分几步完成，其反应热是相同的。即<strong>反应热只取决于始态和终态，与反应途径无关</strong>。</p>
+<p><strong>为什么</strong>：焓是状态函数。就像爬山，从山脚到山顶的海拔升高是固定的，无论你坐缆车直达还是走盘山公路绕三圈，高度差不变。能量变化同理——只看"起点"和"终点"的能级差。</p>
+<p><strong>怎么用（操作三步法）</strong>：</p>
+<ol>
+<li>写出目标方程式，观察它里面每种物质在已知方程式中的位置和系数；</li>
+<li>对已知方程式做三种手术：<strong>调方向</strong>（ΔH 变号）、<strong>乘倍数</strong>（ΔH 同乘）、<strong>相加</strong>（ΔH 相加），使得加和后消去多余物质、恰好得到目标方程式；</li>
+<li>按同样的运算处理 ΔH，即得目标 ΔH。</li>
+</ol>
+<p><strong>常见混淆</strong>：盖斯定律求的是 ΔH，运算时<strong>方程式和 ΔH 必须做完全相同的操作</strong>。方程式乘 2 而 ΔH 忘乘 2，是本章第一大失误类型。</p>
+</div>
+
+<h3>2.5 燃烧热</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：在 101 kPa 时，<strong>1 mol 纯物质完全燃烧生成稳定的氧化物</strong>时所放出的热量，叫做该物质的燃烧热，单位为 kJ/mol，燃烧热是正值（常说"某物质燃烧热为 890.3 kJ/mol"），但写入热化学方程式的 ΔH 要带负号。</p>
+<p><strong>概念三要素（逐字把关）</strong>：</p>
+<ol>
+<li><strong>1 mol 纯物质</strong>：以可燃物为 1 mol 配平方程式，其他物质系数可为分数；</li>
+<li><strong>完全燃烧</strong>：C → CO<sub>2</sub>(g)，不能是 CO；S → SO<sub>2</sub>(g)，不能是 SO<sub>3</sub>（SO<sub>2</sub> 才是硫的稳定燃烧产物）；</li>
+<li><strong>稳定氧化物</strong>：H → H<sub>2</sub>O<strong>(l)</strong>（液态水才是常温下的稳定形态，不是水蒸气）。</li>
+</ol>
+<p><strong>实例</strong>：CH<sub>4</sub> 的燃烧热为 890.3 kJ/mol，对应热化学方程式：</p>
+<p class="eq"><span class="formula">CH<sub>4</sub>(g) + 2O<sub>2</sub>(g) <span class="eq-arrow">→</span> CO<sub>2</sub>(g) + 2H<sub>2</sub>O(l)　ΔH = −890.3 kJ/mol</span></p>
+<p><strong>常见混淆</strong>：若上式写成 2CH<sub>4</sub> + 4O<sub>2</sub> → 2CO<sub>2</sub> + 4H<sub>2</sub>O，ΔH = −1780.6 kJ/mol，方程式本身没错，但它表示的不再是"燃烧热"（可燃物不是 1 mol）。</p>
+<p><strong>常见物质的燃烧热（101 kPa，了解量级即可）</strong>：</p>
+<table>
+<tr>
+<th>物质</th>
+<th>H<sub>2</sub>(g)</th>
+<th>CO(g)</th>
+<th>CH<sub>4</sub>(g)</th>
+<th>C<sub>2</sub>H<sub>5</sub>OH(l)</th>
+</tr>
+<tr>
+<td>燃烧热（kJ/mol）</td>
+<td>285.8</td>
+<td>283.0</td>
+<td>890.3</td>
+<td>1366.8</td>
+</tr>
+<tr>
+<td>对应稳定产物</td>
+<td>H<sub>2</sub>O(l)</td>
+<td>CO<sub>2</sub>(g)</td>
+<td>CO<sub>2</sub>(g) + H<sub>2</sub>O(l)</td>
+<td>CO<sub>2</sub>(g) + H<sub>2</sub>O(l)</td>
+</tr>
+</table>
+</div>
+
+<h3>2.6 中和热及其实验测定</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：在<strong>稀溶液</strong>中，<strong>强酸与强碱</strong>发生中和反应生成 <strong>1 mol H<sub>2</sub>O</strong> 时所放出的热量。实验测定值约为 <strong>57.3 kJ/mol</strong>，对应离子方程式：</p>
+<p class="eq"><span class="formula">H<sup>+</sup>(aq) + OH<sup>−</sup>(aq) <span class="eq-arrow">→</span> H<sub>2</sub>O(l)　ΔH = −57.3 kJ/mol</span></p>
+<p><strong>概念三要素</strong>：</p>
+<ol>
+<li><strong>稀溶液</strong>：浓溶液（如浓硫酸）稀释时本身放热，会使测得值偏大；</li>
+<li><strong>强酸强碱</strong>：弱酸（如 CH<sub>3</sub>COOH）、弱碱（如 NH<sub>3</sub>·H<sub>2</sub>O）电离时要吸热，使测得的中和热<strong>偏小</strong>；</li>
+<li><strong>生成 1 mol 水</strong>：若生成 2 mol 水，放出的热量是 114.6 kJ，但"中和热"仍指折合到 1 mol 水的 57.3 kJ/mol；另外，若有沉淀生成（如 H<sub>2</sub>SO<sub>4</sub> 与 Ba(OH)<sub>2</sub>），生成沉淀也放热，测得值偏大。</li>
+</ol>
+</div>
+
+<div class="card violet">
+<span class="tag">实验专项</span>
+<p><strong>中和热的测定实验（环形玻璃搅拌棒是标志仪器）</strong></p>
+<p><strong>实验用品</strong>：大烧杯、小烧杯、温度计、<strong>环形玻璃搅拌棒</strong>、量筒、泡沫塑料（或碎纸条）、泡沫塑料盖板。</p>
+<p><strong>操作要点</strong>：</p>
+<ol>
+<li>大小烧杯之间填满泡沫塑料，小烧杯口与大烧杯口相平，盖板盖严——一切为了<strong>保温、减少热量散失</strong>；</li>
+<li>量取 50 mL 0.50 mol/L 盐酸倒入小烧杯，测其初始温度 t<sub>1</sub>；</li>
+<li>另量取 50 mL 0.55 mol/L NaOH 溶液（碱稍过量，保证盐酸被完全中和），测其温度；</li>
+<li><strong>一次快速倒入</strong> NaOH 溶液，立即盖板，用环形玻璃搅拌棒轻轻搅动，读取<strong>最高温度</strong> t<sub>2</sub>；</li>
+<li>重复 2~3 次，取温度差的平均值计算。</li>
+</ol>
+<p><strong>计算</strong>：Q = c·m·Δt ≈ 4.18 J/(g·℃) × 100 g × (t<sub>2</sub> − t<sub>1</sub>)，再除以生成水的物质的量 0.025 mol，即得中和热。</p>
+<p><strong>误差分析（常考）</strong>：</p>
+<ul>
+<li>倒入动作慢、盖板不严、未搅拌、温度计碰到烧杯壁 → 热量散失 → 测得中和热<strong>偏小</strong>；</li>
+<li>用铜质搅拌棒代替玻璃棒 → 金属导热 → 热量散失 → <strong>偏小</strong>；</li>
+<li>碱不过量导致酸未完全中和 → <strong>偏小</strong>。</li>
+</ul>
+<p><strong>注意</strong>：测得的实验值一般小于 57.3 kJ/mol，主要就是因为装置不可能完全绝热，热量有散失。</p>
+</div>
+
+<h3>2.7 能源常识</h3>
+<table>
+<tr>
+<th>类别</th>
+<th>代表</th>
+<th>特点</th>
+</tr>
+<tr>
+<td>化石能源（不可再生）</td>
+<td>煤、石油、天然气</td>
+<td>储量有限；燃烧产生 SO<sub>2</sub>、NO<sub>x</sub>、粉尘等污染物，是酸雨的主要来源</td>
+</tr>
+<tr>
+<td>新能源（可再生/清洁）</td>
+<td>氢能、太阳能、风能、地热能、生物质能</td>
+<td>氢气热值高、燃烧产物只有水，是理想能源，但制取与储运成本高</td>
+</tr>
+<tr>
+<td>能源综合利用</td>
+<td>煤的干馏、气化、液化</td>
+<td>煤的气化（C + H<sub>2</sub>O(g) <span class="eq-arrow" data-cond="高温">→</span> CO + H<sub>2</sub>）可提高燃烧效率、减少污染</td>
+</tr>
+</table>
+<div class="card violet">
+<span class="tag">视野拓展</span>
+<p><strong>氢能源——理想但很"挑"的能源</strong>：</p>
+<ul>
+<li><strong>优点</strong>：热值高（约 143 kJ/g，是汽油的 3 倍左右）；燃烧产物只有水，零污染；原料水取之不尽；</li>
+<li><strong>难题</strong>：① 制取成本高——电解水制氢耗电，目前工业上主要靠水煤气法（C + H<sub>2</sub>O(g) <span class="eq-arrow" data-cond="高温">→</span> CO + H<sub>2</sub>，吸热反应）；② 储存运输难——氢气密度小、易泄漏、易爆炸，需要高压或液化；③ 基础设施建设投入大；</li>
+<li><strong>方向</strong>：利用太阳能光解水制氢是研究热点，一旦突破成本瓶颈，氢能将大规模替代化石能源。</li>
+</ul>
+<p><strong>答题话术</strong>：问"氢能为什么还没普及"——答"制取成本高、储存和运输困难"；问"氢能的优点"——答"热值高、产物无污染、原料丰富"。</p>
+</div>
+
+<div class="card note">
+<span class="tag">情境储备</span>
+<p>选择题常结合"碳达峰、碳中和"命题：化石燃料燃烧排放 CO<sub>2</sub>，发展新能源、植树造林、CO<sub>2</sub> 资源化利用都是减碳路径。记住"<strong>节能即减碳</strong>"这条主线即可应对大部分情境判断。</p>
+</div>
+</section>
+
+<section>
+<h2>三、三重表征贯通</h2>
+<p>宏观现象、微观粒子、符号表达三位一体，是化学思维的核心。本章选两个经典反应来练：</p>
+
+<h3>3.1 氢气在氯气中燃烧（放热反应）</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>H<sub>2</sub> 在 Cl<sub>2</sub> 中安静地燃烧，发出<strong>苍白色火焰</strong>，集气瓶口有<strong>白雾</strong>生成（HCl 气体遇空气中的水蒸气形成盐酸小液滴），用手摸集气瓶外壁感觉<strong>发烫</strong>——反应放出热量。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>H—H 键与 Cl—Cl 键先断裂，分别吸收 436 kJ/mol 和 243 kJ/mol 能量；随后 H 原子与 Cl 原子结合成 H—Cl 键，每摩尔放出 431 kJ。断键共吸热 679 kJ，成键共放热 862 kJ，放出的多于吸收的，差额 183 kJ 以热量形式释放，使体系温度升高。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p class="eq"><span class="formula">H<sub>2</sub>(g) + Cl<sub>2</sub>(g) <span class="eq-arrow">→</span> 2HCl(g)　ΔH = −183 kJ/mol</span></p>
+<p>ΔH &lt; 0，放热反应；ΔH = (436 + 243) − 2×431 = −183 kJ/mol。</p>
+</div>
+</div>
+
+<h3>3.2 Ba(OH)<sub>2</sub>·8H<sub>2</sub>O 与 NH<sub>4</sub>Cl 的反应（吸热反应）</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>把两种晶体在烧杯中混合搅拌，能闻到<strong>刺激性气味的氨气</strong>；用手摸烧杯外壁，感觉<strong>冰凉</strong>；把烧杯放在滴有水的木片上，过一会儿烧杯底部的<strong>水结成了冰</strong>，烧杯与木片"冻"在一起。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>反应中旧键断裂吸收的能量多于新键形成放出的能量，差额只能从周围环境"抽取"热量来弥补，于是体系温度急剧下降。这直观地证明了：生成物的总能量高于反应物的总能量，ΔH &gt; 0。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p class="eq"><span class="formula">Ba(OH)<sub>2</sub>·8H<sub>2</sub>O(s) + 2NH<sub>4</sub>Cl(s) <span class="eq-arrow">→</span> BaCl<sub>2</sub>(s) + 2NH<sub>3</sub>↑ + 10H<sub>2</sub>O(l)　ΔH &gt; 0</span></p>
+<p>这是课本上吸热反应的"形象代言人"，看到"烧杯结冰"就要立刻想到它。</p>
+</div>
+</div>
+
+<h3>3.3 中和反应的热效应</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>向盐酸中倒入 NaOH 溶液，二者均无色，混合后仍<strong>无色、无沉淀、无气泡</strong>，看起来"什么都没发生"，但温度计示数明显<strong>上升</strong>——放热反应也可能没有可见现象，能量变化本身就是现象。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>盐酸中的 H<sup>+</sup> 与 NaOH 溶液中的 OH<sup>−</sup> 结合生成 H<sub>2</sub>O 分子，Na<sup>+</sup> 和 Cl<sup>−</sup> 只是"旁观者"（未参与反应）。每生成 1 mol H<sub>2</sub>O 放出约 57.3 kJ 热量。所有强酸强碱的稀溶液中和，实质都是同一个反应，所以中和热相同。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p class="eq"><span class="formula">HCl(aq) + NaOH(aq) <span class="eq-arrow">→</span> NaCl(aq) + H<sub>2</sub>O(l)　ΔH = −57.3 kJ/mol</span></p>
+<p>离子方程式：H<sup>+</sup>(aq) + OH<sup>−</sup>(aq) <span class="eq-arrow">→</span> H<sub>2</sub>O(l)　ΔH = −57.3 kJ/mol。</p>
+</div>
+</div>
+</section>
+
+<section>
+<h2>四、典型例题分步拆解</h2>
+
+<div class="card example">
+<span class="tag">例题 1 · 键能计算 ΔH</span>
+<p><strong>题目</strong>：已知 H—H 键能为 436 kJ/mol，N≡N 键能为 946 kJ/mol，N—H 键能为 391 kJ/mol。求反应 N<sub>2</sub>(g) + 3H<sub>2</sub>(g) <span class="eq-arrow" data-cond="高温、高压、催化剂">→</span> 2NH<sub>3</sub>(g) 的 ΔH。</p>
+<p><strong>【思路点拨】</strong>用键能公式 ΔH = 反应物总键能 − 生成物总键能。关键是数清每种物质中有几个什么键：1 个 NH<sub>3</sub> 分子含 3 个 N—H 键，2 mol NH<sub>3</sub> 含 6 mol N—H 键。</p>
+<div class="step"><span class="no">1</span><p>计算反应物断键吸收的能量：1 mol N≡N + 3 mol H—H = 946 + 3×436 = 946 + 1308 = 2254 kJ。</p></div>
+<div class="step"><span class="no">2</span><p>计算生成物成键放出的能量：2 mol NH<sub>3</sub> 含 6 mol N—H 键 = 6×391 = 2346 kJ。</p></div>
+<div class="step"><span class="no">3</span><p>ΔH = 2254 − 2346 = −92 kJ/mol。</p></div>
+<div class="ans"><strong>【答案】</strong>ΔH = −92 kJ/mol。ΔH &lt; 0，合成氨是放热反应（这与"升温不利于氨的合成"相呼应，下一章平衡移动还会用到）。</div>
+<p><strong>【方法总结】</strong>键能计算三步：数键 → 求和 → 反减生。最容易错在"数键"——务必按方程式系数乘以每个分子内的键数（如 2 mol NH<sub>3</sub> 是 6 mol N—H，不是 2 mol 或 3 mol）。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 2 · 盖斯定律计算（高考必考模型）</span>
+<p><strong>题目</strong>：已知：</p>
+<p>① C(s) + O<sub>2</sub>(g) <span class="eq-arrow">→</span> CO<sub>2</sub>(g)　ΔH<sub>1</sub> = −393.5 kJ/mol</p>
+<p>② CO(g) + 1/2O<sub>2</sub>(g) <span class="eq-arrow">→</span> CO<sub>2</sub>(g)　ΔH<sub>2</sub> = −283.0 kJ/mol</p>
+<p>求 C(s) + 1/2O<sub>2</sub>(g) <span class="eq-arrow">→</span> CO(g) 的 ΔH<sub>3</sub>。</p>
+<p><strong>【思路点拨】</strong>这是"碳不完全燃烧"的反应热，实验上很难直接测定（燃烧时总会生成 CO<sub>2</sub>），必须用盖斯定律间接求得。观察：目标中 C 在左边（与①同向），CO 在右边（与②反向），所以用 ① − ②。</p>
+<div class="step"><span class="no">1</span><p>对齐物质：目标反应物 C 在①的左侧，系数都是 1，①保持不动；目标生成物 CO 在②的左侧，要让它变到右侧，需将②<strong>调转方向</strong>，ΔH<sub>2</sub> 变号为 +283.0 kJ/mol。</p></div>
+<div class="step"><span class="no">2</span><p>① + (−②) 相加：左边 C + O<sub>2</sub> + CO<sub>2</sub>，右边 CO<sub>2</sub> + CO + ½O<sub>2</sub>；两边消去 CO<sub>2</sub>，O<sub>2</sub> 左边 1 个、右边 ½ 个，净剩左边 ½ 个 O<sub>2</sub>。恰好得到目标方程式：C(s) + ½O<sub>2</sub>(g) → CO(g)。</p></div>
+<div class="step"><span class="no">3</span><p>ΔH<sub>3</sub> = ΔH<sub>1</sub> − ΔH<sub>2</sub> = (−393.5) − (−283.0) = −393.5 + 283.0 = −110.5 kJ/mol。</p></div>
+<div class="ans"><strong>【答案】</strong>ΔH<sub>3</sub> = −110.5 kJ/mol。</div>
+<p><strong>【方法总结】</strong>盖斯定律口诀：<strong>"同向相加、异向相减、倍数同乘、消去验证"</strong>。做完一定要检查：加和后的方程式是否恰好是目标式？ΔH 是否做了完全相同的运算？本题数值上也有个小窍门：−393.5 − (−283.0)，减去负数要变加，符号处最容易出错。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 3 · 热化学方程式正误判断</span>
+<p><strong>题目</strong>：已知 25 ℃、101 kPa 下，1 g 甲烷（CH<sub>4</sub>）完全燃烧生成 CO<sub>2</sub>(g) 和液态水，放出 55.6 kJ 热量。下列热化学方程式书写正确的是（　　）</p>
+<p>A. CH<sub>4</sub>(g) + 2O<sub>2</sub>(g) <span class="eq-arrow">→</span> CO<sub>2</sub>(g) + 2H<sub>2</sub>O(g)　ΔH = −889.6 kJ/mol</p>
+<p>B. CH<sub>4</sub> + 2O<sub>2</sub> <span class="eq-arrow" data-cond="点燃">→</span> CO<sub>2</sub> + 2H<sub>2</sub>O　ΔH = −889.6 kJ/mol</p>
+<p>C. CH<sub>4</sub>(g) + 2O<sub>2</sub>(g) <span class="eq-arrow">→</span> CO<sub>2</sub>(g) + 2H<sub>2</sub>O(l)　ΔH = +889.6 kJ/mol</p>
+<p>D. CH<sub>4</sub>(g) + 2O<sub>2</sub>(g) <span class="eq-arrow">→</span> CO<sub>2</sub>(g) + 2H<sub>2</sub>O(l)　ΔH = −889.6 kJ/mol</p>
+<p><strong>【思路点拨】</strong>先算出每摩尔甲烷的放热量：1 g 放 55.6 kJ，CH<sub>4</sub> 摩尔质量 16 g/mol，则 1 mol 放热 55.6×16 = 889.6 kJ。再逐条对照五条军规排查选项。</p>
+<div class="step"><span class="no">1</span><p>算数值：55.6 kJ/g × 16 g/mol = 889.6 kJ/mol，数值四个选项都一样，无法据此排除。</p></div>
+<div class="step"><span class="no">2</span><p>查状态：题目明确说"液态水"，A 中 H<sub>2</sub>O 标成 (g)，错误。</p></div>
+<div class="step"><span class="no">3</span><p>查状态标注：B 中所有物质都未标状态，且热化学方程式不写"点燃"条件，错误。</p></div>
+<div class="step"><span class="no">4</span><p>查符号：燃烧放热，ΔH 必须为负，C 写成 +889.6 kJ/mol，错误。</p></div>
+<div class="step"><span class="no">5</span><p>D 各项均规范：状态齐全、水为液态、ΔH 为负、数值对应 1 mol CH<sub>4</sub>。</p></div>
+<div class="ans"><strong>【答案】</strong>D</div>
+<p><strong>【方法总结】</strong>热化学方程式正误判断"四查"：<strong>查状态、查符号、查数值与系数对应、查有无多余的条件和↑↓</strong>。养成固定排查顺序，这类题就是送分题。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 4 · 燃烧热概念与计算综合</span>
+<p><strong>题目</strong>：下列关于燃烧热的说法正确的是（　　）</p>
+<p>A. 已知 H<sub>2</sub>(g) + ½O<sub>2</sub>(g) <span class="eq-arrow">→</span> H<sub>2</sub>O(g)　ΔH = −241.8 kJ/mol，则 H<sub>2</sub> 的燃烧热为 241.8 kJ/mol</p>
+<p>B. 1 mol H<sub>2</sub> 与 2 mol H<sub>2</sub> 完全燃烧生成液态水，放出的热量不同，所以燃烧热不同</p>
+<p>C. 已知 C(s) 的燃烧热为 393.5 kJ/mol，则 12 g C 完全燃烧生成 CO<sub>2</sub> 放出 393.5 kJ 热量</p>
+<p>D. 硫的燃烧热对应的热化学方程式中，S 的燃烧产物是 SO<sub>3</sub></p>
+<p><strong>【思路点拨】</strong>逐项对照燃烧热三要素：1 mol 纯物质、完全燃烧、稳定氧化物（H→液态水，C→CO<sub>2</sub>，S→SO<sub>2</sub>）。</p>
+<div class="step"><span class="no">1</span><p>A 错：生成的是水蒸气 H<sub>2</sub>O(g)，不是稳定形态液态水，241.8 kJ/mol 不是燃烧热（燃烧热应对应生成液态水，为 285.8 kJ/mol）。</p></div>
+<div class="step"><span class="no">2</span><p>B 错：燃烧热是"折合到 1 mol 可燃物"的强度量，与实际用量无关。2 mol H<sub>2</sub> 放热加倍，但燃烧热数值不变。</p></div>
+<div class="step"><span class="no">3</span><p>C 对：12 g C 恰好是 1 mol，完全燃烧生成 CO<sub>2</sub>，放热 393.5 kJ，与燃烧热定义一致。</p></div>
+<div class="step"><span class="no">4</span><p>D 错：硫燃烧的稳定产物是 SO<sub>2</sub>，不是 SO<sub>3</sub>（SO<sub>2</sub> 在高温和催化剂下才能进一步氧化，且该反应不完全）。</p></div>
+<div class="ans"><strong>【答案】</strong>C</div>
+<p><strong>【方法总结】</strong>燃烧热判题就盯三个词：<strong>"1 mol""完全""稳定"</strong>。尤其记住三个稳定产物：H→H<sub>2</sub>O(l)、C→CO<sub>2</sub>(g)、S→SO<sub>2</sub>(g)，出题人最爱在"水蒸气和液态水"上设坑。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 5 · 盖斯定律进阶（三个方程式）</span>
+<p><strong>题目</strong>：已知 25 ℃、101 kPa 下：</p>
+<p>① C(s) + O<sub>2</sub>(g) <span class="eq-arrow">→</span> CO<sub>2</sub>(g)　ΔH<sub>1</sub> = −393.5 kJ/mol</p>
+<p>② H<sub>2</sub>(g) + 1/2O<sub>2</sub>(g) <span class="eq-arrow">→</span> H<sub>2</sub>O(l)　ΔH<sub>2</sub> = −285.8 kJ/mol</p>
+<p>③ CH<sub>3</sub>COOH(l) + 2O<sub>2</sub>(g) <span class="eq-arrow">→</span> 2CO<sub>2</sub>(g) + 2H<sub>2</sub>O(l)　ΔH<sub>3</sub> = −870.3 kJ/mol</p>
+<p>求反应 2C(s) + 2H<sub>2</sub>(g) + O<sub>2</sub>(g) <span class="eq-arrow">→</span> CH<sub>3</sub>COOH(l) 的 ΔH<sub>4</sub>。</p>
+<p><strong>【思路点拨】</strong>这是"由单质生成乙酸"的反应，无法直接测定，必须用盖斯定律。对齐物质：目标需要左边 2 个 C（①×2）、左边 2 个 H<sub>2</sub>（②×2）、右边 1 个 CH<sub>3</sub>COOH（③调转方向）。</p>
+<div class="step"><span class="no">1</span><p>①×2：2C(s) + 2O<sub>2</sub>(g) → 2CO<sub>2</sub>(g)，ΔH = 2×(−393.5) = −787.0 kJ/mol。</p></div>
+<div class="step"><span class="no">2</span><p>②×2：2H<sub>2</sub>(g) + O<sub>2</sub>(g) → 2H<sub>2</sub>O(l)，ΔH = 2×(−285.8) = −571.6 kJ/mol。</p></div>
+<div class="step"><span class="no">3</span><p>③调向：2CO<sub>2</sub>(g) + 2H<sub>2</sub>O(l) → CH<sub>3</sub>COOH(l) + 2O<sub>2</sub>(g)，ΔH = +870.3 kJ/mol。</p></div>
+<div class="step"><span class="no">4</span><p>三式相加，消去两边的 2CO<sub>2</sub>、2H<sub>2</sub>O，左边共 3 个 O<sub>2</sub>、右边 2 个 O<sub>2</sub>，净剩左边 1 个 O<sub>2</sub>，恰好得到目标方程式。</p></div>
+<div class="step"><span class="no">5</span><p>ΔH<sub>4</sub> = (−787.0) + (−571.6) + 870.3 = −488.3 kJ/mol。</p></div>
+<div class="ans"><strong>【答案】</strong>ΔH<sub>4</sub> = −488.3 kJ/mol。</div>
+<p><strong>【方法总结】</strong>三式联立的窍门是"抓特殊物质"：先找只在某一个已知式中出现的物质（本题 C 只在①中、H<sub>2</sub> 只在②中、CH<sub>3</sub>COOH 只在③中），它们立刻确定各方程式的倍数和方向，剩下的大众物质（O<sub>2</sub>、CO<sub>2</sub>、H<sub>2</sub>O）加和后自然消去。最后一步用"消去验证"兜底。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 6 · 中和热测定实验计算</span>
+<p><strong>题目</strong>：在中和热测定实验中，量取 50 mL 0.50 mol/L 盐酸与 50 mL 0.55 mol/L NaOH 溶液，混合前两溶液温度均为 20.0 ℃，混合后测得最高温度为 23.4 ℃。已知混合溶液密度约为 1.0 g/mL，比热容为 4.18 J/(g·℃)。计算本实验测得的中和热，并分析其与理论值 57.3 kJ/mol 的差异原因。</p>
+<p><strong>【思路点拨】</strong>先算放出的热量 Q = c·m·Δt，再除以生成水的物质的量。注意酸的量决定水的量（碱过量），以及单位从 J 换算到 kJ。</p>
+<div class="step"><span class="no">1</span><p>溶液总质量 m = (50 + 50) mL × 1.0 g/mL = 100 g；温度变化 Δt = 23.4 − 20.0 = 3.4 ℃。</p></div>
+<div class="step"><span class="no">2</span><p>放出的热量 Q = 4.18 J/(g·℃) × 100 g × 3.4 ℃ = 1421.2 J ≈ 1.42 kJ。</p></div>
+<div class="step"><span class="no">3</span><p>生成水的物质的量由不足量的盐酸决定：n(H<sub>2</sub>O) = n(HCl) = 0.50 mol/L × 0.050 L = 0.025 mol（NaOH 为 0.0275 mol，过量）。</p></div>
+<div class="step"><span class="no">4</span><p>中和热 = Q ÷ n(H<sub>2</sub>O) = 1.42 kJ ÷ 0.025 mol ≈ 56.8 kJ/mol。</p></div>
+<div class="ans"><strong>【答案】</strong>测得中和热约为 56.8 kJ/mol。该值小于理论值 57.3 kJ/mol，主要原因是装置保温不够严密，部分热量散失到环境中，使测得的 Δt 偏小。</div>
+<p><strong>【方法总结】</strong>中和热计算三量：Q（热量）、n（水的物质的量）、比值（中和热）。三个坑：① 体积相加后别忘乘密度得质量；② 水的物质的量按"不足量"一方算；③ J 要换算成 kJ。误差方向一律向"Δt 偏小 → 测得值偏小"靠拢。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 7 · 由 ΔH 反求键能（键能公式逆用）</span>
+<p><strong>题目</strong>：已知 H<sub>2</sub>(g) + Cl<sub>2</sub>(g) <span class="eq-arrow">→</span> 2HCl(g)　ΔH = −183 kJ/mol，H—H 键能为 436 kJ/mol，Cl—Cl 键能为 243 kJ/mol。求 H—Cl 键的键能。</p>
+<p><strong>【思路点拨】</strong>键能公式不仅能"由键能算 ΔH"，也能"由 ΔH 反算键能"。设未知数列方程即可，注意 2 mol HCl 含 2 mol H—Cl 键。</p>
+<div class="step"><span class="no">1</span><p>设 H—Cl 键能为 x kJ/mol。断键吸热：436 + 243 = 679 kJ。</p></div>
+<div class="step"><span class="no">2</span><p>成键放热：2x kJ（生成 2 mol HCl）。</p></div>
+<div class="step"><span class="no">3</span><p>列方程：ΔH = 679 − 2x = −183。</p></div>
+<div class="step"><span class="no">4</span><p>解得 2x = 862，x = 431 kJ/mol。</p></div>
+<div class="ans"><strong>【答案】</strong>H—Cl 键能为 431 kJ/mol。</div>
+<p><strong>【方法总结】</strong>反求键能就是解一元一次方程，关键仍是"数对键数"。求得的结果可以和例题 1 相互印证——同一组键能，正算反算要能对上，这也是检查自己是否掌握的好方法。</p>
+</div>
+</section>
+
+<section>
+<h2>五、易错点与成因分析</h2>
+
+<div class="card trap">
+<span class="tag">易错点 1</span>
+<p><strong>易错表现</strong>：ΔH 的正负号记反，认为"放热为正"或者答题时漏写负号。</p>
+<p><strong>错误成因</strong>：直觉上觉得"放出"就该是"多"（正），没有从"体系自身能量变化"的角度理解符号规定。</p>
+<p><strong>正确理解</strong>：ΔH 描述的是<strong>体系（反应本身）</strong>的能量变化。放热反应中体系把能量给了环境，自己能量变少，所以 ΔH &lt; 0；吸热反应体系从环境拿了能量，ΔH &gt; 0。</p>
+<p><strong>避坑口诀</strong>：<strong>"放负吸正"</strong>——放热 ΔH 为负，吸热 ΔH 为正。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 2</span>
+<p><strong>易错表现</strong>：热化学方程式漏标状态，或者把 H<sub>2</sub>O 的状态随手写成 (g)。</p>
+<p><strong>错误成因</strong>：觉得状态符号是"可有可无的修饰"，不知道状态改变会直接改变 ΔH 的数值。</p>
+<p><strong>正确理解</strong>：H<sub>2</sub>O(l) → H<sub>2</sub>O(g) 本身要吸收 44 kJ/mol，所以同一个燃烧反应，生成液态水比生成水蒸气多放 44 kJ（每摩尔水）。状态不同，ΔH 就是不同的数。状态符号是热化学方程式的"身份证信息"，漏标即错误。</p>
+<p><strong>避坑口诀</strong>：<strong>"热方程式，状态先行"</strong>——写完先检查每个物质后面有没有 (s)(l)(g)(aq)。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 3</span>
+<p><strong>易错表现</strong>：盖斯定律运算时，方程式乘了 2 但 ΔH 忘乘 2；或者方程式调了方向但 ΔH 忘变号。</p>
+<p><strong>错误成因</strong>：把方程式的变形和 ΔH 的变形当成两件独立的事，没有建立"两者绑定"的意识。</p>
+<p><strong>正确理解</strong>：ΔH 是与方程式系数严格对应的。2 mol 物质反应放出的热量当然是 1 mol 的两倍；反应倒过来走，吸放热自然反转。对方程式做任何操作（调向、乘倍、相加），ΔH 必须<strong>同步</strong>做同样的操作。</p>
+<p><strong>避坑口诀</strong>：<strong>"式变 H 变，如影随形"</strong>。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 4</span>
+<p><strong>易错表现</strong>：键能计算 ΔH 时用"生成物键能 − 反应物键能"，得到符号相反的结果。</p>
+<p><strong>错误成因</strong>：与能量公式 ΔH = 生成物总能量 − 反应物总能量 记混了。</p>
+<p><strong>正确理解</strong>：键能是"拆键要花的代价"，反应中先花（断反应物的键）后赚（成生成物的键），ΔH = 花的 − 赚的 = 反应物键能 − 生成物键能。而"总能量"是物质自身携带的能量，ΔH = 终点 − 起点 = 生成物 − 反应物。两个公式方向相反。</p>
+<p><strong>避坑口诀</strong>：<strong>"键能反减生，能量生减反"</strong>。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 5</span>
+<p><strong>易错表现</strong>：认为"需要加热才能发生的反应就是吸热反应"，如认为燃烧是吸热反应。</p>
+<p><strong>错误成因</strong>：把"反应条件"（引发反应所需的能量输入）误当成"反应热"（整个反应的净能量变化）。</p>
+<p><strong>正确理解</strong>：加热只是帮反应物越过"活化能山头"。燃烧需要点燃，但反应一旦开始，放出的热量远大于点燃输入的少量能量，净效果是放热。反之，Ba(OH)<sub>2</sub>·8H<sub>2</sub>O 与 NH<sub>4</sub>Cl 常温就能反应，却是典型的吸热反应。</p>
+<p><strong>避坑口诀</strong>：<strong>"条件不等于热效应，看 ΔH 正负才算数"</strong>。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 6</span>
+<p><strong>易错表现</strong>：认为"任何酸碱中和的中和热都是 57.3 kJ/mol"，比如认为醋酸与 NaOH 的中和热也是 57.3 kJ/mol。</p>
+<p><strong>错误成因</strong>：忽略了中和热概念中"强酸、强碱、稀溶液"三个限定词。</p>
+<p><strong>正确理解</strong>：弱酸（CH<sub>3</sub>COOH）或弱碱（NH<sub>3</sub>·H<sub>2</sub>O）在中和过程中还要不断电离，而电离是吸热的，会抵消一部分中和放热，使测得中和热<strong>小于</strong> 57.3 kJ/mol；浓硫酸稀释放热，使其"表观中和热"<strong>大于</strong> 57.3 kJ/mol；H<sub>2</sub>SO<sub>4</sub> 与 Ba(OH)<sub>2</sub> 因生成 BaSO<sub>4</sub> 沉淀额外放热，也大于 57.3 kJ/mol。</p>
+<p><strong>避坑口诀</strong>：<strong>"稀强强，一摩尔水，五十七点三"</strong>——限定条件缺一不可。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 7</span>
+<p><strong>易错表现</strong>：比较两个反应"谁放热多"时，直接比较 ΔH 数值大小，认为 ΔH = −500 kJ/mol 的反应比 ΔH = −300 kJ/mol 的反应"热效应弱"，或者根本不看物质的量。</p>
+<p><strong>错误成因</strong>：混淆了"ΔH（每摩尔反应进度的热量变化）"与"实际放出热量的总量"两个层次；同时忽略了 ΔH 是带符号的数，比大小要小心负号。</p>
+<p><strong>正确理解</strong>：① 比较 ΔH 大小要带着符号比：−500 &lt; −300，但前者放热更多；② 比较实际放出热量要用 <strong>Q = n × |ΔH|</strong>（n 为按方程式计算的反应进度）。例如 2 mol H<sub>2</sub> 按 ΔH = −285.8 kJ/mol 的方程式反应，放热 571.6 kJ。</p>
+<p><strong>避坑口诀</strong>：<strong>"比 ΔH 带符号，比热量乘摩尔"</strong>。</p>
+</div>
+</section>
+
+<section>
+<h2>六、与前后章节的联系</h2>
+<ul>
+<li><strong>承接氧化还原</strong>：燃烧、铝热反应等放热反应大多是氧化还原反应，本章给它们加上了"能量标签"。</li>
+<li><strong>铺垫化学平衡（3.13）</strong>：ΔH 的正负直接决定温度对平衡的影响方向——放热反应升温平衡逆向移动，这是下一章勒夏特列原理的核心应用。</li>
+<li><strong>铺垫电化学（3.15）</strong>：原电池就是把放热反应释放的化学能直接转化为电能的装置，燃料电池、中和热都与能量转化效率相关。</li>
+<li><strong>贯穿工业流程</strong>：工业反应条件的选择（如合成氨为什么要用高温）需要同时考虑速率与能量，是反应原理大题的常客。</li>
+</ul>
+<div class="card note">
+<span class="tag">承上启下</span>
+<p>建议按以下顺序与相邻章节联动复习：</p>
+<ul>
+<li>先回看多章节中出现的"燃烧反应"，给它们逐一补上 ΔH 标签，体会"能量视角"如何统一零散知识；</li>
+<li>再预习 3.13 的勒夏特列原理，重点想清楚"为什么放热反应升温 K 变小"——答案就藏在本章 ΔH 的符号里；</li>
+<li>最后把本章例题 5（盖斯定律三式联立）与 3.13 例题 2（三段式）连做，这两道题合起来就是高考第 17 题的"标准开局"。</li>
+</ul>
+</div>
+</section>
+
+<section>
+<h2>七、章末自检清单</h2>
+<p>合上书本，逐条自测。能做到就打勾，做不到的立刻回读对应小节：</p>
+<ul class="checklist">
+<li>我能说出 ΔH 的含义、单位，并牢记"放热 ΔH&lt;0、吸热 ΔH&gt;0"。</li>
+<li>我能从能量图（反应物与生成物的相对高度）判断反应的吸放热。</li>
+<li>我能各举出至少三个放热反应和吸热反应的实例，并知道"需要加热 ≠ 吸热反应"。</li>
+<li>我能用键能计算 ΔH（ΔH = 反应物总键能 − 生成物总键能），并数清每个分子中的键数。</li>
+<li>我能规范书写热化学方程式，自觉做到"标状态、带正负、写单位、系数与 ΔH 对应、不写条件"。</li>
+<li>我能解释为什么热化学方程式的系数可以是分数。</li>
+<li>我能用盖斯定律由已知热化学方程式求目标反应的 ΔH，运算后主动验证方程式是否消去正确。</li>
+<li>我能准确说出燃烧热的三个要点，并写出 H→H<sub>2</sub>O(l)、C→CO<sub>2</sub>(g)、S→SO<sub>2</sub>(g) 三个稳定产物。</li>
+<li>我能说出中和热的三个限定条件，并解释弱酸弱碱、浓硫酸、生成沉淀时测定值为何偏离 57.3 kJ/mol。</li>
+<li>我能复述中和热测定实验的主要仪器（含环形玻璃搅拌棒）、操作要点和常见误差方向。</li>
+<li>我能区分化石能源与新能源，知道氢能的优点和煤的综合利用方式。</li>
+<li>我能区分"ΔH 数值大小"与"实际放出热量多少"，会用 Q = n×|ΔH| 比较不同反应的热量。</li>
+</ul>
+</section>
+
+</main>
+<footer class="chap-foot">高考备考 · 化学 · 深度学习材料 · 2026</footer>
+</body>
+</html>

@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>波粒二象性 - 深度学习材料</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<nav class="chap-nav">高考备考 · 物理 · 深度学习材料 ｜ 3.17 波粒二象性</nav>
+<header class="chap-head">
+  <h1>波粒二象性</h1>
+  <p class="chap-meta"></p>
+</header>
+  <div class="subtitle">深度学习材料 · 概念 · 推导 · 模型 · 方法</div>
+  <div class="meta">
+    <span>高中物理 · 近代物理（原子物理） · 选择题常客</span><br>
+    <span>依据：《高考物理95+分备考指南》3.17节要求</span><br>
+    <span>适用：高一同步学习 &amp; 高考一轮复习</span><br>
+    <span>学生：小兵</span>
+  </div>
+</div>
+
+<p class="hint">
+  💡 提示：所有公式由 MathJax 渲染；带推导的公式请合上书独立推一遍
+</p>
+
+<div class="toc">
+  <strong>目录</strong>
+  <ol>
+    <li><a href="#s1">一、本章总览</a></li>
+    <li><a href="#s2">二、核心概念与物理量</a></li>
+    <li><a href="#s3">三、公式与推导（含适用条件）</a></li>
+    <li><a href="#s4">四、典型例题</a></li>
+    <li><a href="#s5">五、易错点与成因分析</a></li>
+    <li><a href="#s6">六、章末自检清单</a></li>
+  </ol>
+</div>
+
+<h2 id="s1">一、本章总览</h2>
+
+<p>19 世纪末，经典物理学的大厦看似完美，但"光电效应"这朵乌云怎么也无法用波动说驱散——光照到金属上打出电子，电子的能量居然只跟光的<strong>颜色（频率）</strong>有关，跟光的<strong>强弱</strong>无关。爱因斯坦用"光子说"漂亮地解决了这个问题，随后德布罗意大胆反问：既然光有粒子性，那实物粒子（比如电子）有没有波动性？本章就回答这两件事：<strong>光的粒子性</strong>与<strong>实物粒子的波动性</strong>。</p>
+
+<h3>考情定位</h3>
+<table>
+  <tr><th style="width:28%">项目</th><th>内容</th></tr>
+  <tr><td>所属模块</td><td class="l">近代物理（原子物理），与原子结构、原子核同处一个板块</td></tr>
+  <tr><td>常见题型</td><td class="l">原子物理板块在高考中约 4～6 分，以 <strong>1 道选择题</strong>为主，本章是该板块出题频率最高的内容</td></tr>
+  <tr><td>高频考法</td><td class="l">① 光电效应方程计算；② $E_k-\nu$ 图象读斜率与截距；③ 光强/频率变化对光电流、最大初动能的影响辨析；④ 德布罗意波长估算</td></tr>
+  <tr><td>难度定位</td><td class="l">中低档题，属于"会者不难、必须拿满"的送分区，但概念辨析陷阱多</td></tr>
+</table>
+
+<h3>本章知识地图</h3>
+<div class="map">
+  <div class="row"><div class="node root">波粒二象性</div></div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node">光的粒子性</div>
+    <div class="node">粒子的波动性</div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node leaf">光电效应现象与四条实验规律</div>
+    <div class="node leaf">光子说 $\varepsilon = h\nu$</div>
+    <div class="node leaf">光电效应方程 $E_k = h\nu - W_0$</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">遏止电压 $eU_c = E_k$</div>
+    <div class="node leaf">截止频率 $\nu_0 = W_0/h$</div>
+    <div class="node leaf">物质波 $\lambda = h/p$</div>
+    <div class="node leaf">概率波</div>
+  </div>
+</div>
+
+<div class="deep">
+<strong>学习建议：</strong>本章公式极少（核心就 $E_k = h\nu - W_0$ 和 $\lambda = h/p$ 两条），真正的战场在<strong>概念辨析</strong>。建议把"四条实验规律"和"波动说为什么失败"用自己的话讲一遍——能讲清楚，选择题就稳了。
+</div>
+
+<h2 id="s2">二、核心概念与物理量</h2>
+
+<h3>1. 光电效应现象</h3>
+<p>照射到金属表面的光（包括不可见光），能使金属中的<strong>电子从表面逸出</strong>，这种现象叫光电效应；逸出的电子叫<strong>光电子</strong>。注意：光电子本质是电子，"光"字只说明它是被光打出来的。</p>
+
+<h3>2. 光电效应实验装置与四条实验规律</h3>
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" width="100%" style="max-width:640px;margin:10px auto;display:block;">
+  <rect x="0" y="0" width="640" height="300" fill="#f7fafc" rx="10"/>
+  <!-- 真空玻璃管 -->
+  <rect x="200" y="40" width="240" height="120" rx="60" fill="#ebf8ff" stroke="#2b6cb0" stroke-width="2"/>
+  <text x="320" y="32" text-anchor="middle" font-size="13" fill="#1a365d">真空玻璃管</text>
+  <!-- 阴极K -->
+  <line x1="250" y1="60" x2="250" y2="140" stroke="#1a365d" stroke-width="6"/>
+  <text x="238" y="105" text-anchor="middle" font-size="14" fill="#1a365d" font-weight="bold">K</text>
+  <text x="238" y="122" text-anchor="middle" font-size="10" fill="#718096">阴极</text>
+  <!-- 阳极A -->
+  <circle cx="390" cy="100" r="16" fill="none" stroke="#1a365d" stroke-width="4"/>
+  <text x="390" y="105" text-anchor="middle" font-size="14" fill="#1a365d" font-weight="bold">A</text>
+  <text x="390" y="140" text-anchor="middle" font-size="10" fill="#718096">阳极</text>
+  <!-- 入射光 -->
+  <path d="M 60 60 Q 90 50 120 60 T 180 60" fill="none" stroke="#dd6b20" stroke-width="2.5"/>
+  <path d="M 60 85 Q 90 75 120 85 T 180 85" fill="none" stroke="#dd6b20" stroke-width="2.5"/>
+  <line x1="180" y1="60" x2="244" y2="80" stroke="#dd6b20" stroke-width="2.5" marker-end="url(#arr)"/>
+  <line x1="180" y1="85" x2="244" y2="95" stroke="#dd6b20" stroke-width="2.5" marker-end="url(#arr)"/>
+  <text x="120" y="45" text-anchor="middle" font-size="13" fill="#dd6b20">入射光（频率 ν）</text>
+  <!-- 光电子 -->
+  <path d="M 258 95 Q 300 75 368 90" fill="none" stroke="#38a169" stroke-width="2" stroke-dasharray="5,4" marker-end="url(#arr2)"/>
+  <circle cx="280" cy="88" r="3.5" fill="#38a169"/>
+  <circle cx="320" cy="82" r="3.5" fill="#38a169"/>
+  <text x="310" y="68" text-anchor="middle" font-size="12" fill="#276749">光电子 e⁻</text>
+  <!-- 外电路 -->
+  <line x1="250" y1="160" x2="250" y2="220" stroke="#2d3748" stroke-width="2"/>
+  <line x1="390" y1="160" x2="390" y2="220" stroke="#2d3748" stroke-width="2"/>
+  <line x1="250" y1="220" x2="290" y2="220" stroke="#2d3748" stroke-width="2"/>
+  <line x1="350" y1="220" x2="390" y2="220" stroke="#2d3748" stroke-width="2"/>
+  <!-- 电流表 -->
+  <circle cx="320" cy="220" r="14" fill="#fff" stroke="#2d3748" stroke-width="2"/>
+  <text x="320" y="225" text-anchor="middle" font-size="13" fill="#2d3748">A</text>
+  <line x1="306" y1="220" x2="290" y2="220" stroke="#2d3748" stroke-width="2"/>
+  <line x1="334" y1="220" x2="350" y2="220" stroke="#2d3748" stroke-width="2"/>
+  <!-- 电源 -->
+  <line x1="250" y1="220" x2="250" y2="260" stroke="#2d3748" stroke-width="2"/>
+  <line x1="390" y1="220" x2="390" y2="260" stroke="#2d3748" stroke-width="2"/>
+  <line x1="250" y1="260" x2="300" y2="260" stroke="#2d3748" stroke-width="2"/>
+  <line x1="340" y1="260" x2="390" y2="260" stroke="#2d3748" stroke-width="2"/>
+  <line x1="310" y1="252" x2="310" y2="268" stroke="#2d3748" stroke-width="4"/>
+  <line x1="330" y1="256" x2="330" y2="264" stroke="#2d3748" stroke-width="2"/>
+  <text x="320" y="285" text-anchor="middle" font-size="12" fill="#718096">电源（可加正向或反向电压）</text>
+  <!-- 电压表 -->
+  <circle cx="480" cy="220" r="14" fill="#fff" stroke="#2d3748" stroke-width="2"/>
+  <text x="480" y="225" text-anchor="middle" font-size="13" fill="#2d3748">V</text>
+  <line x1="390" y1="200" x2="480" y2="200" stroke="#2d3748" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="480" y1="200" x2="480" y2="206" stroke="#2d3748" stroke-width="1.5"/>
+  <line x1="250" y1="240" x2="480" y2="240" stroke="#2d3748" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="480" y1="240" x2="480" y2="234" stroke="#2d3748" stroke-width="1.5"/>
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#dd6b20"/>
+    </marker>
+    <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#38a169"/>
+    </marker>
+  </defs>
+</svg>
+
+<p><strong>实验规律四条</strong>（每条都是选择题的"常客"，务必逐字吃透）：</p>
+<table>
+  <tr><th style="width:22%">规律</th><th>内容</th><th style="width:32%">关键概念</th></tr>
+  <tr>
+    <td class="l">① 存在截止频率</td>
+    <td class="l">对每一种金属，都存在一个<strong>截止频率（极限频率）</strong>$\nu_0$：入射光频率 $\nu \geq \nu_0$ 才能发生光电效应；$\nu &lt; \nu_0$ 时，<strong>无论光多强、照多久</strong>，都没有光电子逸出。</td>
+    <td class="l">$\nu_0$ 由<strong>金属本身</strong>决定，与入射光无关</td>
+  </tr>
+  <tr>
+    <td class="l">② 最大初动能只由频率决定</td>
+    <td class="l">光电子的<strong>最大初动能</strong> $E_k$ 随入射光频率 $\nu$ 的增大而增大，与光强无关。</td>
+    <td class="l">$E_k$ 是"最快那批电子"的动能</td>
+  </tr>
+  <tr>
+    <td class="l">③ 饱和光电流与光强成正比</td>
+    <td class="l">频率 $\nu$ 一定时，单位时间逸出的光电子数与入射光<strong>强度</strong>成正比，即<strong>饱和光电流</strong>与光强成正比。</td>
+    <td class="l">光强 → 光子数 → 光电子数</td>
+  </tr>
+  <tr>
+    <td class="l">④ 瞬时性</td>
+    <td class="l">只要 $\nu \geq \nu_0$，光一照上几乎立即（时间不超过 $10^{-9}\ \mathrm{s}$）就有光电子逸出，<strong>不需要能量积累过程</strong>。</td>
+    <td class="l">一击即中，一个光子对一个电子</td>
+  </tr>
+</table>
+
+<h3>3. 四个核心概念的定义</h3>
+<ul>
+  <li><strong>截止频率 $\nu_0$</strong>：恰能使金属发生光电效应的入射光最小频率。是金属的"门槛"，不同金属 $\nu_0$ 不同。</li>
+  <li><strong>逸出功 $W_0$</strong>：使电子脱离某种金属表面所需做功的<strong>最小值</strong>。$W_0$ 由金属本身决定，与入射光无关。$W_0$ 大的金属"门槛高"。</li>
+  <li><strong>遏止电压 $U_c$</strong>：在光电管两端加<strong>反向电压</strong>（阳极接负），使光电流恰好减为零时的反向电压。它用"电场做功"量出最快光电子的动能：$eU_c = E_k$。</li>
+  <li><strong>饱和光电流 $I_m$</strong>：正向电压足够大时，单位时间逸出的光电子<strong>全部</strong>被阳极收集，电流达到的最大值。$I_m$ 反映单位时间逸出的光电子数。</li>
+</ul>
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 260" width="100%" style="max-width:640px;margin:10px auto;display:block;">
+  <rect x="0" y="0" width="640" height="260" fill="#f7fafc" rx="10"/>
+  <text x="320" y="24" text-anchor="middle" font-size="13" fill="#1a365d">光电流 I 随电压 U 的变化（黄光强/弱两条曲线同频率）</text>
+  <!-- 坐标轴 -->
+  <line x1="80" y1="200" x2="600" y2="200" stroke="#2d3748" stroke-width="2"/>
+  <line x1="200" y1="230" x2="200" y2="40" stroke="#2d3748" stroke-width="2"/>
+  <text x="600" y="222" font-size="13" fill="#2d3748">U</text>
+  <text x="186" y="52" font-size="13" fill="#2d3748">I</text>
+  <text x="208" y="222" font-size="12" fill="#718096">O</text>
+  <!-- 遏止电压标记 -->
+  <line x1="120" y1="200" x2="120" y2="210" stroke="#e53e3e" stroke-width="2"/>
+  <text x="120" y="228" text-anchor="middle" font-size="12" fill="#e53e3e">−Uc</text>
+  <!-- 黄光（强）曲线 -->
+  <path d="M 80 200 Q 130 196 160 170 Q 200 130 260 110 L 560 105" fill="none" stroke="#2b6cb0" stroke-width="2.5"/>
+  <line x1="260" y1="107" x2="560" y2="103" stroke="#2b6cb0" stroke-width="2.5"/>
+  <text x="480" y="92" font-size="12" fill="#2b6cb0">黄光（强） Im大</text>
+  <!-- 黄光（弱）曲线 -->
+  <path d="M 80 200 Q 130 197 160 180 Q 200 155 260 150 L 560 147" fill="none" stroke="#38a169" stroke-width="2.5"/>
+  <line x1="260" y1="149" x2="560" y2="146" stroke="#38a169" stroke-width="2.5"/>
+  <text x="480" y="165" font-size="12" fill="#38a169">黄光（弱） Im小</text>
+  <!-- 饱和电流虚线 -->
+  <line x1="200" y1="105" x2="260" y2="105" stroke="#718096" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="200" y1="148" x2="260" y2="148" stroke="#718096" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="100" y="240" text-anchor="start" font-size="11" fill="#718096">同频率：遏止电压 Uc 相同；光强越大，饱和光电流 Im 越大</text>
+</svg>
+
+<h3>4. 光子说与光的波粒二象性</h3>
+<p>爱因斯坦提出：<strong>光不仅在发射和吸收时是一份一份的，光本身就是由一个个不可分割的能量子组成的</strong>，频率为 $\nu$ 的光，每个光子能量为</p>
+$$\varepsilon = h\nu$$
+<p>其中 $h$ 为普朗克常量，$h = 6.63\times 10^{-34}\ \mathrm{J\cdot s}$。光电效应中，一个光子的能量被金属中的<strong>一个电子一次性全部吸收</strong>，不存在"攒能量"。</p>
+
+<ul>
+  <li><strong>光的粒子性证据</strong>：光电效应、康普顿效应（光子还有动量 $p = h/\lambda$）。</li>
+  <li><strong>光的波动性证据</strong>：干涉、衍射、偏振。</li>
+  <li><strong>统一图像</strong>：光是一种<strong>概率波</strong>——大量光子的行为表现出波动性，单个光子的落点由概率决定；亮条纹处是光子到达概率大的地方。</li>
+  <li><strong>光强的新理解</strong>：频率 $\nu$ 一定时，光强 ∝ 单位时间单位面积到达的<strong>光子数</strong>。光强加倍 = 光子数加倍，单个光子能量 $h\nu$ 不变。</li>
+</ul>
+
+<h3>5. 物质波（德布罗意波）</h3>
+<p>德布罗意提出：一切运动着的实物粒子都具有波粒二象性，其波长为</p>
+$$\lambda = \frac{h}{p} = \frac{h}{mv}$$
+<p>这种波叫<strong>物质波（德布罗意波）</strong>。电子衍射实验证实了它的真实性。宏观物体的动量 $p$ 很大，$\lambda$ 小到无法观测，所以只看得到粒子性。</p>
+
+<h3>6. 本章物理量总表</h3>
+<table>
+  <tr><th>物理量</th><th>符号</th><th>单位（SI）</th><th>常用单位</th><th>标/矢</th><th class="l">要点</th></tr>
+  <tr><td class="l">光子能量</td><td>$\varepsilon$</td><td>J</td><td>eV</td><td>标量</td><td class="l">$\varepsilon = h\nu$</td></tr>
+  <tr><td class="l">普朗克常量</td><td>$h$</td><td>$\mathrm{J\cdot s}$</td><td>—</td><td>常量</td><td class="l">$6.63\times10^{-34}\ \mathrm{J\cdot s}$</td></tr>
+  <tr><td class="l">入射光频率</td><td>$\nu$</td><td>Hz</td><td>—</td><td>标量</td><td class="l">决定单个光子能量</td></tr>
+  <tr><td class="l">截止频率</td><td>$\nu_0$</td><td>Hz</td><td>—</td><td>标量</td><td class="l">只由金属决定</td></tr>
+  <tr><td class="l">逸出功</td><td>$W_0$</td><td>J</td><td>eV</td><td>标量</td><td class="l">只由金属决定</td></tr>
+  <tr><td class="l">最大初动能</td><td>$E_k$</td><td>J</td><td>eV</td><td>标量</td><td class="l">随 $\nu$ 线性增大</td></tr>
+  <tr><td class="l">遏止电压</td><td>$U_c$</td><td>V</td><td>V</td><td>标量（电势差）</td><td class="l">$eU_c = E_k$；数值上 $U_c$ 的伏特数 = $E_k$ 的电子伏特数</td></tr>
+  <tr><td class="l">饱和光电流</td><td>$I_m$</td><td>A</td><td>A</td><td>标量</td><td class="l">由光强决定（$\nu$ 一定时）</td></tr>
+  <tr><td class="l">德布罗意波长</td><td>$\lambda$</td><td>m</td><td>nm</td><td>标量</td><td class="l">$\lambda = h/p$；动量 $p$ 本身是矢量</td></tr>
+</table>
+
+<div class="key-point">
+<strong>单位换算（本章计算的生命线）：</strong>$1\ \mathrm{eV} = 1.60\times 10^{-19}\ \mathrm{J}$；$e = 1.60\times 10^{-19}\ \mathrm{C}$；$c = 3.0\times 10^{8}\ \mathrm{m/s}$；电子质量 $m_e = 9.11\times 10^{-31}\ \mathrm{kg}$。算 eV ↔ J 时，乘除 $1.60\times10^{-19}$ 的方向务必想清楚。
+</div>
+
+<blockquote>
+<p><strong>深度思考：为什么波动说解释不了光电效应？</strong></p>
+<p>按波动说，光的能量分布在波面上，光越弱能量越稀薄，电子需要"攒"足够时间才能获得足够能量——那弱光照射应该有明显的时间延迟，且足够强的红光（能量总量大）理应能打出电子。但实验事实是：① 弱光也瞬时打出电子；② 红光再强也打不出。只有"光是一份一份的、一个电子一次吃一份"才能同时解释这两条。这正是光子说的威力所在。</p>
+</blockquote>
+
+<h2 id="s3">三、公式与推导（含适用条件）</h2>
+
+<h3>1. 爱因斯坦光电效应方程（本章核心）</h3>
+$$E_k = h\nu - W_0$$
+
+<h4>推导思路（能量守恒，3 行就能写完）</h4>
+<ol>
+  <li>金属中束缚最松的电子吸收一个光子，获得能量 $h\nu$；</li>
+  <li>它逸出金属表面至少要付出逸出功 $W_0$（克服金属对它的束缚）；</li>
+  <li>剩下的能量全部转化为动能——这就是<strong>最大</strong>初动能：$E_k = h\nu - W_0$。</li>
+</ol>
+<p>之所以叫"最大"，是因为金属内部的电子束缚更紧、逸出途中还可能碰撞损失能量，实际逸出电子的动能分布在 $0 \sim E_k$ 之间，只有表面束缚最松、无碰撞损失的电子才拿到 $E_k$。</p>
+
+<h4>适用条件与边界（必须单独记）</h4>
+<div class="warn">
+<strong>适用条件：</strong><br>
+① 单光子过程——一个电子一次只吸收<strong>一个</strong>光子（中学及高考范围均不考虑多光子吸收）；<br>
+② 必须满足 $\nu \geq \nu_0$ 才谈得上 $E_k$；若 $\nu &lt; \nu_0$，公式算出的"负动能"物理意义是<strong>打不出来</strong>，而不是电子带负动能；<br>
+③ 研究对象是<strong>金属表面</strong>束缚最松的电子，给出的是<strong>最大</strong>初动能，不是所有光电子的动能；<br>
+④ 方程是<strong>能量</strong>关系，不要把光电效应当成"光子与电子的弹性碰撞"去套动量守恒——光子是被<strong>整体吸收</strong>的。
+</div>
+
+<h3>2. 遏止电压与最大初动能的关系</h3>
+$$eU_c = E_k$$
+<p><strong>推导思路（动能定理）：</strong>加反向电压 $U_c$ 后，光电子从阴极 K 飞向阳极 A 要逆着电场力做功 $eU_c$。调节电压直到<strong>最快</strong>的光电子也恰好到不了阳极（速度减为零），由动能定理：$0 - E_k = -eU_c$，即 $eU_c = E_k$。</p>
+<ul>
+  <li>因为 $E_k$ 只由 $\nu$ 决定，所以 <strong>$U_c$ 也只由 $\nu$（和金属）决定，与光强无关</strong>——这正是 I–U 图上强弱两条黄光曲线共用同一个 $-U_c$ 的原因。</li>
+  <li>实用结论：$E_k$ 以 eV 为单位时，数值上就等于 $U_c$ 的伏特数（例如 $E_k = 2.14\ \mathrm{eV} \Rightarrow U_c = 2.14\ \mathrm{V}$）。</li>
+</ul>
+
+<h3>3. 截止频率</h3>
+$$\nu_0 = \frac{W_0}{h}$$
+<p><strong>推导思路：</strong>令光电效应方程中 $E_k = 0$（恰好打出、动能为零），得 $h\nu_0 = W_0$，即 $\nu_0 = W_0/h$。这把"频率门槛"和"能量门槛"统一了起来：测出 $\nu_0$ 就知道 $W_0$，反之亦然。</p>
+
+<h3>4. $E_k-\nu$ 图象（高考图象题的标准答案模板）</h3>
+<p>把 $E_k = h\nu - W_0$ 与一次函数 $y = kx + b$ 对照：</p>
+<table>
+  <tr><th>图象要素</th><th>物理意义</th></tr>
+  <tr><td class="l">斜率</td><td class="l">普朗克常量 $h$（<strong>对所有金属都一样</strong>，所以不同金属的图线互相平行）</td></tr>
+  <tr><td class="l">横轴截距</td><td class="l">截止频率 $\nu_0$（$E_k = 0$ 处）</td></tr>
+  <tr><td class="l">纵轴截距</td><td class="l">$-W_0$（负值）</td></tr>
+  <tr><td class="l">图线有效区域</td><td class="l">只有 $\nu \geq \nu_0$ 的第一象限部分有物理意义，延长线只是数学外推</td></tr>
+</table>
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 280" width="100%" style="max-width:640px;margin:10px auto;display:block;">
+  <rect x="0" y="0" width="640" height="280" fill="#f7fafc" rx="10"/>
+  <text x="320" y="24" text-anchor="middle" font-size="13" fill="#1a365d">Ek − ν 图象：斜率 h，横截距 ν₀，纵截距 −W₀</text>
+  <!-- 坐标轴 -->
+  <line x1="120" y1="180" x2="600" y2="180" stroke="#2d3748" stroke-width="2"/>
+  <line x1="120" y1="250" x2="120" y2="40" stroke="#2d3748" stroke-width="2"/>
+  <text x="596" y="202" font-size="14" fill="#2d3748">ν</text>
+  <text x="104" y="52" font-size="14" fill="#2d3748">Ek</text>
+  <text x="128" y="198" font-size="12" fill="#718096">O</text>
+  <!-- 图线（实线部分 ν≥ν0） -->
+  <line x1="220" y1="180" x2="560" y2="60" stroke="#2b6cb0" stroke-width="2.5"/>
+  <!-- 虚线延长 -->
+  <line x1="120" y1="215" x2="220" y2="180" stroke="#2b6cb0" stroke-width="2" stroke-dasharray="6,4"/>
+  <!-- 截距标注 -->
+  <line x1="220" y1="180" x2="220" y2="190" stroke="#e53e3e" stroke-width="2"/>
+  <text x="220" y="206" text-anchor="middle" font-size="13" fill="#e53e3e" font-weight="bold">ν₀</text>
+  <line x1="112" y1="215" x2="128" y2="215" stroke="#e53e3e" stroke-width="2"/>
+  <text x="108" y="220" text-anchor="end" font-size="13" fill="#e53e3e" font-weight="bold">−W₀</text>
+  <!-- 斜率标注 -->
+  <line x1="380" y1="123" x2="460" y2="95" stroke="#38a169" stroke-width="1.5"/>
+  <text x="470" y="95" font-size="13" fill="#276749" font-weight="bold">斜率 = h</text>
+  <!-- 有效区域说明 -->
+  <text x="340" y="265" text-anchor="middle" font-size="11" fill="#718096">实线（ν ≥ ν₀）才有物理意义；虚线为数学延长线</text>
+</svg>
+
+<div class="deep">
+<strong>公式串记：</strong>$E_k = h\nu - W_0$ 是"总司令"；令 $E_k = 0$ 得 $\nu_0 = W_0/h$；用减速电场去"称"$E_k$ 得 $eU_c = E_k$；换成图象语言，斜率是 $h$、截距是 $\nu_0$ 和 $-W_0$。一条方程，四种面孔，彼此互推。
+</div>
+
+<h2 id="s4">四、典型例题</h2>
+
+<h3>例 1：光电效应方程直接计算 <span class="stars">★★</span></h3>
+<p>已知某金属的逸出功 $W_0 = 2.0\ \mathrm{eV}$，用波长 $\lambda = 300\ \mathrm{nm}$ 的紫外线照射该金属表面。求：</p>
+<p>（1）光电子的最大初动能（结果用 eV 表示）；（2）遏止电压 $U_c$。</p>
+<p><strong>【分步拆解】</strong></p>
+<ol>
+  <li><strong>先求单个光子能量</strong> $\varepsilon = h\nu = \dfrac{hc}{\lambda}$。代入数值：
+  $$\varepsilon = \frac{6.63\times 10^{-34}\times 3.0\times 10^{8}}{300\times 10^{-9}}\ \mathrm{J} = 6.63\times 10^{-19}\ \mathrm{J}$$</li>
+  <li><strong>统一换算成 eV</strong>：$\varepsilon = \dfrac{6.63\times 10^{-19}}{1.60\times 10^{-19}}\ \mathrm{eV} \approx 4.14\ \mathrm{eV}$。</li>
+  <li><strong>套光电效应方程</strong>：$E_k = h\nu - W_0 = 4.14\ \mathrm{eV} - 2.0\ \mathrm{eV} = 2.14\ \mathrm{eV}$（约合 $3.4\times 10^{-19}\ \mathrm{J}$）。</li>
+  <li><strong>求遏止电压</strong>：由 $eU_c = E_k$，得 $U_c = \dfrac{E_k}{e} = 2.14\ \mathrm{V}$（数值上 eV 直接变 V）。</li>
+</ol>
+<p><strong>【答案】</strong>$E_k \approx 2.14\ \mathrm{eV}$；$U_c = 2.14\ \mathrm{V}$。</p>
+<div class="deep"><strong>方法提炼：</strong>先算光子能量（$hc/\lambda$）、统一单位到 eV，再套方程——三步走。频率给的是波长时，永远先过 $\nu = c/\lambda$ 这座桥。</div>
+
+<h3>例 2：由 $E_k-\nu$ 图象求普朗克常量与逸出功 <span class="stars">★★★</span></h3>
+<p>用不同频率的光照射某金属，测得光电子最大初动能 $E_k$ 与入射光频率 $\nu$ 的两组数据：$\nu_1 = 8.0\times 10^{14}\ \mathrm{Hz}$ 时 $E_{k1} = 1.0\ \mathrm{eV}$；$\nu_2 = 12.0\times 10^{14}\ \mathrm{Hz}$ 时 $E_{k2} = 2.65\ \mathrm{eV}$。求普朗克常量 $h$、该金属的逸出功 $W_0$ 与截止频率 $\nu_0$。</p>
+<p><strong>【分步拆解】</strong></p>
+<ol>
+  <li><strong>斜率即 $h$</strong>：图线斜率 $k = \dfrac{\Delta E_k}{\Delta \nu} = h$。
+  $\Delta E_k = (2.65 - 1.0)\ \mathrm{eV} = 1.65\ \mathrm{eV} = 1.65\times 1.60\times 10^{-19}\ \mathrm{J} = 2.64\times 10^{-19}\ \mathrm{J}$；
+  $\Delta \nu = (12.0 - 8.0)\times 10^{14}\ \mathrm{Hz} = 4.0\times 10^{14}\ \mathrm{Hz}$。
+  $$h = \frac{2.64\times 10^{-19}}{4.0\times 10^{14}}\ \mathrm{J\cdot s} = 6.6\times 10^{-34}\ \mathrm{J\cdot s}$$
+  与公认值 $6.63\times10^{-34}\ \mathrm{J\cdot s}$ 吻合 ✓</li>
+  <li><strong>代回方程求 $W_0$</strong>：用第 1 组数据，$W_0 = h\nu_1 - E_{k1} = 6.6\times 10^{-34}\times 8.0\times 10^{14}\ \mathrm{J} - 1.60\times 10^{-19}\ \mathrm{J} = 5.28\times 10^{-19}\ \mathrm{J} - 1.60\times 10^{-19}\ \mathrm{J} = 3.68\times 10^{-19}\ \mathrm{J} \approx 2.3\ \mathrm{eV}$。</li>
+  <li><strong>求截止频率</strong>：$\nu_0 = \dfrac{W_0}{h} = \dfrac{3.68\times 10^{-19}}{6.6\times 10^{-34}}\ \mathrm{Hz} \approx 5.6\times 10^{14}\ \mathrm{Hz}$。</li>
+</ol>
+<p><strong>【答案】</strong>$h = 6.6\times 10^{-34}\ \mathrm{J\cdot s}$；$W_0 \approx 3.7\times 10^{-19}\ \mathrm{J} \approx 2.3\ \mathrm{eV}$；$\nu_0 \approx 5.6\times 10^{14}\ \mathrm{Hz}$。</p>
+<div class="deep"><strong>方法提炼：</strong>图象题的万能套路——"斜率→$h$、代一组数据→$W_0$、$W_0/h$→$\nu_0$"。注意 $\Delta E_k$ 要先从 eV 换成 J 再除以 $\Delta \nu$，否则 $h$ 的数量级直接错 19 个数量级。</div>
+
+<h3>例 3：光强与频率变化的影响辨析 <span class="stars">★★★</span></h3>
+<p>用一定强度、频率 $\nu = 7.0\times 10^{14}\ \mathrm{Hz}$ 的光照射某金属（$W_0 = 2.3\ \mathrm{eV}$），发生光电效应，光电流达到饱和。下列两种操作分别会引起什么变化？</p>
+<p>（1）保持 $\nu$ 不变，只把光强增大为原来的 2 倍；</p>
+<p>（2）保持光强不变，只把频率增大到 $9.0\times 10^{14}\ \mathrm{Hz}$。</p>
+<p><strong>【分步拆解】</strong></p>
+<ol>
+  <li><strong>操作（1）</strong>：$\nu$ 不变 → 单个光子能量 $h\nu$ 不变 → 最大初动能 $E_k = h\nu - W_0$ <strong>不变</strong>，遏止电压 $U_c$ 不变；光强加倍 → 单位时间到达的光子数加倍 → 单位时间逸出的光电子数加倍 → <strong>饱和光电流约加倍</strong>。</li>
+  <li><strong>操作（2）</strong>：$\nu$ 增大 → $E_k$ 增大（由 $E_k = h\nu - W_0$，$E_k$ 从 $h\nu - W_0 \approx 2.9 - 2.3 = 0.6\ \mathrm{eV}$ 增至约 $3.7 - 2.3 = 1.4\ \mathrm{eV}$，其中 $h\nu$ 按 $h = 6.63\times 10^{-34}$ 算：$6.63\times 10^{-34}\times 7.0\times 10^{14} = 4.64\times 10^{-19}\ \mathrm{J} \approx 2.9\ \mathrm{eV}$；$6.63\times 10^{-34}\times 9.0\times 10^{14} = 5.97\times 10^{-19}\ \mathrm{J} \approx 3.7\ \mathrm{eV}$）；遏止电压随之增大。</li>
+  <li><strong>光电流怎么变？</strong>光强不变意味着单位时间入射光的<strong>总能量</strong>不变；频率升高后单个光子能量变大，光子<strong>数目反而减少</strong>，所以单位时间逸出的光电子数减少，<strong>饱和光电流减小</strong>（这是"光强 = 光子数 × 单个光子能量"的必然推论）。</li>
+</ol>
+<p><strong>【答案】</strong>（1）$E_k$、$U_c$ 不变，饱和光电流约加倍；（2）$E_k$、$U_c$ 增大，饱和光电流减小。</p>
+<div class="warn"><strong>提醒：</strong>第（2）问中"光电流如何变"是区分度所在。有些题目把"光强不变"约定为"光子数流密度不变"，此时结论不同——读题时务必确认"光强"的含义；中学阶段默认光强指单位时间单位面积的光的<strong>总能量</strong>。</div>
+
+<h3>例 4：德布罗意波长估算 <span class="stars">★★</span></h3>
+<p>（1）电子经 $U = 100\ \mathrm{V}$ 电压加速后，其德布罗意波长是多少？（2）质量 $m = 10\ \mathrm{g}$ 的子弹以 $v = 500\ \mathrm{m/s}$ 飞行，其德布罗意波长是多少？由此说明为什么宏观物体看不到波动性。</p>
+<p><strong>【分步拆解】</strong></p>
+<ol>
+  <li><strong>电子的动量</strong>：加速获得动能 $E_k = eU = 1.60\times 10^{-19}\times 100\ \mathrm{J} = 1.60\times 10^{-17}\ \mathrm{J}$。由 $E_k = \dfrac{p^2}{2m}$ 得
+  $$p = \sqrt{2m_e E_k} = \sqrt{2\times 9.11\times 10^{-31}\times 1.60\times 10^{-17}} \approx 5.4\times 10^{-24}\ \mathrm{kg\cdot m/s}$$</li>
+  <li><strong>电子波长</strong>：$\lambda = \dfrac{h}{p} = \dfrac{6.63\times 10^{-34}}{5.4\times 10^{-24}}\ \mathrm{m} \approx 1.2\times 10^{-10}\ \mathrm{m} = 0.12\ \mathrm{nm}$，与原子尺度（$10^{-10}\ \mathrm{m}$）相当——所以电子能被晶格（天然光栅）衍射，波动性可观测。</li>
+  <li><strong>子弹波长</strong>：$\lambda = \dfrac{h}{mv} = \dfrac{6.63\times 10^{-34}}{0.010\times 500}\ \mathrm{m} \approx 1.3\times 10^{-34}\ \mathrm{m}$。这比原子核（$10^{-15}\ \mathrm{m}$）还小 19 个数量级，任何实物孔径都远大于它，衍射现象完全无法观测——宏观物体只显粒子性。</li>
+</ol>
+<p><strong>【答案】</strong>（1）$\lambda \approx 1.2\times 10^{-10}\ \mathrm{m}\ (0.12\ \mathrm{nm})$；（2）$\lambda \approx 1.3\times 10^{-34}\ \mathrm{m}$，宏观物体波长太小，波动性观测不到。</p>
+<div class="deep"><strong>方法提炼：</strong>估算德布罗意波长两步走：先由已知条件求动量 $p$（加速电压场合用 $p = \sqrt{2meU}$），再 $\lambda = h/p$。结论"波长大到与障碍物/孔径可比拟才有可观测的衍射"是判断"能否看到波动性"的标尺。</div>
+
+<h2 id="s5">五、易错点与成因分析</h2>
+
+<h3>易错点 1：把"光强"当成最大初动能的决定因素</h3>
+<p><strong>错误表现：</strong>认为"光越强，打出的光电子速度越快、动能越大"。</p>
+<p><strong>正确理解：</strong>最大初动能 $E_k = h\nu - W_0$ 只含频率 $\nu$，与光强无关；光强决定的是<strong>单位时间逸出的光电子数</strong>（进而决定饱和光电流）。</p>
+<p><strong>成因分析：</strong>日常经验（"力越大推得越快"）和波动观念（"波越猛能量越大"）的负迁移。光强增大 = 光子<strong>个数</strong>增多，单个光子的"成色"$h\nu$ 没变，每个电子分到的能量自然没变。</p>
+
+<h3>易错点 2：认为"红光足够强也能发生光电效应"</h3>
+<p><strong>错误表现：</strong>觉得只要光足够强、照足够久，低频率光也能打出电子。</p>
+<p><strong>正确理解：</strong>能否发生光电效应<strong>只看频率</strong>是否满足 $\nu \geq \nu_0$，与光强、照射时间一律无关。$\nu &lt; \nu_0$ 时，再强的光也无济于事——这是选择题最高频的判断句。</p>
+<p><strong>成因分析：</strong>没有真正接受"一份一份、一次性吸收"的量子图像，仍用"能量慢慢攒"的连续观念想问题。</p>
+
+<h3>易错点 3：混淆逸出功与入射光的关系</h3>
+<p><strong>错误表现：</strong>认为 $W_0$ 随入射光频率变化，或把 $W_0 = h\nu_0$ 中的 $\nu_0$ 当成入射光频率。</p>
+<p><strong>正确理解：</strong>$W_0$、$\nu_0$ 都是<strong>金属本身的属性</strong>（与金属材料、表面状况有关），在入射光照上之前就已确定；$\nu_0$ 是"门槛频率"，不是入射光频率。</p>
+<p><strong>成因分析：</strong>对"谁决定谁"的因果链不清楚——是金属的 $W_0$ 决定了门槛 $\nu_0$，而不是光决定的。</p>
+
+<h3>易错点 4：遏止电压概念含混</h3>
+<p><strong>错误表现：</strong>① 以为遏止电压越大说明光电子越少；② 以为增大光强会改变 $U_c$；③ 搞反遏止电压的极性（它是<strong>反向</strong>电压，用来"顶住"光电子）。</p>
+<p><strong>正确理解：</strong>$eU_c = E_k$，$U_c$ 是最大初动能的"测量仪"，只随 $\nu$ 增大而增大，与光强无关；I–U 图上不同光强的曲线共用同一 $-U_c$。</p>
+<p><strong>成因分析：</strong>对实验电路中"反向电压起减速作用"理解不透，没有经历"调电压直到电流恰好为零"的物理过程想象。</p>
+
+<h3>易错点 5：把光电效应当碰撞问题滥用守恒律</h3>
+<p><strong>错误表现：</strong>列"光子与电子弹性碰撞、动量守恒"方程求解，或认为光子把能量分给多个电子。</p>
+<p><strong>正确理解：</strong>光电效应中光子被<strong>一个电子整体吸收</strong>（光子消失），能量按 $h\nu = W_0 + E_k$ 分配；动量由金属晶格（质量巨大）参与平衡，中学阶段<strong>不对光电效应列动量守恒</strong>。（顺带一提：自由电子无法完全吸收一个光子——同时满足能量、动量守恒做不到，这也是必须用金属中的束缚电子的原因；光子与自由电子的散射是康普顿效应，遵守碰撞守恒律，两者不要张冠李戴。）</p>
+<p><strong>成因分析：</strong>"粒子性 = 小球碰撞"的直觉太强，忽略了光电效应中光子是<strong>被吸收</strong>而非被散射。</p>
+
+<h3>易错点 6：eV 与 J 单位混用</h3>
+<p><strong>错误表现：</strong>$h\nu$ 用 J、$W_0$ 用 eV 直接相减；或用 $E_k-\nu$ 图象求 $h$ 时忘记把 $\Delta E_k$ 换算成 J，导致数量级错误。</p>
+<p><strong>正确理解：</strong>同一条方程内单位必须统一。口诀：<strong>先统一、再计算、后换算</strong>——要么全程 J，要么全程 eV（用 eV 时 $h$ 要写成 $4.14\times 10^{-15}\ \mathrm{eV\cdot s}$ 或先算 J 再换）。</p>
+<p><strong>成因分析：</strong>eV 是"方便单位"而非 SI 单位，套用 SI 公式（含 $h$ 的 SI 值）时最容易翻车。</p>
+
+<h2 id="s6">六、章末自检清单</h2>
+<p>合上书本，逐条自测；任何一条答不上来，回到对应小节再过一遍。</p>
+<ul style="list-style: none; margin-left: 0;">
+  <li>☐ 我能完整说出光电效应的<strong>四条实验规律</strong>，并指出每条对应的关键概念（$\nu_0$、$E_k$、$I_m$、瞬时性）。</li>
+  <li>☐ 我能解释为什么经典波动说无法解释光电效应（至少说出"瞬时性"和"截止频率"两个矛盾）。</li>
+  <li>☐ 我能写出光子能量公式 $\varepsilon = h\nu$，并记住 $h = 6.63\times 10^{-34}\ \mathrm{J\cdot s}$。</li>
+  <li>☐ 我能用能量守恒独立推导出 $E_k = h\nu - W_0$，并说清"最大"二字的由来。</li>
+  <li>☐ 我清楚 $E_k = h\nu - W_0$ 的适用条件：单光子吸收、$\nu \geq \nu_0$、给出的是最大初动能。</li>
+  <li>☐ 我能用动能定理推出 $eU_c = E_k$，并说出遏止电压是反向电压、与光强无关。</li>
+  <li>☐ 我知道 $\nu_0 = W_0/h$ 的来历，明白 $W_0$ 和 $\nu_0$ 都由金属本身决定。</li>
+  <li>☐ 给我 $E_k-\nu$ 图象，我能立刻指出：斜率 $= h$、横截距 $= \nu_0$、纵截距 $= -W_0$，不同金属图线互相平行。</li>
+  <li>☐ 我能准确回答："只增大光强"和"只增大频率"分别改变什么、不改变什么（$E_k$、$U_c$、饱和光电流三者逐个说）。</li>
+  <li>☐ 我会熟练进行 eV 与 J 的换算（$1\ \mathrm{eV} = 1.60\times 10^{-19}\ \mathrm{J}$），计算时先统一单位。</li>
+  <li>☐ 我能写出物质波公式 $\lambda = h/p$，会估算电子的德布罗意波长，并解释宏观物体为何不显波动性。</li>
+  <li>☐ 我知道光既是粒子又是波：干涉/衍射/偏振说明波动性，光电效应/康普顿效应说明粒子性，光是概率波。</li>
+</ul>
+
+<hr>
+<p style="text-align:center; color: var(--muted);">本章是近代物理的"开门红"——概念少、套路固定，把它吃透，原子结构那一章会更顺。小兵，稳住，这一分必须拿满！💪</p>
+
+</body>
+</html>

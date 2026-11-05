@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>磁场 - 深度学习材料</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover：替换 {{章节名}} {{模块定位与分值}} {{章节号}} -->
+<nav class="chap-nav">高考备考 · 物理 · 深度学习材料 ｜ 3.9 磁场</nav>
+<header class="chap-head">
+  <h1>磁场</h1>
+  <p class="chap-meta"></p>
+</header>
+  <div class="subtitle">深度学习材料 · 概念 · 推导 · 模型 · 方法</div>
+  <div class="meta">
+    <span>高中物理 · 电磁学模块 · 计算题高频考点</span><br>
+    <span>依据：《高考物理95+分备考指南》3.9节要求</span><br>
+    <span>适用：高一同步学习 &amp; 高考一轮复习</span><br>
+    <span>学生：小兵</span>
+  </div>
+</div>
+
+<p class="hint">
+  💡 提示：所有公式由 MathJax 渲染；带推导的公式请合上书独立推一遍
+</p>
+
+<!-- 目录：与正文 h2 的 id 对应 -->
+<div class="toc">
+  <strong>目录</strong>
+  <ol>
+    <li><a href="#s1">一、本章总览</a></li>
+    <li><a href="#s2">二、核心概念与物理量</a></li>
+    <li><a href="#s3">三、公式与推导（含适用条件）</a></li>
+    <li><a href="#s4">四、典型例题</a></li>
+    <li><a href="#s5">五、易错点与成因分析</a></li>
+    <li><a href="#s6">六、章末自检清单</a></li>
+  </ol>
+</div>
+
+<h2 id="s1">一、本章总览</h2>
+
+<p>小兵，学完静电场和恒定电流，你手里已经有了两块拼图："电荷受电场力"和"电荷定向移动形成电流"。这一章，我们把第三块拼图放上去——<strong>磁场</strong>。你会看到一个比电场更"讲条件"的场：它只对<strong>运动</strong>的电荷施力，而且力的方向永远跟速度"拧着来"。正是这个古怪的脾气，造就了高考物理最经典的一类压轴素材：带电粒子的圆周运动。</p>
+
+<h3>1. 高考定位与分值</h3>
+<ul>
+  <li><strong>分值定位</strong>：云南高考物理满分 100 分、75 分钟，电磁学约占 40 分。本章最直接的出口是<strong>第 14 题（电磁学计算题，约 13 分）</strong>——"带电粒子在匀强磁场中的圆周运动""速度选择器/质谱仪/回旋加速器"是这一位置的常客；选择题中还常考安培力方向判断、洛伦兹力特点，约 6 分。</li>
+  <li><strong>区分度</strong>：备考指南明确指出，带电粒子在磁场/复合场中的运动"是计算题的高频考点，也是区分度很高的题目"。会者套模板五分钟拿满分，不会者连圆心都找不到。</li>
+  <li><strong>学习阶段</strong>：本章是高二内容。你以高一视角自学，目标是：<strong>概念抠准、公式全部独立推导、四大模型各吃透一道题</strong>。这章特别依赖力学功底（圆周运动、受力平衡），正好检验你高一上学期的成色。</li>
+</ul>
+
+<h3>2. 本章的三级台阶</h3>
+<table>
+  <tr><th style="width:18%">台阶</th><th>内容</th><th style="width:32%">核心问题</th></tr>
+  <tr>
+    <td class="l"><strong>场</strong></td>
+    <td class="l">磁场 → 磁感应强度 $\vec{B}$ → 磁感线</td>
+    <td class="l">磁场从哪来？方向怎么规定？</td>
+  </tr>
+  <tr>
+    <td class="l"><strong>力</strong></td>
+    <td class="l">安培力 $F=BIL$（宏观）→ 洛伦兹力 $f=qvB$（微观）</td>
+    <td class="l">力多大？方向朝哪？（左手定则）</td>
+  </tr>
+  <tr>
+    <td class="l"><strong>运动</strong></td>
+    <td class="l">匀强磁场中的圆周运动 → 复合场模型</td>
+    <td class="l">圆心在哪？半径、周期多大？</td>
+  </tr>
+</table>
+<p>注意逻辑链条：安培力是<strong>导线中所有定向移动电荷所受洛伦兹力的宏观总和</strong>。所以本章真正的主角是洛伦兹力，安培力是它的"集体照"，圆周运动是它的"杰作"。</p>
+
+<h3>3. 本章知识图谱</h3>
+<div class="map">
+  <div class="row"><div class="node root">磁场</div></div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node">磁场的基本概念</div>
+    <div class="node">安培力</div>
+    <div class="node">洛伦兹力</div>
+    <div class="node">带电粒子的运动</div>
+    <div class="node">复合场模型</div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node leaf">磁感应强度 $\vec{B}$ · 磁感线 · 安培定则 · 匀强磁场</div>
+    <div class="node leaf">$F=BIL\sin\theta$ · 左手定则 · 有效长度</div>
+    <div class="node leaf">$f=qvB\sin\theta$ · 方向 · 永不做功</div>
+    <div class="node leaf">$r=\dfrac{mv}{qB}$ · $T=\dfrac{2\pi m}{qB}$ · 找圆心定半径</div>
+    <div class="node leaf">速度选择器 · 质谱仪 · 回旋加速器</div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node view">综合题眼：几何关系（圆心角、弦、边界）+ 力学平衡/圆周规律</div>
+  </div>
+</div>
+
+<div class="deep">
+<strong>深度思考：</strong>磁场和电场最大的差别是什么？电场对电荷"一视同仁"——管你动不动，都有 $F=qE$；磁场却"挑三拣四"——静止的电荷它不理，速度平行于 $\vec{B}$ 的电荷它也不理，只有速度有垂直于 $\vec{B}$ 的分量时才施力，而且力垂直于速度。这个差别不是巧合：磁现象的本质是"<strong>运动电荷之间的相互作用</strong>"，电流产生磁场、磁场作用于运动电荷，全都围绕"运动"二字。把握住这一点，后面每个公式的适用条件你都能自己讲出道理。
+</div>
+
+<h2 id="s2">二、核心概念与物理量</h2>
+
+<h3>1. 物理量总表</h3>
+<table>
+  <tr><th>物理量</th><th>符号</th><th>定义 / 含义</th><th>单位</th><th>矢量 / 标量</th></tr>
+  <tr><td class="l">磁感应强度</td><td>$\vec{B}$</td><td class="l">描述磁场强弱与方向，$B=\dfrac{F}{IL}$（$I\perp B$）</td><td>$\text{T}$（特斯拉）</td><td><strong>矢量</strong></td></tr>
+  <tr><td class="l">电流</td><td>$I$</td><td class="l">单位时间通过导体横截面的电荷量 $I=q/t$</td><td>$\text{A}$（安培）</td><td>标量（但有流向约定）</td></tr>
+  <tr><td class="l">安培力</td><td>$\vec{F}$</td><td class="l">磁场对通电导线的作用力</td><td>$\text{N}$</td><td><strong>矢量</strong></td></tr>
+  <tr><td class="l">洛伦兹力</td><td>$\vec{f}$</td><td class="l">磁场对运动电荷的作用力</td><td>$\text{N}$</td><td><strong>矢量</strong></td></tr>
+  <tr><td class="l">圆周半径</td><td>$r$</td><td class="l">带电粒子圆周运动轨迹半径 $r=\dfrac{mv}{qB}$</td><td>$\text{m}$</td><td>标量</td></tr>
+  <tr><td class="l">周期</td><td>$T$</td><td class="l">粒子绕行一周的时间 $T=\dfrac{2\pi m}{qB}$</td><td>$\text{s}$</td><td>标量</td></tr>
+  <tr><td class="l">磁通量</td><td>$\varPhi$</td><td class="l">穿过某面积的磁感线条数 $\varPhi=BS$（$B\perp S$，下一章主角）</td><td>$\text{Wb}$（韦伯）</td><td>标量</td></tr>
+</table>
+
+<div class="warn">
+<strong>符号撞车提醒：</strong>周期 $T$（斜体，单位 $\text{s}$）与磁感应强度的单位 $\text{T}$（正体，特斯拉）长得一模一样。试卷里靠"斜体是量、正体是单位"区分，你自己书写时也要养成习惯：<strong>物理量用斜体，单位用正体</strong>。$1\,\text{T}=1\,\text{N/(A·m)}$，特斯拉是很大的单位——地磁场约 $5\times10^{-5}\,\text{T}$，常见磁铁附近约 $10^{-2}\sim1\,\text{T}$。
+</div>
+
+<h3>2. 磁场及其方向约定 <span class="stars">★★★</span></h3>
+<p><strong>磁场</strong>是存在于磁体、电流（运动电荷）周围的一种特殊物质，对放入其中的磁体、电流和运动电荷施加力的作用。1820 年奥斯特发现电流的磁效应，第一次把"电"与"磁"连在一起。</p>
+<div class="key-point">
+<strong>方向约定（必须背到条件反射）：</strong>磁场中某点磁感应强度 $\vec{B}$ 的方向，规定为<strong>小磁针 N 极在该点所受磁场力的方向</strong>（即小磁针静止时 N 极所指方向）。这与电场强度方向规定为"正电荷受力方向"完全同构——<strong>都是"受力方向"定场向</strong>，只是磁场的"试探物"是小磁针的 N 极。
+</div>
+<ul>
+  <li><strong>电流方向约定</strong>：物理学规定<strong>正电荷定向移动的方向</strong>为电流方向。而金属导体中实际定向移动的是自由电子（负电荷），所以<strong>电子的移动方向与电流方向相反</strong>。这个约定是恒定电流章学过的，本章它要反复"出场"——每次用左手定则都会用到它。</li>
+  <li><strong>磁场方向、电流方向、力的方向三者两两垂直</strong>（垂直情形下），空间方位感是本章的基本功，建议手里备一支笔当导线、一本书当磁场平面，边学边比划。</li>
+</ul>
+
+<h3>3. 磁感线——描述磁场的假想曲线</h3>
+<p>与电场线一样，磁感线是人为画出的假想曲线。性质对比如下（<strong>闭合与否是本节最高频的选择题考点</strong>）：</p>
+<table>
+  <tr><th style="width:32%">性质</th><th class="l">磁感线</th><th class="l">电场线（对比）</th></tr>
+  <tr><td class="l">切线表方向</td><td class="l">每点切线方向即该点 $\vec{B}$ 方向</td><td class="l">每点切线方向即该点 $\vec{E}$ 方向</td></tr>
+  <tr><td class="l">疏密表大小</td><td class="l">密大疏小</td><td class="l">密大疏小</td></tr>
+  <tr><td class="l">是否闭合</td><td class="l"><strong>闭合曲线</strong>：磁体外部 N→S，内部 S→N</td><td class="l"><strong>不闭合</strong>：起于正电荷、止于负电荷</td></tr>
+  <tr><td class="l">是否相交</td><td class="l">不相交</td><td class="l">不相交</td></tr>
+  <tr><td class="l">是否客观存在</td><td class="l">假想曲线，不存在</td><td class="l">假想曲线，不存在</td></tr>
+</table>
+<p>磁感线闭合这一点，根源是<strong>自然界不存在磁单极子</strong>——任何磁体的 N 极和 S 极永远成对出现，把一块磁铁锯成两段，得到的不是单独的 N 极和 S 极，而是两块完整的小磁铁。</p>
+
+<h3>4. 安培定则（右手螺旋定则）——判断电流产生的磁场 <span class="stars">★★★</span></h3>
+<p>电流产生的磁场方向用<strong>右手</strong>判断，三种情形一套手法：</p>
+<ol>
+  <li><strong>通电直导线</strong>：右手握住导线，<strong>伸直的拇指指向电流方向</strong>，弯曲四指的指向即磁感线的环绕方向（磁感线是以导线为轴的同心圆，越远处越疏）。</li>
+  <li><strong>环形电流 / 通电螺线管</strong>：右手弯曲四指指向电流的环绕方向，<strong>拇指指向即内部磁场方向</strong>（螺线管内部相当于条形磁铁的 S→N 段，拇指端相当于 N 极）。</li>
+</ol>
+
+<div style="text-align:center; margin: 18px 0;">
+<svg width="680" height="250" viewBox="0 0 680 250" xmlns="http://www.w3.org/2000/svg" style="max-width:100%; height:auto;">
+  <!-- 左半：左手定则 -->
+  <g>
+    <!-- B 场叉叉（向里） -->
+    <g stroke="#2b6cb0" stroke-width="1.5">
+      <line x1="48" y1="48" x2="62" y2="62"/><line x1="62" y1="48" x2="48" y2="62"/>
+      <line x1="118" y1="48" x2="132" y2="62"/><line x1="132" y1="48" x2="118" y2="62"/>
+      <line x1="188" y1="48" x2="202" y2="62"/><line x1="202" y1="48" x2="188" y2="62"/>
+      <line x1="258" y1="48" x2="272" y2="62"/><line x1="272" y1="48" x2="258" y2="62"/>
+      <line x1="48" y1="188" x2="62" y2="202"/><line x1="62" y1="188" x2="48" y2="202"/>
+      <line x1="118" y1="188" x2="132" y2="202"/><line x1="132" y1="188" x2="118" y2="202"/>
+      <line x1="188" y1="188" x2="202" y2="202"/><line x1="202" y1="188" x2="188" y2="202"/>
+      <line x1="258" y1="188" x2="272" y2="202"/><line x1="272" y1="188" x2="258" y2="202"/>
+    </g>
+    <text x="160" y="30" font-size="13" fill="#2b6cb0" text-anchor="middle">B（× 表示垂直纸面向里）</text>
+    <!-- 导线 -->
+    <line x1="50" y1="125" x2="270" y2="125" stroke="#e53e3e" stroke-width="6" stroke-linecap="round"/>
+    <!-- 电流箭头 -->
+    <line x1="150" y1="125" x2="230" y2="125" stroke="#fff" stroke-width="0"/>
+    <polygon points="238,118 258,125 238,132" fill="#1a365d"/>
+    <text x="245" y="112" font-size="14" fill="#1a365d" font-weight="bold">I</text>
+    <!-- 安培力箭头 -->
+    <line x1="160" y1="113" x2="160" y2="72" stroke="#dd6b20" stroke-width="3.5"/>
+    <polygon points="160,62 154,74 166,72" fill="#dd6b20"/>
+    <text x="172" y="80" font-size="14" fill="#dd6b20" font-weight="bold">F</text>
+    <text x="160" y="230" font-size="13" fill="#2d3748" text-anchor="middle">左手定则：B 穿掌心、四指指电流 I、拇指即安培力 F</text>
+  </g>
+  <!-- 右半：安培定则 直导线磁场 -->
+  <g>
+    <circle cx="510" cy="125" r="88" stroke="#2b6cb0" stroke-width="1.6" fill="none"/>
+    <circle cx="510" cy="125" r="58" stroke="#2b6cb0" stroke-width="1.6" fill="none"/>
+    <!-- 磁场方向箭头（电流流出纸面 → 逆时针） -->
+    <polygon points="510,37 503,49 517,49" fill="#2b6cb0"/>
+    <polygon points="598,125 586,118 586,132" fill="#2b6cb0"/>
+    <polygon points="568,125 580,132 580,118" fill="#2b6cb0"/>
+    <!-- 中心导线：电流流出纸面 ⊙ -->
+    <circle cx="510" cy="125" r="11" fill="#fff" stroke="#e53e3e" stroke-width="2.5"/>
+    <circle cx="510" cy="125" r="3.2" fill="#e53e3e"/>
+    <text x="534" y="120" font-size="13" fill="#e53e3e" font-weight="bold">I（流出纸面）</text>
+    <text x="596" y="90" font-size="13" fill="#2b6cb0">B</text>
+    <text x="510" y="230" font-size="13" fill="#2d3748" text-anchor="middle">安培定则：拇指指向电流，四指环绕方向即 B 的方向</text>
+  </g>
+</svg>
+</div>
+
+<div class="warn">
+<strong>左手、右手分工别搞反：</strong>本章有两只手——<strong>右手（安培定则）管"电生磁"</strong>：已知电流，判断它产生的磁场方向；<strong>左手管"磁给力"</strong>：已知磁场和电流（或电荷运动方向），判断安培力/洛伦兹力方向。口诀："<strong>右生磁、左给力</strong>"。判断"力"永远用左手，这是与下一章（电磁感应用右手定则）最容易混战的地方。
+</div>
+
+<h3>5. 磁感应强度 B 的定义</h3>
+<p>把一小段通电导线（电流元 $IL$）<strong>垂直</strong>放入磁场中，它受到的安培力 $F$ 与 $I$、$L$ 都成正比，而比值 $F/(IL)$ 与导线无关，只由磁场本身决定——于是定义</p>
+$$B=\frac{F}{IL}\qquad(I\perp B)$$
+<p>这是典型的<strong>比值定义法</strong>，与 $E=\dfrac{F}{q}$ 完全同构：$B$ 由磁场本身决定，与放不放导线、导线中电流多大都无关。不能说"$B$ 与 $F$ 成正比、与 $IL$ 成反比"——那是把定义式误读成决定式。</p>
+
+<h3>6. 匀强磁场</h3>
+<p>磁感应强度处处相同（大小相等、方向相同）的磁场。磁感线为<strong>等间距的平行直线</strong>。常见的近似匀强磁场：两个靠得很近的异名磁极之间、通电螺线管内部、以及题目人为规定的矩形/圆形磁场区域。本章的定量计算几乎全部在匀强磁场中进行。</p>
+
+<div class="key-point">
+<strong>正负电荷受洛伦兹力方向相反（单独强调，本章第一雷区）：</strong>
+<ul>
+  <li>洛伦兹力方向由 $\vec{f}=q\vec{v}\times\vec{B}$ 决定。用左手定则时，"<strong>四指指向正电荷的运动方向</strong>"（即等效电流方向）。</li>
+  <li>若是<strong>负电荷</strong>（如电子）：四指必须指向其运动的<strong>反方向</strong>——因为负电荷定向移动形成的电流方向与其运动方向相反。同一个磁场、同一个运动方向，正、负电荷受力<strong>恰好反向</strong>。</li>
+  <li>考场防错动作：看到"电子""负离子"，先在心里把它的运动箭头<strong>反向画成"等效电流"</strong>，再伸左手。</li>
+</ul>
+</div>
+
+<h2 id="s3">三、公式与推导（含适用条件）</h2>
+
+<p>这一部分是全章的骨架。每个公式我都给出<strong>推导思路</strong>与<strong>适用条件</strong>——磁场这章的公式个个"有前提"，前提恰恰就是选择题埋雷、计算题卡壳的地方，请逐条过关。</p>
+
+<h3>公式 1　安培力的大小 <span class="stars">★★★</span></h3>
+$$F=BIL\sin\theta\quad\xrightarrow{\ I\perp B\ }\quad F=BIL$$
+<p><strong>推导思路</strong>：由定义式 $B=\dfrac{F}{IL}$（垂直情形）直接变形即得 $F=BIL$。当电流方向与磁场方向夹角为 $\theta$ 时，把 $\vec{B}$ 正交分解：垂直于电流的分量 $B\sin\theta$ 才对力有贡献，平行分量 $B\cos\theta$ 不产生安培力，故 $F=BIL\sin\theta$。</p>
+<div class="warn">
+<strong>适用条件与边界：</strong>
+<ul>
+  <li>公式要求<strong>匀强磁场</strong>（导线各处 $\vec{B}$ 相同）；非匀强磁场中需分段微元再求和。</li>
+  <li>$\theta$ 是<strong>电流方向与磁场方向的夹角</strong>。$\theta=0$（平行）时 $F=0$——通电导线顺着磁场放，不受安培力，这是经典判断题。</li>
+  <li>$L$ 是<strong>处在磁场中的那部分导线长度</strong>，不是导线全长。导线只有一半在磁场里，就取一半。</li>
+  <li>方向由<strong>左手定则</strong>判定：伸开左手，让磁感线垂直穿入掌心，四指指向电流方向，拇指即 $\vec{F}$ 方向。$F$ 永远同时垂直于 $B$ 与 $I$ 所决定的平面。</li>
+</ul>
+</div>
+
+<h3>公式 2　有效长度 <span class="stars">★★★</span></h3>
+<p>任意形状的平面导线，放在与导线平面垂直的匀强磁场中，通电流 $I$ 时，它受到的安培力等效于"从导线<strong>首端直接连到末端</strong>的一段直导线"通同样电流所受的力：</p>
+$$F=BIL_{\text{eff}},\qquad L_{\text{eff}}=\text{首末端连线的长度}$$
+<div class="deep">
+<strong>推导思路（微元求和）：</strong>把弯曲导线切成无数小段 $\Delta\vec{L}_i$，每段受力 $\Delta\vec{F}_i=I\Delta\vec{L}_i\times\vec{B}$。由于 $I$、$\vec{B}$ 处处相同，合力 $\vec{F}=I\left(\sum_i\Delta\vec{L}_i\right)\times\vec{B}$。而矢量求和 $\sum_i\Delta\vec{L}_i$ 正是从首端指向末端的矢量 $\vec{L}_{\text{eff}}$——<strong>形状信息全部被"首尾连线"吸收了</strong>。推论：闭合线圈在匀强磁场中 $L_{\text{eff}}=0$，所受安培力的合力为零（但可能受力矩）。
+</div>
+
+<h3>公式 3　洛伦兹力的大小 <span class="stars">★★★</span></h3>
+$$f=qvB\sin\theta\quad\xrightarrow{\ v\perp B\ }\quad f=qvB$$
+<div class="deep">
+<strong>推导思路（从安培力到洛伦兹力，宏观与微观的会师）：</strong>设导线单位体积内自由电荷数为 $n$，每个电荷量为 $q$，定向移动速度为 $v$，导线横截面积为 $S$、长 $L$。
+<ul>
+  <li>电流微观表达式（恒定电流章推过）：$I=nqSv$；</li>
+  <li>这段导线所含运动电荷总数：$N=nSL$；</li>
+  <li>安培力是这 $N$ 个电荷受力的总和：$F=BIL=B(nqSv)L$；</li>
+  <li>平均到每个电荷：$f=\dfrac{F}{N}=\dfrac{B(nqSv)L}{nSL}=qvB$。$n$、$S$、$L$ 全部约掉！</li>
+</ul>
+安培力与洛伦兹力就这样互相印证了：<strong>安培力是洛伦兹力的宏观表现</strong>。
+</div>
+<div class="warn">
+<strong>适用条件与边界：</strong>$\theta$ 是<strong>速度方向与磁场方向的夹角</strong>。$v\parallel B$ 时 $f=0$，粒子做匀速直线运动；$v\perp B$ 时 $f=qvB$ 最大，是本章的主战场；$v$ 与 $B$ 成一般夹角时，运动是"沿 $B$ 的匀速直线 + 垂直 $B$ 的圆周"合成的<strong>等距螺旋线</strong>（高考极少考，知道即可）。
+</div>
+
+<h3>公式 4　洛伦兹力永不做功 <span class="stars">★★★</span></h3>
+<div class="deep">
+<strong>推导说明：</strong>洛伦兹力 $\vec{f}\perp\vec{v}$ 在<strong>任意时刻</strong>成立，所以瞬时功率
+$$P=\vec{f}\cdot\vec{v}=fv\cos90^\circ=0$$
+每一瞬间都不做功，累积起来当然也不做功：$W=0$。这不是"转一圈正好抵消"的巧合，而是<strong>每时每刻</strong>都不做功。
+</div>
+<p><strong>三条直接推论（都是考点）：</strong></p>
+<ol>
+  <li>洛伦兹力只改变速度的<strong>方向</strong>，不改变速度的<strong>大小</strong>——粒子的速率、动能是守恒量；</li>
+  <li>纯磁场问题中<strong>动能定理"无用武之地"</strong>（动能恒不变），分析手段是"牛顿第二定律 + 圆周运动规律 + 几何关系"；</li>
+  <li>安培力是洛伦兹力的宏观合力，洛伦兹力不做功，<strong>安培力却可以做功</strong>（电动机就是靠它对外做功）——矛盾吗？不矛盾：导线中的电荷除了定向移动速度 $v$，还随导线一起运动，洛伦兹力沿导线方向的分力对电荷做负功、垂直导线的分力（即安培力来源）对导线做正功，总功仍为零。此推论只需理解"安培力可以做功"，细节不作要求。</li>
+</ol>
+
+<h3>公式 5　圆周运动的半径与周期 <span class="stars">★★★</span></h3>
+$$qvB=m\frac{v^2}{r}\ \Longrightarrow\ r=\frac{mv}{qB},\qquad T=\frac{2\pi r}{v}=\frac{2\pi m}{qB}$$
+<div class="deep">
+<strong>推导思路：</strong>粒子以 $v\perp B$ 射入匀强磁场，只受洛伦兹力。由于 $\vec{f}\perp\vec{v}$ 且大小 $qvB$ 恒定——"力大小不变、方向永远垂直速度"，这正是<strong>匀速圆周运动</strong>的受力特征，洛伦兹力恰好充当向心力。列牛顿第二定律：$qvB=m\dfrac{v^2}{r}$，解出 $r=\dfrac{mv}{qB}$；再由 $T=\dfrac{2\pi r}{v}$ 得 $T=\dfrac{2\pi m}{qB}$。
+</div>
+<div class="key-point">
+<strong>两个必须刻进直觉的结论：</strong>
+<ul>
+  <li>$r=\dfrac{mv}{qB}$：半径正比于动量 $mv$。<strong>速度越大，圆越大</strong>。</li>
+  <li>$T=\dfrac{2\pi m}{qB}$：<strong>周期与速度、半径都无关</strong>！同一个粒子在同一磁场中，快则转大圈、慢则转小圈，但转一圈的<strong>时间完全相同</strong>。成因：$r\propto v$（路程正比于 $v$）与 $v$ 本身恰好抵消。这是回旋加速器能工作的理论基石，也是选择题的常驻嘉宾。</li>
+</ul>
+</div>
+<div class="warn">
+<strong>适用条件：</strong>匀强磁场；$v\perp B$；粒子只受洛伦兹力（重力等忽略）。若题目给出的是粒子<strong>动能</strong> $E_{\text{k}}$ 而非速度，用 $r=\dfrac{\sqrt{2mE_{\text{k}}}}{qB}$（由 $mv=\sqrt{2mE_{\text{k}}}$ 换元）。
+</div>
+
+<h3>公式 6　找圆心、定半径、求时间 <span class="stars">★★★</span></h3>
+<p>有界磁场中的圆周运动题，90% 的工作量不在物理而在<strong>几何</strong>。标准三步：</p>
+<ol>
+  <li><strong>找圆心</strong>——两把尺子：
+    <ul>
+      <li>圆心必在<strong>入射速度的垂线</strong>上（洛伦兹力指向圆心），距入射点为 $r$；</li>
+      <li>圆心必在<strong>入射点与出射点连线的垂直平分线</strong>上（弦的垂直平分线过圆心）。两条线一交，圆心落定。</li>
+    </ul>
+  </li>
+  <li><strong>定半径</strong>：由几何关系（直角三角形、勾股定理、三角函数）列出含 $r$ 的方程，常与 $r=\dfrac{mv}{qB}$ 联立。</li>
+  <li><strong>求时间</strong>：运动时间 = 圆心角占比 × 周期：
+$$t=\frac{\theta}{2\pi}T=\frac{\theta m}{qB}\qquad(\theta\ \text{用弧度})$$
+    <strong>速度的偏转角等于轨迹对应的圆心角</strong>——这条几何事实是求偏转方向的钥匙。
+  </li>
+</ol>
+
+<div style="text-align:center; margin: 18px 0;">
+<svg width="640" height="250" viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" style="max-width:100%; height:auto;">
+  <!-- 磁场区域：两条平行边界之间，B 向里 -->
+  <line x1="60" y1="60" x2="600" y2="60" stroke="#1a365d" stroke-width="2.5"/>
+  <line x1="60" y1="120" x2="600" y2="120" stroke="#1a365d" stroke-width="2.5"/>
+  <g stroke="#2b6cb0" stroke-width="1.4">
+    <line x1="130" y1="82" x2="142" y2="94"/><line x1="142" y1="82" x2="130" y2="94"/>
+    <line x1="250" y1="82" x2="262" y2="94"/><line x1="262" y1="82" x2="250" y2="94"/>
+    <line x1="330" y1="82" x2="342" y2="94"/><line x1="342" y1="82" x2="330" y2="94"/>
+    <line x1="450" y1="82" x2="462" y2="94"/><line x1="462" y1="82" x2="450" y2="94"/>
+    <line x1="530" y1="82" x2="542" y2="94"/><line x1="542" y1="82" x2="530" y2="94"/>
+  </g>
+  <text x="580" y="100" font-size="13" fill="#2b6cb0">B 向里</text>
+  <!-- 圆心 O=(300,60)，r=120；入射点 P=(180,60)，出射点 Q=(196,120) -->
+  <!-- 半径 OP、OQ 虚线 -->
+  <line x1="300" y1="60" x2="180" y2="60" stroke="#718096" stroke-width="1.4" stroke-dasharray="5,4"/>
+  <line x1="300" y1="60" x2="196" y2="120" stroke="#718096" stroke-width="1.4" stroke-dasharray="5,4"/>
+  <text x="238" y="52" font-size="13" fill="#718096">r</text>
+  <text x="258" y="102" font-size="13" fill="#718096">r</text>
+  <!-- 圆心角弧线 -->
+  <path d="M 270,60 A 30 30 0 0 0 274,75" stroke="#dd6b20" stroke-width="1.6" fill="none"/>
+  <text x="280" y="76" font-size="13" fill="#dd6b20">θ</text>
+  <!-- 轨迹圆弧 -->
+  <path d="M 180,60 A 120 120 0 0 0 196,120" stroke="#e53e3e" stroke-width="3" fill="none"/>
+  <!-- 入射速度箭头（向下） -->
+  <line x1="180" y1="26" x2="180" y2="50" stroke="#1a365d" stroke-width="2.5"/>
+  <polygon points="180,58 175,48 185,48" fill="#1a365d"/>
+  <text x="166" y="24" font-size="13" fill="#1a365d" font-weight="bold">v</text>
+  <!-- 出射速度箭头（南偏东30°） -->
+  <line x1="196" y1="120" x2="222" y2="165" stroke="#1a365d" stroke-width="2.5"/>
+  <polygon points="225,172 211,161 223,158" fill="#1a365d"/>
+  <text x="228" y="168" font-size="13" fill="#1a365d" font-weight="bold">v′</text>
+  <!-- 圆心、入射点、出射点 -->
+  <circle cx="300" cy="60" r="4" fill="#dd6b20"/>
+  <text x="308" y="50" font-size="14" fill="#dd6b20" font-weight="bold">O</text>
+  <circle cx="180" cy="60" r="4" fill="#1a365d"/>
+  <text x="164" y="78" font-size="13" fill="#1a365d" font-weight="bold">P</text>
+  <circle cx="196" cy="120" r="4" fill="#1a365d"/>
+  <text x="182" y="140" font-size="13" fill="#1a365d" font-weight="bold">Q</text>
+  <!-- 边界间距标注 -->
+  <line x1="90" y1="60" x2="90" y2="120" stroke="#718096" stroke-width="1.2"/>
+  <line x1="84" y1="60" x2="96" y2="60" stroke="#718096" stroke-width="1.2"/>
+  <line x1="84" y1="120" x2="96" y2="120" stroke="#718096" stroke-width="1.2"/>
+  <text x="72" y="95" font-size="13" fill="#718096">d</text>
+  <text x="330" y="200" font-size="13" fill="#2d3748" text-anchor="middle">圆心 O 在入射速度 v 的垂线上，且 OP = OQ = r；速度偏转角 = 圆心角 θ</text>
+</svg>
+</div>
+
+<h3>公式 7　复合场四大模型 <span class="stars">★★★</span></h3>
+
+<h4>（1）速度选择器</h4>
+<p>正交的匀强电场 $E$ 与匀强磁场 $B$ 中，粒子要<strong>沿直线匀速通过</strong>，需电场力与洛伦兹力平衡：</p>
+$$qE=qvB\ \Longrightarrow\ v=\frac{E}{B}$$
+<div class="deep">
+<strong>推导要点与惊人结论：</strong>平衡条件里 $q$ 直接约掉——被选出的速度 $v=E/B$ 与粒子的<strong>电荷量、质量、电性正负统统无关</strong>，只由场决定，故称"速度选择"。但<strong>方向有严格配合要求</strong>：$q\vec{E}$ 与 $q\vec{v}\times\vec{B}$ 必须反向。若把粒子速度方向反过来，两个力变成同向，直线通过立即失效；粒子电性反号时两力同时反向，平衡仍然成立（负电荷也能被选出同一速度）。
+</div>
+
+<div style="text-align:center; margin: 18px 0;">
+<svg width="640" height="190" viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" style="max-width:100%; height:auto;">
+  <!-- 极板 -->
+  <line x1="60" y1="35" x2="430" y2="35" stroke="#e53e3e" stroke-width="6"/>
+  <line x1="60" y1="145" x2="430" y2="145" stroke="#2b6cb0" stroke-width="6"/>
+  <text x="36" y="40" font-size="15" fill="#e53e3e" font-weight="bold">+</text>
+  <text x="36" y="150" font-size="15" fill="#2b6cb0" font-weight="bold">−</text>
+  <!-- E 场箭头向下 -->
+  <g stroke="#e53e3e" stroke-width="1.8">
+    <line x1="120" y1="48" x2="120" y2="76"/><polygon points="120,84 115,74 125,74" fill="#e53e3e" stroke="none"/>
+    <line x1="200" y1="48" x2="200" y2="76"/><polygon points="200,84 195,74 205,74" fill="#e53e3e" stroke="none"/>
+    <line x1="360" y1="48" x2="360" y2="76"/><polygon points="360,84 355,74 365,74" fill="#e53e3e" stroke="none"/>
+  </g>
+  <text x="452" y="70" font-size="13" fill="#e53e3e">E 向下</text>
+  <!-- B 叉叉 -->
+  <g stroke="#2b6cb0" stroke-width="1.5">
+    <line x1="95" y1="108" x2="107" y2="120"/><line x1="107" y1="108" x2="95" y2="120"/>
+    <line x1="295" y1="108" x2="307" y2="120"/><line x1="307" y1="108" x2="295" y2="120"/>
+    <line x1="395" y1="108" x2="407" y2="120"/><line x1="407" y1="108" x2="395" y2="120"/>
+  </g>
+  <text x="452" y="118" font-size="13" fill="#2b6cb0">B 向里</text>
+  <!-- 粒子直线轨迹 -->
+  <line x1="60" y1="95" x2="430" y2="95" stroke="#38a169" stroke-width="2" stroke-dasharray="8,5"/>
+  <polygon points="438,95 426,90 426,100" fill="#38a169"/>
+  <text x="244" y="88" font-size="13" fill="#38a169" font-weight="bold">v = E/B，直线通过</text>
+  <text x="245" y="180" font-size="13" fill="#2d3748" text-anchor="middle">速度选择器：电场力 qE（向下）与洛伦兹力 qvB（向上）平衡</text>
+</svg>
+</div>
+
+<h4>（2）质谱仪</h4>
+<p>粒子先经电压 $U$ 加速，再垂直进入匀强磁场 $B$ 做半圆周，打在为感光板上。联立两阶段：</p>
+$$qU=\frac{1}{2}mv^2,\qquad r=\frac{mv}{qB}\ \Longrightarrow\ \frac{q}{m}=\frac{2U}{B^2r^2}\quad\left(\text{或}\ m=\frac{qB^2r^2}{2U}\right)$$
+<div class="deep">
+<strong>推导：</strong>由加速式得 $v=\sqrt{2qU/m}$，代入半径式：$r=\dfrac{m}{qB}\sqrt{\dfrac{2qU}{m}}=\dfrac{1}{B}\sqrt{\dfrac{2mU}{q}}$，两边平方整理即得。物理意义：<strong>同位素</strong>电荷量相同而质量略有差异 → $r\propto\sqrt{m}$，落在感光板上的位置不同，从而把不同质量的粒子"分拣"开来——这就是质谱仪测质量、分同位素的原理。
+</div>
+
+<h4>（3）回旋加速器 <span class="stars">★★★</span></h4>
+<p>两个 D 形金属盒置于匀强磁场中，盒间缝隙接<strong>高频交流电源</strong>。粒子在盒内做半圆周（磁场只管转向、不做功），每经过缝隙被电场加速一次。</p>
+<div class="deep">
+<strong>高频电源的频率条件（推导）：</strong>粒子每转半圈，缝隙电场方向必须恰好反转，才能保证"每次过缝都被加速"。即电源变化周期 = 粒子回旋周期，故电源频率必须满足
+$$f_{\text{电源}}=\frac{1}{T}=\frac{qB}{2\pi m}$$
+由于 $T$ 与速度无关（公式 5 的结论），电源频率可以<strong>一劳永逸地固定</strong>——这正是回旋加速器精巧之处，也是高考最爱考的"条件"。
+</div>
+<div class="deep">
+<strong>最大动能（与加速电压无关！）：</strong>粒子的圆周半径被 D 形盒半径 $R$ 封顶：$r\leqslant R$。故
+$$v_{\max}=\frac{qBR}{m},\qquad E_{\text{km}}=\frac{1}{2}mv_{\max}^2=\frac{q^2B^2R^2}{2m}$$
+最大动能只由 $B$、$R$ 和粒子自身决定，<strong>与加速电压 $U$ 无关</strong>。$U$ 大只是每次加速获得的能量多、所需圈数少而已（每圈加速 2 次，圈数 $n=\dfrac{E_{\text{km}}}{2qU}$）。选择题说"增大加速电压可提高粒子最终获得的动能"——错误。
+</div>
+
+<h4>（4）模型汇总表</h4>
+<table>
+  <tr><th>模型</th><th class="l">场结构与平衡/规律</th><th class="l">核心结论</th></tr>
+  <tr><td class="l">速度选择器</td><td class="l">$E\perp B\perp v$，$qE$ 与 $qvB$ 反向平衡</td><td class="l">$v=E/B$，与 $q$、$m$、电性无关</td></tr>
+  <tr><td class="l">质谱仪</td><td class="l">先加速 $qU=\frac12 mv^2$，再偏转半圆</td><td class="l">$\dfrac{q}{m}=\dfrac{2U}{B^2r^2}$，$r\propto\sqrt{m}$ 分同位素</td></tr>
+  <tr><td class="l">回旋加速器</td><td class="l">盒内偏转 + 缝中加速</td><td class="l">$f_{\text{电源}}=\dfrac{qB}{2\pi m}$；$E_{\text{km}}=\dfrac{q^2B^2R^2}{2m}$ 与 $U$ 无关</td></tr>
+  <tr><td class="l">磁流体发电机 / 电磁流量计 / 霍尔元件</td><td class="l">等离子体（或载流子）在磁场中偏转，堆积电荷形成电场，直至 $qvB=qE$ 平衡</td><td class="l">稳定时 $E=vB$，可求电压、流量、判断载流子正负</td></tr>
+</table>
+
+<h2 id="s4">四、典型例题</h2>
+
+<h3>例 1　安培力参与的平衡问题 <span class="stars">★★★</span></h3>
+<p>间距为 $L=0.20\,\text{m}$ 的两条光滑平行导轨固定在倾角 $\theta=30^\circ$ 的斜面上，质量 $m=0.020\,\text{kg}$ 的金属棒 $ab$ 水平横放在导轨上（棒与斜面底边平行），棒中通有电流 $I$。空间存在匀强磁场，$B=0.50\,\text{T}$。取 $g=10\,\text{m/s}^2$。</p>
+<p>(1) 若磁场方向<strong>竖直向上</strong>，要使棒静止在导轨上，求电流 $I_1$ 的大小；(2) 若磁场方向改为<strong>垂直斜面向上</strong>，求使棒静止的电流 $I_2$。</p>
+<div class="deep">
+<strong>过程拆解：</strong>
+<p><strong>第 0 步：受力盘点。</strong>棒受三个力：重力 $mg$（竖直向下）、导轨支持力 $N$（垂直斜面向上）、安培力 $F$。$F=BIL$（本题电流方向与磁场垂直，$\sin\theta=1$），方向由左手定则确定后画进受力图——<strong>安培力问题先把 $F$ 的方向搞对，后面就是纯力学</strong>。</p>
+<p><strong>第 1 步：磁场竖直向上时。</strong>棒中电流沿水平方向（棒水平横放），$\vec{B}$ 竖直向上，由左手定则，安培力沿<strong>水平方向</strong>（指向斜面高端那一侧）。沿斜面方向列平衡方程：</p>
+$$F\cos\theta=mg\sin\theta\ \Rightarrow\ F=mg\tan30^\circ=0.020\times10\times\frac{\sqrt3}{3}\,\text{N}\approx0.115\,\text{N}$$
+$$I_1=\frac{F}{BL}=\frac{0.115}{0.50\times0.20}\,\text{A}\approx1.15\,\text{A}\approx1.2\,\text{A}$$
+<p><strong>第 2 步：磁场垂直斜面向上时。</strong>左手定则：安培力沿<strong>斜面方向</strong>（沿斜面向上）。此时 $F$ 与 $mg\sin\theta$ 沿斜面直接对拉：</p>
+$$F=mg\sin\theta\ \Rightarrow\ F=0.020\times10\times0.5\,\text{N}=0.10\,\text{N}$$
+$$I_2=\frac{F}{BL}=\frac{0.10}{0.50\times0.20}\,\text{A}=1.0\,\text{A}$$
+</div>
+<p><strong>答案</strong>：(1) $I_1\approx1.2\,\text{A}$；(2) $I_2=1.0\,\text{A}$。</p>
+<div class="key-point"><strong>方法提炼：</strong>"磁场方向变 → 安培力方向变 → 分解方式变 → 结果变"。同一根棒、同样大小的磁场，仅仅磁场方向从"竖直"换成"垂直斜面"，所需电流就从 $1.15\,\text{A}$ 变成 $1.0\,\text{A}$。这类题的物理只有一行 $F=BIL$，剩下的全是力学受力分析——<strong>左手定则 + 受力图</strong>是它和力学之间的接口。
+</div>
+
+<h3>例 2　弯曲导线的有效长度 <span class="stars">★★</span></h3>
+<p>在水平面内有一段直角弯折导线 $abc$，其中 $ab=0.30\,\text{m}$、$bc=0.40\,\text{m}$，且 $ab\perp bc$。空间有竖直向下的匀强磁场 $B=0.50\,\text{T}$，导线中通入 $I=2.0\,\text{A}$ 的电流（方向 $a\to b\to c$）。求：</p>
+<p>(1) 导线所受安培力的大小；(2) 若把这段导线换成以 $ac$ 为直径的半圆形导线（仍在水平面内，电流仍为 $a\to c$），安培力变为多少？</p>
+<div class="deep">
+<strong>过程拆解：</strong>
+<p><strong>第 1 步：求有效长度。</strong>磁场垂直于导线所在平面，满足有效长度结论的使用条件：</p>
+$$L_{\text{eff}}=|ac|=\sqrt{(0.30)^2+(0.40)^2}\,\text{m}=\sqrt{0.25}\,\text{m}=0.50\,\text{m}$$
+<p><strong>第 2 步：算力。</strong></p>
+$$F=BIL_{\text{eff}}=0.50\times2.0\times0.50\,\text{N}=0.50\,\text{N}$$
+<p>方向：水平面内垂直于 $ac$ 连线，由左手定则确定具体指向（与"电流从 $a$ 直接流向 $c$ 的直导线"受力方向相同）。</p>
+<p><strong>第 3 步：换成半圆形导线。</strong>首端仍是 $a$、末端仍是 $c$，有效长度还是 $|ac|=0.50\,\text{m}$：</p>
+$$F'=BIL_{\text{eff}}=0.50\,\text{N}\ (\text{不变！})$$
+</div>
+<p><strong>答案</strong>：(1) $F=0.50\,\text{N}$；(2) 仍为 $0.50\,\text{N}$。</p>
+<div class="key-point"><strong>方法提炼：</strong>在垂直于导线平面的匀强磁场中，安培力只认"首尾连线"，不认中间绕了什么弯——直角折线、半圆、波浪线，只要首尾相同、电流相同，受力完全相同。逐段算再矢量合成也能得到同样结果（你可以用 $F_{ab}=0.30\,\text{N}$、$F_{bc}=0.40\,\text{N}$ 互相垂直、合成 $\sqrt{0.30^2+0.40^2}\times BI=0.50\,\text{N}$ 验证）。
+</div>
+
+<h3>例 3　有界磁场中的圆周运动：找圆心、定半径、求时间 <span class="stars">★★★</span></h3>
+<p>一比荷为 $\dfrac{q}{m}=1.0\times10^{8}\,\text{C/kg}$ 的带正电粒子（重力不计），以 $v=1.0\times10^{6}\,\text{m/s}$ 的速度垂直射入宽度 $d=5.0\,\text{cm}$ 的条形匀强磁场区域，磁场 $B=0.10\,\text{T}$，方向垂直纸面向里。粒子从边界上 $P$ 点<strong>垂直于边界</strong>入射。求：</p>
+<p>(1) 粒子在磁场中的轨迹半径；(2) 粒子穿过磁场过程中的速度偏转角与运动时间；(3) 出射点相对于入射点沿边界方向的偏移距离。</p>
+<div class="deep">
+<strong>过程拆解：</strong>
+<p><strong>第 1 步：定半径。</strong>洛伦兹力提供向心力：</p>
+$$r=\frac{mv}{qB}=\frac{v}{(q/m)\,B}=\frac{1.0\times10^{6}}{1.0\times10^{8}\times0.10}\,\text{m}=0.10\,\text{m}=10\,\text{cm}$$
+<p><strong>第 2 步：找圆心。</strong>$r=10\,\text{cm}&gt;d=5.0\,\text{cm}$，粒子从对面边界射出。入射速度垂直于边界，圆心 $O$ 在"入射速度的垂线"上——即入射边界本身，且 $OP=r=10\,\text{cm}$（$O$ 在洛伦兹力指向的一侧，由左手定则判定）。</p>
+<p><strong>第 3 步：几何求圆心角。</strong>设圆心角为 $\theta$。$O$ 在入射边界上，出射点 $Q$ 在对面边界上，$OQ=r$，而 $OQ$ 沿"垂直边界方向"的分量恰为磁场宽度 $d$，故</p>
+$$\sin\theta=\frac{d}{r}=\frac{5.0}{10}=\frac{1}{2}\ \Rightarrow\ \theta=30^\circ=\frac{\pi}{6}$$
+<p>速度偏转角等于圆心角：<strong>$\Delta\varphi=\theta=30^\circ$</strong>。</p>
+<p><strong>第 4 步：求时间。</strong>周期</p>
+$$T=\frac{2\pi m}{qB}=\frac{2\pi}{(q/m)\,B}=\frac{2\pi}{1.0\times10^{8}\times0.10}\,\text{s}=2\pi\times10^{-7}\,\text{s}\approx6.3\times10^{-7}\,\text{s}$$
+$$t=\frac{\theta}{2\pi}T=\frac{1}{12}T\approx5.2\times10^{-8}\,\text{s}$$
+<p><strong>第 5 步：求偏移。</strong>沿边界方向，出射点相对入射点的偏移（即 $r$ 与 $OQ$ 沿边界方向分量之差）：</p>
+$$\Delta x=r-\sqrt{r^2-d^2}=10-\sqrt{100-25}\,\text{cm}=10-5\sqrt3\,\text{cm}\approx1.3\,\text{cm}$$
+</div>
+<p><strong>答案</strong>：(1) $r=0.10\,\text{m}$；(2) 偏转角 $30^\circ$，$t\approx5.2\times10^{-8}\,\text{s}$；(3) $\Delta x\approx1.3\,\text{cm}$。</p>
+<div class="key-point"><strong>方法提炼：</strong>标准流程一句话——"<strong>一找圆心（速度垂线 + 弦的中垂线）、二抓几何（直角三角形出圆心角）、三算时间（$t=\theta T/2\pi$）</strong>"。注意本题若把粒子改为等量异号的负电荷，轨迹将向另一侧弯曲，圆心、偏移镜像对称，而 $r$、$T$、$t$、偏转角大小全部不变——半径和周期公式里只用 $|q|$。
+</div>
+
+<h3>例 4　速度选择器 + 质谱仪综合 <span class="stars">★★★</span></h3>
+<p>一束速度大小不等的正离子流，先经过速度选择器：正交的匀强电场 $E=1.0\times10^{4}\,\text{N/C}$ 与匀强磁场 $B_1=0.10\,\text{T}$。穿出选择器的离子垂直进入另一匀强偏转磁场 $B_2=0.20\,\text{T}$，做半个圆周后打在为感光板上，落点到入射小孔的距离为 $l=20\,\text{cm}$。求：</p>
+<p>(1) 穿出速度选择器的离子速度 $v$；(2) 该种离子的比荷 $\dfrac{q}{m}$；(3) 若该离子带电荷量为元电荷 $e=1.6\times10^{-19}\,\text{C}$，估算其质量（质子质量 $m_{\text{p}}=1.67\times10^{-27}\,\text{kg}$，可作参照）。</p>
+<div class="deep">
+<strong>过程拆解：</strong>
+<p><strong>第 1 步：速度选择。</strong>直线通过 ⇔ 电场力与洛伦兹力平衡：</p>
+$$qE=qvB_1\ \Rightarrow\ v=\frac{E}{B_1}=\frac{1.0\times10^{4}}{0.10}\,\text{m/s}=1.0\times10^{5}\,\text{m/s}$$
+<p>注意这一问根本没用到离子种类——同一选择器对任何离子都放行这个速度。</p>
+<p><strong>第 2 步：偏转半圆求比荷。</strong>半圆周轨迹的<strong>直径</strong>等于落点到入射孔的距离：</p>
+$$r=\frac{l}{2}=\frac{20\,\text{cm}}{2}=0.10\,\text{m}$$
+<p>由 $r=\dfrac{mv}{qB_2}$：</p>
+$$\frac{q}{m}=\frac{v}{B_2 r}=\frac{1.0\times10^{5}}{0.20\times0.10}\,\text{C/kg}=5.0\times10^{6}\,\text{C/kg}$$
+<p><strong>第 3 步：估算质量。</strong>$q=e$ 时：</p>
+$$m=\frac{e}{q/m}=\frac{1.6\times10^{-19}}{5.0\times10^{6}}\,\text{kg}=3.2\times10^{-26}\,\text{kg}$$
+<p>与质子比较：$\dfrac{m}{m_{\text{p}}}=\dfrac{3.2\times10^{-26}}{1.67\times10^{-27}}\approx19$——这是一种质量数约为 19 的离子（想想氟）。</p>
+</div>
+<p><strong>答案</strong>：(1) $v=1.0\times10^{5}\,\text{m/s}$；(2) $\dfrac{q}{m}=5.0\times10^{6}\,\text{C/kg}$；(3) $m=3.2\times10^{-26}\,\text{kg}$，约为质子质量的 19 倍。</p>
+<div class="key-point"><strong>方法提炼：</strong>组合场题 = 分段处理 + 接缝传值。"选择器段"交出速度 $v$（与粒子无关），"偏转段"用 $v$ 和几何量 $r$ 反推粒子身份 $\dfrac{q}{m}$。接缝处的物理量（这里是 $v$）是两段之间的桥梁。审题时先问自己："每段是什么场？粒子在其中做什么运动？段与段之间什么量连续？"
+</div>
+
+<h2 id="s5">五、易错点与成因分析</h2>
+
+<div class="warn">
+<strong>易错点 1：左手定则用于负电荷时方向搞反。</strong><br>
+<strong>成因</strong>：死记"四指指向运动方向"，忘了左手定则的四指指向的是<strong>电流方向（正电荷运动方向）</strong>。电子、负离子定向移动的方向与电流方向相反，直接照搬会把力判反，圆周运动整题崩盘。<br>
+<strong>对策</strong>：先确认粒子电性。负电荷两条路任选：① 四指指向其运动<strong>反方向</strong>再读拇指；② 先按正电荷判出方向，再<strong>整体反向</strong>。养成习惯：读题第一步就圈出"正/负电荷"。
+</div>
+
+<div class="warn">
+<strong>易错点 2：把洛伦兹力当恒力，套匀变速公式或动能定理。</strong><br>
+<strong>成因</strong>：电场的思维惯性——$F=qE$ 恒定、可以做功，于是对磁场也写 $v^2-v_0^2=2ax$、$W=fs$。但洛伦兹力方向<strong>时刻跟着速度转</strong>，是变力；且 $\vec{f}\perp\vec{v}$ 永不做功，速率根本不变。<br>
+<strong>对策</strong>：纯磁场问题换一套语言：牛顿第二定律 $qvB=mv^2/r$ + 圆周运动几何。<strong>动能定理在纯磁场中无计可施</strong>（动能守恒），凡是算出"磁场使粒子加速/减速"的结论，立刻回头检查。
+</div>
+
+<div class="warn">
+<strong>易错点 3：找圆心方法错误。</strong><br>
+<strong>成因</strong>：把圆心当成入射点与出射点的<strong>中点</strong>，或想当然认为圆心在磁场区域的中心/边界中点。根源是没抓住圆心的两个充要性质。<br>
+<strong>对策</strong>：背熟两条并作图验证——圆心必在<strong>入射（出射）速度的垂线上</strong>（洛伦兹力即向心力，必指圆心）；圆心必在<strong>入射点与出射点连线的垂直平分线上</strong>。两线交点才是圆心，缺一不可。
+</div>
+
+<div class="warn">
+<strong>易错点 4：以为周期与速度有关。</strong><br>
+<strong>成因</strong>：直觉认为"速度快的粒子转一圈更快"。没推 $T=\dfrac{2\pi m}{qB}$，看不出 $r\propto v$ 与 $v$ 恰好抵消。<br>
+<strong>对策</strong>：自己推导一遍 $T=\dfrac{2\pi r}{v}=\dfrac{2\pi}{v}\cdot\dfrac{mv}{qB}=\dfrac{2\pi m}{qB}$，亲眼看着 $v$ 被约掉。结论：同种粒子在同一磁场中，无论快慢，<strong>回旋周期相同</strong>——这正是回旋加速器固定频率的前提（易错点 6 的连锁考点）。
+</div>
+
+<div class="warn">
+<strong>易错点 5：左手定则与右手安培定则混用。</strong><br>
+<strong>成因</strong>：两只手的姿势都学了，但没建立"<strong>什么问题用哪只手</strong>"的分工意识。判断电流产生的磁场用了左手、判断受力用了右手，全盘皆反。<br>
+<strong>对策</strong>：口诀"<strong>右生磁、左给力</strong>"——涉及"产生磁场"（安培定则）用右手；涉及"受力"（安培力、洛伦兹力）用左手。做题前先判断问题类型再伸手。
+</div>
+
+<div class="warn">
+<strong>易错点 6：认为回旋加速器的最大动能由加速电压决定。</strong><br>
+<strong>成因</strong>：直觉"$U$ 越大每次加速越猛，最终能量越高"。忽略了粒子的圆周半径被 D 形盒半径 $R$ 锁死：$r\leqslant R$，$E_{\text{km}}=\dfrac{q^2B^2R^2}{2m}$ 里根本没有 $U$。<br>
+<strong>对策</strong>：记住各自分工——$U$ 决定"加几次"（圈数 $n=\dfrac{E_{\text{km}}}{2qU}$），$B$ 和 $R$ 决定"最多加到多少"。想提高最大动能：加大磁场或换更大的 D 形盒。
+</div>
+
+<div class="warn">
+<strong>易错点 7：$F=BIL$ 乱用，忘记垂直条件与有效长度。</strong><br>
+<strong>成因</strong>：把 $F=BIL$ 当成无条件的"安培力公式"。实际它有两个前提：匀强磁场、$I\perp B$（一般式为 $F=BIL\sin\theta$）；且 $L$ 是磁场中的<strong>有效长度</strong>——弯曲导线取首尾连线、部分在磁场中的导线只取场内部分。<br>
+<strong>对策</strong>：代入前自问三连：磁场匀强吗？电流与磁场夹角多少？真正"泡在"磁场里的导线有多长？
+</div>
+
+<div class="warn">
+<strong>易错点 8：速度选择器的方向配合与"万能选择"误解。</strong><br>
+<strong>成因</strong>：只记 $v=E/B$，忽略平衡的方向要求：电场力与洛伦兹力必须<strong>反向</strong>。把粒子入射方向反过来、或把 $E$（或 $B$）单独反向，平衡立即破坏。另一种反向错误是认为"选择结果与电性有关"。<br>
+<strong>对策</strong>：现场做受力分析而不是背结论：$q\vec{E}$ 一个方向，$q\vec{v}\times\vec{B}$ 一个方向，反向才平衡。电性反号时两力同时反向，故选择结果与电性无关、与入射<strong>方向</strong>有关。
+</div>
+
+<h2 id="s6">六、章末自检清单</h2>
+
+<p>合上书本，逐项打勾。任何一项犹豫超过 10 秒，回到对应小节重学。</p>
+
+<h4>概念理解</h4>
+<ul style="list-style:none; margin-left:8px;">
+  <li>☐ 能说出磁场方向的约定（小磁针 N 极受力方向），并类比电场方向约定</li>
+  <li>☐ 理解 $B=\dfrac{F}{IL}$ 是比值定义，$B$ 与 $F$、$I$、$L$ 无关；知道 $1\,\text{T}=1\,\text{N/(A·m)}$</li>
+  <li>☐ 能默写磁感线的性质，并说出与电场线的最大区别（闭合 vs 不闭合）及原因</li>
+  <li>☐ 分清电流方向约定（正电荷定向移动方向）与金属中电子实际移动方向的关系</li>
+  <li>☐ 能陈述"右生磁、左给力"的分工，并各举一例</li>
+</ul>
+
+<h4>公式掌握（能独立推导）</h4>
+<ul style="list-style:none; margin-left:8px;">
+  <li>☐ $F=BIL\sin\theta$：$\theta$ 的含义、平行时 $F=0$、$L$ 取场内有效长度</li>
+  <li>☐ 由安培力推导出洛伦兹力 $f=qvB$（$I=nqSv$、$N=nSL$、$f=F/N$）</li>
+  <li>☐ 用瞬时功率 $P=\vec{f}\cdot\vec{v}=0$ 证明洛伦兹力永不做功，说出"只改方向、不改大小"</li>
+  <li>☐ 由 $qvB=mv^2/r$ 推出 $r=\dfrac{mv}{qB}$、$T=\dfrac{2\pi m}{qB}$，解释 $T$ 为何与 $v$ 无关</li>
+  <li>☐ 运动时间公式 $t=\dfrac{\theta}{2\pi}T=\dfrac{\theta m}{qB}$，知道速度偏转角等于圆心角</li>
+  <li>☐ 速度选择器 $v=E/B$、质谱仪 $\dfrac{q}{m}=\dfrac{2U}{B^2r^2}$、回旋加速器 $f=\dfrac{qB}{2\pi m}$ 与 $E_{\text{km}}=\dfrac{q^2B^2R^2}{2m}$ 的来龙去脉</li>
+</ul>
+
+<h4>模型与方法</h4>
+<ul style="list-style:none; margin-left:8px;">
+  <li>☐ 安培力平衡题：左手定则定 $F$ 方向 → 受力图 → 力学平衡方程（会处理斜面模型）</li>
+  <li>☐ 弯曲导线：会取有效长度（首尾连线），知道闭合线圈在匀强磁场中合力为零</li>
+  <li>☐ 圆周运动三步：找圆心（速度垂线 + 弦的中垂线）→ 几何定 $r$ 与 $\theta$ → $t=\theta T/(2\pi)$</li>
+  <li>☐ 组合场分段处理：识别每段的运动类型，抓住"接缝量"（速度/比荷）传递</li>
+</ul>
+
+<h4>易错点免疫</h4>
+<ul style="list-style:none; margin-left:8px;">
+  <li>☐ 负电荷用左手定则时先反向（运动方向 → 电流方向），读题先圈电性</li>
+  <li>☐ 纯磁场中不动能定理、不套匀变速公式，只用圆周规律 + 几何</li>
+  <li>☐ 不把周期当速度的函数，能一句话讲清 $T$ 与 $v$ 无关的抵消机制</li>
+  <li>☐ 判断力用左手、判断电流生磁用右手，永不混用</li>
+  <li>☐ 说得出回旋加速器最大动能与 $U$ 无关的理由（半径被 $R$ 封顶）</li>
+  <li>☐ 用 $F=BIL$ 前自问：匀强吗？垂直吗？有效长度取对了吗？</li>
+</ul>
+
+<hr>
+<p style="color: var(--muted); text-align: center; font-size: 0.9em;">
+磁场这一章，物理只有三个公式，功夫全在"方向"与"几何"上。<br>
+左手伸对了、圆心找准了，压轴题也不过是送分的圆。<br>
+—— 为小兵 2029 云南高考加油 💪
+</p>
+
+</body>
+</html>

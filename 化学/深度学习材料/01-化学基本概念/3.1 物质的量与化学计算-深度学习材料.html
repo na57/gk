@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.1 物质的量与化学计算-深度学习材料</title>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#0e7c7b; --subject-soft:#eef7f6;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 化学点缀层（无 JS，纯文本方程式） ===== */
+/* 语义卡片（例题=紫 / 易错=琥珀 / 概念=蓝 / 提示=科目色 / 结构=中性墨） */
+.card { border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 18px; margin: 14px 0; page-break-inside: avoid; }
+.card .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
+.card.concept { background: var(--c-concept-bg); } .card.concept .tag { background: var(--c-concept); color: #fff; }
+.card.example { background: var(--c-example-bg); } .card.example .tag { background: var(--c-example); color: #fff; }
+.card.trap { background: var(--c-trap-bg); } .card.trap .tag { background: var(--c-trap); color: #fff; }
+.card.note { background: var(--subject-soft); } .card.note .tag { background: var(--subject); color: #fff; }
+.card.violet { background: var(--canvas); } .card.violet .tag { background: var(--ink); color: #fff; }
+/* 方程式容器（统一灰底盒 + 科目色左边条） */
+.eq { display: block; background: var(--formula-bg); border: 1px solid var(--line); border-left: 4px solid var(--subject); border-radius: 8px; padding: var(--formula-pad); margin: 10px 0; font-size: 16px; text-align: center; letter-spacing: .3px; page-break-inside: avoid; }
+.eq-arrow { position: relative; display: inline-block; margin: 0 6px; font-weight: 600; }
+.eq-arrow::before { content: attr(data-cond); position: absolute; left: 50%; transform: translateX(-50%); top: -1.05em; font-size: 10.5px; font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
+.state { font-size: .72em; font-style: italic; color: var(--ink-soft); }
+sub, sup { font-size: .72em; line-height: 0; }
+.formula { font-size: 1.05em; }
+.kbd { background: #f0f2f5; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 13px; }
+/* 三栏对比 */
+.triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; page-break-inside: avoid; }
+.triple .cell { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: 14px; }
+.triple .cell h4 { margin: 0 0 8px; font-size: 13.5px; text-align: center; padding: 4px 0; border-radius: 6px; color: #fff; }
+.triple .cell:nth-child(1) h4 { background: var(--c-trap); }
+.triple .cell:nth-child(2) h4 { background: var(--c-example); }
+.triple .cell:nth-child(3) h4 { background: var(--subject); }
+/* 步骤与答案 */
+.step { display: flex; gap: 10px; margin: 8px 0; }
+.step .no { flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--c-method); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.ans { background: #fff; border: 1px dashed var(--c-method); border-radius: 8px; padding: 8px 14px; margin: 8px 0; }
+.chap-foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-soft); text-align: center; }
+@media (max-width: 640px) { .triple { grid-template-columns: 1fr; } }
+@media print {
+  .card { border: 1px solid #999; background: #fff !important; }
+  .card .tag { border: 1px solid #333; background: #fff !important; color: #000; }
+  .eq { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .chap-foot { border-top: none; }
+}
+</style>
+</head>
+<body>
+<nav class="chap-nav">高考备考 · 化学 · 深度学习材料 ｜ 化学基本概念 ｜ 3.1 物质的量与化学计算</nav>
+<header class="chap-head">
+  <h1>3.1 物质的量与化学计算</h1>
+  <p class="chap-meta">高中化学 · 深度学习材料 · 面向 2029 届云南高考</p>
+  <p class="chap-intro">「物质的量」是连接宏观质量与微观粒子数的桥梁，是整个高中化学计算的核心工具。本章的每一个公式、每一个单位都要练到零失误——高考中 N<sub>A</sub> 辨析题和物质的量浓度计算题，都是你「一眼定答案」的送分点，前提是陷阱你能一眼看穿。</p>
+</header>
+<main>
+
+<section>
+<h2>一、知识全景</h2>
+<table>
+<tr><th>知识点</th><th>核心内容</th><th>高考要求</th></tr>
+<tr>
+<td>物质的量</td>
+<td>概念、单位 mol、阿伏加德罗常数 N<sub>A</sub> 的精确值与近似值</td>
+<td>深刻理解「七个基本物理量之一」的定位，熟练进行 n 与 N 的互算</td>
+</tr>
+<tr>
+<td>摩尔质量</td>
+<td>定义、单位 g/mol，与相对分子（原子）质量数值相等</td>
+<td>熟练换算 m ↔ n，注意单位书写</td>
+</tr>
+<tr>
+<td>气体摩尔体积</td>
+<td>V<sub>m</sub> 定义；标准状况下 V<sub>m</sub> ≈ 22.4 L/mol</td>
+<td>准确判断适用条件：必须是气体、必须是标准状况（0 ℃、101 kPa）</td>
+</tr>
+<tr>
+<td>物质的量浓度</td>
+<td>c = n/V；溶液配制步骤、仪器、误差分析</td>
+<td>熟练计算，掌握容量瓶使用与误差分析</td>
+</tr>
+<tr>
+<td>阿伏加德罗定律及推论</td>
+<td>同温同压同体积 → 同分子数；PV = nRT 的推论体系</td>
+<td>能推导推论并灵活应用于密度、体积比问题</td>
+</tr>
+<tr>
+<td>化学计算常用方法</td>
+<td>守恒法、差量法、极值法、关系式法</td>
+<td>各方法运用自如，看到题型能快速选择最优方法</td>
+</tr>
+</table>
+<p><strong>本章在高考中的位置</strong>：云南高考（全国卷模式）中，物质的量直接考查约 2~4 分（选择题中的 N<sub>A</sub> 辨析），但它渗透在工业流程、反应原理、实验题的所有计算中，是「隐性分值」最高的基础工具，必须做到零失误。</p>
+<h3>以物质的量为中心的公式速查表</h3>
+<table>
+<tr><th>已知量</th><th>公式</th><th>关键提醒</th></tr>
+<tr>
+<td>粒子数 N</td>
+<td>n = N / N<sub>A</sub></td>
+<td>N<sub>A</sub> ≈ 6.02×10<sup>23</sup> mol<sup>−1</sup>；先看清问的是分子、原子还是电子数</td>
+</tr>
+<tr>
+<td>质量 m</td>
+<td>n = m / M</td>
+<td>M 以 g/mol 为单位时数值等于相对质量</td>
+</tr>
+<tr>
+<td>气体体积 V</td>
+<td>n = V / V<sub>m</sub></td>
+<td>标准状况下 V<sub>m</sub> ≈ 22.4 L/mol；先核对标况与气态</td>
+</tr>
+<tr>
+<td>溶液体积与浓度</td>
+<td>n = c × V</td>
+<td>V 是溶液体积，单位化为 L</td>
+</tr>
+<tr>
+<td>浓溶液稀释</td>
+<td>c<sub>1</sub>V<sub>1</sub> = c<sub>2</sub>V<sub>2</sub></td>
+<td>稀释前后溶质的物质的量不变</td>
+</tr>
+<tr>
+<td>气体相对密度</td>
+<td>D = ρ<sub>1</sub>/ρ<sub>2</sub> = M<sub>1</sub>/M<sub>2</sub></td>
+<td>同温同压下成立，用于求未知气体摩尔质量</td>
+</tr>
+<tr>
+<td>混合气体平均摩尔质量</td>
+<td>M̄ = m(总) / n(总)</td>
+<td>介于各组分摩尔质量之间（极值法依据）</td>
+</tr>
+<tr>
+<td>质量分数换算浓度</td>
+<td>c = 1000ρω / M</td>
+<td>ρ 取 g/mL、ω 为质量分数（小数）；高二常用，先记住形式</td>
+</tr>
+</table>
+<div class="card note">
+<span class="tag">数据约定</span>
+<p>本材料计算所用相对原子质量：H 1、C 12、N 14、O 16、Na 23、Mg 24、Al 27、S 32、Cl 35.5、K 39、Ca 40、Fe 56、Cu 64、Zn 65、Ag 108、Ba 137。</p>
+</div>
+<div class="card note">
+<span class="tag">学法建议</span>
+<p>本章公式不多，但组合极多。建议准备一张「n 为中心」的换算图贴在错题本上：任何已知量 → n → 任何目标量，每做一道计算题就在图上走一遍路径。坚持两周，换算会变成条件反射，为高二高三的综合计算省下大量时间。</p>
+</div>
+</section>
+
+<section>
+<h2>二、核心概念精讲</h2>
+<p>六个概念卡片按「是什么 → 为什么 → 适用边界 → 常见混淆」展开。请特别留意每张卡片的「边界」——高考命题的陷阱几乎全部设置在边界条件上。</p>
+
+<div class="card concept">
+<span class="tag">核心概念 1</span>
+<h3>物质的量（n）：把「数粒子」变成「称质量」的桥梁</h3>
+<p><strong>是什么</strong>：物质的量是把微观粒子「打包」计数的物理量，是国际单位制七个基本物理量之一（其余为长度、质量、时间、电流、热力学温度、发光强度），单位是摩尔（mol）。1 mol 任何粒子集体所含的粒子数，等于 0.012 kg <sup>12</sup>C 中所含碳原子数，即阿伏加德罗常数 N<sub>A</sub> ≈ 6.02×10<sup>23</sup> mol<sup>−1</sup>。</p>
+<p><strong>为什么（微观解释）</strong>：单个原子、分子太轻（如一个 H<sub>2</sub>O 分子质量约 3×10<sup>−23</sup> g），实验室无法逐个数粒子。人们规定一个「大包装」——N<sub>A</sub> 个粒子为 1 mol，使得 1 mol 物质的质量（以 g 为单位）在数值上恰好等于其相对质量，宏观称量与微观计数就此打通。</p>
+<p><strong>适用边界</strong>：</p>
+<ul>
+<li>物质的量<strong>只用于微观粒子</strong>（分子、原子、离子、电子、质子、中子等）及其特定组合，不能说「1 mol 大米」。</li>
+<li>必须<strong>指明粒子种类</strong>：说「1 mol 氢」是错误的，应说「1 mol H」或「1 mol H<sub>2</sub>」，二者相差 2 倍的原子数。</li>
+<li>N<sub>A</sub> 是精确值（6.02214076×10<sup>23</sup> mol<sup>−1</sup>），6.02×10<sup>23</sup> 是计算用近似值；题目说「N<sub>A</sub>」指精确计数标准，计算时可用近似值。</li>
+<li>物质的量与质量、长度一样是可以加减乘除运算的物理量，运算时带着单位 mol 一起参与，是检验列式是否合理的好办法。</li>
+</ul>
+<p><strong>基本公式</strong>：<span class="formula">n = N / N<sub>A</sub></span>（N 为粒子数）。</p>
+<p><strong>微粒数计算示例（先算 n，再看每个微粒里含几个目标粒子）</strong>：</p>
+<ul>
+<li>1 mol H<sub>2</sub>O 中含 2 mol H 原子、1 mol O 原子，共 3 mol 原子；含 10 mol 电子（每个 H<sub>2</sub>O 分子含 2×1 + 8 = 10 个电子）。</li>
+<li>1 mol Mg 失去 2 mol 电子变为 Mg<sup>2+</sup>；1 mol Cl<sub>2</sub> 得到 2 mol 电子变为 2 mol Cl<sup>−</sup>。</li>
+<li>0.5 mol Na<sub>2</sub>SO<sub>4</sub> 中含 1 mol Na<sup>+</sup>、0.5 mol SO<sub>4</sub><sup>2−</sup>，共 1.5 mol 离子。</li>
+</ul>
+<p><strong>常见混淆</strong>：「物质的量」≠「物质的质量」，前者单位 mol，后者单位 g；摩尔是单位不是物理量。说「1 mol 氧」时必须补全为「1 mol O」还是「1 mol O<sub>2</sub>」。</p>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念 2</span>
+<h3>摩尔质量（M）：1 mol 物质的质量</h3>
+<p><strong>是什么</strong>：单位物质的量的物质所具有的质量，单位 g/mol（或 g·mol<sup>−1</sup>）。以 g/mol 为单位时，数值等于该粒子的相对原子质量或相对分子质量。</p>
+<p><strong>示例</strong>：M(H<sub>2</sub>SO<sub>4</sub>) = 2×1 + 32 + 4×16 = 98 g/mol；M(Na<sub>2</sub>CO<sub>3</sub>) = 2×23 + 12 + 3×16 = 106 g/mol；M(Na<sub>2</sub>SO<sub>4</sub>) = 2×23 + 32 + 4×16 = 142 g/mol。</p>
+<p><strong>基本公式</strong>：<span class="formula">n = m / M</span>（m 为质量）。</p>
+<p><strong>常用摩尔质量速查（g/mol，考试应能默算）</strong>：</p>
+<table>
+<tr><th>物质</th><th>算式</th><th>M</th><th>物质</th><th>算式</th><th>M</th></tr>
+<tr><td>H<sub>2</sub>SO<sub>4</sub></td><td>2+32+64</td><td>98</td><td>NaOH</td><td>23+16+1</td><td>40</td></tr>
+<tr><td>Na<sub>2</sub>CO<sub>3</sub></td><td>46+12+48</td><td>106</td><td>CaCO<sub>3</sub></td><td>40+12+48</td><td>100</td></tr>
+<tr><td>CuSO<sub>4</sub></td><td>64+32+64</td><td>160</td><td>BaSO<sub>4</sub></td><td>137+32+64</td><td>233</td></tr>
+<tr><td>NaCl</td><td>23+35.5</td><td>58.5</td><td>KMnO<sub>4</sub></td><td>39+55+64</td><td>158</td></tr>
+</table>
+<p><strong>常见混淆</strong>：摩尔质量（g/mol）与相对分子质量（无量纲，是比值）数值相同但<strong>单位不同</strong>；1 mol 物质的质量（g）与摩尔质量（g/mol）单位也不同。高考填空若写「98」而不写「98 g/mol」不得分。</p>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念 3</span>
+<h3>气体摩尔体积（V<sub>m</sub>）与 22.4 L/mol 的适用条件</h3>
+<p><strong>是什么</strong>：单位物质的量的气体所占的体积，V<sub>m</sub> = V / n，单位 L/mol。在标准状况（0 ℃、101 kPa）下，任何气体（纯净或混合）的 V<sub>m</sub> ≈ 22.4 L/mol。</p>
+<p><strong>为什么（微观解释）</strong>：气体分子本身的体积远小于分子间的距离，气体体积主要由「分子数」和「分子间距」决定；同温同压下分子间距相同，所以同温同压下相同分子数（相同物质的量）的任何气体体积相同。固、液体则不同——粒子间几乎无空隙，体积由粒子本身大小决定，故没有统一的「摩尔体积」。</p>
+<p><strong>温度压强的影响方向</strong>：温度升高，分子间距增大，V<sub>m</sub> 增大；压强增大，分子被「挤近」，V<sub>m</sub> 减小。所以 25 ℃、101 kPa（常温常压）下 V<sub>m</sub> ≈ 24.5 L/mol &gt; 22.4 L/mol。</p>
+<p><strong>适用边界（高频陷阱，务必逐条核对）</strong>：</p>
+<ul>
+<li>必须是<strong>气体</strong>。标准状况下水是液体（冰）、SO<sub>3</sub> 是固体、己烷（C<sub>6</sub>H<sub>14</sub>）、苯、CCl<sub>4</sub>、乙醇均为液体，「22.4 L」对这些物质一律不适用。</li>
+<li>必须是<strong>标准状况</strong>。常温常压（25 ℃、101 kPa）下 V<sub>m</sub> ≈ 24.5 L/mol，不是 22.4 L/mol。</li>
+<li>反过来：非标准状况下气体体积<strong>也可能</strong>恰为 22.4 L/mol（升温同时增压），所以「22.4 L/mol 时一定处于标准状况」的说法是错的。</li>
+<li>「任何气体」包括混合气体：标准状况下 22.4 L 空气、22.4 L CO 与 H<sub>2</sub> 的混合气，物质的量都是 1 mol。</li>
+</ul>
+<p><strong>基本公式</strong>：<span class="formula">n = V / V<sub>m</sub></span>，标准状况下 n = V / 22.4 L·mol<sup>−1</sup>。</p>
+<div class="card note" style="margin:10px 0">
+<span class="tag">陷阱物质清单</span>
+<p>标准状况（0 ℃）下<strong>不是气体</strong>、见到「22.4 L」要立刻警觉的常见物质：H<sub>2</sub>O（液体或冰）、SO<sub>3</sub>（固体，熔点 16.8 ℃）、己烷 C<sub>6</sub>H<sub>14</sub>（液体）、苯 C<sub>6</sub>H<sub>6</sub>（液体）、CCl<sub>4</sub>（液体）、乙醇 C<sub>2</sub>H<sub>5</sub>OH（液体）、HF（液体，沸点 19.5 ℃）。反过来，CO<sub>2</sub>、O<sub>2</sub>、N<sub>2</sub>、H<sub>2</sub>、NH<sub>3</sub>、HCl 标况下均为气体，可正常使用。</p>
+</div>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念 4</span>
+<h3>物质的量浓度（c）与溶液配制</h3>
+<p><strong>是什么</strong>：单位体积<strong>溶液</strong>（不是溶剂！）中所含溶质的物质的量，c = n / V，单位 mol/L。</p>
+<p><strong>从溶液中取出部分</strong>：浓度是强度量，与体积无关——从 1 mol/L 的 NaCl 溶液中取出 1 mL，浓度仍是 1 mol/L；但取出部分所含溶质的物质的量随体积变化。</p>
+<p><strong>离子浓度</strong>：强电解质完全电离，c(Na<sub>2</sub>SO<sub>4</sub>) = 0.2 mol/L 时，c(Na<sup>+</sup>) = 0.4 mol/L，c(SO<sub>4</sub><sup>2−</sup>) = 0.2 mol/L。一般规律：离子浓度 = 电解质浓度 × 该离子在化学式中的下标数。</p>
+<p><strong>再练一组</strong>：0.5 mol/L Al<sub>2</sub>(SO<sub>4</sub>)<sub>3</sub> 溶液中，c(Al<sup>3+</sup>) = 1.0 mol/L，c(SO<sub>4</sub><sup>2−</sup>) = 1.5 mol/L；取出 100 mL，浓度不变，但含 SO<sub>4</sub><sup>2−</sup> 的物质的量 = 1.5 × 0.1 = 0.15 mol。</p>
+<p><strong>配制一定物质的量浓度溶液（以配制 500 mL 0.2 mol/L Na<sub>2</sub>SO<sub>4</sub> 溶液为例）</strong>：</p>
+<ol>
+<li><strong>计算</strong>：n = 0.5 L × 0.2 mol/L = 0.1 mol，m = 0.1 mol × 142 g/mol = 14.2 g。</li>
+<li><strong>称量</strong>：用托盘天平（精确到 0.1 g）或称量纸/小烧杯称取 14.2 g 固体。</li>
+<li><strong>溶解</strong>：在烧杯中加适量蒸馏水，玻璃棒搅拌溶解，<strong>冷却至室温</strong>。</li>
+<li><strong>转移</strong>：用玻璃棒引流，将溶液转入 <strong>500 mL 容量瓶</strong>。</li>
+<li><strong>洗涤</strong>：用少量蒸馏水洗涤烧杯和玻璃棒 2~3 次，洗涤液一并转入容量瓶。</li>
+<li><strong>定容</strong>：加水至液面离刻度线 1~2 cm 时，改用胶头滴管滴加，至凹液面最低处与刻度线相切。</li>
+<li><strong>摇匀</strong>：盖好瓶塞，反复上下颠倒摇匀；装瓶贴标签。</li>
+</ol>
+<p><strong>容量瓶使用要点</strong>：容量瓶是量入式精密仪器，瓶身标有温度（20 ℃）和一个刻度线；不能溶解固体、不能稀释浓溶液、不能加热、不能长期存放溶液。使用前先<strong>查漏</strong>：装水至刻度线附近，盖好瓶塞，用食指按住瓶塞、另一手托住瓶底，倒置 2 分钟观察是否渗漏，正立后将瓶塞旋转 180° 再倒置检查一次。实验室没有 480 mL 规格，需配 480 mL 时选 500 mL 容量瓶，按 500 mL 计算。</p>
+<p><strong>误差分析速查（判断 c 偏高还是偏低，抓住 c = n/V 两个量）</strong>：</p>
+<ul>
+<li>未洗涤烧杯和玻璃棒 → n 偏小 → <strong>c 偏低</strong>。</li>
+<li>定容时俯视刻度线 → V 偏小 → <strong>c 偏高</strong>；仰视 → V 偏大 → <strong>c 偏低</strong>。</li>
+<li>溶解后未冷却即转移定容 → 冷却后 V 偏小 → <strong>c 偏高</strong>。</li>
+<li>定容摇匀后液面低于刻度线再加水 → V 偏大 → <strong>c 偏低</strong>（摇匀后液面下降是正常现象，不可再加水）。</li>
+<li>砝码生锈或药品与砝码放反（使用游码时）→ 称得 n 偏小 → <strong>c 偏低</strong>。</li>
+<li>容量瓶用蒸馏水洗净后未干燥 → n、V 均不受影响 → <strong>无影响</strong>（定容时本来就要加水）。</li>
+<li>转移时有少量液体洒出 → n 偏小 → <strong>c 偏低</strong>。</li>
+</ul>
+<p><strong>常见混淆</strong>：溶液体积 ≠ 溶剂体积。「将 1 mol NaCl 溶于 1 L 水」所得溶液体积不是 1 L，浓度不是 1 mol/L；正确表述是「溶于水配成 1 L 溶液」。</p>
+<h4>溶液的稀释与浓溶液取用</h4>
+<p>稀释前后溶质的物质的量不变，故 <span class="formula">c(浓)·V(浓) = c(稀)·V(稀)</span>。注意 V(稀) 是配制后溶液的总体积（由容量瓶规格决定），不能理解为「加入水的体积」。</p>
+<p><strong>示例</strong>：用 18.4 mol/L 的浓硫酸配制 500 mL 1.0 mol/L 的稀硫酸，需浓硫酸 V = 1.0 mol/L × 500 mL ÷ 18.4 mol/L ≈ <strong>27.2 mL</strong>。</p>
+<ul>
+<li>操作要点：用量筒量取浓硫酸；烧杯中先加适量蒸馏水，再将浓硫酸<strong>沿玻璃棒缓慢注入水中</strong>并不断搅拌（「酸入水」，切不可反向，否则剧烈放热导致液体飞溅）。</li>
+<li>冷却至室温后再转移、洗涤、定容——浓硫酸稀释放热，热溶液直接定容会使浓度偏高。</li>
+</ul>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念 5</span>
+<h3>阿伏加德罗定律及推论</h3>
+<p><strong>定律</strong>：同温同压下，相同体积的任何气体（包括混合气体）含有相同数目的分子。</p>
+<p><strong>为什么</strong>：由理想气体状态方程 PV = nRT，P、V、T 三个量中确定两个，第三个即被确定；同温同压同体积 ⇒ n 相同 ⇒ 分子数相同。</p>
+<p><strong>三大推论（要会由 PV = nRT 自己推导）</strong>：</p>
+<ul>
+<li>同温同压：V<sub>1</sub>/V<sub>2</sub> = n<sub>1</sub>/n<sub>2</sub> = N<sub>1</sub>/N<sub>2</sub>（体积比 = 物质的量之比 = 分子数之比）。</li>
+<li>同温同体积：p<sub>1</sub>/p<sub>2</sub> = n<sub>1</sub>/n<sub>2</sub>（压强比 = 物质的量之比）。</li>
+<li>同温同压：ρ<sub>1</sub>/ρ<sub>2</sub> = M<sub>1</sub>/M<sub>2</sub>（密度比 = 摩尔质量之比，称「相对密度」D = M<sub>1</sub>/M<sub>2</sub>）。</li>
+</ul>
+<p><strong>推论 1 的推导</strong>：同温同压下，由 PV = nRT 得 V = nRT/P，R、T、P 均为定值，故 V 与 n 成正比，V<sub>1</sub>/V<sub>2</sub> = n<sub>1</sub>/n<sub>2</sub>；同温同体积时由 P = nRT/V 得 P 与 n 成正比。</p>
+<p><strong>推论 3 的推导（体会 PV = nRT 的用法）</strong>：</p>
+<ol>
+<li>由 PV = nRT 与 n = m/M，得 PV = (m/M)RT。</li>
+<li>两边整理：ρ = m/V = PM/(RT)。</li>
+<li>同温同压下 P、R、T 相同，故 ρ 与 M 成正比，即 ρ<sub>1</sub>/ρ<sub>2</sub> = M<sub>1</sub>/M<sub>2</sub>。</li>
+</ol>
+<p>会自己推导，就不用死记——考场上忘掉方向时，30 秒即可重新推出。</p>
+<p><strong>推论应用示例</strong>：同温同压下某气体对氢气的相对密度为 16，则该气体的摩尔质量 M = 16 × M(H<sub>2</sub>) = 16 × 2 g/mol = 32 g/mol，可能是 O<sub>2</sub>。若对空气的相对密度为 2.21，则 M ≈ 2.21 × 29 ≈ 64 g/mol，可能是 SO<sub>2</sub>——相对密度法是「称量气体」的常用手段。</p>
+<p><strong>常见混淆</strong>：阿伏加德罗定律研究的是<strong>气体</strong>体系，对液体、固体不成立；「分子数相同」不等于「原子数相同」（如 1 mol He 含 N<sub>A</sub> 个原子，1 mol H<sub>2</sub> 含 2N<sub>A</sub> 个原子）。</p>
+<p><strong>混合气体平均摩尔质量</strong>：M̄ = m(总)/n(总)。空气的平均摩尔质量约为 29 g/mol；某混合气体 M̄ &lt; 29 g/mol，说明其中含有比空气「轻」的气体（如 H<sub>2</sub>）。</p>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念 6</span>
+<h3>化学计算四大方法</h3>
+<p><strong>① 守恒法</strong>：利用化学反应前后质量守恒、原子守恒、电荷守恒、得失电子守恒列式，跳过中间过程直击结果。溶液计算中最常用<strong>电荷守恒</strong>：溶液呈电中性，阳离子所带正电荷总数 = 阴离子所带负电荷总数。再如原子守恒：「CO<sub>2</sub> 通入 NaOH 溶液，碳元素最终全在溶液中」，无论生成 Na<sub>2</sub>CO<sub>3</sub> 还是 NaHCO<sub>3</sub>，碳的总量不变。</p>
+<p><strong>② 差量法</strong>：利用反应前后质量差、体积差、物质的量差与化学计量数成正比列式。例如铁片浸入 CuSO<sub>4</sub> 溶液，每反应 1 mol Fe（56 g）析出 1 mol Cu（64 g），固体增重 8 g——增重量与反应量成正比。</p>
+<p><strong>③ 极值法</strong>：混合物计算中，先假设全为某一组分求出极值，真实值必在两极值之间，用于确定混合物可能的组成（平均值思想）。它的反面运用同样重要：若题目说「一定含有」，就找那个任何组合都无法替代的成分。</p>
+<p><strong>④ 关系式法</strong>：多步反应中，根据各步方程式找出已知物与目标物之间的计量关系（如 Na<sub>2</sub>CO<sub>3</sub> ~ 2HCl），一步列式求解，避免逐步倒推。</p>
+<p><strong>方法选择速查（看题干信号选方法）</strong>：</p>
+<table>
+<tr><th>题干信号</th><th>首选方法</th><th>本章例题</th></tr>
+<tr><td>溶液中多种离子、求某离子量</td><td>守恒法（电荷守恒）</td><td>例 3</td></tr>
+<tr><td>反应前后质量/体积「增加了多少」</td><td>差量法</td><td>例 4</td></tr>
+<tr><td>混合物组成「可能是」「一定是」</td><td>极值法（平均值）</td><td>例 5A</td></tr>
+<tr><td>多步反应、滴定、求原料与产品关系</td><td>关系式法</td><td>例 5B、例 8</td></tr>
+<tr><td>给体积求分子数/质量（标况气体）</td><td>基本公式直算</td><td>例 6</td></tr>
+<tr><td>同温同压（或同体积）比体积/压强</td><td>阿伏加德罗定律推论</td><td>例 7</td></tr>
+</table>
+</div>
+
+<div class="card note">
+<span class="tag">公式汇总</span>
+<p>四大基本公式：<span class="formula">n = N/N<sub>A</sub>　n = m/M　n = V/V<sub>m</sub>（气体）　n = c·V（溶液）</span>。所有以物质的量为中心的计算，都是这四条路与组合变形。</p>
+</div>
+</section>
+
+<section>
+<h2>三、三重表征贯通</h2>
+<p>本章是计算章，但计算的背后是真实的实验与微粒世界。下面三组贯通，把「看得见的操作与现象」「看不见的粒子行为」「公式与方程式」对应起来——理解了粒子的行为，公式就不再是死记硬背的符号。</p>
+
+<h3>贯通组 1：配制一定物质的量浓度的溶液</h3>
+<p>配制实验把本章最多的细节串在一起：计算（n、m）、仪器（容量瓶）、微观（离子均匀分散）。三者对应着下表三栏。</p>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>称取 14.2 g 白色 Na<sub>2</sub>SO<sub>4</sub> 固体，放入烧杯加蒸馏水，玻璃棒搅拌，固体逐渐消失，得到无色透明溶液，无明显放热；转入 500 mL 容量瓶定容后，凹液面最低处与刻度线相切，摇匀后溶液均匀澄清。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>Na<sub>2</sub>SO<sub>4</sub> 在水中电离：Na<sub>2</sub>SO<sub>4</sub> → 2Na<sup>+</sup> + SO<sub>4</sub><sup>2−</sup>。0.1 mol Na<sub>2</sub>SO<sub>4</sub> 解离出 0.2 mol Na<sup>+</sup> 和 0.1 mol SO<sub>4</sub><sup>2−</sup>，均匀分散在水分子之间，故任意取出一份浓度都相同。定容的本质就是「让离子数固定在 0.1+0.2 = 0.3 mol 的同时，把溶液体积锁定为 500 mL」。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<p>n(Na<sub>2</sub>SO<sub>4</sub>) = 0.5 L × 0.2 mol/L = 0.1 mol</p>
+<p>m = 0.1 mol × 142 g/mol = 14.2 g</p>
+<p>c(Na<sup>+</sup>) = 2 × 0.2 mol/L = 0.4 mol/L</p>
+</div>
+</div>
+
+<h3>贯通组 2：标准状况下的气体体积与分子数</h3>
+<p>同一个 22.4 L，装在气体上和装在水上完全是两回事——差别就写在分子的间距里。</p>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>标准状况（0 ℃、101 kPa）下，一个 22.4 L 的气球，无论装的是 H<sub>2</sub>、O<sub>2</sub> 还是 CO<sub>2</sub>，都恰好装下 1 mol 气体；但若装入的是水，22.4 L 水的物质的量约为 1244 mol——「22.4 L/mol」对液体完全失效。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>气体分子本身极小、间距极大（约为分子直径的 10 倍），同温同压下间距相同，故 1 mol 任何气体（含 N<sub>A</sub> ≈ 6.02×10<sup>23</sup> 个分子）占据的体积相同；液体分子间几乎没有空隙，体积由分子本身大小决定，各不相同。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<p>n = V / V<sub>m</sub> = 22.4 L ÷ 22.4 L/mol = 1 mol</p>
+<p>N = n·N<sub>A</sub> = 6.02×10<sup>23</sup>（个分子）</p>
+<p>22.4 L H<sub>2</sub>O（标况，液态）：不能用该公式</p>
+<p>液体需用密度换算：22.4 L 水质量约 22400 g，n ≈ 22400 ÷ 18 ≈ 1244 mol</p>
+</div>
+</div>
+
+<h3>贯通组 3：铁片浸入硫酸铜溶液——差量法的来龙去脉</h3>
+<p>差量法不是巧技，而是对「一进一出两个过程同时发生」的定量描述。先看现象，再看粒子，最后落到比例式。</p>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>光亮的银白色铁片浸入蓝色的 CuSO<sub>4</sub> 溶液，片刻后铁片表面覆盖一层<strong>红色</strong>固体（析出的铜），溶液蓝色逐渐变浅（充分反应后呈浅绿色，即 FeSO<sub>4</sub> 溶液的颜色）；取出洗净、干燥后称量，铁片总质量<strong>不减反增</strong>。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>Fe 原子失去 2 个电子变成 Fe<sup>2+</sup> 进入溶液，溶液中的 Cu<sup>2+</sup> 在铁片表面得到电子析出 Cu 原子。每溶解 1 mol Fe（固体减少 56 g），就析出 1 mol Cu（固体增加 64 g），一进一出，固体净增 8 g——这就是差量法中「每摩尔反应对应 8 g 增重」的微观来源。电子在铁片内部转移，Cu<sup>2+</sup> 不必跑到溶液外，这正是置换反应在金属表面就地发生的原因。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<span class="eq">Fe + CuSO<sub>4</sub> → FeSO<sub>4</sub> + Cu</span>
+<p>离子层面：Fe + Cu<sup>2+</sup> → Fe<sup>2+</sup> + Cu</p>
+<p>差量关系：每 1 mol 反应，Δm(固体) = 64 − 56 = +8 g</p>
+<p>实际增重 0.8 g → 反应了 0.1 mol Fe、析出 0.1 mol Cu</p>
+</div>
+</div>
+</section>
+
+<section>
+<h2>四、典型例题分步拆解</h2>
+<p>十道例题覆盖本章全部题型：N<sub>A</sub> 辨析（例 1）、浓度与配制（例 2、例 9）、四大计算方法（例 3、4、5、8、10）、气体计算（例 6、7）。每题请先遮住解答独立做，再对照分步拆解找断点。</p>
+
+<div class="card example">
+<span class="tag">例 1 · N<sub>A</sub> 陷阱辨析（高考选择题经典模型）</span>
+<p><strong>题目</strong>：设 N<sub>A</sub> 为阿伏加德罗常数的值，下列说法正确的是（　　）</p>
+<p>A. 标准状况下，22.4 L 己烷（C<sub>6</sub>H<sub>14</sub>）中含有的分子数为 N<sub>A</sub><br>
+B. 1 mol Na<sub>2</sub>O<sub>2</sub> 与足量水完全反应，转移的电子数为 2N<sub>A</sub><br>
+C. 1 L 1 mol/L 的 NaCl 溶液中含有的 Na<sup>+</sup> 数为 N<sub>A</sub><br>
+D. 1 mol Fe 与足量稀盐酸反应，失去的电子数为 3N<sub>A</sub></p>
+<p><strong>【思路点拨】</strong>N<sub>A</sub> 题的本质是「把每个选项翻译成物质的量，再逐项核对前提条件」。常见陷阱只有四类：标况非气体、体积/浓度前提缺失、电子转移数算错、隐含的水解或反应不完全。逐项排雷即可。</p>
+<div class="step"><span class="no">1</span><p><strong>核对 A</strong>：「22.4 L → 1 mol」的前提是该物质在标准状况下为气体。己烷在标准状况下是液体（沸点约 69 ℃），22.4 L 液态己烷的物质的量远大于 1 mol。<strong>A 错误</strong>（典型「标况非气体」陷阱，同类常客还有 H<sub>2</sub>O、SO<sub>3</sub>、苯、CCl<sub>4</sub>、乙醇）。</p></div>
+<div class="step"><span class="no">2</span><p><strong>核对 B</strong>：写出反应方程式：</p>
+<span class="eq">2Na<sub>2</sub>O<sub>2</sub> + 2H<sub>2</sub>O → 4NaOH + O<sub>2</sub>↑</span>
+<p>Na<sub>2</sub>O<sub>2</sub> 中 O 为 −1 价，反应中一半升高到 0 价（O<sub>2</sub>）、一半降低到 −2 价（NaOH），属于歧化反应：每 2 mol Na<sub>2</sub>O<sub>2</sub> 转移 2 mol 电子，即 1 mol Na<sub>2</sub>O<sub>2</sub> 只转移 1 mol 电子，数目为 N<sub>A</sub> 而非 2N<sub>A</sub>。<strong>B 错误</strong>。</p></div>
+<div class="step"><span class="no">3</span><p><strong>核对 C</strong>：n(NaCl) = 1 L × 1 mol/L = 1 mol；NaCl 是强电解质完全电离，Na<sup>+</sup> 不水解，n(Na<sup>+</sup>) = 1 mol，数目恰为 N<sub>A</sub>。<strong>C 正确</strong>。注意对比陷阱变体：若只给「1 mol/L NaCl 溶液」而不给体积，则无法确定离子数。</p></div>
+<div class="step"><span class="no">4</span><p><strong>核对 D</strong>：Fe 与<strong>稀盐酸</strong>反应生成 Fe<sup>2+</sup> 而非 Fe<sup>3+</sup>：</p>
+<span class="eq">Fe + 2HCl → FeCl<sub>2</sub> + H<sub>2</sub>↑</span>
+<p>1 mol Fe 只失去 2 mol 电子，数目为 2N<sub>A</sub>。<strong>D 错误</strong>。（若换成足量 Cl<sub>2</sub> 加热，则生成 FeCl<sub>3</sub>，转移 3N<sub>A</sub> 电子——产物由氧化剂强弱决定。）</p></div>
+<div class="ans"><strong>【答案】</strong>C</div>
+<p><strong>【方法总结】</strong>N<sub>A</sub> 辨析四步排雷法：①见「22.4 L」先问「标况吗？是气体吗？」；②见浓度先问「给体积了吗？溶质水解/部分电离吗？」；③见电子转移先写方程式确定产物价态；④见「一定」「均」「完全」警惕特殊物质与可逆反应。</p>
+<p><strong>【变式自测】</strong>判断正误：①标准状况下 22.4 L SO<sub>3</sub> 含分子数 N<sub>A</sub>（错，SO<sub>3</sub> 标况为固体）；②1 mol CH<sub>3</sub>COOH 溶液中 H<sup>+</sup> 数为 N<sub>A</sub>（错，醋酸是弱电解质只部分电离，且未给体积）；③常温常压下 22.4 L O<sub>2</sub> 含分子数 N<sub>A</sub>（错，非标况）。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 2 · 物质的量浓度计算与配制（含容量瓶规格陷阱）</span>
+<p><strong>题目</strong>：实验室需要 480 mL 0.2 mol/L 的 Na<sub>2</sub>SO<sub>4</sub> 溶液。请计算需要称取 Na<sub>2</sub>SO<sub>4</sub> 固体的质量，并回答：若定容时仰视刻度线，所配溶液浓度如何变化？（已知 Na 23、S 32、O 16）</p>
+<p><strong>【思路点拨】</strong>容量瓶没有 480 mL 规格，「需要 480 mL」必须选用 500 mL 容量瓶，按 500 mL 计算投料——这是本题的第一个得分点。误差分析抓住 c = n/V，判断哪个量变了、怎么变。</p>
+<div class="step"><span class="no">1</span><p><strong>确定仪器规格</strong>：容量瓶常见规格为 100、250、500、1000 mL，无 480 mL。故选 500 mL 容量瓶，实际配制 500 mL 溶液。</p></div>
+<div class="step"><span class="no">2</span><p><strong>计算物质的量</strong>：n(Na<sub>2</sub>SO<sub>4</sub>) = c × V = 0.2 mol/L × 0.5 L = 0.1 mol。</p></div>
+<div class="step"><span class="no">3</span><p><strong>计算质量</strong>：M(Na<sub>2</sub>SO<sub>4</sub>) = 2×23 + 32 + 4×16 = 46 + 32 + 64 = 142 g/mol；m = n × M = 0.1 mol × 142 g/mol = <strong>14.2 g</strong>。</p></div>
+<div class="step"><span class="no">4</span><p><strong>误差分析</strong>：仰视刻度线时，视线偏低，实际液面超过刻度线才被认为「到位」，即溶液体积 V 偏大；n 不变，由 c = n/V 知所配浓度<strong>偏低</strong>。（口诀：「俯高仰低」——俯视偏高、仰视偏低。）</p></div>
+<div class="ans"><strong>【答案】</strong>需称取 Na<sub>2</sub>SO<sub>4</sub> 固体 14.2 g；定容时仰视刻度线，所配溶液浓度偏低。</div>
+<p><strong>【方法总结】</strong>配制计算三步走：选规格 → 按所选规格算 n → 换算 m。误差分析只问两句话：n 变了没有？V 变了没有？任何操作都归结到 c = n/V 上，不要背结论。</p>
+<p><strong>【误差分析速查表】</strong>（c = n/V，先定变量再下结论）</p>
+<table>
+<tr><th>操作</th><th>影响对象</th><th>浓度结果</th></tr>
+<tr><td>未洗涤烧杯、玻璃棒</td><td>n 偏小</td><td>偏低</td></tr>
+<tr><td>溶解后未冷却即定容</td><td>冷却后 V 偏小</td><td>偏高</td></tr>
+<tr><td>定容时俯视刻度线</td><td>V 偏小</td><td>偏高</td></tr>
+<tr><td>定容时仰视刻度线</td><td>V 偏大</td><td>偏低</td></tr>
+<tr><td>摇匀后再补加水</td><td>V 偏大</td><td>偏低</td></tr>
+<tr><td>砝码生锈（称量变短斤少两）</td><td>n 偏小</td><td>偏低</td></tr>
+</table>
+</div>
+
+<div class="card example">
+<span class="tag">例 3 · 守恒法（电荷守恒）</span>
+<p><strong>题目</strong>：某溶液中只含 Na<sup>+</sup>、Mg<sup>2+</sup>、Cl<sup>−</sup>、SO<sub>4</sub><sup>2−</sup> 四种离子。已知溶液中含 Na<sup>+</sup> 0.2 mol、Mg<sup>2+</sup> 0.25 mol、Cl<sup>−</sup> 0.4 mol，求溶液中 SO<sub>4</sub><sup>2−</sup> 的物质的量。</p>
+<p><strong>【思路点拨】</strong>溶液整体呈电中性：所有阳离子带的正电荷总数，必然等于所有阴离子带的负电荷总数。设未知数列一个方程即可，不必知道这些离子来自哪些溶质。</p>
+<div class="step"><span class="no">1</span><p><strong>设未知数</strong>：设 n(SO<sub>4</sub><sup>2−</sup>) = x mol。</p></div>
+<div class="step"><span class="no">2</span><p><strong>列电荷守恒式</strong>：正电荷总量 = 负电荷总量：</p>
+<span class="eq">n(Na<sup>+</sup>)×1 + n(Mg<sup>2+</sup>)×2 = n(Cl<sup>−</sup>)×1 + n(SO<sub>4</sub><sup>2−</sup>)×2</span>
+<p>即 0.2×1 + 0.25×2 = 0.4×1 + 2x。</p></div>
+<div class="step"><span class="no">3</span><p><strong>求解</strong>：0.2 + 0.5 = 0.4 + 2x → 0.7 − 0.4 = 2x → x = 0.15 mol。</p></div>
+<div class="ans"><strong>【答案】</strong>n(SO<sub>4</sub><sup>2−</sup>) = 0.15 mol。</div>
+<p><strong>【方法总结】</strong>守恒法的精髓是「绕过过程、抓住不变量」。除电荷守恒外，常用还有原子守恒（反应前后某元素原子总数不变）、质量守恒（反应前后总质量不变）。写式子时注意：每种离子的电荷要乘上它的电荷数。</p>
+<p><strong>【变式自测】</strong>把 0.1 mol Na<sub>2</sub>SO<sub>4</sub> 和 0.2 mol NaCl 溶于水配成 1 L 溶液，则 c(Na<sup>+</sup>) = (0.1×2 + 0.2) mol ÷ 1 L = 0.4 mol/L，c(SO<sub>4</sub><sup>2−</sup>) = 0.1 mol/L，c(Cl<sup>−</sup>) = 0.2 mol/L——用「总物质的量 ÷ 总体积」处理混合溶液，注意 Na<sub>2</sub>SO<sub>4</sub> 中 Na<sup>+</sup> 要乘 2。用电荷守恒复核：0.4×1 = 0.1×2 + 0.2×1 = 0.4 ✓。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 4 · 差量法（固体质量差）</span>
+<p><strong>题目</strong>：将质量为 10 g 的铁片放入 CuSO<sub>4</sub> 溶液中，一段时间后取出，洗净、干燥后称得质量为 10.8 g。求铁片上析出铜的质量。（已知 Fe 56、Cu 64）</p>
+<p><strong>【思路点拨】</strong>直接设铜的质量列式要同时处理「消耗的铁」和「生成的铜」两个变量，较繁琐。改用差量法：抓住「每反应 1 mol Fe，固体净增重 8 g」这一固定比例，由总增重反推反应量。</p>
+<div class="step"><span class="no">1</span><p><strong>写方程式并分析质量变化</strong>：</p>
+<span class="eq">Fe + CuSO<sub>4</sub> → FeSO<sub>4</sub> + Cu　　Δm（固体增重）</span>
+<p>每消耗 1 mol Fe（56 g 从固体上进入溶液），同时析出 1 mol Cu（64 g 附着到固体上），固体净增重 64 − 56 = 8 g。</p></div>
+<div class="step"><span class="no">2</span><p><strong>建立比例</strong>：实际增重 10.8 − 10 = 0.8 g。设析出 Cu 的物质的量为 n，则 n / 1 mol = 0.8 g / 8 g，解得 n = 0.1 mol。</p></div>
+<div class="step"><span class="no">3</span><p><strong>换算质量</strong>：m(Cu) = 0.1 mol × 64 g/mol = 6.4 g。</p></div>
+<div class="ans"><strong>【答案】</strong>析出铜的质量为 6.4 g。（检验：消耗 Fe 0.1 mol = 5.6 g，10 − 5.6 + 6.4 = 10.8 g ✓）</div>
+<p><strong>【方法总结】</strong>差量法适用于「反应引起某个总量（质量、体积、压强）变化」的题目。步骤：写方程式 → 找出每摩尔反应对应的差量 → 用实际差量按比例求反应量。验算习惯能帮你规避 90% 的粗心错误。</p>
+<p><strong>【变式自测】</strong>把铜片放入 AgNO<sub>3</sub> 溶液中，析出 2.16 g Ag 时铜片质量如何变化？（Cu + 2AgNO<sub>3</sub> → Cu(NO<sub>3</sub>)<sub>2</sub> + 2Ag，每 2 mol Ag（216 g）析出对应溶解 1 mol Cu（64 g），固体增重 152 g；2.16 g Ag 对应增重 1.52 g。）</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 5 · 极值法与关系式法（各一微型题）</span>
+<p><strong>题目 A（极值法）</strong>：由两种金属组成的混合物 13 g，与足量稀硫酸完全反应生成 1 g H<sub>2</sub>。组成该混合物的两种金属可能是（候选：Mg、Al、Fe、Zn）。（已知 Mg 24、Al 27、Fe 56、Zn 65，H 1）</p>
+<div class="step"><span class="no">1</span><p>n(H<sub>2</sub>) = 1 g ÷ 2 g/mol = 0.5 mol，即平均每生成 1 mol H<sub>2</sub> 消耗金属 13 ÷ 0.5 = <strong>26 g</strong>。</p></div>
+<div class="step"><span class="no">2</span><p>各金属每生成 1 mol H<sub>2</sub> 所需质量：Mg + H<sub>2</sub>SO<sub>4</sub> → MgSO<sub>4</sub> + H<sub>2</sub>↑，1 mol Mg 生成 1 mol H<sub>2</sub>，需 24 g；2Al + 3H<sub>2</sub>SO<sub>4</sub> → Al<sub>2</sub>(SO<sub>4</sub>)<sub>3</sub> + 3H<sub>2</sub>↑，2 mol Al（54 g）生成 3 mol H<sub>2</sub>，每摩尔 H<sub>2</sub> 需 18 g；Fe + H<sub>2</sub>SO<sub>4</sub> → FeSO<sub>4</sub> + H<sub>2</sub>↑，需 56 g；Zn 同理需 65 g。</p></div>
+<div class="step"><span class="no">3</span><p>平均值为 26 g，则两金属的该值必<strong>一个小于 26、一个大于 26</strong>：小于 26 的有 Mg（24）、Al（18）；大于 26 的有 Fe（56）、Zn（65）。故组合必须是「Mg 或 Al」与「Fe 或 Zn」搭配；Mg+Al（均小于 26）、Fe+Zn（均大于 26）不可能。</p></div>
+<div class="ans"><strong>【答案】</strong>组合为「Mg 或 Al」与「Fe 或 Zn」搭配，即 Mg 和 Fe、Mg 和 Zn、Al 和 Fe、Al 和 Zn。（检验其中一组：若全为 Mg，13 g Mg 生成 H<sub>2</sub> 13/24 ≈ 0.54 mol &gt; 0.5 mol；若全为 Fe，13 g Fe 生成 13/56 ≈ 0.23 mol &lt; 0.5 mol——实际值恰在两者之间 ✓）</div>
+<p><strong>题目 B（关系式法）</strong>：用 0.1 mol/L 盐酸滴定 25 mL Na<sub>2</sub>CO<sub>3</sub> 溶液，恰好完全反应时消耗盐酸 20 mL，求 Na<sub>2</sub>CO<sub>3</sub> 溶液的物质的量浓度。</p>
+<div class="step"><span class="no">1</span><p>写方程式找关系：</p>
+<span class="eq">Na<sub>2</sub>CO<sub>3</sub> + 2HCl → 2NaCl + H<sub>2</sub>O + CO<sub>2</sub>↑</span>
+<p>关系式：Na<sub>2</sub>CO<sub>3</sub> ~ 2HCl。</p></div>
+<div class="step"><span class="no">2</span><p>n(HCl) = 0.1 mol/L × 0.02 L = 0.002 mol，则 n(Na<sub>2</sub>CO<sub>3</sub>) = 0.002 ÷ 2 = 0.001 mol。</p></div>
+<div class="step"><span class="no">3</span><p>c(Na<sub>2</sub>CO<sub>3</sub>) = 0.001 mol ÷ 0.025 L = 0.04 mol/L。</p></div>
+<div class="ans"><strong>【答案】</strong>c(Na<sub>2</sub>CO<sub>3</sub>) = 0.04 mol/L。</div>
+<p><strong>【变式自测】</strong>若滴定 25 mL NaOH 溶液消耗 0.1 mol/L 盐酸 20 mL，由关系式 NaOH ~ HCl 得 n(NaOH) = 0.002 mol，c(NaOH) = 0.002 ÷ 0.025 = 0.08 mol/L——一元酸碱 1:1，二元酸/碱别忘乘除 2。再试：滴定 20 mL Na<sub>2</sub>CO<sub>3</sub> 溶液消耗 0.05 mol/L 盐酸 16 mL，则 n(HCl) = 0.05 × 0.016 = 0.0008 mol，n(Na<sub>2</sub>CO<sub>3</sub>) = 0.0004 mol，c = 0.0004 ÷ 0.02 = 0.02 mol/L。</p>
+<p><strong>【方法总结】</strong>极值法的关键词是「平均值介于两极端值之间」；关系式法的关键词是「从方程式直接抓计量关系」。多步反应题先把各步方程式叠加成一个总关系式，往往一步出答案。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 6 · 气体摩尔体积基础计算</span>
+<p><strong>题目</strong>：标准状况下 33.6 L CO<sub>2</sub> 的物质的量是多少？质量是多少克？含有多少个 CO<sub>2</sub> 分子、多少个氧原子？（已知 C 12、O 16，N<sub>A</sub> 取 6.02×10<sup>23</sup> mol<sup>−1</sup>）</p>
+<p><strong>【思路点拨】</strong>先核对前提：标准状况 ✓、气体 ✓，可用 22.4 L/mol。再由 n 为中心，分别通向质量与粒子数；算原子数时不要忘记每个分子含 2 个 O 原子。</p>
+<div class="step"><span class="no">1</span><p><strong>求物质的量</strong>：n(CO<sub>2</sub>) = 33.6 L ÷ 22.4 L/mol = 1.5 mol。</p></div>
+<div class="step"><span class="no">2</span><p><strong>求质量</strong>：M(CO<sub>2</sub>) = 12 + 2×16 = 44 g/mol；m = 1.5 mol × 44 g/mol = 66 g。</p></div>
+<div class="step"><span class="no">3</span><p><strong>求分子数</strong>：N(CO<sub>2</sub>) = 1.5 mol × 6.02×10<sup>23</sup> mol<sup>−1</sup> = 9.03×10<sup>23</sup>（个），即 1.5N<sub>A</sub>。</p></div>
+<div class="step"><span class="no">4</span><p><strong>求氧原子数</strong>：每个 CO<sub>2</sub> 含 2 个 O，n(O) = 2 × 1.5 = 3 mol，N(O) = 3N<sub>A</sub> = 1.806×10<sup>24</sup>（个）。</p></div>
+<div class="ans"><strong>【答案】</strong>1.5 mol；66 g；1.5N<sub>A</sub>（9.03×10<sup>23</sup>）个分子；3N<sub>A</sub>（1.806×10<sup>24</sup>）个氧原子。</div>
+<p><strong>【方法总结】</strong>所有「量→量」的换算都过 n 这座桥：体积 → n → 质量 / 粒子数。涉及原子、电子数时，先写出「每个微粒含几个目标粒子」再乘，这是最常见的漏乘点。</p>
+<p><strong>【变式自测】</strong>标准状况下 11.2 L NH<sub>3</sub>：n = 0.5 mol，m = 0.5 × 17 = 8.5 g，分子数 0.5N<sub>A</sub>，原子总数 0.5 × 4 = 2 mol 即 2N<sub>A</sub> 个（每个 NH<sub>3</sub> 含 4 个原子，别只乘 3）。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 7 · 阿伏加德罗定律及推论应用</span>
+<p><strong>题目</strong>：同温同压下，等质量的 SO<sub>2</sub> 和 CO<sub>2</sub> 气体，体积之比是多少？若改为同温同体积，二者的压强之比是多少？（已知 S 32、C 12、O 16）</p>
+<p><strong>【思路点拨】</strong>同温同压下 V 与 n 成正比；同温同体积下 p 与 n 成正比。等质量时 n 与 M 成反比，抓住「n = m/M」即可。</p>
+<div class="step"><span class="no">1</span><p><strong>求摩尔质量</strong>：M(SO<sub>2</sub>) = 32 + 2×16 = 64 g/mol；M(CO<sub>2</sub>) = 12 + 2×16 = 44 g/mol。</p></div>
+<div class="step"><span class="no">2</span><p><strong>设质量均为 m g，求物质的量之比</strong>：n(SO<sub>2</sub>) : n(CO<sub>2</sub>) = m/64 : m/44 = 44 : 64 = 11 : 16。</p></div>
+<div class="step"><span class="no">3</span><p><strong>同温同压</strong>：V(SO<sub>2</sub>) : V(CO<sub>2</sub>) = n(SO<sub>2</sub>) : n(CO<sub>2</sub>) = <strong>11 : 16</strong>。</p></div>
+<div class="step"><span class="no">4</span><p><strong>同温同体积</strong>：p(SO<sub>2</sub>) : p(CO<sub>2</sub>) = n(SO<sub>2</sub>) : n(CO<sub>2</sub>) = <strong>11 : 16</strong>。</p></div>
+<div class="ans"><strong>【答案】</strong>同温同压下体积比 11 : 16；同温同体积下压强比 11 : 16。（检验：等质量时 CO<sub>2</sub> 更「轻」、物质的量更大，体积与压强都应是 CO<sub>2</sub> 更大，11 : 16 中后者更大 ✓）</div>
+<p><strong>【方法总结】</strong>等质量的气体，物质的量与摩尔质量成反比——「越轻的气体物质的量越大」。记住推论的方向：定温定容比压强，定温定压比体积，定温定压密度比等于摩尔质量比。</p>
+<p><strong>【变式自测】</strong>同温同压下某气体对空气的相对密度约为 1.52，则其 M ≈ 1.52 × 29 ≈ 44 g/mol，可能是 CO<sub>2</sub>（M = 44）；相对密度法是有机推断中求未知气体摩尔质量的常用入口。再问一句：同温同压下 1 L O<sub>2</sub> 与 1 L H<sub>2</sub> 的质量比是多少？M 之比即质量之比：32 : 2 = 16 : 1。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 8 · 关系式法（多步反应：接触法制硫酸）</span>
+<p><strong>题目</strong>：工业上以硫黄为原料制硫酸，反应分三步：</p>
+<span class="eq">S<span class="state">(s)</span> + O<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="点燃">→</span> SO<sub>2</sub><span class="state">(g)</span></span>
+<span class="eq">2SO<sub>2</sub><span class="state">(g)</span> + O<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="催化剂、加热">→</span> 2SO<sub>3</sub><span class="state">(g)</span></span>
+<span class="eq">SO<sub>3</sub><span class="state">(g)</span> + H<sub>2</sub>O<span class="state">(l)</span> → H<sub>2</sub>SO<sub>4</sub><span class="state">(aq)</span></span>
+<p>理论上 64 kg 硫黄（按纯 S 计）最多可制得多少千克硫酸？（已知 S 32、H 1、O 16）</p>
+<p><strong>【思路点拨】</strong>不必逐步计算 SO<sub>2</sub>、SO<sub>3</sub> 的产量。观察三步反应：1 mol S → 1 mol SO<sub>2</sub> → 1 mol SO<sub>3</sub> → 1 mol H<sub>2</sub>SO<sub>4</sub>，硫原子全程守恒，直接建立关系式 S ~ H<sub>2</sub>SO<sub>4</sub>。</p>
+<div class="step"><span class="no">1</span><p><strong>建立关系式</strong>：由三步方程式的化学计量数，S ~ SO<sub>2</sub> ~ SO<sub>3</sub> ~ H<sub>2</sub>SO<sub>4</sub>，即 <strong>S ~ H<sub>2</sub>SO<sub>4</sub></strong>（1 : 1）。</p></div>
+<div class="step"><span class="no">2</span><p><strong>求摩尔质量</strong>：M(S) = 32 g/mol；M(H<sub>2</sub>SO<sub>4</sub>) = 2×1 + 32 + 4×16 = 98 g/mol。</p></div>
+<div class="step"><span class="no">3</span><p><strong>列比例</strong>：32 kg S 对应 98 kg H<sub>2</sub>SO<sub>4</sub>，故 64 kg S 对应 x = 98 × 64 ÷ 32 = 196 kg。</p></div>
+<div class="ans"><strong>【答案】</strong>理论上最多可制得 196 kg 硫酸。（用物质的量复核：n(S) = 64000 g ÷ 32 g/mol = 2000 mol → n(H<sub>2</sub>SO<sub>4</sub>) = 2000 mol → m = 2000 × 98 = 196000 g = 196 kg ✓）</div>
+<p><strong>【方法总结】</strong>多步反应抓「首尾关系」：利用某原子（这里是 S）全程守恒，把原料与最终产品直接挂钩。工业流程题中产率计算常在此基础上乘一个转化率。</p>
+<p><strong>【变式自测】</strong>若上述流程硫的总利用率为 95%，则 64 kg 硫黄实际制得硫酸 196 × 0.95 = 186.2 kg——关系式法求理论值，再乘利用率得实际值，两步分工明确。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 9 · 配制步骤与仪器（实验题小问原型）</span>
+<p><strong>题目</strong>：实验室用 Na<sub>2</sub>CO<sub>3</sub> 固体配制 250 mL 0.1 mol/L 的 Na<sub>2</sub>CO<sub>3</sub> 溶液。请回答：（1）需称取 Na<sub>2</sub>CO<sub>3</sub> 固体的质量；（2）按操作先后排列：①定容 ②转移 ③称量 ④溶解 ⑤计算 ⑥洗涤 ⑦摇匀；（3）本实验必须用到的玻璃仪器有哪些？（已知 Na 23、C 12、O 16）</p>
+<p><strong>【思路点拨】</strong>先选规格（250 mL 容量瓶是常见规格，直接按 250 mL 计算）；步骤顺序记「算、称、溶、（冷）、转、洗、定、摇」；仪器按每一步想一想用什么。</p>
+<div class="step"><span class="no">1</span><p><strong>计算称量</strong>：n = 0.25 L × 0.1 mol/L = 0.025 mol；M(Na<sub>2</sub>CO<sub>3</sub>) = 106 g/mol；m = 0.025 × 106 = 2.65 g ≈ <strong>2.7 g</strong>（托盘天平精确到 0.1 g，按 2.7 g 称取）。</p></div>
+<div class="step"><span class="no">2</span><p><strong>步骤排序</strong>：⑤计算 → ③称量 → ④溶解（冷却后）→ ②转移 → ⑥洗涤 → ①定容 → ⑦摇匀，即 <strong>⑤③④②⑥①⑦</strong>。</p></div>
+<div class="step"><span class="no">3</span><p><strong>玻璃仪器</strong>：烧杯（溶解）、玻璃棒（搅拌与引流）、250 mL 容量瓶（定容主体）、胶头滴管（定容末端滴加）。注意：量筒在本实验中可有可无（溶解用水不需精确量取），托盘天平不是玻璃仪器。</p></div>
+<div class="ans"><strong>【答案】</strong>（1）2.7 g；（2）⑤③④②⑥①⑦；（3）烧杯、玻璃棒、250 mL 容量瓶、胶头滴管。</div>
+<p><strong>【方法总结】</strong>仪器清单用「流程回忆法」：跟着操作步骤走一遍，每步问自己用什么器皿，就不会漏掉胶头滴管或容量瓶。天平读数精确到 0.1 g 这一点，常在计算结果取整时考查。</p>
+<p><strong>【变式自测】</strong>配制 100 mL 1.0 mol/L NaCl 溶液：n = 0.1 mol，m = 0.1 × 58.5 ≈ 5.9 g；选 100 mL 容量瓶；仪器同样为烧杯、玻璃棒、100 mL 容量瓶、胶头滴管。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 10 · 混合气体平均摩尔质量（十字交叉思想）</span>
+<p><strong>题目</strong>：由 CO<sub>2</sub> 和 H<sub>2</sub> 组成的混合气体，平均摩尔质量为 16 g/mol。求混合气体中 CO<sub>2</sub> 与 H<sub>2</sub> 的体积比。（已知 C 12、O 16、H 1）</p>
+<p><strong>【思路点拨】</strong>平均摩尔质量是物质的量的加权平均：M̄ = m(总)/n(总)，介于两组分摩尔质量之间。设物质的量列方程最稳妥；熟练后可用十字交叉法口算。</p>
+<div class="step"><span class="no">1</span><p><strong>求各组分摩尔质量</strong>：M(CO<sub>2</sub>) = 44 g/mol，M(H<sub>2</sub>) = 2 g/mol，M̄ = 16 g/mol，确满足 2 &lt; 16 &lt; 44，组成合理。</p></div>
+<div class="step"><span class="no">2</span><p><strong>设未知数列方程</strong>：设 n(CO<sub>2</sub>) = a、n(H<sub>2</sub>) = b，则 (44a + 2b)/(a + b) = 16。</p></div>
+<div class="step"><span class="no">3</span><p><strong>求解</strong>：44a + 2b = 16a + 16b → 28a = 14b → b = 2a，即 n(H<sub>2</sub>) : n(CO<sub>2</sub>) = 2 : 1。</p></div>
+<div class="step"><span class="no">4</span><p><strong>换算体积比</strong>：同温同压下体积比 = 物质的量之比，故 V(CO<sub>2</sub>) : V(H<sub>2</sub>) = <strong>1 : 2</strong>。</p></div>
+<div class="ans"><strong>【答案】</strong>V(CO<sub>2</sub>) : V(H<sub>2</sub>) = 1 : 2。（十字交叉速算：CO<sub>2</sub> 44 与 H<sub>2</sub> 2 对均值 16，差值 16−2 = 14 与 44−16 = 28，n(CO<sub>2</sub>) : n(H<sub>2</sub>) = 14 : 28 = 1 : 2 ✓）</div>
+<p><strong>【方法总结】</strong>「平均值 + 两端值」结构是极值法/十字交叉法的共同信号：均值必介于两端之间，差值之比即物质的量的反比。此法在原子量计算（同位素丰度）中还会再见面。</p>
+</div>
+</section>
+
+<section>
+<h2>五、易错点与成因</h2>
+<p>每条易错点都按「表现 → 成因 → 正解 → 口诀」四层拆解。知道「为什么会错」，比记住「不要错」更有用——成因理解了，同类陷阱会自动现形。</p>
+
+<div class="card trap">
+<span class="tag">易错点 1</span>
+<p><strong>易错表现</strong>：看到「22.4 L」就除以 22.4 L/mol 得 1 mol。</p>
+<p><strong>错误成因</strong>：把 22.4 L/mol 当成普适常数，忽略了它的两个前提——标准状况 + 气体。命题人正是利用这种「条件反射」，把水、SO<sub>3</sub>、己烷、苯、CCl<sub>4</sub> 等标况下非气态物质塞进选项。</p>
+<p><strong>正确理解</strong>：先用「标况吗？气体吗？」两问过滤；两问都通过才允许使用 22.4 L/mol。非气体物质的体积只能用密度或浓度换算。</p>
+<p><strong>避坑口诀</strong>：「二十二点四，标况且气体。」</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 2</span>
+<p><strong>易错表现</strong>：由「1 mol/L NaCl 溶液」直接得出「Na<sup>+</sup> 数为 N<sub>A</sub>」；或认为「从 1 mol/L 溶液中取出一半，浓度变为 0.5 mol/L」。</p>
+<p><strong>错误成因</strong>：混淆了浓度（强度量，与体积无关）与物质的量（与体积成正比）。只给浓度不给体积，n 根本无法确定。</p>
+<p><strong>正确理解</strong>：n = c·V，二者缺一不可；取出部分溶液浓度不变，所含溶质的物质的量按比例减少。还要注意溶质是否水解、是否部分电离（如 CH<sub>3</sub>COOH 为弱电解质，1 L 1 mol/L 醋酸溶液中 H<sup>+</sup> 数远小于 N<sub>A</sub>）。</p>
+<p><strong>避坑口诀</strong>：「浓度不给体积，粒子数目免谈。」</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 3</span>
+<p><strong>易错表现</strong>：需要 480 mL 溶液时按 480 mL 计算称量；或把「将 1 mol NaCl 溶于 1 L 水」当作 1 mol/L。</p>
+<p><strong>错误成因</strong>：不知道容量瓶只有固定规格（100/250/500/1000 mL），也混淆了「溶液体积」与「溶剂体积」——物质的量浓度定义中的 V 是<strong>溶液</strong>体积。</p>
+<p><strong>正确理解</strong>：选容量瓶按「就近向上」原则，需 480 mL 选 500 mL 并按 500 mL 投料；描述浓度时必须说「配成多少体积的溶液」，溶解后溶液的体积不等于水的体积。</p>
+<p><strong>避坑口诀</strong>：「容量瓶，往上靠；浓度看溶液，不是看溶剂。」</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 4</span>
+<p><strong>易错表现</strong>：电子转移数目判断错误，如认为 1 mol Na<sub>2</sub>O<sub>2</sub> 与水反应转移 2 mol 电子、1 mol Fe 与稀盐酸反应转移 3 mol 电子。</p>
+<p><strong>错误成因</strong>：没有先写方程式、没有先确定产物的真实价态，凭「感觉」数电子。Na<sub>2</sub>O<sub>2</sub> 的歧化、Fe 遇弱氧化剂只到 +2 价，都是命题人的固定套路。</p>
+<p><strong>正确理解</strong>：先写方程式定产物，再算单个原子变价 × 变价原子数。歧化反应中同一物质既升又降，转移电子数只按「升高部分」或「降低部分」算一次，不能两头相加。</p>
+<p><strong>避坑口诀</strong>：「电子转移先写式，产物价态定乾坤。」</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 5</span>
+<p><strong>易错表现</strong>：摩尔质量写成「98」或「98 g」；相对分子质量写成「98 g/mol」。</p>
+<p><strong>错误成因</strong>：三者数值相等（如 H<sub>2</sub>SO<sub>4</sub> 的相对分子质量 98、摩尔质量 98 g/mol、1 mol 质量 98 g），数值相同掩盖了单位与物理意义的差别，考试中一放松就丢单位分。</p>
+<p><strong>正确理解</strong>：相对分子（原子）质量是比值、无单位；摩尔质量单位 g/mol；质量单位 g。填空时看清题目问的是哪一个，再决定写不写单位、写什么单位。</p>
+<p><strong>避坑口诀</strong>：「数值三胞胎，单位各不同。」</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 6</span>
+<p><strong>易错表现</strong>：误差分析靠背结论，题目换个操作就判断失误；或认为「摇匀后液面低于刻度线要补加水」。</p>
+<p><strong>错误成因</strong>：没有回到 c = n/V 的根本定义，把「俯高仰低」等口诀当成万能钥匙；不理解摇匀后瓶颈残留液体导致液面下降是正常现象。</p>
+<p><strong>正确理解</strong>：任何操作先翻译成对 n 或 V 的影响，再用 c = n/V 推出结果。摇匀后液面低于刻度线是正常的，再加水反而使 V 偏大、浓度偏低。</p>
+<p><strong>避坑口诀</strong>：「误差问 n 和 V，定义面前无口诀。」</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 7</span>
+<p><strong>易错表现</strong>：由「同温同压同体积的 H<sub>2</sub> 与 O<sub>2</sub> 分子数相同」推出「原子数相同」「质量相同」；或认为「22.4 L/mol 出现时一定是标准状况」。</p>
+<p><strong>错误成因</strong>：阿伏加德罗定律只保证<strong>分子数</strong>相同，不同气体每个分子含原子数不同（H<sub>2</sub>、O<sub>2</sub> 都是双原子分子，原子数恰好相同；但 H<sub>2</sub> 与 O<sub>3</sub> 就不同）、摩尔质量不同（2 g/mol vs 32 g/mol，质量相差 16 倍）。另外，非标准状况通过升温增压也可能出现 22.4 L/mol，把 V<sub>m</sub> 的数值当成标况的「身份证」是逻辑倒置。</p>
+<p><strong>正确理解</strong>：阿伏加德罗定律的结论止于分子数；要比较原子数需乘每个分子的原子数，要比较质量需乘摩尔质量。判断「标准状况」只能看温度压强（0 ℃、101 kPa），不能由 22.4 L/mol 反推。</p>
+<p><strong>避坑口诀</strong>：「定律只管分子数，原子质量另起算。」</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 8</span>
+<p><strong>易错表现</strong>：计算 n = c·V 时 V 直接代入 mL 数值；滴定题中 20 mL、25 mL 不换算成 L，结果相差 1000 倍。</p>
+<p><strong>错误成因</strong>：浓度的单位是 mol/L，公式 n = c·V 要求 V 以 L 为单位；题目给的数据几乎总是 mL，着急代入是计算丢分的头号粗心。</p>
+<p><strong>正确理解</strong>：见到体积先化 L：20 mL = 0.02 L、25 mL = 0.025 L。养成「先写单位再计算」的习惯，n = 0.1 mol/L × 0.02 L = 0.002 mol 这样带单位写，错误会大幅减少。</p>
+<p><strong>避坑口诀</strong>：「毫升换升再相乘，单位跟着数字走。」</p>
+</div>
+</section>
+
+<section>
+<h2>六、章末自检清单</h2>
+<p>合上材料逐条自测，能流畅说出或写出即可打勾；任何一条卡壳，回到对应小节重读。</p>
+<p>自测完成后，按下列方式补一道「个人的第四遍」：</p>
+<ul>
+<li>把本周所有 N<sub>A</sub> 错题剪贴到一起，逐题在题干上圈出「触发陷阱的词」（标况、溶液中、转移、完全反应）。</li>
+<li>把两次数值算错的题重新列式，专门检查单位与有效数字。</li>
+<li>把自检清单中卡壳的条目转写成一句「我的易错声明」，贴在书桌前。</li>
+</ul>
+<ul class="checklist">
+<li>我能说出物质的量是七个基本物理量之一，并解释为什么它只用于微观粒子、必须指明粒子种类。</li>
+<li>我能默写并互用四个基本公式：n = N/N<sub>A</sub>、n = m/M、n = V/V<sub>m</sub>、n = c·V。</li>
+<li>我能说出 N<sub>A</sub> 的精确值与 6.02×10<sup>23</sup> mol<sup>−1</sup> 近似值的关系，并知道何时使用哪一个。</li>
+<li>我能逐条复述 22.4 L/mol 的适用条件，并列举至少 5 种标准状况下非气态的「陷阱物质」。</li>
+<li>我能区分摩尔质量、相对分子质量、1 mol 物质的质量三者的单位与意义。</li>
+<li>我能完整说出配制一定物质的量浓度溶液的七个步骤及各步仪器，知道容量瓶的规格与使用禁忌。</li>
+<li>我能对任何配制操作做误差分析：先判 n 或 V 的变化，再由 c = n/V 下结论。</li>
+<li>我能由 PV = nRT 推导阿伏加德罗定律的三个推论，并用相对密度求气体摩尔质量。</li>
+<li>我能在 2 分钟内完成一道 N<sub>A</sub> 辨析选择题，逐项说出陷阱类型。</li>
+<li>我能根据题目特征选择守恒法、差量法、极值法或关系式法，并完整写出解题过程。</li>
+<li>我做完计算题有用结果反代检验的习惯（如用析出铜的质量反算铁片增重）。</li>
+<li>我能在代入公式前把所有体积统一换算成 L，并带单位书写计算过程。</li>
+</ul>
+</section>
+
+<section>
+<h2>七、高考怎么考</h2>
+<p>对照近年全国卷（云南适用）的命题方式，本章考法与应对如下：</p>
+<ul>
+<li><strong>选择题（必考）</strong>：N<sub>A</sub> 辨析题，常以 4 个选项覆盖 4 类陷阱（标况非气体、缺体积、电子转移、弱电解质/水解），本章例 1 就是原型。目标：60 秒内满分。</li>
+<li><strong>选择题（常考）</strong>：阿伏加德罗定律推论（密度比、体积比）、溶液浓度与离子浓度换算，难度低，属于「稳拿分」。</li>
+<li><strong>实验综合题</strong>：溶液配制步骤排序、仪器选择（容量瓶规格）、误差分析，常以 2~4 分的小问嵌入大题。</li>
+<li><strong>工业流程与反应原理大题</strong>：产率、转化率、K 值计算的本质都是本章的 n、c、守恒法组合，本章是大题计算的「地基」。</li>
+<li><strong>答卷建议</strong>：计算结果保留有效数字与题目数据一致（通常 2~3 位）；比例式、单位、答案三件套缺一不可，「列式对、结果错」同样丢分，务必验算。</li>
+</ul>
+</section>
+
+<section>
+<h2>八、与前后章节的联系</h2>
+<p>本章是全书的「计算中枢」：向后，离子反应（3.3）、氧化还原（3.4）中的定量计算都以 n 为核心语言；向前，热化学、化学平衡、电化学、工业流程中的产率与转化率计算，全部是本章方法的组合运用。建议学完 3.4 氧化还原后回做本章例 1、例 4，你会有「原来如此」的通透感。</p>
+<p>给小兵的一句话：物质的量不难，难在「细」。把每一道错题归因到「标况没看」「单位没换」「价态没写对」这类具体动作上，三个月后你会发现 N<sub>A</sub> 题真的只是送分题。计算的信心，是一题一题验算出来的。</p>
+<p>本章复习节奏建议：第一遍通读概念卡片并默写四个公式；第二遍只做例题的「变式自测」；第三遍合上材料逐条过自检清单。三遍之间各隔一周，让遗忘曲线替你筛选出真正需要回炉的点。</p>
+</section>
+
+</main>
+<footer class="chap-foot">高考备考 · 化学 · 深度学习材料 · 2026</footer>
+</body>
+</html>

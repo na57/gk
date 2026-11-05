@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>动量守恒定律 - 深度学习材料</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<nav class="chap-nav">高考备考 · 物理 · 深度学习材料 ｜ 3.5 动量守恒定律</nav>
+<header class="chap-head">
+  <h1>动量守恒定律</h1>
+  <p class="chap-meta"></p>
+</header>
+  <div class="subtitle">深度学习材料 · 概念 · 推导 · 模型 · 方法</div>
+  <div class="meta">
+    <span>高中物理 · 力学模块 · 高考必考重点</span><br>
+    <span>依据：《高考物理95+分备考指南》3.5节要求</span><br>
+    <span>适用：高一同步学习 &amp; 高考一轮复习</span><br>
+    <span>学生：小兵</span>
+  </div>
+</div>
+
+<p class="hint">
+  💡 提示：所有公式由 MathJax 渲染；带推导的公式请合上书独立推一遍
+</p>
+
+<div class="toc">
+  <strong>目录</strong>
+  <ol>
+    <li><a href="#s1">一、本章总览</a></li>
+    <li><a href="#s2">二、核心概念与物理量</a></li>
+    <li><a href="#s3">三、公式与推导（含适用条件）</a></li>
+    <li><a href="#s4">四、典型例题</a></li>
+    <li><a href="#s5">五、易错点与成因分析</a></li>
+    <li><a href="#s6">六、章末自检清单</a></li>
+  </ol>
+</div>
+
+<h2 id="s1">一、本章总览</h2>
+
+<p>小兵，欢迎来到力学里「最讲规矩」的一章。运动学管「怎么动」，牛顿定律管「为什么这样动」，而本章要回答一个更霸气的问题：<strong>不管中间过程多复杂，有没有什么东西是雷打不动、始终不变的？</strong>答案就是——动量。掌握了守恒的思想，你就有了一把「跳过过程、直达结果」的钥匙，这正是高考压轴题最看重的物理思维。</p>
+
+<h3>本章在云南高考中的定位</h3>
+<p>云南高考物理满分 100 分、75 分钟，力学板块约占 40 分，而<strong>动量守恒定律是力学大题的最高频考点之一</strong>。它极少单独成题，而是与能量守恒、牛顿第二定律、板块模型、弹簧模型打包出现，常以计算题第 2、3 题（10~14 分）的身份登场。选择题里也常考「守恒条件判断」「碰撞可能性分析」这类 4~6 分的小题。可以说：<strong>动量这一章的熟练度，直接决定你力学大题的下限</strong>。</p>
+
+<table>
+  <tr><th style="width:24%">考查形式</th><th style="width:38%">常见载体</th><th class="l">能力要求</th></tr>
+  <tr><td>选择题（4~6 分）</td><td>守恒条件判断、碰撞合理性分析、冲量与动量变化</td><td class="l">概念辨析 + 快速估算</td></tr>
+  <tr><td>计算题（10~14 分）</td><td>碰撞 + 能量综合、子弹打木块、板块模型、弹簧模型</td><td class="l">分段分析 + 双守恒列方程 + 规范书写</td></tr>
+  <tr><td>实验题（可能）</td><td>验证动量守恒定律（气垫导轨 / 平抛落点法）</td><td class="l">原理理解 + 误差分析</td></tr>
+</table>
+
+<h3>本章知识地图</h3>
+<div class="map">
+  <div class="row"><div class="node root">动量守恒定律（3.5）</div></div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node">两个基本概念</div>
+    <div class="node">一个核心定理</div>
+    <div class="node">一条守恒定律</div>
+    <div class="node">三类碰撞模型</div>
+    <div class="node view">综合应用</div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node leaf">动量 $\vec{p}=m\vec{v}$<br>冲量 $\vec{I}=\vec{F}t$</div>
+    <div class="node leaf">动量定理<br>$\vec{I}_{合}=\Delta\vec{p}$</div>
+    <div class="node leaf">守恒条件<br>表达式与方向性</div>
+    <div class="node leaf">弹性 / 非弹性<br>完全非弹性</div>
+    <div class="node leaf">子弹打木块<br>板块 · 弹簧<br>爆炸与反冲</div>
+  </div>
+</div>
+
+<h3>本章的主线逻辑（先建立框架再填细节）</h3>
+<ol>
+  <li><strong>为什么引入动量？</strong>牛顿第二定律 $\vec{F}=m\vec{a}$ 描述瞬时关系，但碰撞、爆炸中力瞬息万变、根本测不准。物理学家发现：把力和作用时间打包（冲量）、把质量和速度打包（动量），竟能得到「力的时间累积效果 = 动量改变量」这一简洁规律——动量定理。</li>
+  <li><strong>从定理到守恒：</strong>把两个相互作用的物体看成一个系统，它们之间的力是作用力与反作用力，给彼此的冲量等大反向，动量变化恰好抵消——于是系统总动量守恒。守恒不是新定律，是牛顿定律的推论，但它比牛顿定律好用得多。</li>
+  <li><strong>从守恒到模型：</strong>碰撞按「动能是否守恒」分三类；把碰撞拉长、放慢，就是子弹打木块、板块、弹簧等经典模型。所有模型的共同套路都是：<strong>选系统 → 判守恒 → 分段 → 列动量方程 + 能量方程</strong>。</li>
+</ol>
+
+<div class="deep">
+  <strong>给高一的你的学习建议：</strong>本章公式极少（核心就三个：$p=mv$、$Ft=\Delta p$、$m_1v_1+m_2v_2=m_1v_1'+m_2v_2'$），但「会背」和「会用」之间隔着一条叫「过程分析」的河。建议每道例题先遮住解析，自己在草稿纸上画过程图、标已知量，再对照检查。这一章投入的时间，会在高二电磁学（带电粒子碰撞、导体棒双杆模型）里加倍返还给你。
+</div>
+
+<h2 id="s2">二、核心概念与物理量</h2>
+
+<h3>2.1 动量：描述「运动物体携带的冲撞本领」</h3>
+
+<p><strong>定义：</strong>运动物体的质量与速度的乘积，叫做动量，符号 $\vec{p}$。</p>
+$$\vec{p} = m\vec{v}$$
+<table>
+  <tr><th>项目</th><th>内容</th></tr>
+  <tr><td>符号</td><td>$\vec{p}$（矢量记号，手写时在字母上方画箭头）</td></tr>
+  <tr><td>单位</td><td>千克米每秒，$\,\text{kg·m/s}$</td></tr>
+  <tr><td>矢标性</td><td><strong>矢量</strong>，方向与该时刻速度 $\vec{v}$ 的方向相同</td></tr>
+  <tr><td>性质</td><td>状态量——对应某一时刻（或某一位置），不是过程量</td></tr>
+</table>
+
+<p>为什么用 $m\vec{v}$ 而不是只用 $\vec{v}$ 来描述「冲撞本领」？生活经验早就告诉你了：同样 60 km/h 的速度，乒乓球撞过来你眼都不眨，卡车撞过来……所以「运动的效果」必须质量与速度一起算。一颗 10 g 的子弹以 500 m/s 飞行，动量是 $0.010\times 500=5\,\text{kg·m/s}$；一个 60 kg 的人以 2 m/s 慢跑，动量是 $120\,\text{kg·m/s}$——动量更直接地刻画「撞上会有什么后果」。</p>
+
+<h4>动量的变化量 $\Delta\vec{p}$（本章真正的主角）</h4>
+$$\Delta\vec{p} = \vec{p}_{末}-\vec{p}_{初} = m\vec{v}_{末}-m\vec{v}_{初}$$
+<p>注意这是<strong>矢量减法</strong>。在一条直线上运动时，我们的处理流程是：</p>
+<div class="key-point">
+  <strong>⚑ 正方向约定（本章第一铁律，单独强调）：</strong>
+  <ol style="margin-top:6px">
+    <li>凡涉及动量、冲量、速度的运算，<strong>第一步永远是规定正方向</strong>（题目没说就自己规定，并写在卷面上：「取……方向为正方向」）；</li>
+    <li>与正方向同向的矢量取正值，反向取负值，把所有矢量运算转化为<strong>带符号的代数运算</strong>；</li>
+    <li>解出结果后，正号表示与正方向同向，负号表示反向——<strong>负号是答案的一部分，不许丢</strong>。</li>
+  </ol>
+</div>
+<p>示例：质量 $m=2\,\text{kg}$ 的小球以 $v_1=4\,\text{m/s}$ 向右运动，碰后以 $v_2=3\,\text{m/s}$ 向左弹回。取向右为正方向，则 $p_1=+8\,\text{kg·m/s}$，$p_2=-6\,\text{kg·m/s}$，$\Delta p=p_2-p_1=-6-(+8)=-14\,\text{kg·m/s}$。负号说明动量变化量方向向左。如果你写成 $-6-8$ 的对头是 $6-8=-2$，那就是把矢量减法做成了标量减法——本章一半的错误都源于此。</p>
+
+<h3>2.2 冲量：力在时间上的累积</h3>
+
+<p><strong>定义：</strong>力与力的作用时间的乘积，叫做该力的冲量，符号 $\vec{I}$。</p>
+$$\vec{I} = \vec{F}\,t \quad(\text{恒力})$$
+<table>
+  <tr><th>项目</th><th>内容</th></tr>
+  <tr><td>符号</td><td>$\vec{I}$（矢量）</td></tr>
+  <tr><td>单位</td><td>牛秒，$\,\text{N·s}$（可证 $1\,\text{N·s}=1\,\text{kg·m/s}$，与动量单位一致）</td></tr>
+  <tr><td>矢标性</td><td><strong>矢量</strong>；恒力的冲量方向与力 $\vec{F}$ 同向</td></tr>
+  <tr><td>性质</td><td>过程量——对应一段时间，谈冲量必须指明是「哪个力、哪段时间」的冲量</td></tr>
+</table>
+
+<p><strong>变力的冲量怎么求？</strong>高中阶段两条路：</p>
+<ul>
+  <li><strong>图像法：</strong>作 $F\text{-}t$ 图像，图线与时间轴围成的「面积」即冲量的大小（同一位移轴上方向不变的变力）；</li>
+  <li><strong>动量定理反求：</strong>$\vec{I}_{合}=\Delta\vec{p}$，这是更常用的「曲线救国」路线——力再复杂，只要测出初末动量，冲量就有了。这正是第三部分的主角。</li>
+</ul>
+
+<blockquote>
+  <p><strong>💭 深度思考：冲量 vs 功——一对最容易混淆的「双胞胎」</strong></p>
+  <ul>
+    <li>冲量 $\vec{I}=\vec{F}t$ 是力对<strong>时间</strong>的累积，是<strong>矢量</strong>，效果对应动量变化 $\Delta\vec{p}$；</li>
+    <li>功 $W=\vec{F}\cdot\vec{s}$ 是力对<strong>位移（空间）</strong>的累积，是<strong>标量</strong>，效果对应动能变化 $\Delta E_k$；</li>
+    <li>同一个力，作用时间再长，若物体没有位移，则冲量很大、功为零（比如你用力推墙 10 秒，墙纹丝不动：墙受到你的冲量 $Ft$，但你没对墙做功）；</li>
+    <li>判断一个过程该用动量定理还是动能定理，就看题目给的是「时间」还是「位移」——给时间想冲量，给位移想功。</li>
+  </ul>
+</blockquote>
+
+<h3>2.3 系统、内力与外力：守恒的「户口问题」</h3>
+<p>动量守恒谈的是「系统总动量」，所以必须先搞清楚系统的边界：</p>
+<ul>
+  <li><strong>系统：</strong>由两个（或多个）相互作用的物体组成的研究对象整体。系统是你<strong>人为划定</strong>的，划不同，答案的难易天差地别。</li>
+  <li><strong>内力：</strong>系统内部物体之间的相互作用力（碰撞力、爆炸力、弹簧弹力、相互摩擦力）。</li>
+  <li><strong>外力：</strong>系统之外的物体对系统内物体的作用力（重力、地面支持力、地面对板的摩擦力等）。</li>
+</ul>
+<p>举例：子弹射入放在光滑水平面上的木块。若把「子弹+木块」划为系统，则子弹与木块间的冲击力是内力，重力和地面支持力是外力（恰好抵消）——水平方向动量守恒。若只把木块划为系统，那子弹的冲击力就成了外力，动量对木块而言根本不守恒。<strong>同一个物理过程，守恒与否取决于你怎么划系统</strong>——这就是「户口问题」。</p>
+
+<h2 id="s3">三、公式与推导（含适用条件）</h2>
+
+<h3>3.1 动量定理</h3>
+
+<h4>内容</h4>
+<p>物体在一个过程中所受<strong>合外力的冲量</strong>，等于它的<strong>动量变化量</strong>：</p>
+$$\vec{F}_{合}\,t=\Delta\vec{p}=m\vec{v}_{末}-m\vec{v}_{初}$$
+<p>变力情形下写成 $\vec{I}_{合}=\Delta\vec{p}$，其中 $\vec{I}_{合}$ 是合外力冲量（可用 $F\text{-}t$ 面积理解）。</p>
+
+<h4>推导思路（恒力版，三步）</h4>
+<ol>
+  <li>设质量 $m$ 的物体受恒力 $\vec{F}_{合}$，初速度 $\vec{v}_1$，经时间 $t$ 速度变为 $\vec{v}_2$；</li>
+  <li>由牛顿第二定律：$\vec{F}_{合}=m\vec{a}$；</li>
+  <li>由匀变速运动定义：$\vec{a}=\dfrac{\vec{v}_2-\vec{v}_1}{t}$，代入得
+  $$\vec{F}_{合}=m\frac{\vec{v}_2-\vec{v}_1}{t}\;\Longrightarrow\;\vec{F}_{合}\,t=m\vec{v}_2-m\vec{v}_1=\Delta\vec{p}.\quad\blacksquare$$</li>
+</ol>
+<p>变力情形的推导思想（了解即可）：把 $t$ 切成无数小段 $\Delta t_i$，每段内力近似不变，$F_i\,\Delta t_i=\Delta p_i$，全部加起来，左边是总冲量、右边是总动量变化，结论不变。<strong>所以动量定理对恒力、变力一律成立</strong>——这是它比 $Ft=\Delta p$ 这个写法更广的原因，也是它处理碰撞、打击类「变力冲量问题」不可替代的原因。</p>
+
+<h4>适用条件与边界</h4>
+<ul>
+  <li>对单个物体（或可视为质点的系统）普遍成立，恒力、变力、直线、曲线都适用（高中阶段只用直线情形）；</li>
+  <li>式中 $t$ 是<strong>力的作用时间</strong>，$m\vec{v}_{末}-m\vec{v}_{初}$ 必须与这段时间对应；</li>
+  <li>在一维问题中，先规定正方向，把所有矢量化为带符号的代数量再代入；</li>
+  <li>它给出的是「平均效果」：碰撞中用动量定理求出的 $\bar{F}=\dfrac{\Delta p}{t}$ 是<strong>平均作用力</strong>，不是峰值力（峰值通常比平均值大得多，这是安全设计关心的，但高考只考平均值）。</li>
+</ul>
+
+<div class="deep">
+  <strong>🌱 即学即用（撞墙求平均力）：</strong>质量 $m=0.5\,\text{kg}$ 的皮球以 $10\,\text{m/s}$ 垂直撞墙，以 $8\,\text{m/s}$ 弹回，接触时间 $t=0.02\,\text{s}$，求墙对球的平均作用力。<br>
+  <strong>解：</strong>取弹回方向为正方向，则 $v_1=-10\,\text{m/s}$，$v_2=+8\,\text{m/s}$。由动量定理：
+  $$\bar{F}\,t=mv_2-mv_1=0.5\times 8-0.5\times(-10)=9\,\text{kg·m/s}\;\Rightarrow\;\bar{F}=\frac{9}{0.02}=450\,\text{N}$$
+  方向与正方向相同（即弹回方向）。注意：若忘了方向写成 $0.5\times(8-10)=-1$，平均力就成 $50\,\text{N}$ 了——差 9 倍！<strong>方向就是分数。</strong>
+</div>
+
+<blockquote>
+  <p><strong>💭 深度思考：为什么安全气囊、跳远沙坑、易碎品包装都用「延长时间」这一招？</strong>由 $\bar{F}=\dfrac{\Delta p}{t}$：动量变化量 $\Delta p$ 由碰撞前后的速度决定（躲不掉），但 $t$ 越大，$\bar{F}$ 越小。安全气囊把头部撞击的减速时间从几毫秒拉长到几十毫秒，平均冲击力就降到原来的几分之一。反过来，钉钉子要用重锤快速敲击——缩短 $t$、放大 $\bar{F}$。同一个公式，解释两类相反的智慧。</p>
+</blockquote>
+
+<h3>3.2 动量守恒定律</h3>
+
+<h4>内容</h4>
+<p>如果一个系统<strong>不受外力，或所受合外力为零</strong>，这个系统的总动量保持不变：</p>
+$$m_1\vec{v}_1+m_2\vec{v}_2=m_1\vec{v}_1'+m_2\vec{v}_2'\quad\text{（一维，两物体）}$$
+<p>也可以写成 $\Delta\vec{p}_{总}=0$，或 $\Delta\vec{p}_1=-\Delta\vec{p}_2$（一个物体动量的增加量 = 另一个的减少量）。</p>
+
+<h4>推导思路（两球碰撞，牛顿定律的推论）</h4>
+<ol>
+  <li>光滑水平面上，球 1 以 $v_1$ 追碰静止的球 2，碰撞时间 $t$ 内，球 2 对球 1 的平均作用力为 $F_1$，球 1 对球 2 的为 $F_2$；</li>
+  <li>由牛顿第三定律：$F_1=-F_2$，且作用时间同为 $t$，故 $F_1 t=-F_2 t$；</li>
+  <li>对两球分别用动量定理：$F_1 t=m_1v_1'-m_1v_1$，$F_2 t=m_2v_2'-m_2v_2$；</li>
+  <li>两式相加：$(m_1v_1'+m_2v_2')-(m_1v_1+m_2v_2)=F_1t+F_2t=0$，即碰撞前后总动量相等。$\blacksquare$</li>
+</ol>
+<p>看懂了吗？<strong>动量守恒不是实验里蹦出来的孤立定律，而是「牛顿第三定律 + 动量定理」的必然推论</strong>。它成立的前提在上面的推导里已经埋好：我们只考虑了两球之间的内力，没有外力捣乱。</p>
+
+<h4>守恒条件——三个层次，层层放宽（本章判断题的命脉）</h4>
+<table>
+  <tr><th style="width:26%">层次</th><th class="l" style="width:37%">条件</th><th class="l">典型场景</th></tr>
+  <tr><td>① 严格守恒</td><td class="l">系统不受外力，或合外力为零</td><td class="l">光滑水平面上的碰撞；太空中的相互作用</td></tr>
+  <tr><td>② 近似守恒</td><td class="l">内力 <strong>远大于</strong> 外力（碰撞、爆炸、射击瞬间），外力的冲量可忽略</td><td class="l">粗糙地面上的短暂碰撞；炸弹空中爆炸；子弹射入木块的瞬间</td></tr>
+  <tr><td>③ 某方向守恒</td><td class="l">系统整体合外力不为零，但<strong>某一方向</strong>上合外力为零，则该方向动量守恒</td><td class="l">斜面上滑块下滑（水平方向守恒）；小球沿光滑弧形槽下滑过程中，「球+槽」系统水平方向动量守恒</td></tr>
+</table>
+<div class="warn">
+  <strong>⚠ 条件②的判据要会说：</strong>碰撞时间极短（通常 $10^{-2}\,\text{s}$ 量级），内力（冲击力，动辄几百上千牛）远大于外力（重力、摩擦力，几牛到几十牛），由 $I=Ft$ 知外力在这段时间内提供的冲量可忽略，故可近似用动量守恒。答题时写明「由于碰撞时间极短，内力远大于外力，系统动量守恒」，这就是得分点。
+</div>
+
+<h4>应用动量守恒的规范四步</h4>
+<ol>
+  <li><strong>选系统</strong>：把相互作用的物体圈进来，明确内力、外力；</li>
+  <li><strong>判守恒</strong>：逐条对照上面三个层次（合外力为零？内力远大于外力？某方向合外力为零？），并写一句判断依据；</li>
+  <li><strong>定正方向</strong>：写在卷面上，所有速度带符号；</li>
+  <li><strong>列方程</strong>：初态总动量 = 末态总动量；有能量关系的（弹性碰撞、能量损失）再补能量方程。</li>
+</ol>
+
+<h3>3.3 碰撞：三类模型与弹性碰撞双守恒</h3>
+
+<h4>碰撞的共同特征与分类</h4>
+<p>碰撞的力学特征：<strong>时间极短、内力极大</strong>，因此碰撞瞬间系统动量（近似）守恒——这是所有碰撞问题的公共方程。区别在于<strong>动能</strong>的去向：</p>
+<table>
+  <tr><th>类型</th><th class="l">动能情况</th><th class="l">微观图景</th><th class="l">典型实例</th></tr>
+  <tr><td>弹性碰撞</td><td class="l">动能守恒（无损失）</td><td class="l">形变完全恢复</td><td class="l">钢球、台球、分子间的碰撞（理想化）</td></tr>
+  <tr><td>非弹性碰撞</td><td class="l">动能有损失（转化为内能等）</td><td class="l">形变部分恢复</td><td class="l">现实中绝大多数碰撞</td></tr>
+  <tr><td>完全非弹性碰撞</td><td class="l">动能损失<strong>最大</strong>（碰后共速、粘在一起）</td><td class="l">形变完全不恢复</td><td class="l">子弹射入木块留在其中、橡皮泥互撞、两车挂接</td></tr>
+</table>
+<div class="key-point">
+  <strong>📌 关键认知：</strong>三类碰撞<strong>动量都守恒</strong>（条件满足时），区别只在动能。「完全非弹性碰撞动能损失最大」的直观理解：在动量守恒的约束下，碰后两物体共速时系统的「整体平动动能」是不得不保留的最小值，其余能转化的都转化掉了。
+</div>
+
+<h4>弹性碰撞的双守恒推导（重点，推导要会！）</h4>
+<p>质量 $m_1$ 的物体以 $v_1$ 碰撞静止的质量 $m_2$ 的物体（$v_2=0$），弹性碰撞后速度分别为 $v_1'$、$v_2'$。列两个方程：</p>
+<p><strong>动量守恒：</strong></p>
+$$m_1v_1=m_1v_1'+m_2v_2' \quad\cdots\;①$$
+<p><strong>动能守恒：</strong></p>
+$$\frac{1}{2}m_1v_1^2=\frac{1}{2}m_1v_1'^2+\frac{1}{2}m_2v_2'^2 \quad\cdots\;②$$
+<p><strong>推导技巧（移项相除法）：</strong>把①改写为 $m_1(v_1-v_1')=m_2(v_2'-0)\;$…①′；把②改写为 $m_1(v_1^2-v_1'^2)=m_2(v_2'^2-0)$，用平方差公式展开：$m_1(v_1-v_1')(v_1+v_1')=m_2 v_2'^2\;$…②′。用 ②′ ÷ ①′ 得：</p>
+$$v_1+v_1'=v_2' \quad\cdots\;③$$
+<p>③式的物理意义极美：<strong>碰撞前的接近速度 $v_1$（相对速度）等于碰撞后的分离速度 $v_2'-v_1'$</strong>。把 $v_2'=v_1+v_1'$ 代回①，解得：</p>
+$$\boxed{v_1'=\frac{m_1-m_2}{m_1+m_2}\,v_1,\qquad v_2'=\frac{2m_1}{m_1+m_2}\,v_1}$$
+<h4>三个重要推论（记住，选择题直接用）</h4>
+<table>
+  <tr><th>情形</th><th>结果</th><th class="l">现象</th></tr>
+  <tr><td>$m_1=m_2$</td><td>$v_1'=0$，$v_2'=v_1$</td><td class="l"><strong>交换速度</strong>——台球正碰后一个停、一个走</td></tr>
+  <tr><td>$m_1\gg m_2$</td><td>$v_1'\approx v_1$，$v_2'\approx 2v_1$</td><td class="l">大象撞皮球：大象不受影响，皮球以约两倍速飞出</td></tr>
+  <tr><td>$m_1\ll m_2$</td><td>$v_1'\approx -v_1$，$v_2'\approx 0$</td><td class="l">乒乓球撞墙：原速率弹回，墙不动</td></tr>
+</table>
+<div class="warn">
+  <strong>⚠ 结论的使用边界：</strong>上表公式的前提是「$m_2$ 初始静止 + 一维弹性碰撞」。若 $m_2$ 也在动，须回到 ①③ 两式联立（$v_1-v_2=v_2'-v_1'$ 即「接近速度=分离速度」对任意初速度都成立）；若碰后两物体速度方向未知，先设正再解，符号会告诉你方向。<strong>不要背了结论到处乱套。</strong>
+</div>
+
+<h4>完全非弹性碰撞的能量损失公式</h4>
+<p>$m_1$ 以 $v_1$ 碰撞静止的 $m_2$ 并粘在一起。动量守恒给出共同速度 $v_{共}=\dfrac{m_1v_1}{m_1+m_2}$，动能损失：</p>
+$$\Delta E_k=\frac{1}{2}m_1v_1^2-\frac{1}{2}(m_1+m_2)v_{共}^2=\frac{1}{2}\cdot\frac{m_1m_2}{m_1+m_2}\cdot v_1^2$$
+<p>其中 $\mu=\dfrac{m_1m_2}{m_1+m_2}$ 叫<strong>折合质量</strong>，$v_1$ 恰是两物体的相对速度。这个「$\Delta E=\frac{1}{2}\mu v_{相对}^2$」的形式极好记：<strong>凡是两物体从有相对运动到共速的过程（完全非弹性碰撞、弹簧最大压缩、板块相对静止），损失/转化的能量都等于折合质量乘相对速度平方的一半</strong>。弹簧最大压缩量、板块生热题用它直接秒杀。推导建议自己展开代数验证一遍（例题 4 会带你验证）。</p>
+
+<h3>3.4 本章公式速查表</h3>
+<table>
+  <tr><th style="width:22%">名称</th><th style="width:38%">表达式</th><th class="l">条件 / 备注</th></tr>
+  <tr><td>动量</td><td>$\vec{p}=m\vec{v}$</td><td class="l">状态量，单位 $\,\text{kg·m/s}$</td></tr>
+  <tr><td>冲量</td><td>$\vec{I}=\vec{F}t$</td><td class="l">恒力直接用；变力用 $F\text{-}t$ 面积或动量定理</td></tr>
+  <tr><td>动量定理</td><td>$\vec{I}_{合}=\Delta\vec{p}$</td><td class="l">恒力变力通用；一维须先定正方向</td></tr>
+  <tr><td>动量守恒</td><td>$m_1v_1+m_2v_2=m_1v_1'+m_2v_2'$</td><td class="l">合外力为零 / 内力≫外力 / 某方向合外力为零</td></tr>
+  <tr><td>弹性碰撞结论</td><td>$v_1'=\frac{m_1-m_2}{m_1+m_2}v_1$，$v_2'=\frac{2m_1}{m_1+m_2}v_1$</td><td class="l">仅限 $m_2$ 静止、一维弹性碰撞</td></tr>
+  <tr><td>接近=分离</td><td>$v_1-v_2=v_2'-v_1'$</td><td class="l">弹性碰撞普适（任意初速度）</td></tr>
+  <tr><td>共速能量损失</td><td>$\Delta E=\frac{1}{2}\cdot\frac{m_1m_2}{m_1+m_2}\cdot v_{相对}^2$</td><td class="l">完全非弹性 / 弹簧最大压缩 / 板块共速</td></tr>
+</table>
+
+<h2 id="s4">四、典型例题</h2>
+
+<h3>例 1　一维弹性碰撞的结论应用与验证 <span class="stars">★★★</span></h3>
+<p>光滑水平面上，质量 $m_1=2\,\text{kg}$ 的小球 A 以 $v_1=5\,\text{m/s}$ 的速度，与静止的质量 $m_2=1\,\text{kg}$ 的小球 B 发生弹性正碰。求碰后两球的速度。</p>
+<p><strong>【过程分析】</strong></p>
+<ol>
+  <li>选系统：A、B 两球。水平面光滑 → 水平方向无外力；竖直方向重力与支持力抵消 → 系统合外力为零，<strong>动量守恒成立</strong>（严格守恒）；弹性碰撞 → <strong>动能也守恒</strong>。</li>
+  <li>定正方向：取 $v_1$ 的方向为正方向。</li>
+  <li>列方程：动量守恒 + 动能守恒（或直接用推导好的结论）。</li>
+</ol>
+<p><strong>【解】</strong>由弹性碰撞结论（被碰球静止情形）：</p>
+$$v_1'=\frac{m_1-m_2}{m_1+m_2}\,v_1=\frac{2-1}{2+1}\times 5=\frac{5}{3}\,\text{m/s}\approx 1.67\,\text{m/s}$$
+$$v_2'=\frac{2m_1}{m_1+m_2}\,v_1=\frac{2\times 2}{2+1}\times 5=\frac{20}{3}\,\text{m/s}\approx 6.67\,\text{m/s}$$
+<p>两球碰后均沿正方向运动，A 减速、B 以更快的速度飞出（合理：$m_1>m_2$，A 不会反弹）。</p>
+<div class="deep">
+  <strong>✔ 自主验证（考场上 30 秒做完，能救命）：</strong><br>
+  动量检验：碰前 $p=2\times 5=10\,\text{kg·m/s}$；碰后 $p'=2\times\dfrac{5}{3}+1\times\dfrac{20}{3}=\dfrac{10+20}{3}=10\,\text{kg·m/s}$ ✓<br>
+  动能检验：碰前 $E_k=\dfrac{1}{2}\times 2\times 5^2=25\,\text{J}$；碰后 $E_k'=\dfrac{1}{2}\times 2\times\left(\dfrac{5}{3}\right)^2+\dfrac{1}{2}\times 1\times\left(\dfrac{20}{3}\right)^2=\dfrac{25}{9}+\dfrac{200}{9}=25\,\text{J}$ ✓<br>
+  分离速度检验：$v_2'-v_1'=\dfrac{20}{3}-\dfrac{5}{3}=5\,\text{m/s}=v_1$（等于接近速度）✓
+</div>
+<p><strong>【变式思考】</strong>若 B 球的质量改为 $m_2=4\,\text{kg}$（$m_1<m_2$），则 $v_1'=\dfrac{2-4}{6}\times 5=-\dfrac{5}{3}\,\text{m/s}$——负号！A 被弹回。用「$m_1\ll m_2$ 近似原速弹回」的极限去套，方向感立刻出来。遇到解出负速度，别慌，那是在告诉你方向与正方向相反。</p>
+
+<h3>例 2　完全非弹性碰撞与能量损失 <span class="stars">★★★</span></h3>
+<p>质量 $m_1=3\,\text{kg}$ 的滑块甲以 $v_1=4\,\text{m/s}$ 在光滑水平面上滑行，撞上静止的质量 $m_2=1\,\text{kg}$ 的滑块乙，碰后两滑块<strong>粘在一起</strong>运动。求：(1) 碰后共同速度；(2) 碰撞过程中损失的机械能。</p>
+<p><strong>【过程分析】</strong>「粘在一起」= 完全非弹性碰撞的明文标志。动量守恒（光滑面，合外力为零）；动能<strong>不守恒</strong>，损失量用初末动能差求。</p>
+<p><strong>【解】</strong></p>
+<p>(1) 取 $v_1$ 方向为正方向，由动量守恒：</p>
+$$m_1v_1=(m_1+m_2)v_{共}\;\Rightarrow\;v_{共}=\frac{3\times 4}{3+1}=3\,\text{m/s}$$
+<p>(2) 能量损失：</p>
+$$\Delta E=\frac{1}{2}m_1v_1^2-\frac{1}{2}(m_1+m_2)v_{共}^2=\frac{1}{2}\times 3\times 4^2-\frac{1}{2}\times 4\times 3^2=24-18=6\,\text{J}$$
+<div class="deep">
+  <strong>✔ 用折合质量公式交叉验证：</strong>$\Delta E=\dfrac{1}{2}\cdot\dfrac{m_1m_2}{m_1+m_2}\cdot v_1^2=\dfrac{1}{2}\times\dfrac{3\times 1}{4}\times 16=6\,\text{J}$ ✓ 两种方法一致。<br>
+  <strong>这 6 J 去哪了？</strong>转化为两滑块形变产生的内能（发热）和少量声能。下次有人问「碰撞一定动能守恒吗」，你就把这道题甩给他：动量守恒杠杠的，动能可是实打实少了 6 J。
+</div>
+
+<h3>例 3　子弹打木块 + 板块模型（两过程分段） <span class="stars">★★★★</span></h3>
+<p>如图所示的情景：光滑水平地面上放着长木板，质量 $M=2\,\text{kg}$，静止；木板上表面与滑块间的动摩擦因数 $\mu=0.2$。一质量 $m_0=0.02\,\text{kg}$ 的子弹以 $v_0=300\,\text{m/s}$ 水平射入静止在地面上的木块 $m=0.98\,\text{kg}$（木块最初停在木板左端正前方，子弹射入后木块立即滑上木板），子弹留在木块中。随后木块（含子弹）在木板上滑行，木板足够长，最终两者相对静止。取 $g=10\,\text{m/s}^2$。求：</p>
+<p>(1) 子弹射入木块后瞬间，木块（含子弹）的速度 $v_1$；<br>
+(2) 最终木块与木板的共同速度 $v_2$；<br>
+(3) 木块在木板上滑行的相对距离 $s$；<br>
+(4) 全过程损失的机械能。</p>
+
+<svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="子弹打木块加板块模型示意图" style="display:block;margin:10px auto;max-width:640px;background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;">
+  <rect x="0" y="120" width="640" height="6" fill="#cbd5e0"/>
+  <rect x="300" y="88" width="260" height="32" fill="#b7791f" rx="3"/>
+  <text x="430" y="108" font-size="13" fill="#fff" text-anchor="middle">长木板 M = 2 kg（静止）</text>
+  <rect x="210" y="98" width="52" height="22" fill="#2b6cb0" rx="3"/>
+  <text x="236" y="113" font-size="11" fill="#fff" text-anchor="middle">木块 m</text>
+  <rect x="120" y="104" width="24" height="10" fill="#4a5568" rx="5"/>
+  <text x="132" y="96" font-size="11" fill="#2d3748" text-anchor="middle">子弹 m₀</text>
+  <line x1="150" y1="109" x2="195" y2="109" stroke="#e53e3e" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="172" y="126" font-size="11" fill="#e53e3e" text-anchor="middle">v₀ = 300 m/s</text>
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#e53e3e"/></marker></defs>
+  <text x="320" y="30" font-size="12" fill="#718096" text-anchor="middle">地面光滑 · 木块与木板间 μ = 0.2 · 子弹留在木块中</text>
+</svg>
+
+<p><strong>【过程分析——分段是本题的灵魂】</strong></p>
+<table>
+  <tr><th>阶段</th><th class="l">系统</th><th class="l">守恒判断</th><th class="l">方程</th></tr>
+  <tr><td>① 子弹射入木块（瞬间）</td><td class="l">子弹 + 木块</td><td class="l">内力（冲击力）≫ 外力，动量近似守恒；完全非弹性，动能损失大</td><td class="l">$m_0v_0=(m_0+m)v_1$</td></tr>
+  <tr><td>② 木块滑上木板至共速</td><td class="l">木块(含弹) + 木板</td><td class="l">地面光滑，系统合外力为零，动量守恒；滑动摩擦生热，动能损失</td><td class="l">$(m_0+m)v_1=(m_0+m+M)v_2$<br>$Q=f\,s_{相对}=\Delta E_k$</td></tr>
+</table>
+<div class="warn">
+  <strong>⚠ 为什么阶段①不能用能量守恒？</strong>子弹射入木块是完全非弹性碰撞，大量动能转化为内能，动能不守恒——只能用动量守恒。为什么阶段①中不用管木板？因为子弹射入时间极短（约 $10^{-3}\,\text{s}$），木块还来不及在木板上发生明显位移，木板此刻仍静止；且这一阶段把「木块+木板」捆进系统反而引入未知的摩擦冲量，徒增麻烦。<strong>谁参与了「瞬间作用」，就把谁圈进系统。</strong>
+</div>
+<p><strong>【解】</strong></p>
+<p>(1) 阶段①，取子弹速度方向为正方向，动量守恒：</p>
+$$m_0v_0=(m_0+m)v_1\;\Rightarrow\;v_1=\frac{0.02\times 300}{0.02+0.98}=\frac{6}{1}=6\,\text{m/s}$$
+<p>(2) 阶段②，对「木块(含子弹)+木板」系统，动量守恒：</p>
+$$(m_0+m)v_1=(m_0+m+M)v_2\;\Rightarrow\;v_2=\frac{1\times 6}{1+2}=2\,\text{m/s}$$
+<p>(3) 阶段②的滑动摩擦生热等于系统动能的减少量：</p>
+$$Q=\frac{1}{2}(m_0+m)v_1^2-\frac{1}{2}(m_0+m+M)v_2^2=\frac{1}{2}\times 1\times 6^2-\frac{1}{2}\times 3\times 2^2=18-6=12\,\text{J}$$
+<p>滑动摩擦力 $f=\mu(m_0+m)g=0.2\times 1\times 10=2\,\text{N}$，由 $Q=f\cdot s_{相对}$：</p>
+$$s=\frac{Q}{f}=\frac{12}{2}=6\,\text{m}$$
+<p>(4) 全过程机械能损失 = 初态（子弹）动能 − 末态（三者共速）动能：</p>
+$$\Delta E_{总}=\frac{1}{2}m_0v_0^2-\frac{1}{2}(m_0+m+M)v_2^2=\frac{1}{2}\times 0.02\times 300^2-\frac{1}{2}\times 3\times 2^2=900-6=894\,\text{J}$$
+<div class="deep">
+  <strong>✔ 分段核对：</strong>阶段①损失 $\dfrac{1}{2}\times 0.02\times 300^2-\dfrac{1}{2}\times 1\times 6^2=900-18=882\,\text{J}$；阶段②损失 $12\,\text{J}$。合计 $882+12=894\,\text{J}$，与第 (4) 问整体计算一致 ✓。<br>
+  <strong>方法点睛：</strong>第 (3) 问的 $Q=f\cdot s_{相对}$ 是板块模型的招牌公式——<strong>滑动摩擦力乘「相对位移」（不是对地位移！）等于系统产生的内能</strong>。也可以对木块、木板分别用动能定理列式，两式相减同样得到 $f\,s_{相对}=\Delta E_k$，建议自己推一遍这个结论。
+</div>
+
+<h3>例 4　弹簧连接体：最大压缩与分离速度 <span class="stars">★★★★</span></h3>
+<p>光滑水平面上，物体 B（质量 $m_2=4\,\text{kg}$）静止，其左端固连一根轻质弹簧（劲度系数 $k=300\,\text{N/m}$）。物体 A（质量 $m_1=2\,\text{kg}$）以 $v_0=6\,\text{m/s}$ 向右运动，压缩弹簧后与 B 分离。求：</p>
+<p>(1) 弹簧压缩量最大时两物体的共同速度；<br>
+(2) 弹簧的最大弹性势能；<br>
+(3) 弹簧的最大压缩量 $x$；<br>
+(4) A、B 分离时各自的速度。</p>
+<p><strong>【过程分析】</strong>弹簧模型是「被拉长的弹性碰撞」：压缩阶段动能 → 弹性势能，恢复阶段弹性势能 → 动能，全程动量守恒、机械能守恒（弹簧轻、无摩擦）。<strong>压缩量最大的标志是什么？</strong>不是「A 停下来」，而是<strong>两物体速度相等</strong>——此前 A 比 B 快、弹簧继续压缩；此后 B 比 A 快、弹簧开始恢复。所以「共速」就是最大压缩的瞬间。</p>
+<p><strong>【解】</strong></p>
+<p>(1) 最大压缩时 A、B 共速，由动量守恒：</p>
+$$m_1v_0=(m_1+m_2)v_{共}\;\Rightarrow\;v_{共}=\frac{2\times 6}{2+4}=2\,\text{m/s}$$
+<p>(2) 由能量守恒，减少的动能全部转化为弹性势能：</p>
+$$E_{p}=\frac{1}{2}m_1v_0^2-\frac{1}{2}(m_1+m_2)v_{共}^2=\frac{1}{2}\times 2\times 6^2-\frac{1}{2}\times 6\times 2^2=36-12=24\,\text{J}$$
+<p style="margin-left:0"><em>（折合质量公式验证：$\frac{1}{2}\times\frac{2\times 4}{6}\times 6^2=24\,\text{J}$ ✓）</em></p>
+<p>(3) 由 $E_{p}=\dfrac{1}{2}kx^2$：</p>
+$$x=\sqrt{\frac{2E_{p}}{k}}=\sqrt{\frac{2\times 24}{300}}=\sqrt{0.16}=0.4\,\text{m}$$
+<p>(4) 分离时刻弹簧恢复原长，全程动量守恒 + 机械能守恒——<strong>数学上与弹性碰撞完全同构</strong>，直接套结论：</p>
+$$v_A=\frac{m_1-m_2}{m_1+m_2}v_0=\frac{2-4}{6}\times 6=-2\,\text{m/s},\qquad v_B=\frac{2m_1}{m_1+m_2}v_0=\frac{2\times 2}{6}\times 6=4\,\text{m/s}$$
+<p>即 A 以 $2\,\text{m/s}$ 向左弹回，B 以 $4\,\text{m/s}$ 向右运动。</p>
+<div class="deep">
+  <strong>✔ 验证：</strong>动量 $2\times(-2)+4\times 4=-4+16=12\,\text{kg·m/s}=2\times 6$ ✓；动能 $\dfrac{1}{2}\times 2\times(-2)^2+\dfrac{1}{2}\times 4\times 4^2=4+32=36\,\text{J}=\dfrac{1}{2}\times 2\times 6^2$ ✓。<br>
+  <strong>模型升华：</strong>「弹簧最大压缩/伸长」↔ 完全非弹性碰撞（共速、动能向弹性势能的转化最大）；「弹簧恢复原长分离」↔ 弹性碰撞。一个模型同时装着两类碰撞——这就是综合题喜欢弹簧的原因。
+</div>
+
+<h2 id="s5">五、易错点与成因分析</h2>
+
+<div class="warn">
+  <strong>易错点 1：动量守恒条件误判——「系统受了外力，所以动量不守恒」</strong>
+  <p style="margin-top:6px"><strong>典型表现：</strong>看到地面粗糙、或系统受重力，就断定动量不守恒，放着好用的守恒律不用，转而用牛顿定律硬算碰撞瞬间，直接走进死胡同。</p>
+  <p><strong>成因分析：</strong>只背了「合外力为零」这一条严格条件，没有理解守恒条件的三个层次。碰撞、爆炸、子弹入木这类过程，作用时间极短（$10^{-3}\sim10^{-2}\,\text{s}$），内力成百上千牛，外力冲量 $F_{外}t$ 在数值上完全可以忽略——这就是「近似守恒」的物理实质。另外，把「某方向守恒」当成「全方向守恒」或反过来，也属于这一条：比如小球沿光滑弧形槽滑下，「球+槽」系统竖直方向有重力冲量、动量不守恒，但<strong>水平方向</strong>合外力为零、动量守恒，列水平方向方程即可。</p>
+  <p><strong>对策：</strong>每次用守恒前，强制自己写一句判断依据：「系统合外力为零 / 碰撞时间极短，内力远大于外力 / ××方向合外力为零」。写出来，就是逼自己过一遍三层次。</p>
+</div>
+
+<div class="warn">
+  <strong>易错点 2：矢量方向漏掉——$\Delta p$ 算成「大减小」</strong>
+  <p style="margin-top:6px"><strong>典型表现：</strong>撞墙反弹问题中，把 $\Delta p=m(v_2-v_1)$ 算成 $m(8-10)=-2m$ 甚至 $m|10-8|$；或者求出动量变化是负值后，回答「动量减少了」，答非所问。</p>
+  <p><strong>成因分析：</strong>初中数学养成的「结果必须为正」的直觉在作祟，加上没养成「先规定正方向」的下笔习惯。动量、冲量、动量变化量都是矢量，直线运动中它们的方向全部压缩在正负号里，<strong>丢掉负号 = 丢掉方向 = 丢掉一半分数</strong>。3.1 节的皮球撞墙就是铁证：正确结果 $9\,\text{kg·m/s}$，漏掉方向算成 $1\,\text{kg·m/s}$，差 9 倍。</p>
+  <p><strong>对策：</strong>卷面第一行永远先写「取 ×× 方向为正方向」；把所有已知速度先标上符号再代公式；解出负结果时，用文字翻译：「负号表示方向与所设正方向相反」。</p>
+</div>
+
+<div class="warn">
+  <strong>易错点 3：完全非弹性碰撞能量损失公式误用</strong>
+  <p style="margin-top:6px"><strong>典型表现一：</strong>把 $\Delta E=\dfrac{1}{2}\cdot\dfrac{m_1m_2}{m_1+m_2}v_1^2$ 中的 $v_1$ 误以为是主动物体对地的速度而在两物体都运动时照套——其实它是<strong>相对速度</strong> $v_{相对}$。<strong>典型表现二：</strong>「粘在一起」的题还硬写动能守恒方程，凑出矛盾结果却不知错在哪。<strong>典型表现三：</strong>算损失时把末动能算成 $\frac{1}{2}m_1v_{共}^2$（漏了 $m_2$）。</p>
+  <p><strong>成因分析：</strong>对「完全非弹性碰撞 = 碰后共速 = 动能损失最大」这一物理图像没有真正建立，把公式当成纯符号游戏。共速意味着系统只剩下「整体平动」的动能 $\frac{1}{2}(m_1+m_2)v_{共}^2$，这是动量守恒约束下甩不掉的部分；其余的全转化为内能。图像清楚了，公式里的每一项才有意义。</p>
+  <p><strong>对策：</strong>能量损失一律用「初动能 − 末动能」的原始定义算一遍，折合质量公式只作验算；遇到两物体都在动的情形，先把 $v_{相对}=|v_1-v_2|$ 写出来。</p>
+</div>
+
+<div class="warn">
+  <strong>易错点 4：系统选取「中途变卦」或「张冠李戴」</strong>
+  <p style="margin-top:6px"><strong>典型表现：</strong>子弹打木块+板块题中，第一阶段把木板也算进系统（导致摩擦冲量未知、无法求解），或第二阶段忘了子弹还留在木块里、质量少算了 $m_0$。</p>
+  <p><strong>成因分析：</strong>过程没有分段，系统边界随心情漂移。多过程问题的铁律是「一段一系统」：子弹射入瞬间，参与「瞬间作用」的是子弹和木块，木板来不及动——圈子弹+木块；滑行阶段，相互作用的双方变成木块(含弹)和木板——圈它们俩。每个阶段先问「谁和谁在这段时间内相互作用」，再动笔画圈。</p>
+  <p><strong>对策：</strong>像例 3 那样画一张「阶段—系统—守恒判断」对照表，三行写完再列方程。养成这个习惯，多过程题的混乱立刻消失。</p>
+</div>
+
+<div class="warn">
+  <strong>易错点 5：把弹簧「最大压缩」当成「受力平衡」</strong>
+  <p style="margin-top:6px"><strong>典型表现：</strong>认为弹簧压缩量最大时 A（或 B）所受合力为零、加速度为零。</p>
+  <p><strong>成因分析：</strong>和「竖直弹簧振子经过平衡位置时速度最大」的记忆串了线。在水平面双物体弹簧模型中，最大压缩瞬间的判据是<strong>两物体共速</strong>（相对速度为零），此刻弹簧弹力达到最大，两物体的<strong>加速度都最大</strong>，恰恰是最不平衡的时刻。平衡位置描述的是单物体振子，与共速判据风马牛不相及。</p>
+  <p><strong>对策：</strong>记住判据链：「A 比 B 快 → 弹簧继续压缩；B 比 A 快 → 弹簧恢复」——压缩与恢复的转折点只能是 $v_A=v_B$。用相对运动的观点想，一次就想通。</p>
+</div>
+
+<div class="warn">
+  <strong>易错点 6：盲目套用弹性碰撞结论公式</strong>
+  <p style="margin-top:6px"><strong>典型表现：</strong>$v_1'=\dfrac{m_1-m_2}{m_1+m_2}v_1$ 这类结论，被碰物体明明在动也照套；非弹性碰撞也照套；套完不验证，算出 $v_1'>v_2'$（A 穿过 B 继续领先）这种「鬼故事」也不察觉。</p>
+  <p><strong>成因分析：</strong>记结论不记条件。该结论的前提是「一维 + 弹性 + 被碰球静止」。此外，任何碰撞的解都要过两道合理性安检：① 碰后不能有 $v_1'>v_2'$（否则表示互相穿透，物理上不可能）；② 动能只能守恒或减少，绝不能增加（爆炸除外，但爆炸初态两物体通常静止或已知）。</p>
+  <p><strong>对策：</strong>套用前先默念条件；算完必做「动量、动能、不穿透」三检验（例 1 的验证模板直接抄思路）。</p>
+</div>
+
+<h2 id="s6">六、章末自检清单</h2>
+<p>合上书本，逐项自测。能口头说清楚、能在白纸上写出来，才打勾；任何一项犹豫，回到对应小节重学。</p>
+
+<h4>A. 概念关</h4>
+<ul style="list-style:none;margin-left:6px">
+  <li>☐ 能默写动量定义 $\vec{p}=m\vec{v}$、单位 $\,\text{kg·m/s}$，并说明它是矢量、方向与速度相同</li>
+  <li>☐ 能默写冲量定义 $\vec{I}=\vec{F}t$、单位 $\,\text{N·s}$，并说明 $1\,\text{N·s}=1\,\text{kg·m/s}$</li>
+  <li>☐ 能说出冲量与功的三点区别（时间/空间累积、矢量/标量、对应动量变化/动能变化）</li>
+  <li>☐ 能在具体问题中区分内力与外力，并说明「系统怎么划、守恒怎么变」</li>
+  <li>☐ 能解释为什么解题第一步要规定正方向，并完整复述「正负号约定」三条规则</li>
+</ul>
+
+<h4>B. 公式关</h4>
+<ul style="list-style:none;margin-left:6px">
+  <li>☐ 能从牛顿第二定律独立推导动量定理 $\vec{F}_{合}t=\Delta\vec{p}$，并说明它对变力也成立的理由</li>
+  <li>☐ 能从牛顿第三定律+动量定理推导两球系统的动量守恒</li>
+  <li>☐ 能完整说出动量守恒条件的三个层次（严格守恒 / 内力≫外力近似守恒 / 某方向守恒）并各举一例</li>
+  <li>☐ 能用「移项相除法」推导弹性碰撞结论 $v_1'=\frac{m_1-m_2}{m_1+m_2}v_1$、$v_2'=\frac{2m_1}{m_1+m_2}v_1$，并说出「接近速度=分离速度」</li>
+  <li>☐ 能说出弹性碰撞三条推论（$m_1=m_2$ 交换速度；$m_1\gg m_2$；$m_1\ll m_2$）及其适用前提</li>
+  <li>☐ 能默写并解释共速能量损失公式 $\Delta E=\frac{1}{2}\cdot\frac{m_1m_2}{m_1+m_2}\cdot v_{相对}^2$（折合质量、相对速度）</li>
+</ul>
+
+<h4>C. 模型关</h4>
+<ul style="list-style:none;margin-left:6px">
+  <li>☐ 碰撞三分法：能说出三类碰撞的动能特征与标志词（「粘在一起」= 完全非弹性）</li>
+  <li>☐ 子弹打木块：能区分「留在其中」与「穿出」两种情形的方程差异</li>
+  <li>☐ 板块模型：会用 $Q=f\cdot s_{相对}$，并说明为什么用相对位移而非对地位移</li>
+  <li>☐ 弹簧模型：能用「共速」判据求最大压缩量，并说明「恢复原长分离」等价于弹性碰撞</li>
+  <li>☐ 多过程问题：会先画「阶段—系统—守恒判断」对照表，再逐段列方程</li>
+  <li>☐ 综合题套路：能完整执行「选系统 → 判守恒 → 定正方向 → 列动量+能量方程」四步</li>
+</ul>
+
+<h4>D. 易错点关（逐条自问「我还会犯吗」）</h4>
+<ul style="list-style:none;margin-left:6px">
+  <li>☐ 守恒条件三层次不再混淆，见到粗糙面上的短暂碰撞知道仍可近似守恒</li>
+  <li>☐ 撞墙反弹类问题先定正方向，$\Delta p$ 不再漏方向</li>
+  <li>☐ 完全非弹性碰撞不再误写动能守恒；能量损失中 $v_{相对}$ 不再误用对地速度</li>
+  <li>☐ 多过程题系统选取不「中途变卦」，子弹质量不会在第二阶段被丢掉</li>
+  <li>☐ 弹簧最大压缩判据认准「共速」，不再误当受力平衡</li>
+  <li>☐ 弹性碰撞结论公式套用前检查前提，算完必做「动量、动能、不穿透」三检验</li>
+</ul>
+
+<div class="key-point">
+  <strong>🎯 最后的话：</strong>动量这一章，公式一页纸就能抄完，但高考要考的是你「在复杂过程中保持清醒」的能力——每个阶段谁和谁作用、守恒与否、能量流向哪里。建议把四道例题隔三天重做一遍（遮住答案），能流畅写完且通过三检验，这一章就算真正拿下了。下一站：机械能守恒，它会是动量最好的搭档。加油，小兵！
+</div>
+
+</body>
+</html>

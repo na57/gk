@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.15 电化学基础-深度学习材料</title>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#0e7c7b; --subject-soft:#eef7f6;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 化学点缀层（无 JS，纯文本方程式） ===== */
+/* 语义卡片（例题=紫 / 易错=琥珀 / 概念=蓝 / 提示=科目色 / 结构=中性墨） */
+.card { border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 18px; margin: 14px 0; page-break-inside: avoid; }
+.card .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
+.card.concept { background: var(--c-concept-bg); } .card.concept .tag { background: var(--c-concept); color: #fff; }
+.card.example { background: var(--c-example-bg); } .card.example .tag { background: var(--c-example); color: #fff; }
+.card.trap { background: var(--c-trap-bg); } .card.trap .tag { background: var(--c-trap); color: #fff; }
+.card.note { background: var(--subject-soft); } .card.note .tag { background: var(--subject); color: #fff; }
+.card.violet { background: var(--canvas); } .card.violet .tag { background: var(--ink); color: #fff; }
+/* 方程式容器（统一灰底盒 + 科目色左边条） */
+.eq { display: block; background: var(--formula-bg); border: 1px solid var(--line); border-left: 4px solid var(--subject); border-radius: 8px; padding: var(--formula-pad); margin: 10px 0; font-size: 16px; text-align: center; letter-spacing: .3px; page-break-inside: avoid; }
+.eq-arrow { position: relative; display: inline-block; margin: 0 6px; font-weight: 600; }
+.eq-arrow::before { content: attr(data-cond); position: absolute; left: 50%; transform: translateX(-50%); top: -1.05em; font-size: 10.5px; font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
+.state { font-size: .72em; font-style: italic; color: var(--ink-soft); }
+sub, sup { font-size: .72em; line-height: 0; }
+.formula { font-size: 1.05em; }
+.kbd { background: #f0f2f5; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 13px; }
+/* 三栏对比 */
+.triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; page-break-inside: avoid; }
+.triple .cell { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: 14px; }
+.triple .cell h4 { margin: 0 0 8px; font-size: 13.5px; text-align: center; padding: 4px 0; border-radius: 6px; color: #fff; }
+.triple .cell:nth-child(1) h4 { background: var(--c-trap); }
+.triple .cell:nth-child(2) h4 { background: var(--c-example); }
+.triple .cell:nth-child(3) h4 { background: var(--subject); }
+/* 步骤与答案 */
+.step { display: flex; gap: 10px; margin: 8px 0; }
+.step .no { flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--c-method); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.ans { background: #fff; border: 1px dashed var(--c-method); border-radius: 8px; padding: 8px 14px; margin: 8px 0; }
+.chap-foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-soft); text-align: center; }
+@media (max-width: 640px) { .triple { grid-template-columns: 1fr; } }
+@media print {
+  .card { border: 1px solid #999; background: #fff !important; }
+  .card .tag { border: 1px solid #333; background: #fff !important; color: #000; }
+  .eq { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .chap-foot { border-top: none; }
+}
+</style>
+</head>
+<body>
+<nav class="chap-nav">高考备考 · 化学 · 深度学习材料 ｜ 化学反应原理 ｜ 3.15 电化学基础</nav>
+<header class="chap-head">
+  <h1>3.15 电化学基础</h1>
+  <p class="chap-meta">高中化学 · 深度学习材料 · 面向 2029 届云南高考</p>
+  <p class="chap-intro">
+    电化学研究的是"化学反应"与"电"的相互转化：原电池把化学能变成电能，电解池用电能驱动化学反应。
+    本章的题在高考里几乎年年必考（选择题 1 道 + 原理大题中 2~4 分），套路非常固定——先分原电池还是电解池，再判断电极，然后写电极反应式，最后用电子守恒计算。把这条流水线练熟，电化学就是送分题。
+  </p>
+</header>
+<main>
+
+<section>
+<h2>一、本章知识全景</h2>
+<table>
+<tr>
+<th>知识点</th>
+<th>核心内容</th>
+<th>高考要求</th>
+</tr>
+<tr>
+<td>原电池</td>
+<td>构成条件；负极氧化（失电子）、正极还原（得电子）；电子流向与离子迁移</td>
+<td>原理透彻，正负极判断"秒杀"，电极反应式书写快、准、全</td>
+</tr>
+<tr>
+<td>化学电源</td>
+<td>干电池、铅蓄电池、氢氧燃料电池（酸性/碱性介质）</td>
+<td>各类电池总反应与电极反应清楚，燃料电池在不同介质中会写</td>
+</tr>
+<tr>
+<td>电解池</td>
+<td>阳极氧化、阴极还原；阴阳离子放电顺序；电解产物判断</td>
+<td>放电顺序记熟，各类电解（水溶液）产物能准确判断</td>
+</tr>
+<tr>
+<td>电解的应用</td>
+<td>氯碱工业、电镀、电解精炼铜、电冶金</td>
+<td>各应用的电极、电解液、产物与原理对应清楚</td>
+</tr>
+<tr>
+<td>金属腐蚀与防护</td>
+<td>化学腐蚀 vs 电化学腐蚀；析氢腐蚀 vs 吸氧腐蚀；牺牲阳极法、外加电流法</td>
+<td>吸氧腐蚀是重点；两种防护方法会区分、能举例</td>
+</tr>
+</table>
+<div class="card note">
+<span class="tag">高考怎么考</span>
+<p>电化学的考法高度模板化：① 选择题给一个陌生装置或新型电池（如锂电池、微生物燃料电池），考电极判断、电极反应式正误、离子迁移方向、pH 变化；② 反应原理大题中嵌入电解计算（用电子守恒求产物量）或与 K<sub>sp</sub>、平衡常数结合的综合小问。无论题目背景多"新"，落点永远是那几句口诀：<strong>负氧正还、阳氧阴还、电子守恒</strong>。</p>
+</div>
+<div class="card violet">
+<span class="tag">学法建议</span>
+<ul>
+<li><strong>先背熟两张表</strong>：原电池/电解池对比表、阴阳极放电顺序表——这是全章的"地基"，每天早上默写一遍，一周就刻进脑子里；</li>
+<li><strong>电极反应式专项</strong>：按"定产物 → 配电荷（看介质）→ 配水 → 验电子"四步流程，把氢氧燃料电池（酸/碱）、铅蓄电池、氯碱工业等 8 个经典电极反应各写 3 遍；</li>
+<li><strong>计算只认一个理</strong>：串联电路中各电极通过的电子数相等。所有电解计算都从"n(e<sup>−</sup>) 相等"列等式。</li>
+</ul>
+<p>此外建议准备一个"电化学错题本"：把每次做错的电极反应式按"错因"分类（电极判错 / 介质用错 / 电荷没配平 / 产物写错），考前只复习错因最多的那一类。电化学的失分高度集中在少数几个固定陷阱上，消灭一个陷阱就等于拿稳一类题的分数。</p>
+<p>本章与下一阶段的工业流程题联系紧密——氯碱工业、电解精炼、湿法冶金都是流程题的经典素材，学习时多问自己"这个步骤对应哪个电极反应"，就能把两部分的分数一起拿下。</p>
+<p>最后提醒：电化学是高考中"性价比"极高的章节——知识点总量不大、题型高度固定、套路清晰可见，投入产出比远超有机推断等"大开大合"的章节，务必做到零失误。</p>
+</div>
+</section>
+
+<section>
+<h2>二、核心概念精讲</h2>
+
+<h3>2.1 原电池的工作原理</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：把自发的氧化还原反应拆成"两个半反应"，让电子通过外电路从负极流向正极，从而把化学能转化为电能的装置。以最经典的铜锌原电池（稀硫酸为电解液）为例：</p>
+<p class="eq"><span class="formula">负极（Zn）：Zn − 2e<sup>−</sup> <span class="eq-arrow" data-cond="">→</span> Zn<sup>2+</sup>（氧化反应，锌片溶解）</span></p>
+<p class="eq"><span class="formula">正极（Cu）：2H<sup>+</sup> + 2e<sup>−</sup> <span class="eq-arrow" data-cond="">→</span> H<sub>2</sub>↑（还原反应，铜片冒气泡）</span></p>
+<p class="eq"><span class="formula">总反应：Zn + 2H<sup>+</sup> <span class="eq-arrow" data-cond="">→</span> Zn<sup>2+</sup> + H<sub>2</sub>↑</span></p>
+<p><strong>为什么（微观解释）</strong>：Zn 比 Cu 活泼，失电子能力强。锌片上的 Zn 原子把电子"交给"外电路，自己变成 Zn<sup>2+</sup> 进入溶液；电子流到铜片表面，溶液中的 H<sup>+</sup> 在铜片表面得电子变成 H<sub>2</sub>。把氧化反应和还原反应"隔离"在两地进行，电子被迫走外电路——这就是电流的来源。</p>
+<p><strong>判断口诀：负氧正还</strong>——负极发生氧化反应（失电子、化合价升高、电极溶解），正极发生还原反应（得电子、化合价降低、有气体或金属析出）。</p>
+<p><strong>构成条件</strong>：① 两种活泼性不同的电极（金属-金属或金属-石墨）；② 电解质溶液（或熔融电解质）；③ 闭合回路（含盐桥）；④ 能自发进行的氧化还原反应。</p>
+<p><strong>三个"流向"必须分清</strong>：</p>
+<ul>
+<li><strong>电子</strong>：外电路中由负极 → 正极（电子不下水、离子不上岸——电子绝不进入溶液）；</li>
+<li><strong>电流</strong>：外电路中由正极 → 负极（与电子流向相反）；</li>
+<li><strong>离子</strong>：内电路（溶液）中阳离子移向正极、阴离子移向负极（"正正负负"——阳离子去正极、阴离子去负极）。</li>
+</ul>
+<p><strong>常见混淆</strong>：负极是"电子流出极"，不是"带负电的极"；判断正负极看<strong>谁失电子</strong>（一般更活泼的金属作负极），而不是看谁"更贵"或谁"更大"。</p>
+<p><strong>原电池原理的四大应用</strong>（选择题常客）：</p>
+<ol>
+<li><strong>加快反应速率</strong>：纯锌与稀硫酸反应较慢，滴入几滴 CuSO<sub>4</sub> 溶液后锌置换出铜附着在锌表面，形成无数微小原电池，产生 H<sub>2</sub> 的速率明显加快（但锌消耗加快，且若 CuSO<sub>4</sub> 过多会覆盖锌表面反而减慢）；</li>
+<li><strong>比较金属活泼性</strong>：两金属构成原电池时，一般作负极（溶解、变细）的更活泼；</li>
+<li><strong>设计化学电源</strong>：理论上任何自发的氧化还原反应都能设计成原电池——拆成两个半反应，分别找负极材料与电解质；</li>
+<li><strong>金属防护</strong>：牺牲阳极法就是利用原电池原理（详见 2.6）。</li>
+</ol>
+</div>
+
+<h4>深入一步：双液原电池与盐桥</h4>
+<div class="card concept">
+<span class="tag">拓展理解</span>
+<p>把铜锌原电池"拆开"：锌片插入 ZnSO<sub>4</sub> 溶液，铜片插入 CuSO<sub>4</sub> 溶液，两烧杯用<strong>盐桥</strong>（浸有 KCl 饱和溶液的琼脂）连通，外电路用导线连接——这就是效率更高的双液原电池（丹尼尔电池）。</p>
+<p class="eq"><span class="formula">负极（Zn）：Zn − 2e<sup>−</sup> → Zn<sup>2+</sup>　　正极（Cu）：Cu<sup>2+</sup> + 2e<sup>−</sup> → Cu</span></p>
+<p><strong>盐桥的三个作用</strong>：</p>
+<ol>
+<li>形成闭合回路（沟通内电路），没有盐桥电路立即断开；</li>
+<li>平衡电荷：负极区 Zn<sup>2+</sup> 增多带正电趋势，盐桥中 Cl<sup>−</sup> 迁入；正极区 Cu<sup>2+</sup> 减少带负电趋势，K<sup>+</sup> 迁入；</li>
+<li>避免 Zn 与 CuSO<sub>4</sub> 直接接触发生置换反应而"短路"，使电流更持久稳定。</li>
+</ol>
+<p><strong>注意</strong>：盐桥中的离子只起导电作用，不参与电极反应；盐桥不能用导线代替（电子不能在溶液中移动）。高考常给"盐桥中 Cl<sup>−</sup> 向哪个烧杯迁移"这类小题，记住：<strong>阴离子向负极区，阳离子向正极区</strong>。</p>
+</div>
+
+<h3>2.2 电极反应式的书写方法</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>四步书写法</strong>（高考要求"快、准、全"）：</p>
+<ol>
+<li><strong>定产物</strong>：根据总反应和电极性质，确定该电极的反应物和产物；</li>
+<li><strong>配电子</strong>：根据化合价升降写出得失电子数（负极/阳极失电子，写"− ne<sup>−</sup>"；正极/阴极得电子，写"+ ne<sup>−</sup>"）；</li>
+<li><strong>配电荷</strong>：根据介质酸碱性，用 H<sup>+</sup>（酸性）或 OH<sup>−</sup>（碱性）配平两边电荷——<strong>酸性介质中绝不能出现 OH<sup>−</sup>，碱性介质中绝不能出现 H<sup>+</sup></strong>；</li>
+<li><strong>配原子</strong>：用 H<sub>2</sub>O 配平 H、O 原子，最后检查"电子守恒、电荷守恒、原子守恒"三守恒。</li>
+</ol>
+<p><strong>验证</strong>：正、负极反应式相加，消去电子后必须等于总反应式——这是考场上最有效的自查。</p>
+</div>
+
+<h4>经典电极反应式速查表（建议全部默写过关）</h4>
+<div class="card concept">
+<span class="tag">考前必背</span>
+<table>
+<tr><th>装置 / 环境</th><th>负极或阳极（失电子）</th><th>正极或阴极（得电子）</th></tr>
+<tr><td>铜锌原电池（稀 H<sub>2</sub>SO<sub>4</sub>）</td><td>负极：Zn − 2e<sup>−</sup> → Zn<sup>2+</sup></td><td>正极：2H<sup>+</sup> + 2e<sup>−</sup> → H<sub>2</sub>↑</td></tr>
+<tr><td>氢氧燃料电池（酸性）</td><td>负极：H<sub>2</sub> − 2e<sup>−</sup> → 2H<sup>+</sup></td><td>正极：O<sub>2</sub> + 4e<sup>−</sup> + 4H<sup>+</sup> → 2H<sub>2</sub>O</td></tr>
+<tr><td>氢氧燃料电池（碱性）</td><td>负极：H<sub>2</sub> − 2e<sup>−</sup> + 2OH<sup>−</sup> → 2H<sub>2</sub>O</td><td>正极：O<sub>2</sub> + 4e<sup>−</sup> + 2H<sub>2</sub>O → 4OH<sup>−</sup></td></tr>
+<tr><td>铅蓄电池放电（稀 H<sub>2</sub>SO<sub>4</sub>）</td><td>负极：Pb − 2e<sup>−</sup> + SO<sub>4</sub><sup>2−</sup> → PbSO<sub>4</sub></td><td>正极：PbO<sub>2</sub> + 2e<sup>−</sup> + 4H<sup>+</sup> + SO<sub>4</sub><sup>2−</sup> → PbSO<sub>4</sub> + 2H<sub>2</sub>O</td></tr>
+<tr><td>钢铁吸氧腐蚀（中性水膜）</td><td>负极：Fe − 2e<sup>−</sup> → Fe<sup>2+</sup></td><td>正极：O<sub>2</sub> + 2H<sub>2</sub>O + 4e<sup>−</sup> → 4OH<sup>−</sup></td></tr>
+<tr><td>钢铁析氢腐蚀（酸性水膜）</td><td>负极：Fe − 2e<sup>−</sup> → Fe<sup>2+</sup></td><td>正极：2H<sup>+</sup> + 2e<sup>−</sup> → H<sub>2</sub>↑</td></tr>
+<tr><td>电解饱和食盐水（惰性电极）</td><td>阳极：2Cl<sup>−</sup> − 2e<sup>−</sup> → Cl<sub>2</sub>↑</td><td>阴极：2H<sub>2</sub>O + 2e<sup>−</sup> → H<sub>2</sub>↑ + 2OH<sup>−</sup></td></tr>
+<tr><td>电解 CuSO<sub>4</sub> 溶液（惰性电极）</td><td>阳极：2H<sub>2</sub>O − 4e<sup>−</sup> → O<sub>2</sub>↑ + 4H<sup>+</sup></td><td>阴极：Cu<sup>2+</sup> + 2e<sup>−</sup> → Cu</td></tr>
+<tr><td>电解精炼铜</td><td>阳极（粗铜）：Cu − 2e<sup>−</sup> → Cu<sup>2+</sup></td><td>阴极（纯铜）：Cu<sup>2+</sup> + 2e<sup>−</sup> → Cu</td></tr>
+</table>
+<p>写任何一条时都过一遍三守恒：电子守恒（化合价升降数 = 电子数）、电荷守恒（等式两边总电荷相等，靠 H<sup>+</sup>/OH<sup>−</sup>/水调节）、原子守恒（H、O 最后用水配平）。</p>
+</div>
+
+<h3>2.3 化学电源</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>① 普通锌锰干电池</strong>（一次电池，电解质为糊状 NH<sub>4</sub>Cl 等）：锌筒作负极，石墨棒作正极。</p>
+<p class="eq"><span class="formula">负极：Zn − 2e<sup>−</sup> → Zn<sup>2+</sup>　　正极：2MnO<sub>2</sub> + 2NH<sub>4</sub><sup>+</sup> + 2e<sup>−</sup> → Mn<sub>2</sub>O<sub>3</sub> + 2NH<sub>3</sub> + H<sub>2</sub>O</span></p>
+<p><strong>② 铅蓄电池</strong>（二次电池/可充电电池，电解质为稀硫酸）：</p>
+<p class="eq"><span class="formula">总反应：Pb + PbO<sub>2</sub> + 2H<sub>2</sub>SO<sub>4</sub> <span class="eq-arrow" data-cond="放电">⇌</span> 2PbSO<sub>4</sub> + 2H<sub>2</sub>O（充电时逆向进行）</span></p>
+<p class="eq"><span class="formula">放电时　负极：Pb − 2e<sup>−</sup> + SO<sub>4</sub><sup>2−</sup> → PbSO<sub>4</sub>　　正极：PbO<sub>2</sub> + 2e<sup>−</sup> + 4H<sup>+</sup> + SO<sub>4</sub><sup>2−</sup> → PbSO<sub>4</sub> + 2H<sub>2</sub>O</span></p>
+<p>放电时硫酸被消耗，溶液密度减小——可通过测密度判断"电量"。充电时，原来的负极接外电源负极作阴极、原来的正极接外电源正极作阳极，电极反应全部逆转。</p>
+<p><strong>③ 氢氧燃料电池</strong>（介质不同，电极反应不同——高考最爱考）：</p>
+<table>
+<tr><th>介质</th><th>负极（通 H<sub>2</sub>）</th><th>正极（通 O<sub>2</sub>）</th></tr>
+<tr><td>酸性（如 H<sub>2</sub>SO<sub>4</sub>）</td><td>H<sub>2</sub> − 2e<sup>−</sup> → 2H<sup>+</sup></td><td>O<sub>2</sub> + 4e<sup>−</sup> + 4H<sup>+</sup> → 2H<sub>2</sub>O</td></tr>
+<tr><td>碱性（如 KOH）</td><td>H<sub>2</sub> − 2e<sup>−</sup> + 2OH<sup>−</sup> → 2H<sub>2</sub>O</td><td>O<sub>2</sub> + 4e<sup>−</sup> + 2H<sub>2</sub>O → 4OH<sup>−</sup></td></tr>
+</table>
+<p>两种介质中总反应相同：2H<sub>2</sub> + O<sub>2</sub> <span class="eq-arrow" data-cond="">=</span> 2H<sub>2</sub>O。燃料电池的燃料从负极通入、氧化剂从正极通入，电极本身不参与反应（用惰性电极），能量转化率高、产物无污染。</p>
+</div>
+
+<h4>补充：另外两种常考电源</h4>
+<div class="card concept">
+<span class="tag">拓展理解</span>
+<p><strong>① 碱性锌锰电池</strong>（生活中最常用的干电池，KOH 为电解质）：</p>
+<p class="eq"><span class="formula">负极：Zn + 2OH<sup>−</sup> − 2e<sup>−</sup> → Zn(OH)<sub>2</sub></span></p>
+<p class="eq"><span class="formula">正极：2MnO<sub>2</sub> + 2H<sub>2</sub>O + 2e<sup>−</sup> → 2MnOOH + 2OH<sup>−</sup></span></p>
+<p class="eq"><span class="formula">总反应：Zn + 2MnO<sub>2</sub> + 2H<sub>2</sub>O → Zn(OH)<sub>2</sub> + 2MnOOH</span></p>
+<p>注意负极写法——碱性介质中 Zn<sup>2+</sup> 不能独立存在，必须写成 Zn(OH)<sub>2</sub> 并用 OH<sup>−</sup> 配电荷。</p>
+<p><strong>② 锂离子电池</strong>（可充电，负极为嵌锂石墨 Li<sub>x</sub>C，正极为 Li<sub>1−x</sub>CoO<sub>2</sub>）：</p>
+<p class="eq"><span class="formula">放电　负极：Li<sub>x</sub>C − xe<sup>−</sup> → xLi<sup>+</sup> + C　　正极：Li<sub>1−x</sub>CoO<sub>2</sub> + xLi<sup>+</sup> + xe<sup>−</sup> → LiCoO<sub>2</sub></span></p>
+<p>锂是最轻的金属，比能量高；放电时 Li<sup>+</sup> 从负极经电解质移向正极嵌入正极材料，充电时反向移动——俗称"摇椅式电池"。高考遇到陌生电池不要怕：先找<strong>谁失电子（负极）</strong>，再按介质配电荷即可。</p>
+</div>
+
+<h4>可充电电池的"放电—充电"对应关系</h4>
+<div class="card concept">
+<span class="tag">归纳总结</span>
+<p>以铅蓄电池为例，可充电电池的两态切换是高考常客，记住"一一对应、方向相反"：</p>
+<table>
+<tr><th>放电（原电池）</th><th>充电（电解池）</th></tr>
+<tr><td>负极：Pb − 2e<sup>−</sup> + SO<sub>4</sub><sup>2−</sup> → PbSO<sub>4</sub>（氧化）</td><td>阴极：PbSO<sub>4</sub> + 2e<sup>−</sup> → Pb + SO<sub>4</sub><sup>2−</sup>（还原）</td></tr>
+<tr><td>正极：PbO<sub>2</sub> + 2e<sup>−</sup> + 4H<sup>+</sup> + SO<sub>4</sub><sup>2−</sup> → PbSO<sub>4</sub> + 2H<sub>2</sub>O（还原）</td><td>阳极：PbSO<sub>4</sub> + 2H<sub>2</sub>O − 2e<sup>−</sup> → PbO<sub>2</sub> + 4H<sup>+</sup> + SO<sub>4</sub><sup>2−</sup>（氧化）</td></tr>
+</table>
+<p><strong>接线规则</strong>：充电时，原电池的<strong>负极接外电源负极</strong>（作阴极被还原）、<strong>正极接外电源正极</strong>（作阳极被氧化）——"负接负、正接正"。充电反应就是放电反应的完全倒写，充电总反应为放电总反应的逆反应。</p>
+<p><strong>现象判断</strong>：铅蓄电池放电时两极表面都覆盖 PbSO<sub>4</sub>（两极均"增重"）、硫酸浓度减小（密度下降）；充电过程恰好相反。</p>
+</div>
+
+<h3>2.4 电解池原理与放电顺序</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：在外接直流电源的驱动下，强迫电流通过电解质溶液（或熔融电解质），在两极分别发生氧化、还原反应的装置。判断口诀：<strong>阳氧阴还</strong>——阳极（接电源正极）发生氧化反应，阴极（接电源负极）发生还原反应。</p>
+<p><strong>与原电池对比记忆</strong>：</p>
+<table>
+<tr><th></th><th>原电池</th><th>电解池</th></tr>
+<tr><td>能量转化</td><td>化学能 → 电能</td><td>电能 → 化学能</td></tr>
+<tr><td>有无外接电源</td><td>无（本身就是电源）</td><td>有直流电源</td></tr>
+<tr><td>电极名称</td><td>负极（氧化）、正极（还原）</td><td>阳极（氧化，接电源正极）、阴极（还原，接电源负极）</td></tr>
+<tr><td>电子流向</td><td>负极 → 外电路 → 正极</td><td>电源负极 → 阴极；阳极 → 电源正极</td></tr>
+<tr><td>离子迁移</td><td>阳离子向正极，阴离子向负极</td><td>阳离子向阴极，阴离子向阳极</td></tr>
+</table>
+<p><strong>放电顺序（必须熟背）</strong>：</p>
+<ul>
+<li><strong>阳极</strong>：先看电极材料！若为<strong>活性电极</strong>（除 Pt、Au 以外的金属，如 Cu、Fe、Ag），则<strong>电极本身失电子溶解</strong>；若为惰性电极（Pt、石墨），溶液中阴离子放电：S<sup>2−</sup> &gt; I<sup>−</sup> &gt; Br<sup>−</sup> &gt; Cl<sup>−</sup> &gt; OH<sup>−</sup> &gt; 含氧酸根（SO<sub>4</sub><sup>2−</sup>、NO<sub>3</sub><sup>−</sup> 等不放电）；</li>
+<li><strong>阴极</strong>（电极本身总是不放电，只看阳离子）：Ag<sup>+</sup> &gt; Fe<sup>3+</sup> &gt; Cu<sup>2+</sup> &gt; H<sup>+</sup>(酸) &gt; Pb<sup>2+</sup> &gt; Fe<sup>2+</sup> &gt; Zn<sup>2+</sup> &gt; H<sup>+</sup>(水) &gt; Al<sup>3+</sup>、Mg<sup>2+</sup>、Na<sup>+</sup>、Ca<sup>2+</sup>、K<sup>+</sup>（这些在水溶液中不放电，水放电产生 H<sub>2</sub>）。</li>
+</ul>
+<p><strong>典型电解类型</strong>（惰性电极）：</p>
+<table>
+<tr><th>电解液</th><th>阴极产物</th><th>阳极产物</th><th>电解实质</th></tr>
+<tr><td>CuCl<sub>2</sub> 溶液</td><td>Cu</td><td>Cl<sub>2</sub></td><td>电解质本身被电解</td></tr>
+<tr><td>NaCl 溶液</td><td>H<sub>2</sub>（水放电）</td><td>Cl<sub>2</sub></td><td>电解质 + 水，生成 NaOH</td></tr>
+<tr><td>CuSO<sub>4</sub> 溶液</td><td>Cu</td><td>O<sub>2</sub>（水放电）</td><td>电解质 + 水，生成 H<sub>2</sub>SO<sub>4</sub>，pH 减小</td></tr>
+<tr><td>Na<sub>2</sub>SO<sub>4</sub> 溶液 / 稀 H<sub>2</sub>SO<sub>4</sub> / NaOH 溶液</td><td>H<sub>2</sub></td><td>O<sub>2</sub></td><td>实质都是电解水（2H<sub>2</sub>O → 2H<sub>2</sub>↑ + O<sub>2</sub>↑）</td></tr>
+</table>
+</div>
+
+<h4>电解规律四类型（含 pH 变化与"复原"方法）</h4>
+<div class="card concept">
+<span class="tag">归纳总结</span>
+<table>
+<tr><th>类型</th><th>典型电解液</th><th>被电解的物质</th><th>pH 变化</th><th>恢复原状应加入</th></tr>
+<tr><td>电解水型</td><td>NaOH、H<sub>2</sub>SO<sub>4</sub>、Na<sub>2</sub>SO<sub>4</sub></td><td>水</td><td>碱溶液 pH↑；酸溶液 pH↓；强酸强碱盐溶液不变</td><td>加水</td></tr>
+<tr><td>电解电解质型</td><td>HCl、CuCl<sub>2</sub></td><td>电解质本身</td><td>HCl：pH↑</td><td>通入 HCl 气体 / 加 CuCl<sub>2</sub></td></tr>
+<tr><td>放 H<sub>2</sub> 生碱型</td><td>NaCl、KBr</td><td>电解质 + 水</td><td>pH↑</td><td>通入 HCl 气体（不是加盐酸溶液——会多加水）</td></tr>
+<tr><td>放 O<sub>2</sub> 生酸型</td><td>CuSO<sub>4</sub>、AgNO<sub>3</sub></td><td>电解质 + 水</td><td>pH↓</td><td>加 CuO 或 CuCO<sub>3</sub>（不是 Cu(OH)<sub>2</sub>——会多加水）</td></tr>
+</table>
+<p><strong>"复原"原则</strong>：电解中从溶液里"跑出来"什么（气体逸出、固体析出），就按原子比例补回什么。放 H<sub>2</sub> 生碱型跑掉的是"H 和 Cl"（H<sub>2</sub>↑ + Cl<sub>2</sub>↑），所以通 HCl 气体；放 O<sub>2</sub> 生酸型析出 Cu、逸出 O<sub>2</sub>，相当于从溶液中拿走"CuO"，所以加 CuO。</p>
+</div>
+
+<h4>串联电路与多池混合装置的判断</h4>
+<div class="card concept">
+<span class="tag">归纳总结</span>
+<ul>
+<li><strong>多个池子串联</strong>：只要有一个外接直流电源，所有池子都是电解池；没有电源时，最活泼金属所在的那个池子是原电池（充当"电源"），其余池子都变成电解池；</li>
+<li><strong>计算只认一条</strong>：串联电路中流过每个电极的电子数相等。例如左池电解 CuSO<sub>4</sub> 析出 0.1 mol Cu（转移 0.2 mol e<sup>−</sup>），则右池电解 AgNO<sub>3</sub> 必析出 0.2 mol Ag（Ag<sup>+</sup> + e<sup>−</sup> → Ag，1 mol Ag 只对应 1 mol e<sup>−</sup>）；</li>
+<li><strong>电极名称要分开叫</strong>：原电池叫正负极、电解池叫阴阳极；串联时原电池的正极连接的是电解池的阳极（都发生氧化/还原方向相反——注意：相连的两极一个是"还原则"一个是"氧化极"，电子从原电池负极流向电解池阴极）。</li>
+</ul>
+</div>
+
+<h3>2.5 电解原理的应用</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>① 氯碱工业</strong>（电解饱和食盐水，惰性电极，离子交换膜隔开两极）：</p>
+<p class="eq"><span class="formula">阳极：2Cl<sup>−</sup> − 2e<sup>−</sup> → Cl<sub>2</sub>↑　　阴极：2H<sub>2</sub>O + 2e<sup>−</sup> → H<sub>2</sub>↑ + 2OH<sup>−</sup></span></p>
+<p class="eq"><span class="formula">总反应：2NaCl + 2H<sub>2</sub>O <span class="eq-arrow" data-cond="通电">→</span> 2NaOH + H<sub>2</sub>↑ + Cl<sub>2</sub>↑</span></p>
+<p>阳离子交换膜只让 Na<sup>+</sup> 通过到阴极区，防止 Cl<sub>2</sub> 与 NaOH 接触反应（Cl<sub>2</sub> + 2NaOH → NaCl + NaClO + H<sub>2</sub>O），也防止 H<sub>2</sub> 与 Cl<sub>2</sub> 混合爆炸。</p>
+<p><strong>② 电镀</strong>：待镀件作<strong>阴极</strong>，镀层金属作<strong>阳极</strong>，电镀液含镀层金属阳离子。如铁件镀铜：阴极（铁件）Cu<sup>2+</sup> + 2e<sup>−</sup> → Cu；阳极（铜片）Cu − 2e<sup>−</sup> → Cu<sup>2+</sup>。电镀液浓度基本不变。</p>
+<p><strong>③ 电解精炼铜</strong>：粗铜作阳极（Cu 及比 Cu 活泼的 Zn、Fe、Ni 都失电子溶解；比 Cu 不活泼的 Ag、Au 沉在阳极下方形成"阳极泥"），纯铜作阴极（Cu<sup>2+</sup> + 2e<sup>−</sup> → Cu），CuSO<sub>4</sub> 溶液作电解液。由于 Zn<sup>2+</sup>、Fe<sup>2+</sup> 不断在溶液中积累而 Cu<sup>2+</sup> 不断消耗，电解液中 c(Cu<sup>2+</sup>) 会逐渐减小，需定期净化。</p>
+<p><strong>④ 电冶金</strong>：活泼金属 K、Ca、Na、Mg、Al 用电解法制取——电解熔融 NaCl 制 Na（2NaCl(熔融) <span class="eq-arrow" data-cond="通电">→</span> 2Na + Cl<sub>2</sub>↑）；电解熔融 Al<sub>2</sub>O<sub>3</sub>（加冰晶石 Na<sub>3</sub>AlF<sub>6</sub> 降低熔点）制 Al：2Al<sub>2</sub>O<sub>3</sub>(熔融) <span class="eq-arrow" data-cond="通电">→</span> 4Al + 3O<sub>2</sub>↑。注意电解熔融 MgCl<sub>2</sub> 制 Mg，而不是 MgO（熔点太高）。</p>
+<p><strong>电镀与电解精炼铜对比</strong>（两者极易混淆）：</p>
+<table>
+<tr><th></th><th>电镀（铁件镀铜）</th><th>电解精炼铜</th></tr>
+<tr><td>目的</td><td>在制品表面镀一层铜</td><td>提纯粗铜得到纯铜</td></tr>
+<tr><td>阳极</td><td>纯铜（镀层金属）</td><td>粗铜（含 Zn、Fe、Ag、Au 等杂质）</td></tr>
+<tr><td>阴极</td><td>待镀铁件</td><td>纯铜</td></tr>
+<tr><td>电解液</td><td>CuSO<sub>4</sub> 溶液（含镀层金属离子）</td><td>CuSO<sub>4</sub> 溶液（需定期净化）</td></tr>
+<tr><td>c(Cu<sup>2+</sup>)</td><td>基本不变</td><td>逐渐减小（杂质离子进入溶液）</td></tr>
+<tr><td>特殊点</td><td>镀层均匀致密</td><td>阳极泥中可回收 Ag、Au</td></tr>
+</table>
+<p>共同点：阳极都是铜失电子溶解、阴极都是 Cu<sup>2+</sup> 得电子析出，本质上都是"铜的定向搬运"。</p>
+</div>
+
+<h3>2.6 金属的腐蚀与防护</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>腐蚀的两大类</strong>：</p>
+<ul>
+<li><strong>化学腐蚀</strong>：金属直接与干燥气体（O<sub>2</sub>、Cl<sub>2</sub> 等）或非电解质反应，无电流产生；</li>
+<li><strong>电化学腐蚀</strong>：不纯金属与电解质溶液接触形成无数微小原电池，活泼金属作负极被氧化，有微弱电流——<strong>是金属腐蚀的主要形式</strong>。</li>
+</ul>
+<p><strong>钢铁的两种电化学腐蚀</strong>（Fe 作负极、C 作正极）：</p>
+<table>
+<tr><th></th><th>析氢腐蚀</th><th>吸氧腐蚀（更普遍）</th></tr>
+<tr><td>条件</td><td>水膜酸性较强（pH &lt; 4.3）</td><td>水膜呈中性或弱酸性</td></tr>
+<tr><td>负极（Fe）</td><td colspan="2">Fe − 2e<sup>−</sup> → Fe<sup>2+</sup>（两种腐蚀相同）</td></tr>
+<tr><td>正极（C）</td><td>2H<sup>+</sup> + 2e<sup>−</sup> → H<sub>2</sub>↑</td><td>O<sub>2</sub> + 2H<sub>2</sub>O + 4e<sup>−</sup> → 4OH<sup>−</sup></td></tr>
+</table>
+<p>吸氧腐蚀后续：Fe<sup>2+</sup> + 2OH<sup>−</sup> → Fe(OH)<sub>2</sub>，再被氧化：4Fe(OH)<sub>2</sub> + O<sub>2</sub> + 2H<sub>2</sub>O → 4Fe(OH)<sub>3</sub>，Fe(OH)<sub>3</sub> 失水形成铁锈（Fe<sub>2</sub>O<sub>3</sub>·xH<sub>2</sub>O）。</p>
+<p><strong>防护方法</strong>：</p>
+<ul>
+<li>覆盖保护层：刷漆、涂油、镀其他金属、烤蓝；</li>
+<li><strong>牺牲阳极（阴极保护）法</strong>：在被保护的钢铁设备上连接更活泼的金属（Zn、Mg），活泼金属作负极被腐蚀，钢铁作正极受保护——如船体外挂锌块、地下钢管连镁块。<strong>本质是原电池原理</strong>；</li>
+<li><strong>外加电流阴极保护法</strong>：把被保护金属接直流电源的<strong>负极</strong>作阴极，辅助电极接正极——如保护水闸门、埋地管道。<strong>本质是电解池原理</strong>；</li>
+<li>改变金属内部结构：制成不锈钢等合金。</li>
+</ul>
+<p><strong>一句话区分</strong>：牺牲阳极 = 找个"替死鬼"（原电池）；外加电流 = 接电源负极强行"按住"电子（电解池）。</p>
+<p><strong>金属腐蚀速率的一般规律</strong>（由快到慢）：电解池的阳极 &gt; 原电池的负极 &gt; 化学腐蚀 &gt; 有防护措施的腐蚀；原电池正极、电解池阴极上的金属几乎不受腐蚀。因此：① 同一金属在电解质溶液中比在干燥空气中腐蚀快；② 与更活泼金属相连时被保护，与更不活泼金属相连时加速腐蚀（如铁船体上嵌铜钉处锈蚀最严重）；③ 电解质浓度越大腐蚀越快（海水中的钢铁比淡水中锈蚀快）。</p>
+</div>
+
+<h3>2.7 本章核心结论速查</h3>
+<div class="card note">
+<span class="tag">考前必背</span>
+<ul>
+<li><strong>两句口诀</strong>：原电池"负氧正还"（负极失电子被氧化），电解池"阳氧阴还"（阳极失电子被氧化）；</li>
+<li><strong>三流向</strong>：电子走外电路（原电池负→正）、电流相反、溶液中阳离子向正极/阴极迁移；</li>
+<li><strong>放电顺序</strong>：阳极看材料（活性电极自身溶解；惰性电极 S<sup>2−</sup> &gt; I<sup>−</sup> &gt; Br<sup>−</sup> &gt; Cl<sup>−</sup> &gt; OH<sup>−</sup> &gt; 含氧酸根），阴极看离子（Ag<sup>+</sup> &gt; Fe<sup>3+</sup> &gt; Cu<sup>2+</sup> &gt; H<sup>+</sup> &gt; …活泼金属离子在水溶液中不放电）；</li>
+<li><strong>介质规则</strong>：酸性用 H<sup>+</sup> 配电荷、碱性用 OH<sup>−</sup> 配电荷，产物必须能在介质中稳定存在；</li>
+<li><strong>计算铁律</strong>：串联电路各电极转移电子数相等，一切电化学计算从 n(e<sup>−</sup>) 出发；</li>
+<li><strong>电解四应用</strong>：氯碱（2NaCl + 2H<sub>2</sub>O → 2NaOH + H<sub>2</sub>↑ + Cl<sub>2</sub>↑）、电镀（镀件作阴极）、精炼（粗铜作阳极，Ag/Au 成阳极泥）、电冶金（熔融 NaCl 制 Na、熔融 Al<sub>2</sub>O<sub>3</sub> 制 Al）；</li>
+<li><strong>腐蚀防护</strong>：钢铁在潮湿中性环境中主要发生吸氧腐蚀（正极 O<sub>2</sub> + 2H<sub>2</sub>O + 4e<sup>−</sup> → 4OH<sup>−</sup>）；牺牲阳极用原电池原理，外加电流接电源负极用电解池原理；</li>
+<li><strong>复原原则</strong>：电解后出什么补什么——放氢生碱通 HCl、放氧生酸加 CuO/CuCO<sub>3</sub>、电解水加水。</li>
+<li><strong>速查提醒</strong>：选择题中"电流方向""离子迁移方向""电极质量变化""pH 变化"四类判断，答案全部能从两极反应式直接读出，先写式子再判断是最稳的路径；充电电池牢记"放电看正负、充电看阴阳、负接负、正接正、反应倒着写"。</li>
+</ul>
+</div>
+</section>
+
+<section>
+<h2>三、三重表征贯通</h2>
+
+<h4>第 1 组：铜锌原电池</h4>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>锌片和铜片平行插入稀硫酸并用导线连接（接电流计）：指针偏转，锌片逐渐溶解变薄，铜片表面不断冒出无色气泡，烧杯中溶液温度略有上升。若只插锌片不连铜片，锌片表面也冒气泡但无电流——对比可知电流来自两个电极的"分工"。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>Zn 原子在锌片表面失电子变成 Zn<sup>2+</sup> 进入溶液（氧化半反应）；电子沿导线涌向铜片；溶液中的 H<sup>+</sup> 迁移到铜片表面夺取电子生成 H<sub>2</sub> 分子（还原半反应）。溶液中阳离子（H<sup>+</sup>、Zn<sup>2+</sup>）向铜片（正极）迁移，SO<sub>4</sub><sup>2−</sup> 向锌片（负极）迁移，形成闭合的"离子流"。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p>负极（Zn）：Zn − 2e<sup>−</sup> → Zn<sup>2+</sup></p>
+<p>正极（Cu）：2H<sup>+</sup> + 2e<sup>−</sup> → H<sub>2</sub>↑</p>
+<p>总反应：Zn + H<sub>2</sub>SO<sub>4</sub> → ZnSO<sub>4</sub> + H<sub>2</sub>↑</p>
+<p>装置记法：负氧正还；电子 Zn → 外电路 → Cu</p>
+</div>
+</div>
+
+<h4>第 2 组：电解饱和食盐水（氯碱工业）</h4>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>U 形管中装饱和食盐水，两端插入石墨电极接通直流电源：两极都有气泡产生；阳极附近湿润的淀粉 KI 试纸变蓝（Cl<sub>2</sub> 氧化 I<sup>−</sup> 生成 I<sub>2</sub>）；阴极附近滴加酚酞变红（生成 OH<sup>−</sup>），收集到的气体点燃有爆鸣声（H<sub>2</sub>）。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>阳极（接电源正极）：Cl<sup>−</sup> 比 OH<sup>−</sup> 优先失电子，两个 Cl<sup>−</sup> 变成 Cl<sub>2</sub> 分子逸出；阴极（接电源负极）：Na<sup>+</sup> 不放电，由 H<sub>2</sub>O 提供的 H<sup>+</sup> 得电子变成 H<sub>2</sub>，留下 OH<sup>−</sup>；Na<sup>+</sup> 穿过阳离子交换膜向阴极迁移，与 OH<sup>−</sup> 形成 NaOH。水被不断"拆分"，食盐水的咸味逐渐消失。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p>阳极：2Cl<sup>−</sup> − 2e<sup>−</sup> → Cl<sub>2</sub>↑</p>
+<p>阴极：2H<sub>2</sub>O + 2e<sup>−</sup> → H<sub>2</sub>↑ + 2OH<sup>−</sup></p>
+<p>总反应：2NaCl + 2H<sub>2</sub>O <span class="eq-arrow" data-cond="通电">→</span> 2NaOH + H<sub>2</sub>↑ + Cl<sub>2</sub>↑</p>
+</div>
+</div>
+
+<h4>第 3 组：钢铁的吸氧腐蚀</h4>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>潮湿空气中的铁钉几天后表面出现红棕色铁锈，且水膜覆盖处比干燥处锈蚀更快；食盐水中比纯水中锈蚀更快。铁锈疏松多孔，不能阻止内部继续锈蚀——所以铁器防锈必须隔绝水和氧气。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>铁中含有的碳粒与铁构成无数微小原电池：Fe 作负极失电子变成 Fe<sup>2+</sup> 进入水膜；O<sub>2</sub> 在碳粒（正极）表面得电子与水生成 OH<sup>−</sup>；Fe<sup>2+</sup> 与 OH<sup>−</sup> 结合成 Fe(OH)<sub>2</sub>，再被 O<sub>2</sub> 氧化为 Fe(OH)<sub>3</sub>，失水后成为 Fe<sub>2</sub>O<sub>3</sub>·xH<sub>2</sub>O（铁锈）。NaCl 溶液导电性更强，加速了电子与离子的传递，故锈蚀更快。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p>负极：Fe − 2e<sup>−</sup> → Fe<sup>2+</sup></p>
+<p>正极：O<sub>2</sub> + 2H<sub>2</sub>O + 4e<sup>−</sup> → 4OH<sup>−</sup></p>
+<p>后续：Fe<sup>2+</sup> + 2OH<sup>−</sup> → Fe(OH)<sub>2</sub>；4Fe(OH)<sub>2</sub> + O<sub>2</sub> + 2H<sub>2</sub>O → 4Fe(OH)<sub>3</sub></p>
+</div>
+</div>
+
+<h4>第 4 组：铁件镀铜（电镀）</h4>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>把铁钉和铜片同时浸入 CuSO<sub>4</sub> 溶液，铁钉接电源负极、铜片接电源正极。通电几分钟后取出铁钉，表面均匀地覆盖了一层紫红色的铜，光亮如新；铜片则缓慢变细。电镀液的颜色（蓝色）几乎不变——说明 Cu<sup>2+</sup> 浓度保持恒定。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>电源负极把电子"压"到铁钉表面，溶液中的 Cu<sup>2+</sup> 在铁钉表面得电子，逐个"长"成致密的铜镀层；铜阳极上的 Cu 原子不断失电子变成 Cu<sup>2+</sup> 进入溶液，恰好补上阴极消耗的量。整个过程像一台"铜的搬运机"：铜从阳极出发，经溶液，在阴极（铁件）上安家。电子只走外电路和电极，Cu<sup>2+</sup> 只在溶液中定向迁移。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p>阴极（铁件）：Cu<sup>2+</sup> + 2e<sup>−</sup> → Cu</p>
+<p>阳极（铜片）：Cu − 2e<sup>−</sup> → Cu<sup>2+</sup></p>
+<p>电镀液：CuSO<sub>4</sub> 溶液，c(Cu<sup>2+</sup>) 不变</p>
+<p>口诀：镀件作阴极，镀层金属作阳极，电镀液含镀层金属离子</p>
+</div>
+</div>
+</section>
+
+<section>
+<h2>四、典型例题分步拆解</h2>
+
+<div class="card example">
+<span class="tag">例 1 · 电极判断 + 电极反应式书写</span>
+<p><strong>题目</strong>：将镁片和铝片用导线连接，插入 NaOH 溶液中组成原电池。写出负极、正极的电极反应式和电池总反应式。</p>
+<p><strong>【思路点拨】</strong>很多同学一看"镁比铝活泼"就直接判镁为负极——这是本题的陷阱。判断负极的依据是"谁与该电解质发生自发的氧化还原反应"。Mg 不与 NaOH 溶液反应，而 Al 能：2Al + 2NaOH + 2H<sub>2</sub>O → 2NaAlO<sub>2</sub> + 3H<sub>2</sub>↑。所以<strong>铝作负极</strong>。</p>
+<div class="step"><span class="no">1</span><p>确定总反应：2Al + 2OH<sup>−</sup> + 2H<sub>2</sub>O → 2AlO<sub>2</sub><sup>−</sup> + 3H<sub>2</sub>↑（Al 失电子，水中的 H 得电子）。</p></div>
+<div class="step"><span class="no">2</span><p>负极（Al，氧化反应）：Al − 3e<sup>−</sup> + 4OH<sup>−</sup> → AlO<sub>2</sub><sup>−</sup> + 2H<sub>2</sub>O。检验：左边电荷 −3 − 4 = −7？不对——Al 失去 3 个电子即左边净电荷为 −4（4 个 OH<sup>−</sup>）加上失去的 3 个电子相当于 +3，两边电荷：左 = −4 + 3 = −1，右 = −1，守恒；原子：Al 守恒，O 左 4 右 4，H 左 4 右 4，守恒。✓</p></div>
+<div class="step"><span class="no">3</span><p>正极（Mg，还原反应）：Mg 不与 NaOH 反应，只有水在镁表面得电子：6H<sub>2</sub>O + 6e<sup>−</sup> → 3H<sub>2</sub>↑ + 6OH<sup>−</sup>（即 2H<sub>2</sub>O + 2e<sup>−</sup> → H<sub>2</sub>↑ + 2OH<sup>−</sup>）。</p></div>
+<div class="step"><span class="no">4</span><p>验证：负极 × 2 与正极相加，消去 6e<sup>−</sup>：2Al + 8OH<sup>−</sup> + 6H<sub>2</sub>O → 2AlO<sub>2</sub><sup>−</sup> + 4H<sub>2</sub>O + 3H<sub>2</sub>↑ + 6OH<sup>−</sup>，化简得 2Al + 2OH<sup>−</sup> + 2H<sub>2</sub>O → 2AlO<sub>2</sub><sup>−</sup> + 3H<sub>2</sub>↑，与总反应一致。✓</p></div>
+<div class="ans"><strong>【答案】</strong>负极（Al）：Al − 3e<sup>−</sup> + 4OH<sup>−</sup> → AlO<sub>2</sub><sup>−</sup> + 2H<sub>2</sub>O；正极（Mg）：2H<sub>2</sub>O + 2e<sup>−</sup> → H<sub>2</sub>↑ + 2OH<sup>−</sup>；总反应：2Al + 2OH<sup>−</sup> + 2H<sub>2</sub>O → 2AlO<sub>2</sub><sup>−</sup> + 3H<sub>2</sub>↑。</div>
+<p><strong>【方法总结】</strong>判断正负极的铁律是"<strong>谁与该电解质发生自发的氧化反应，谁作负极</strong>"，活泼性只是通常情况下的经验规则（在稀硫酸中 Mg 确实是负极）。类似陷阱还有：Fe、Al 遇浓硝酸钝化后，Cu 反而作负极。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 2 · 电子守恒计算</span>
+<p><strong>题目</strong>：用惰性电极电解 500 mL CuSO<sub>4</sub> 溶液，一段时间后阴极析出铜 6.4 g（Cu 的相对原子质量取 64）。求：(1) 电路中转移电子的物质的量；(2) 阳极在标准状况下生成气体的体积；(3) 若溶液体积仍为 500 mL，此时溶液的 pH。</p>
+<p><strong>【思路点拨】</strong>先写两极反应：阴极 Cu<sup>2+</sup> + 2e<sup>−</sup> → Cu；阳极（惰性电极，SO<sub>4</sub><sup>2−</sup> 不放电，由水放电）：2H<sub>2</sub>O − 4e<sup>−</sup> → O<sub>2</sub>↑ + 4H<sup>+</sup>。所有计算通过"n(e<sup>−</sup>) 相等"挂钩。</p>
+<div class="step"><span class="no">1</span><p>n(Cu) = 6.4 g ÷ 64 g/mol = 0.10 mol。由 Cu<sup>2+</sup> + 2e<sup>−</sup> → Cu，转移电子 n(e<sup>−</sup>) = 2 × 0.10 = <strong>0.20 mol</strong>。</p></div>
+<div class="step"><span class="no">2</span><p>由阳极反应 2H<sub>2</sub>O − 4e<sup>−</sup> → O<sub>2</sub>↑ + 4H<sup>+</sup>，n(O<sub>2</sub>) = n(e<sup>−</sup>)/4 = 0.20/4 = 0.050 mol，V(O<sub>2</sub>) = 0.050 × 22.4 = <strong>1.12 L</strong>（标准状况）。</p></div>
+<div class="step"><span class="no">3</span><p>同时阳极生成 n(H<sup>+</sup>) = n(e<sup>−</sup>) = 0.20 mol（由方程式比例 4e<sup>−</sup> ~ 4H<sup>+</sup>）。c(H<sup>+</sup>) = 0.20 mol ÷ 0.500 L = 0.40 mol/L，pH = −lg 0.40 = lg 2.5 = 0.40（lg 2.5 = 0.40）。更精确：−lg 0.4 = 1 − lg 4 = 1 − 0.60 = 0.40。</p></div>
+<div class="ans"><strong>【答案】</strong>(1) 0.20 mol；(2) 1.12 L；(3) pH ≈ 0.4。</div>
+<p><strong>【方法总结】</strong>电解计算三步："<strong>写两极反应 → 由已知量求 n(e<sup>−</sup>) → 按电子守恒分配给其他物质</strong>"。串联电路中每个电极转移的电子数必定相等，这是所有电化学计算的"总开关"。本题还有个小陷阱：问 pH 时，CuSO<sub>4</sub> 溶液电解后生成的是 H<sub>2</sub>SO<sub>4</sub>，溶液变酸，不要再去找 OH<sup>−</sup>。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 3 · 燃料电池电极反应式（介质对比）</span>
+<p><strong>题目</strong>：氢氧燃料电池的总反应为 2H<sub>2</sub> + O<sub>2</sub> = 2H<sub>2</sub>O。分别写出以 (1) 稀硫酸、(2) KOH 溶液为电解质时，负极和正极的电极反应式。</p>
+<p><strong>【思路点拨】</strong>燃料电池中：燃料（H<sub>2</sub>）通入负极被氧化，氧化剂（O<sub>2</sub>）通入正极被还原。书写时用四步法，<strong>介质决定用什么离子配电荷</strong>：酸性用 H<sup>+</sup>，碱性用 OH<sup>−</sup>。</p>
+<div class="step"><span class="no">1</span><p><strong>酸性介质负极</strong>：H<sub>2</sub> 失电子变成 H<sup>+</sup>：H<sub>2</sub> − 2e<sup>−</sup> → 2H<sup>+</sup>（电荷、原子均守恒）。</p></div>
+<div class="step"><span class="no">2</span><p><strong>酸性介质正极</strong>：O<sub>2</sub> 得 4e<sup>−</sup>，用 H<sup>+</sup> 配电荷、H<sub>2</sub>O 配原子：O<sub>2</sub> + 4e<sup>−</sup> + 4H<sup>+</sup> → 2H<sub>2</sub>O。检验：左电荷 −4+4=0，右 0；O、H 均守恒。✓</p></div>
+<div class="step"><span class="no">3</span><p><strong>碱性介质负极</strong>：H<sup>+</sup> 不能存在于碱性中，H<sub>2</sub> 失电子后与 OH<sup>−</sup> 结合成水：H<sub>2</sub> − 2e<sup>−</sup> + 2OH<sup>−</sup> → 2H<sub>2</sub>O。检验：左电荷 −2−2=−4？注意"−2e<sup>−</sup>"意味着左边净电荷为 −2 + 2 = 0……换个算法：把电子放在左边参与电荷平衡：左 = −2（OH<sup>−</sup>），右 = 0，电子 −2e<sup>−</sup> 从左边移走，左边失去负电荷相当于 +2，故左净 = 0，右 = 0，守恒。✓（考场上用最朴素的方法：数左右两边"总电荷"相等即可。）</p></div>
+<div class="step"><span class="no">4</span><p><strong>碱性介质正极</strong>：O<sub>2</sub> 得电子后生成 OH<sup>−</sup>：O<sub>2</sub> + 4e<sup>−</sup> + 2H<sub>2</sub>O → 4OH<sup>−</sup>。检验：左电荷 −4，右 −4；O：左 4 右 4，H：左 4 右 4。✓</p></div>
+<div class="step"><span class="no">5</span><p>验证（碱性）：负极 × 2 加正极：2H<sub>2</sub> + 4OH<sup>−</sup> + O<sub>2</sub> + 2H<sub>2</sub>O → 4H<sub>2</sub>O + 4OH<sup>−</sup>，消去 4OH<sup>−</sup> 并化简：2H<sub>2</sub> + O<sub>2</sub> → 2H<sub>2</sub>O，与总反应一致。✓</p></div>
+<div class="ans"><strong>【答案】</strong>酸性：负极 H<sub>2</sub> − 2e<sup>−</sup> → 2H<sup>+</sup>，正极 O<sub>2</sub> + 4e<sup>−</sup> + 4H<sup>+</sup> → 2H<sub>2</sub>O；碱性：负极 H<sub>2</sub> − 2e<sup>−</sup> + 2OH<sup>−</sup> → 2H<sub>2</sub>O，正极 O<sub>2</sub> + 4e<sup>−</sup> + 2H<sub>2</sub>O → 4OH<sup>−</sup>。</div>
+<p><strong>【方法总结】</strong>陌生介质（如熔融碳酸盐、固体氧化物电解质）也用同一套四步法，只是把 H<sup>+</sup>/OH<sup>−</sup> 换成介质中可迁移的离子（如 CO<sub>3</sub><sup>2−</sup>、O<sup>2−</sup>）。口诀："<strong>产物跟着介质走，三守恒来把关</strong>"。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 4 · 电解产物判断与电极材料</span>
+<p><strong>题目</strong>：按下列两种装置电解 CuSO<sub>4</sub> 溶液，分别写出两极反应式并说明溶液 pH 的变化：装置 A 用石墨作两极；装置 B 用铜作阳极、石墨作阴极。</p>
+<p><strong>【思路点拨】</strong>两装置的差别只在阳极材料：石墨是惰性电极，由阴离子放电；铜是活性电极，<strong>电极本身优先溶解</strong>——这是放电顺序表的第一条规则，也是电镀、精炼的原理。</p>
+<div class="step"><span class="no">1</span><p>装置 A（惰性阳极）：阳极 OH<sup>−</sup>（来自水）优先于 SO<sub>4</sub><sup>2−</sup> 放电：2H<sub>2</sub>O − 4e<sup>−</sup> → O<sub>2</sub>↑ + 4H<sup>+</sup>；阴极 Cu<sup>2+</sup> + 2e<sup>−</sup> → Cu。总反应：2CuSO<sub>4</sub> + 2H<sub>2</sub>O <span class="eq-arrow" data-cond="通电">→</span> 2Cu + O<sub>2</sub>↑ + 2H<sub>2</sub>SO<sub>4</sub>，生成强酸，<strong>pH 减小</strong>。</p></div>
+<div class="step"><span class="no">2</span><p>装置 B（铜阳极）：阳极铜自身失电子：Cu − 2e<sup>−</sup> → Cu<sup>2+</sup>；阴极仍是 Cu<sup>2+</sup> + 2e<sup>−</sup> → Cu。总效果是把阳极的铜"搬运"到阴极，溶液中 c(CuSO<sub>4</sub>) 不变，<strong>pH 不变</strong>——这正是电解精炼铜的原理。</p></div>
+<div class="step"><span class="no">3</span><p>对比总结：同样电解 CuSO<sub>4</sub> 溶液，阳极材料不同，结果完全不同——"先看阳极材料"是电解分析的第一反应。</p></div>
+<div class="ans"><strong>【答案】</strong>A：阳极 2H<sub>2</sub>O − 4e<sup>−</sup> → O<sub>2</sub>↑ + 4H<sup>+</sup>，阴极 Cu<sup>2+</sup> + 2e<sup>−</sup> → Cu，pH 减小；B：阳极 Cu − 2e<sup>−</sup> → Cu<sup>2+</sup>，阴极 Cu<sup>2+</sup> + 2e<sup>−</sup> → Cu，pH 不变。</div>
+<p><strong>【方法总结】</strong>电解分析四连问：① 阳极是不是惰性电极？② 溶液中有哪些离子，按放电顺序谁放电？③ 两极产物是什么？④ 溶液中剩下什么，pH 怎么变？按这个顺序走，任何电解题都不会乱。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 5 · 串联电路电子守恒计算</span>
+<p><strong>题目</strong>：甲、乙两个电解池串联：甲池用惰性电极电解 AgNO<sub>3</sub> 溶液，乙池用惰性电极电解 CuSO<sub>4</sub> 溶液。通电一段时间后，甲池阴极析出 10.8 g Ag（Ag 的相对原子质量取 108）。求乙池阴极析出铜的质量，以及乙池阳极在标准状况下产生气体的体积。</p>
+<p><strong>【思路点拨】</strong>串联电路每个电极流过的电子数相等。先由 Ag 的量求 n(e<sup>−</sup>)，再分配给乙池两极。</p>
+<div class="step"><span class="no">1</span><p>甲池阴极：Ag<sup>+</sup> + e<sup>−</sup> → Ag。n(Ag) = 10.8 g ÷ 108 g/mol = 0.10 mol，故转移 n(e<sup>−</sup>) = 0.10 mol。</p></div>
+<div class="step"><span class="no">2</span><p>乙池阴极：Cu<sup>2+</sup> + 2e<sup>−</sup> → Cu。n(Cu) = 0.10 ÷ 2 = 0.050 mol，m(Cu) = 0.050 × 64 = <strong>3.2 g</strong>。</p></div>
+<div class="step"><span class="no">3</span><p>乙池阳极（惰性电极，SO<sub>4</sub><sup>2−</sup> 不放电，水放电）：2H<sub>2</sub>O − 4e<sup>−</sup> → O<sub>2</sub>↑ + 4H<sup>+</sup>。n(O<sub>2</sub>) = 0.10 ÷ 4 = 0.025 mol，V(O<sub>2</sub>) = 0.025 × 22.4 = <strong>0.56 L</strong>（标准状况）。</p></div>
+<div class="ans"><strong>【答案】</strong>乙池析出铜 3.2 g；阳极产生 O<sub>2</sub> 0.56 L（标准状况）。</div>
+<p><strong>【方法总结】</strong>串联计算中特别要注意<strong>各物质与电子的化学计量比不同</strong>：Ag 是 1 mol 金属对 1 mol 电子，Cu 是 1 mol 对 2 mol，O<sub>2</sub> 是 1 mol 对 4 mol。把"n(e<sup>−</sup>)"当成各池之间的"通用货币"，先统一换算再分配。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 6 · 新型电池判断（选择题模型）</span>
+<p><strong>题目</strong>：某新型"锂—空气电池"以金属锂为负极、多孔碳为正极（通入空气）、非水电解质传导 Li<sup>+</sup>，放电总反应为 4Li + O<sub>2</sub> + 2H<sub>2</sub>O → 4LiOH。下列说法正确的是（　）</p>
+<p>A．放电时 Li<sup>+</sup> 向负极迁移　B．正极反应为 O<sub>2</sub> + 4e<sup>−</sup> + 2H<sub>2</sub>O → 4OH<sup>−</sup>　C．放电时负极质量增大　D．该电池工作时化学能转化为电能</p>
+<p><strong>【思路点拨】</strong>陌生电池题四步走：找负极（Li 最活泼，失电子）→ 写两极反应 → 判断离子迁移 → 核对选项。</p>
+<div class="step"><span class="no">1</span><p>负极（Li）：Li − e<sup>−</sup> → Li<sup>+</sup>，锂溶解，<strong>负极质量减小</strong>，C 错误。</p></div>
+<div class="step"><span class="no">2</span><p>离子迁移：原电池中阳离子向<strong>正极</strong>迁移，故 Li<sup>+</sup> 向正极迁移，A 错误。</p></div>
+<div class="step"><span class="no">3</span><p>正极：O<sub>2</sub> 得电子，结合总反应产物 LiOH，写为 O<sub>2</sub> + 4e<sup>−</sup> + 2H<sub>2</sub>O → 4OH<sup>−</sup>，检验电荷（左 −4、右 −4）与原子均守恒，B 正确。</p></div>
+<div class="step"><span class="no">4</span><p>原电池的能量转化就是化学能 → 电能，D 正确。</p></div>
+<div class="step"><span class="no">5</span><p>总反应验证：负极 × 4 加正极：4Li + O<sub>2</sub> + 2H<sub>2</sub>O → 4Li<sup>+</sup> + 4OH<sup>−</sup>，即 4LiOH，与题目所给一致。✓</p></div>
+<div class="ans"><strong>【答案】</strong>BD</div>
+<p><strong>【方法总结】</strong>新型电池题的材料再陌生，考点永远是老三样：电极判断（谁失电子）、离子迁移（阳离子向正极）、电极反应（三守恒验证）。见到"质量变化""迁移方向""反应式正误"四类设问，逐一套用即可。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 7 · 可充电电池的充放电判断</span>
+<p><strong>题目</strong>：铅蓄电池放电时的总反应为 Pb + PbO<sub>2</sub> + 2H<sub>2</sub>SO<sub>4</sub> → 2PbSO<sub>4</sub> + 2H<sub>2</sub>O。下列说法正确的是（　）</p>
+<p>A．放电时，负极反应为 PbO<sub>2</sub> + 2e<sup>−</sup> + 4H<sup>+</sup> + SO<sub>4</sub><sup>2−</sup> → PbSO<sub>4</sub> + 2H<sub>2</sub>O<br>
+B．充电时，阳极反应为 PbSO<sub>4</sub> + 2H<sub>2</sub>O − 2e<sup>−</sup> → PbO<sub>2</sub> + 4H<sup>+</sup> + SO<sub>4</sub><sup>2−</sup><br>
+C．放电时，电解质溶液的密度逐渐增大<br>
+D．充电时，标有"−"的电极应与外接电源的正极相连</p>
+<p><strong>【思路点拨】</strong>用"放电看正负、充电看阴阳、反应互为倒写"来逐项核对。</p>
+<div class="step"><span class="no">1</span><p>A：放电时负极是 Pb 失电子（Pb − 2e<sup>−</sup> + SO<sub>4</sub><sup>2−</sup> → PbSO<sub>4</sub>），选项写的是正极反应，张冠李戴，错误。</p></div>
+<div class="step"><span class="no">2</span><p>B：充电时阳极是放电正极反应的倒写（PbSO<sub>4</sub> 失电子变回 PbO<sub>2</sub>），电极反应式正确，且电荷、原子均守恒，正确。</p></div>
+<div class="step"><span class="no">3</span><p>C：放电时消耗 H<sub>2</sub>SO<sub>4</sub> 并生成水，硫酸浓度减小，密度应<strong>减小</strong>，错误。</p></div>
+<div class="step"><span class="no">4</span><p>D：充电时"负接负、正接正"——标"−"的电极（放电时的负极）充电时应接外电源<strong>负极</strong>作阴极被还原，错误。</p></div>
+<div class="ans"><strong>【答案】</strong>B</div>
+<p><strong>【方法总结】</strong>充电电池题的万能流程：先写放电两极反应（负氧正还）→ 充电反应就是对应倒写（负极↔阴极、正极↔阳极）→ 接线"负接负、正接正"。再把现象（密度、质量、pH）与总反应中的物质增减挂钩，逐项排除即可。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 8 · 电解产物判断与现象描述</span>
+<p><strong>题目</strong>：以石墨为电极电解滴有酚酞的饱和食盐水，U 形管左端为阴极、右端为阳极。描述通电后两极附近可观察到的现象，并写出总反应离子方程式。</p>
+<p><strong>【思路点拨】</strong>现象描述必须"从电极反应式出发"，一个电极一个电极地说：有什么气体、颜色如何变化。</p>
+<div class="step"><span class="no">1</span><p>阴极（左端）：2H<sub>2</sub>O + 2e<sup>−</sup> → H<sub>2</sub>↑ + 2OH<sup>−</sup>，生成 OH<sup>−</sup> 使酚酞变红。现象：有无色气泡产生，电极附近溶液变红。</p></div>
+<div class="step"><span class="no">2</span><p>阳极（右端）：2Cl<sup>−</sup> − 2e<sup>−</sup> → Cl<sub>2</sub>↑。现象：有黄绿色、有刺激性气味的气体产生（湿润淀粉 KI 试纸靠近变蓝）。</p></div>
+<div class="step"><span class="no">3</span><p>总反应（离子方程式）：2Cl<sup>−</sup> + 2H<sub>2</sub>O <span class="eq-arrow" data-cond="通电">→</span> Cl<sub>2</sub>↑ + H<sub>2</sub>↑ + 2OH<sup>−</sup>。</p></div>
+<div class="ans"><strong>【答案】</strong>阴极：无色气泡、附近溶液变红；阳极：黄绿色刺激性气体；总反应 2Cl<sup>−</sup> + 2H<sub>2</sub>O <span class="eq-arrow" data-cond="通电">→</span> Cl<sub>2</sub>↑ + H<sub>2</sub>↑ + 2OH<sup>−</sup>。</div>
+<p><strong>【方法总结】</strong>现象描述三要素："气泡（颜色气味）+ 溶液颜色变化 + 电极本身变化"。描述时严禁出现结论性语言代替现象（如不能说"生成了氯气"，要说"产生黄绿色气体"）；气体检验方法（淀粉 KI 试纸变蓝）要写在现象之后。</p>
+</div>
+
+<div class="card note">
+<span class="tag">答题模板</span>
+<p><strong>① 电极判断表述</strong>："X 电极上，X 物质失（得）电子，化合价升高（降低），发生氧化（还原）反应，故 X 为负（正）极/阳（阴）极。"</p>
+<p><strong>② 电极反应式书写表述</strong>：先写"介质"（酸性/碱性），再按"定产物 → 配电子 → 配电荷 → 配原子"四步书写，写完后用三守恒（电子、电荷、原子）自查。</p>
+<p><strong>③ 离子迁移方向表述</strong>："阳离子向正极（阴极）迁移，阴离子向负极（阳极）迁移"——原电池说正负极，电解池说阴阳极，不要混用。</p>
+<p><strong>④ 电化学计算表述</strong>：必须写出"由电极反应式可知 n(物质) 与 n(e<sup>−</sup>) 的关系"，串联电路写明"各电极转移电子数相等"。</p>
+<p><strong>⑤ 装置图分析模板</strong>：先看有无外接电源（有→电解池，无→原电池）→ 再定各极名称与反应类型 → 然后写两极反应式 → 最后回答迁移方向、pH 变化、产物计算等设问。遇到"交换膜"先判断膜的种类（阳离子膜只过阳离子），再分析各室物质变化。</p>
+<p><strong>⑥ 常见失分提醒</strong>：电极反应式中电子写成"+ e<sup>−</sup>"的位置不能错（负极、阳极失电子写在左边减电子或右边加电子，但高考规范写法是左侧"− ne<sup>−</sup>"）；气体漏标"↑"、沉淀漏标"↓"也会扣分；总反应与两极反应的电子数必须配平一致再相加。</p>
+</div>
+</section>
+
+<section>
+<h2>五、易错点与成因分析</h2>
+
+<div class="card trap">
+<span class="tag">易错点 1</span>
+<p><strong>易错表现</strong>：把原电池和电解池的电极名称张冠李戴，如说"原电池的负极就是电解池的阴极"，或认为电解池中"阳极得电子"。</p>
+<p><strong>错误成因</strong>：死记"正负阴阳"四个名词而没有抓住本质——<strong>氧化还原</strong>。负极和阳极才是"一家人"（都发生氧化、失电子），正极和阴极是"一家人"（都发生还原、得电子）。</p>
+<p><strong>正确理解</strong>：负氧正还（原电池）、阳氧阴还（电解池）。充电电池放电时是原电池（说正负极），充电时是电解池（说阴阳极）——同一个物理电极，放电时的负极在充电时作阴极。</p>
+<p><strong>一句话避坑</strong>：负阳都氧化（失电子），正阴都还原（得电子）——"负阳一家，正阴一家"。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 2</span>
+<p><strong>易错表现</strong>：认为"电子从负极流出，经过电解质溶液到达正极"，或说"阳离子带正电所以向负极跑"（原电池中）。</p>
+<p><strong>错误成因</strong>：混淆了外电路和内电路的导电机制。外电路靠自由电子定向移动导电，溶液靠阴、阳离子定向移动导电，两者接力而不交叉——"电子不下水，离子不上岸"。</p>
+<p><strong>正确理解</strong>：原电池中电子走导线（负 → 正）；溶液中阳离子移向正极、阴离子移向负极（补偿电荷，保持各处电中性）。电解池中阳离子移向阴极、阴离子移向阳极（被电极"吸引"）。</p>
+<p><strong>一句话避坑</strong>：电子走外、离子走内；原电池"正正负负"（阳离子向正极），电解池"阴阳相吸"。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 3</span>
+<p><strong>易错表现</strong>：写碱性条件下的电极反应式时产物中出现 H<sup>+</sup>（或酸性条件下出现 OH<sup>−</sup>），如把碱性氢氧燃料电池负极写成 H<sub>2</sub> − 2e<sup>−</sup> → 2H<sup>+</sup>。</p>
+<p><strong>错误成因</strong>：只背了酸性的写法，没有意识到 H<sup>+</sup> 在碱性溶液中会立即与 OH<sup>−</sup> 中和成水，根本不可能作为最终产物存在。</p>
+<p><strong>正确理解</strong>：书写前先问自己"这个环境里能稳定存在什么离子"。酸性用 H<sup>+</sup> 配电荷，碱性用 OH<sup>−</sup> 配电荷。写完后检查：电极反应式中出现的每一种粒子都必须能在该介质中稳定存在。</p>
+<p><strong>一句话避坑</strong>：酸中无 OH<sup>−</sup>，碱中无 H<sup>+</sup>——产物必须"入乡随俗"。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 4</span>
+<p><strong>易错表现</strong>：电解 CuCl<sub>2</sub> 溶液时用铜作阳极，仍按"Cl<sup>−</sup> 放电生成 Cl<sub>2</sub>"来写阳极反应。</p>
+<p><strong>错误成因</strong>：背放电顺序时漏掉了前提条件——阴离子放电顺序只适用于<strong>惰性电极</strong>。活性电极（除 Pt、Au 外的金属）作阳极时，电极金属自身优先失电子溶解，轮不到溶液里的离子。</p>
+<p><strong>正确理解</strong>：阳极判断第一步永远是"看材料"：惰性电极 → 按 S<sup>2−</sup> &gt; I<sup>−</sup> &gt; Br<sup>−</sup> &gt; Cl<sup>−</sup> &gt; OH<sup>−</sup> &gt; 含氧酸根 放电；活性电极 → 电极本身溶解（如 Cu − 2e<sup>−</sup> → Cu<sup>2+</sup>）。</p>
+<p><strong>一句话避坑</strong>：阳极先看材料——活性电极"自己动手"，惰性电极才轮到离子。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 5</span>
+<p><strong>易错表现</strong>：混淆两种金属防护法——认为"牺牲阳极法是利用电解池原理"或"外加电流法要接被保护金属到电源正极"。</p>
+<p><strong>错误成因</strong>：没有从"谁被氧化"的角度理解。被保护金属必须作<strong>还原反应的一极</strong>（正极或阴极），让别的物质替它被氧化。接到电源正极就成了阳极，会被加速氧化腐蚀，南辕北辙。</p>
+<p><strong>正确理解</strong>：牺牲阳极法（牺牲阳极的阴极保护法）：连接更活泼金属，活泼金属作负极（原电池负极被氧化），被保护金属作正极——原电池原理；外加电流法：被保护金属接电源<strong>负极</strong>作阴极——电解池原理。</p>
+<p><strong>一句话避坑</strong>：牺牲阳极靠"替死鬼"（原电池），外加电流接"负极"（电解池）。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 6</span>
+<p><strong>易错表现</strong>：计算电解后溶液 pH 时，直接对阳极区或阴极区的局部浓度进行计算并当作整个溶液的 pH；或把电解 CuSO<sub>4</sub> 溶液后 pH 的变化方向判断反。</p>
+<p><strong>错误成因</strong>：没有先写出两极反应式、判断"净生成"了什么。电解 CuSO<sub>4</sub> 溶液时阴极析出 Cu、阳极生成 H<sup>+</sup>，总体效果是生成了 H<sub>2</sub>SO<sub>4</sub>，pH 必然减小；若题目给出两极区不隔膜的混合溶液，必须先算总的 n(H<sup>+</sup>) 再除以总体积。</p>
+<p><strong>正确理解</strong>：先写两极反应 → 合并出总反应 → 看净产物是酸还是碱 → 用总量和总体积求浓度。凡是涉及"pH 变化"的电解题，总反应写出来答案就明了一半。</p>
+<p><strong>一句话避坑</strong>：电解 pH 看总反应，合并两极再下结论。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 7</span>
+<p><strong>易错表现</strong>：描述原电池现象时说"负极质量一定减小、正极一定有气体产生"；或认为"电极上发生的反应类型取决于电极材料的活泼性"。</p>
+<p><strong>错误成因</strong>：把铜锌原电池的特殊现象当成了普遍规律。负极质量减小只在"电极自身失电子溶解"时成立；燃料电池中两个电极都是惰性材料，质量都不变。正极的产物取决于"谁在正极得电子"，可能是 H<sub>2</sub>、金属析出，也可能是 O<sub>2</sub> 被还原（吸氧腐蚀），不一定有气体。</p>
+<p><strong>正确理解</strong>：判断现象一律从两极反应式出发，先写式子再说现象。电极反应类型（氧化/还原）由电极的"角色"决定（负极/阳极氧化，正极/阴极还原），而不是材料本身——同一块铜，在原电池中作正极被保护，在电解池中作阳极却被溶解。</p>
+<p><strong>一句话避坑</strong>：现象从反应式里来，不背模板；电极角色决定反应类型，与材料无关。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 8</span>
+<p><strong>易错表现</strong>：认为"电解 NaCl 溶液一段时间后，加入 NaCl 即可使溶液复原"；或"电解 CuSO<sub>4</sub> 溶液后加 Cu(OH)<sub>2</sub> 复原"。</p>
+<p><strong>错误成因</strong>：没有搞清楚"复原"补的是"从溶液中离开的元素"。电解 NaCl 溶液时跑出的是 H<sub>2</sub> 和 Cl<sub>2</sub>（H、Cl 元素离开体系），NaCl 本身并没有减少多少——加 NaCl 反而越加越浓。</p>
+<p><strong>正确理解</strong>：复原原则——"<strong>出什么补什么，按原子比例补</strong>"：放 H<sub>2</sub> 生碱型通 HCl 气体（补 H、Cl 两种元素且不带入水）；放 O<sub>2</sub> 生酸型加 CuO 或 CuCO<sub>3</sub>（补 Cu、O，且能与生成的酸反应）；只电解水时加水；电解电解质型加该电解质（或通入对应气体，如盐酸电解后通 HCl）。</p>
+<p><strong>一句话避坑</strong>：复原看"离场的元素"，不看"原来的溶质"。</p>
+</div>
+</section>
+
+<section>
+<h2>六、与前后章节的联系</h2>
+<table>
+<tr><th>关联章节</th><th>联系点</th></tr>
+<tr><td>氧化还原反应（必修一）</td><td>电化学是氧化还原反应的"分居版"——把氧化半反应和还原半反应拆到两个电极上进行；电极反应式的配平用的就是氧化还原的得失电子守恒</td></tr>
+<tr><td>3.12 化学反应与能量</td><td>原电池是化学能→电能的转化装置，与"反应热"是同一能量的两种释放途径（烧掉变成热，接成电池变成电）</td></tr>
+<tr><td>3.14 水溶液中的离子平衡</td><td>电极反应式书写必须考虑介质酸碱性；电解后溶液 pH 的计算要用 K<sub>w</sub>；电解精炼、电镀常与水解、沉淀知识结合命题</td></tr>
+<tr><td>金属元素及其化合物</td><td>金属活动性顺序是判断负极和放电顺序的依据；Na、Mg、Al 的工业冶炼全靠电解法；铁的吸氧腐蚀是金属元素知识的延伸</td></tr>
+<tr><td>有机化学基础</td><td>甲烷、乙醇、甲醇燃料电池是有机物与电化学的交叉考点，电极反应式书写方法与本章完全一致</td></tr>
+</table>
+<p>电化学是高中化学"用一条守恒线串起一整章"的典范：判断电极靠氧化还原，写方程式靠三守恒，做计算靠电子守恒。把这三件事练熟，本章就没有难题。</p>
+</section>
+
+<section>
+<h2>七、章末自检清单</h2>
+<ul class="checklist">
+<li>我能说出原电池的四个构成条件，并用"负氧正还"快速判断正负极。</li>
+<li>我能说清原电池中电子、电流、阴阳离子三个"流向"，知道"电子不下水、离子不上岸"。</li>
+<li>我能用"定产物 → 配电子 → 配电荷（看介质）→ 配原子"四步法书写陌生电池的电极反应式，并用总反应验证。</li>
+<li>我能写出铅蓄电池放电时的两极反应和总反应，理解充电时电极反应全部逆转。</li>
+<li>我能分别写出氢氧燃料电池在酸性、碱性介质中的两极反应式。</li>
+<li>我能默写阴、阳极的放电顺序，知道活性电极作阳极时电极自身优先溶解。</li>
+<li>我能判断电解 NaCl、CuSO<sub>4</sub>、CuCl<sub>2</sub>、Na<sub>2</sub>SO<sub>4</sub> 等水溶液时两极的产物及溶液 pH 的变化。</li>
+<li>我能说出氯碱工业、电镀、电解精炼铜各自的阴极、阳极材料和电极反应式。</li>
+<li>我能用"n(e<sup>−</sup>) 相等"完成电解计算（产物质量、气体体积、溶液 pH）。</li>
+<li>我能区分析氢腐蚀与吸氧腐蚀的条件和正极反应，写出吸氧腐蚀的完整过程。</li>
+<li>我能区分牺牲阳极法（原电池原理）与外加电流法（接电源负极，电解池原理），并举出应用实例。</li>
+<li>我能指出电镀与电解精炼铜在阴阳极材料、电解液浓度变化上的异同。</li>
+</ul>
+</section>
+
+</main>
+<footer class="chap-foot">高考备考 · 化学 · 深度学习材料 · 2026</footer>
+</body>
+</html>

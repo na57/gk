@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.2 化学用语与化学基本概念-深度学习材料</title>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#0e7c7b; --subject-soft:#eef7f6;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 化学点缀层（无 JS，纯文本方程式） ===== */
+/* 语义卡片（例题=紫 / 易错=琥珀 / 概念=蓝 / 提示=科目色 / 结构=中性墨） */
+.card { border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 18px; margin: 14px 0; page-break-inside: avoid; }
+.card .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
+.card.concept { background: var(--c-concept-bg); } .card.concept .tag { background: var(--c-concept); color: #fff; }
+.card.example { background: var(--c-example-bg); } .card.example .tag { background: var(--c-example); color: #fff; }
+.card.trap { background: var(--c-trap-bg); } .card.trap .tag { background: var(--c-trap); color: #fff; }
+.card.note { background: var(--subject-soft); } .card.note .tag { background: var(--subject); color: #fff; }
+.card.violet { background: var(--canvas); } .card.violet .tag { background: var(--ink); color: #fff; }
+/* 方程式容器（统一灰底盒 + 科目色左边条） */
+.eq { display: block; background: var(--formula-bg); border: 1px solid var(--line); border-left: 4px solid var(--subject); border-radius: 8px; padding: var(--formula-pad); margin: 10px 0; font-size: 16px; text-align: center; letter-spacing: .3px; page-break-inside: avoid; }
+.eq-arrow { position: relative; display: inline-block; margin: 0 6px; font-weight: 600; }
+.eq-arrow::before { content: attr(data-cond); position: absolute; left: 50%; transform: translateX(-50%); top: -1.05em; font-size: 10.5px; font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
+.state { font-size: .72em; font-style: italic; color: var(--ink-soft); }
+sub, sup { font-size: .72em; line-height: 0; }
+.formula { font-size: 1.05em; }
+.kbd { background: #f0f2f5; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 13px; }
+/* 三栏对比 */
+.triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; page-break-inside: avoid; }
+.triple .cell { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: 14px; }
+.triple .cell h4 { margin: 0 0 8px; font-size: 13.5px; text-align: center; padding: 4px 0; border-radius: 6px; color: #fff; }
+.triple .cell:nth-child(1) h4 { background: var(--c-trap); }
+.triple .cell:nth-child(2) h4 { background: var(--c-example); }
+.triple .cell:nth-child(3) h4 { background: var(--subject); }
+/* 步骤与答案 */
+.step { display: flex; gap: 10px; margin: 8px 0; }
+.step .no { flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--c-method); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.ans { background: #fff; border: 1px dashed var(--c-method); border-radius: 8px; padding: 8px 14px; margin: 8px 0; }
+.chap-foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-soft); text-align: center; }
+@media (max-width: 640px) { .triple { grid-template-columns: 1fr; } }
+@media print {
+  .card { border: 1px solid #999; background: #fff !important; }
+  .card .tag { border: 1px solid #333; background: #fff !important; color: #000; }
+  .eq { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .chap-foot { border-top: none; }
+}
+</style>
+</head>
+<body>
+<nav class="chap-nav">高考备考 · 化学 · 深度学习材料 ｜ 化学基本概念 ｜ 3.2 化学用语与化学基本概念</nav>
+<header class="chap-head">
+  <h1>3.2 化学用语与化学基本概念</h1>
+  <p class="chap-meta">高中化学 · 深度学习材料 · 面向 2029 届云南高考</p>
+  <p class="chap-intro">化学用语是化学学科的「书面语言」，物质分类与胶体是认识物质世界的第一把「尺」。本章看似零散，却是高考选择题的常驻考点：一个电子式写错、一次分类判断失误，都是可以直接避免的失分。把规范写成本能，就是本章的全部要求。</p>
+</header>
+<main>
+
+<section>
+<h2>一、知识全景</h2>
+<table>
+<tr><th>知识点</th><th>核心内容</th><th>高考要求</th></tr>
+<tr>
+<td>物质的分类</td>
+<td>混合物/纯净物、单质/化合物、酸/碱/盐/氧化物</td>
+<td>分类标准清晰，能准确判断常见物质（含易混物质）</td>
+</tr>
+<tr>
+<td>分散系与胶体</td>
+<td>分散质粒径分类；胶体的丁达尔效应、电泳、聚沉；Fe(OH)<sub>3</sub> 胶体制备</td>
+<td>理解胶体本质是粒径，会分析生活中的胶体现象</td>
+</tr>
+<tr>
+<td>化学用语</td>
+<td>化学式、电子式、结构式、结构简式、原子结构示意图、核素符号</td>
+<td>书写规范零差错，清楚各种表示方法的区别</td>
+</tr>
+<tr>
+<td>化合价</td>
+<td>概念、常见元素化合价、化合物中正负化合价代数和为零</td>
+<td>快速计算复杂化合物中元素化合价（含平均化合价）</td>
+</tr>
+<tr>
+<td>化学方程式</td>
+<td>书写规则、配平方法、质与量双重意义</td>
+<td>配平快速准确，注明条件与状态符号</td>
+</tr>
+</table>
+<p><strong>本章在高考中的位置</strong>：物质分类、胶体、化学用语常以选择题第一、二题的「送分题」身份出现，化合价与配平则渗透在所有方程式的书写中。送分题丢分最可惜——本章目标：会者全对。</p>
+
+<h3>易混物质分类速查表（考前必背）</h3>
+<table>
+<tr><th>物质</th><th>正确归类</th><th>常见误判与理由</th></tr>
+<tr><td>盐酸</td><td>混合物</td><td>误判为纯净物：HCl 气体的水溶液，含 HCl 与 H<sub>2</sub>O</td></tr>
+<tr><td>液氯、液氧、液氨</td><td>纯净物（单质/化合物）</td><td>误判为混合物：只是物质的一种聚集状态</td></tr>
+<tr><td>漂白粉</td><td>混合物</td><td>误判为纯净物：含 Ca(ClO)<sub>2</sub> 与 CaCl<sub>2</sub></td></tr>
+<tr><td>纯碱（Na<sub>2</sub>CO<sub>3</sub>）</td><td>盐</td><td>误判为碱：名称带「碱」但由金属离子与酸根构成</td></tr>
+<tr><td>冰水混合物</td><td>纯净物</td><td>误判为混合物：只有 H<sub>2</sub>O 一种分子，状态不同不影响</td></tr>
+<tr><td>水银（Hg）</td><td>纯净物（单质）</td><td>误判为混合物：金属的液态形态</td></tr>
+<tr><td>干冰（CO<sub>2</sub>）</td><td>纯净物（化合物）</td><td>误判为混合物：固态 CO<sub>2</sub></td></tr>
+<tr><td>NaHSO<sub>4</sub></td><td>盐（酸式盐）</td><td>误判为酸：电离还产生 Na<sup>+</sup></td></tr>
+<tr><td>Cu<sub>2</sub>(OH)<sub>2</sub>CO<sub>3</sub></td><td>盐（碱式盐）</td><td>误判为碱：含 OH<sup>−</sup> 但同时含酸根</td></tr>
+<tr><td>Na<sub>2</sub>O<sub>2</sub></td><td>过氧化物</td><td>误判为碱性氧化物：与酸反应还生成 O<sub>2</sub>，不属于碱性氧化物</td></tr>
+<tr><td>氨水</td><td>混合物</td><td>误判为纯净物：NH<sub>3</sub> 的水溶液，含多种微粒</td></tr>
+</table>
+<div class="card note">
+<span class="tag">学法建议</span>
+<p>本章建议「卡片化」学习：把分类速查表、变价元素表、分散系比较表各抄成一张卡片，每天早读各默写一遍，一周后这些表会长在你的脑子里。选择题第 1 题的正确率，就是这样练出来的。</p>
+</div>
+</section>
+
+<section>
+<h2>二、核心概念精讲</h2>
+<p>五张概念卡片覆盖本章全部考点。每张卡片按「定义 → 微观理解 → 边界与特例 → 易混淆点」展开，特例和边界是命题人最偏爱的地方，请重点标注。</p>
+
+<div class="card concept">
+<span class="tag">核心概念 1</span>
+<h3>物质的分类：标准先行，逐级细分</h3>
+<p><strong>分类树</strong>：物质先分<strong>混合物</strong>（由两种或多种物质混合，如空气、盐酸、漂白粉、所有溶液）与<strong>纯净物</strong>（只含一种物质，有固定组成和性质）；纯净物再分<strong>单质</strong>（只含一种元素，如 O<sub>2</sub>、Fe、液氯）与<strong>化合物</strong>（含两种及以上元素，如 H<sub>2</sub>O、Na<sub>2</sub>CO<sub>3</sub>）；化合物再分为氧化物、酸、碱、盐等。</p>
+<p><strong>随手练</strong>：给下列物质定位到分类树的「叶子」——氧气（纯净物·单质）、氧化镁（纯净物·化合物·氧化物）、石灰水（混合物）、硫酸（纯净物·化合物·酸）、氢氧化钾（纯净物·化合物·碱）、碳酸钙（纯净物·化合物·盐）。</p>
+<p><strong>判断口诀与要点</strong>：</p>
+<ul>
+<li>先问「是不是一种物质」，再问「是不是一种元素」。盐酸是 HCl 气体的水溶液，含 HCl 和 H<sub>2</sub>O 两种物质 → <strong>混合物</strong>；液氯、液氧是 Cl<sub>2</sub>、O<sub>2</sub> 的液态 → <strong>纯净物中的单质</strong>。</li>
+<li><strong>酸</strong>：电离时生成的阳离子<strong>全部</strong>是 H<sup>+</sup> 的化合物，如 HCl、H<sub>2</sub>SO<sub>4</sub>。注意 NaHSO<sub>4</sub> 虽能电离出 H<sup>+</sup>，但同时电离出 Na<sup>+</sup>，属于<strong>盐（酸式盐）</strong>不是酸。</li>
+<li><strong>碱</strong>：电离时生成的阴离子全部是 OH<sup>−</sup> 的化合物，如 NaOH、Ba(OH)<sub>2</sub>；Cu<sub>2</sub>(OH)<sub>2</sub>CO<sub>3</sub>（碱式碳酸铜）是<strong>碱式盐</strong>。</li>
+<li><strong>盐</strong>：由金属阳离子（或 NH<sub>4</sub><sup>+</sup>）与酸根离子构成的化合物，如 NaCl、Na<sub>2</sub>CO<sub>3</sub>（纯碱是盐不是碱！）。</li>
+<li><strong>用电离方程式看酸碱</strong>：HCl → H<sup>+</sup> + Cl<sup>−</sup>（阳离子全是 H<sup>+</sup>，是酸）；NaOH → Na<sup>+</sup> + OH<sup>−</sup>（阴离子全是 OH<sup>−</sup>，是碱）；NaHSO<sub>4</sub> → Na<sup>+</sup> + H<sup>+</sup> + SO<sub>4</sub><sup>2−</sup>（还有 Na<sup>+</sup>，是盐）——电离方程式是酸碱判据的「显微镜」。</li>
+<li><strong>氧化物</strong>：由两种元素组成且其中一种是氧的化合物。酸性氧化物（如 CO<sub>2</sub>、SO<sub>3</sub>，与碱反应生成盐和水）、碱性氧化物（如 CaO、CuO，与酸反应生成盐和水）、两性氧化物（Al<sub>2</sub>O<sub>3</sub>）、不成盐氧化物（CO、NO）。注意：Na<sub>2</sub>O<sub>2</sub> 是过氧化物，不属于碱性氧化物。</li>
+</ul>
+<p><strong>常见混淆对</strong>：</p>
+<ul>
+<li><strong>同素异形体</strong>：同种<strong>元素</strong>组成的不同<strong>单质</strong>，如 O<sub>2</sub> 与 O<sub>3</sub>、金刚石与石墨、红磷与白磷。它们的混合（如 O<sub>2</sub> 与 O<sub>3</sub> 混合）是混合物。</li>
+<li><strong>同位素</strong>：质子数相同、中子数不同的同种元素的不同<strong>原子</strong>，如 <sup>1</sup>H、<sup>2</sup>H（D）、<sup>3</sup>H（T）；<sup>12</sup>C 与 <sup>14</sup>C。比较对象一个是单质、一个是原子，切勿混淆。</li>
+</ul>
+<p><strong>同位素与同素异形体对照表</strong>：</p>
+<table>
+<tr><th>比较项</th><th>同位素</th><th>同素异形体</th></tr>
+<tr><td>比较对象</td><td>原子</td><td>单质</td></tr>
+<tr><td>相同之处</td><td>质子数相同（同种元素）</td><td>组成元素相同</td></tr>
+<tr><td>不同之处</td><td>中子数不同</td><td>结构、性质不同</td></tr>
+<tr><td>实例</td><td><sup>1</sup>H、<sup>2</sup>H、<sup>3</sup>H</td><td>O<sub>2</sub> 与 O<sub>3</sub>；金刚石与石墨</td></tr>
+<tr><td>相互转化</td><td>不能通过化学变化转化</td><td>可通过化学变化相互转化（如石墨高温高压变金刚石）</td></tr>
+</table>
+<ul>
+<li>纯碱（Na<sub>2</sub>CO<sub>3</sub>）是盐；水银（Hg）是单质不是混合物；冰水混合物是纯净物（只含 H<sub>2</sub>O 一种分子）；漂白粉是 Ca(ClO)<sub>2</sub> 与 CaCl<sub>2</sub> 的混合物。</li>
+</ul>
+<p><strong>氧化物的反应特征（判断氧化物的第二个「尺子」）</strong>：</p>
+<ul>
+<li>酸性氧化物与碱反应生成盐和水：CO<sub>2</sub> + 2NaOH → Na<sub>2</sub>CO<sub>3</sub> + H<sub>2</sub>O；SO<sub>3</sub> + Ca(OH)<sub>2</sub> → CaSO<sub>4</sub> + H<sub>2</sub>O。</li>
+<li>碱性氧化物与酸反应生成盐和水：CaO + 2HCl → CaCl<sub>2</sub> + H<sub>2</sub>O；CuO + H<sub>2</sub>SO<sub>4</sub> → CuSO<sub>4</sub> + H<sub>2</sub>O。</li>
+<li>特例：SiO<sub>2</sub> 是酸性氧化物但不溶于水、不与水反应；Al<sub>2</sub>O<sub>3</sub> 既能与酸又能与碱反应（两性氧化物）；Mn<sub>2</sub>O<sub>7</sub> 是金属氧化物却属于酸性氧化物——「金属氧化物一定碱性、非金属氧化物一定酸性」是伪规律。</li>
+</ul>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念 2</span>
+<h3>分散系与胶体：粒径决定一切</h3>
+<p><strong>是什么</strong>：一种（或多种）物质分散到另一种物质中形成的体系叫分散系，被分散的物质叫分散质，容纳分散质的叫分散剂。按分散质粒子的<strong>直径</strong>分类：</p>
+<ul>
+<li>溶液：粒径 &lt; 1 nm（如 NaCl 溶液），均一、透明、稳定。</li>
+<li><strong>胶体：粒径 1~100 nm</strong>（如 Fe(OH)<sub>3</sub> 胶体、豆浆、雾、牛奶、血液），均一、较稳定（介稳体系）。</li>
+<li>浊液：粒径 &gt; 100 nm（如泥水），不均一、不稳定、静置分层或沉降。</li>
+</ul>
+<p><strong>三类分散系比较表</strong>：</p>
+<table>
+<tr><th>分散系</th><th>粒径</th><th>外观</th><th>稳定性</th><th>透过滤纸</th><th>透过半透膜</th><th>丁达尔效应</th><th>实例</th></tr>
+<tr><td>溶液</td><td>&lt; 1 nm</td><td>均一透明</td><td>稳定</td><td>能</td><td>能</td><td>无</td><td>NaCl 溶液</td></tr>
+<tr><td>胶体</td><td>1~100 nm</td><td>均一透明</td><td>介稳</td><td>能</td><td>不能</td><td>有</td><td>Fe(OH)<sub>3</sub> 胶体、豆浆</td></tr>
+<tr><td>浊液</td><td>&gt; 100 nm</td><td>不均一</td><td>不稳定</td><td>不能</td><td>不能</td><td>无</td><td>泥水、油水混合物</td></tr>
+</table>
+<p><strong>渗析</strong>：胶粒不能透过半透膜，而溶液中的离子、小分子可以。把含杂质的胶体放入半透膜袋、浸入流动水中，杂质离子逐渐渗出——这就是提纯胶体的方法（如除去 Fe(OH)<sub>3</sub> 胶体中残留的 HCl）。血液透析利用的就是这一原理。</p>
+<p><strong>生活中的胶体实例（选择题素材库）</strong>：</p>
+<ul>
+<li>气溶胶：云、雾、烟（分散剂是气体）。</li>
+<li>液溶胶：豆浆、牛奶、墨水、血液、Fe(OH)<sub>3</sub> 胶体（分散剂是液体）。</li>
+<li>固溶胶：有色玻璃、烟水晶（分散剂是固体）。</li>
+<li>早晨森林里光束、影院放映机的光柱、车灯在雾中的光柱——都是丁达尔效应。</li>
+</ul>
+<p><strong>为什么（微观解释）</strong>：胶体的所有特性都源于「1~100 nm」这个尺度——粒子比溶液中的离子大得多，足以散射可见光（丁达尔效应）；又比重力沉降所需的颗粒小得多，且胶粒表面吸附同种电荷的离子而相互排斥（故胶体稳定、能发生电泳）。粒径是<strong>本质</strong>，现象是粒径的「外在表现」。</p>
+<p><strong>胶体三大性质</strong>：</p>
+<ul>
+<li><strong>丁达尔效应</strong>：用一束可见光（激光笔）照射胶体，从入射光的垂直方向可看到一条光亮的「通路」。成因是胶体粒子对光的散射。<strong>这是区分胶体与溶液最简便的物理方法</strong>。</li>
+<li><strong>电泳</strong>：在电场作用下，胶体粒子向某一电极定向移动。说明<strong>胶体粒子带电</strong>（Fe(OH)<sub>3</sub> 胶粒带正电，向阴极移动）。注意：胶体整体呈电中性，带电的只是胶粒。</li>
+<li><strong>聚沉</strong>：胶粒聚集成较大颗粒而沉降。方法：①加入电解质（电离出的反号离子中和胶粒电荷）；②加入带相反电荷胶粒的胶体；③加热。应用：三角洲的形成（河水中的泥沙胶体遇海水中电解质聚沉）、明矾净水、卤水点豆腐、不同品牌墨水混用堵笔。</li>
+<li><strong>布朗运动</strong>：胶体粒子在分散剂分子的撞击下做无规则运动，是胶体不易沉降的辅助原因（注意：布朗运动不是胶体独有，花粉在水中也有）。</li>
+</ul>
+<p>三大性质中，<strong>丁达尔效应用于鉴别，电泳证明胶粒带电，聚沉用于破坏胶体</strong>——用途各不相同，选择题常把三者张冠李戴。</p>
+<p><strong>Fe(OH)<sub>3</sub> 胶体的制备（实验题高频）</strong>：向<strong>沸水</strong>中逐滴加入 <strong>FeCl<sub>3</sub> 饱和溶液</strong> 5~6 滴，继续煮沸至液体呈<strong>红褐色</strong>，立即停止加热：</p>
+<span class="eq">FeCl<sub>3</sub> + 3H<sub>2</sub>O <span class="eq-arrow" data-cond="加热">→</span> Fe(OH)<sub>3</sub>（胶体） + 3HCl</span>
+<p><strong>注意事项</strong>：不能用自来水代替蒸馏水（电解质使胶体聚沉）；不能用 FeCl<sub>3</sub> 与 NaOH 反应制备（直接生成 Fe(OH)<sub>3</sub> 红褐色沉淀）；不能长时间或过度加热（胶体受热聚沉）。方程式中产物写「Fe(OH)<sub>3</sub>（胶体）」，<strong>不写沉淀符号↓</strong>。</p>
+<p><strong>常见混淆</strong>：胶体不是「胶状的物质」（如果冻、胶水不一定是胶体），也不是一种物质种类，而是一种<strong>分散状态</strong>——同种物质在不同分散剂中可形成胶体或浊液。</p>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念 3</span>
+<h3>化学用语：五种表示方法各司其职</h3>
+<p><strong>① 化学式（分子式）</strong>：用元素符号表示物质组成的式子，如 H<sub>2</sub>SO<sub>4</sub>、Na<sub>2</sub>CO<sub>3</sub>。离子化合物（如 NaCl）中不存在单个分子，化学式表示的是<strong>离子个数比</strong>（最简比），不能叫分子式。</p>
+<p><strong>② 电子式</strong>：在元素符号周围用「·」或「×」标出最外层电子的式子。</p>
+<ul>
+<li>原子：如 Na· 、·Cl·（氯原子周围共 7 个点）。</li>
+<li><strong>离子化合物</strong>（如 NaCl）：写成 Na<sup>+</sup>[︰Cl︰]<sup>−</sup>——阳离子写离子符号，阴离子用方括号括起并标电荷，方括号内 Cl 周围应有 8 个电子（上下左右四对，平面书写常用左右两对示意，答题时须画全）。<strong>绝不能</strong>把 NaCl 写成 Na︰Cl︰（那是共价结合的画法）。</li>
+<li><strong>共价化合物</strong>（如 HCl、CO<sub>2</sub>）：共用电子对，没有方括号和电荷。HCl 写为 H︰Cl︰（Cl 周围补齐 8 电子）；CO<sub>2</sub> 中 C 与每个 O 共用两对电子。<strong>绝不能</strong>把 HCl 写成 H<sup>+</sup>[︰Cl︰]<sup>−</sup>。</li>
+<li>书写判据：先判断化合物类型（离子/共价），再决定用不用方括号。</li>
+</ul>
+<p><strong>进阶电子式示例（高考常考写法）</strong>：</p>
+<ul>
+<li>Na<sub>2</sub>O<sub>2</sub>（过氧化钠）：两个 Na<sup>+</sup> 夹一个过氧根 [︰O—O︰]<sup>2−</sup>，两个 O 之间共用<strong>一对</strong>电子——过氧根是整体，不能拆写成两个独立的 O<sup>2−</sup>。</li>
+<li>MgCl<sub>2</sub>：写成 [︰Cl︰]<sup>−</sup>Mg<sup>2+</sup>[︰Cl︰]<sup>−</sup>，两个 Cl<sup>−</sup> 必须分写在 Mg<sup>2+</sup> 两侧，<strong>不能合并</strong>成 Mg<sup>2+</sup>[︰Cl︰]<sub>2</sub><sup>−</sup>。</li>
+<li>NH<sub>4</sub>Cl：阳离子 NH<sub>4</sub><sup>+</sup> 内部是共价键（N 与 4 个 H 共用电子对）且要加方括号标「+」，Cl<sup>−</sup> 单独带方括号标「−」——同一物质中既有离子键又有共价键的典型。</li>
+<li>CO<sub>2</sub>：C 与每个 O 共用<strong>两对</strong>电子，写作 Ö::C::Ö（每侧 O 各有 4 个未成键电子），对应结构式 O=C=O。</li>
+</ul>
+<p><strong>③ 结构式</strong>：用短线表示共用电子对的式子，一对共用电子画一条短线，如 HCl：H—Cl；CO<sub>2</sub>：O=C=O；H<sub>2</sub>O：H—O—H。结构式只画成键电子对，不画孤对电子。</p>
+<p><strong>④ 结构简式</strong>：结构式的简化写法，省略部分短线，多用于有机物，如 CH<sub>3</sub>COOH（乙酸）、CH<sub>2</sub>=CH<sub>2</sub>（乙烯，碳碳双键<strong>不能省略</strong>）。</p>
+<p><strong>五种表示方法对照表（以乙酸为例逐级递进）</strong>：</p>
+<table>
+<tr><th>表示方法</th><th>写法</th><th>提供的信息</th></tr>
+<tr><td>最简式（实验式）</td><td>CH<sub>2</sub>O</td><td>原子个数最简比</td></tr>
+<tr><td>分子式（化学式）</td><td>C<sub>2</sub>H<sub>4</sub>O<sub>2</sub></td><td>分子中各原子真实数目</td></tr>
+<tr><td>结构式</td><td>CH<sub>3</sub>—C(=O)—O—H（展开全部短线）</td><td>原子的连接方式与成键数目</td></tr>
+<tr><td>结构简式</td><td>CH<sub>3</sub>COOH</td><td>保留官能团，省略 C—H 等短线</td></tr>
+<tr><td>电子式</td><td>画出各原子最外层电子及共用电子对</td><td>成键的电子层面来源</td></tr>
+</table>
+<p><strong>⑤ 原子结构示意图</strong>：圆圈标核电荷数（质子数），弧线表示电子层，弧线上数字表示该层电子数。如 Na：+11，电子层排布 2、8、1；Cl：+17，排布 2、8、7。要点：各层电子数 ≤ 2n<sup>2</sup>，最外层 ≤ 8。</p>
+<p><strong>⑥ 核素符号</strong>：<sup>A</sup><sub>Z</sub>X，左下角 Z 为<strong>质子数</strong>（= 核电荷数 = 原子序数），左上角 A 为<strong>质量数</strong>（= 质子数 + 中子数）。如 <sup>37</sup><sub>17</sub>Cl：质子 17、中子 37 − 17 = 20。注意上下位置不可颠倒，质子数必须与元素种类相符。</p>
+<p><strong>①化学式的四层意义（以 H<sub>2</sub>O 为例）</strong>：宏观上表示水这种物质、表示水由氢氧两种元素组成；微观上表示一个水分子、表示一个水分子由 2 个氢原子和 1 个氧原子构成。对离子化合物（如 NaCl），只能表示「由钠元素和氯元素组成、离子个数比 1 : 1」，不能说「一个 NaCl 分子」。</p>
+<p><strong>常见混淆</strong>：「化学式」对离子化合物只是比例式；「结构式」中的短线数 = 共用电子对数；比例模型、球棍模型是模型不是式子。考试问哪一种就必须写哪一种，写错种类不给分。</p>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念 4</span>
+<h3>化合价：化合物中的「电子账本」</h3>
+<p><strong>是什么</strong>：化合价表示原子间相互化合时的数目关系，本质是成键时电子得失或偏移的数目。得电子（或电子对偏向）显负价，失电子（或电子对偏离）显正价。</p>
+<p><strong>核心规则</strong>：</p>
+<ul>
+<li>化合物中各元素正负化合价的<strong>代数和为零</strong>；单质中元素化合价为 0。</li>
+<li>常见固定价：H 通常 +1（与金属成氢化物如 NaH 时为 −1）；O 通常 −2（过氧化物如 H<sub>2</sub>O<sub>2</sub>、Na<sub>2</sub>O<sub>2</sub> 中为 <strong>−1</strong>，OF<sub>2</sub> 中为 +2）；金属无负价。</li>
+<li>原子团整体计价：SO<sub>4</sub><sup>2−</sup> 中 S 为 +6、NO<sub>3</sub><sup>−</sup> 中 N 为 +5、NH<sub>4</sub><sup>+</sup> 中 N 为 −3。</li>
+<li>许多元素有变价：Fe 有 +2、+3；Cl 有 −1、0、+1、+3、+5、+7；S 有 −2、0、+4、+6；N 有 −3、+2、+3、+4、+5。</li>
+</ul>
+<p><strong>常见元素化合价口诀</strong>：一价钾钠氯氢银，二价氧钙钡镁锌；三铝四硅五价磷，二三铁、二四碳；二四六硫都齐全，铜汞二价最常见。口诀给出的是「常见价」，遇到具体化合物仍以「代数和为零」计算为准。</p>
+<p><strong>变价元素速查表</strong>：</p>
+<table>
+<tr><th>元素</th><th>常见价态</th><th>对应物质示例</th></tr>
+<tr><td>Fe</td><td>+2、+3</td><td>FeCl<sub>2</sub>、FeCl<sub>3</sub>；Fe<sub>3</sub>O<sub>4</sub> 兼有二者</td></tr>
+<tr><td>Cl</td><td>−1、+1、+5、+7</td><td>NaCl、HClO、KClO<sub>3</sub>、HClO<sub>4</sub></td></tr>
+<tr><td>S</td><td>−2、+4、+6</td><td>H<sub>2</sub>S、SO<sub>2</sub>、H<sub>2</sub>SO<sub>4</sub></td></tr>
+<tr><td>N</td><td>−3、+2、+3、+4、+5</td><td>NH<sub>3</sub>、NO、HNO<sub>2</sub>、NO<sub>2</sub>、HNO<sub>3</sub></td></tr>
+<tr><td>Mn</td><td>+2、+4、+6、+7</td><td>MnSO<sub>4</sub>、MnO<sub>2</sub>、K<sub>2</sub>MnO<sub>4</sub>、KMnO<sub>4</sub></td></tr>
+</table>
+<p><strong>计算方法（代数和为零列方程）</strong>：以 K<sub>2</sub>Cr<sub>2</sub>O<sub>7</sub> 为例：2×(+1) + 2x + 7×(−2) = 0，解得 x = +6，即 Cr 为 +6 价。</p>
+<p><strong>平均化合价</strong>：Fe<sub>3</sub>O<sub>4</sub> 中按代数和算得 Fe 平均为 +8/3 价（实际是 2 个 Fe<sup>3+</sup> 与 1 个 Fe<sup>2+</sup>）；Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub>（硫代硫酸钠）中 S 平均为 +2 价。平均价可以是分数，它是「账本均值」，不代表每个原子的真实价态。</p>
+<p><strong>化合价与离子电荷的关系</strong>：简单离子的电荷数 = 该元素在该化合物中化合价的绝对值，符号也一致——Mg<sup>2+</sup> 对应 +2 价，Cl<sup>−</sup> 对应 −1 价。这就是为什么「升失氧、降得还」的氧化还原分析（3.4）可以从化合价直接读出电子转移数。</p>
+<p><strong>常见酸根离子及其化合价</strong>：</p>
+<table>
+<tr><th>酸根</th><th>化合价</th><th>酸根中中心元素价态</th></tr>
+<tr><td>SO<sub>4</sub><sup>2−</sup></td><td>−2</td><td>S 为 +6</td></tr>
+<tr><td>SO<sub>3</sub><sup>2−</sup></td><td>−2</td><td>S 为 +4</td></tr>
+<tr><td>NO<sub>3</sub><sup>−</sup></td><td>−1</td><td>N 为 +5</td></tr>
+<tr><td>CO<sub>3</sub><sup>2−</sup></td><td>−2</td><td>C 为 +4</td></tr>
+<tr><td>PO<sub>4</sub><sup>3−</sup></td><td>−3</td><td>P 为 +5</td></tr>
+<tr><td>MnO<sub>4</sub><sup>−</sup></td><td>−1</td><td>Mn 为 +7</td></tr>
+</table>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念 5</span>
+<h3>化学方程式的书写与配平</h3>
+<p><strong>书写规则</strong>：①以客观事实为基础，产物必须真实；②遵守质量守恒，必须配平；③注明反应条件（点燃、加热△、催化剂、高温、通电等）；④标状态符号与 ↑↓——反应物中无气体时生成的气体标 ↑，溶液中反应生成的不溶性固体标 ↓。</p>
+<p><strong>配平方法</strong>：</p>
+<ul>
+<li><strong>观察法</strong>：适用于简单反应，如 C + O<sub>2</sub> <span class="eq-arrow" data-cond="点燃">→</span> CO<sub>2</sub>。</li>
+<li><strong>最小公倍数法</strong>：先配出现次数少且原子数不等两边的元素。如配平 P + O<sub>2</sub> → P<sub>2</sub>O<sub>5</sub>：O 原子 2 与 5 的最小公倍数为 10，O<sub>2</sub> 前配 5、P<sub>2</sub>O<sub>5</sub> 前配 2，再配 P 为 4。</li>
+<li><strong>奇数配偶法</strong>：把出现次数多且一边为奇数的原子先配成偶数，如 FeS<sub>2</sub> + O<sub>2</sub> → Fe<sub>2</sub>O<sub>3</sub> + SO<sub>2</sub> 中先把 Fe<sub>2</sub>O<sub>3</sub> 配 2 使 Fe 成偶数 4（见例 5）。</li>
+<li><strong>设 1 法（暂定系数法）</strong>：把最复杂物质的系数定为 1，依次推出其余，最后去分母，适用于有机物燃烧，如 C<sub>2</sub>H<sub>5</sub>OH + 3O<sub>2</sub> <span class="eq-arrow" data-cond="点燃">→</span> 2CO<sub>2</sub> + 3H<sub>2</sub>O。</li>
+</ul>
+<p><strong>方程式的双重意义</strong>：质的方面——什么物质在什么条件下生成什么；量的方面——化学计量数之比 = 物质的量之比 = 粒子数之比（气体间还等于同温同压下的体积之比）。例如 2H<sub>2</sub> + O<sub>2</sub> <span class="eq-arrow" data-cond="点燃">→</span> 2H<sub>2</sub>O 表示：2 mol H<sub>2</sub> 与 1 mol O<sub>2</sub> 恰好完全反应生成 2 mol H<sub>2</sub>O，这正是第 3.1 章「关系式法」的依据。</p>
+<p><strong>配平自测（先遮住答案）</strong>：</p>
+<ul>
+<li>__C<sub>2</sub>H<sub>6</sub> + __O<sub>2</sub> <span class="eq-arrow" data-cond="点燃">→</span> __CO<sub>2</sub> + __H<sub>2</sub>O　【答案：2、7、4、6；用设 1 法，C<sub>2</sub>H<sub>6</sub> 定 1 得 7/2，整体乘 2】</li>
+<li>__Al + __HCl → __AlCl<sub>3</sub> + __H<sub>2</sub>↑　【答案：2、6、2、3；先配 Cl 再配 H，H<sub>2</sub> 前为 3】</li>
+<li>__CuO + __CO <span class="eq-arrow" data-cond="加热">→</span> __Cu + __CO<sub>2</sub>　【答案：1、1、1、1；观察法】</li>
+</ul>
+<div class="card note" style="margin:10px 0">
+<span class="tag">注意</span>
+<p>条件不是装饰：H<sub>2</sub> 与 O<sub>2</sub> 常温共存无事，点燃才爆炸；「点燃」与「加热」不同，「高温」与「加热」也不同。漏写、错写条件，高考按错误处理。</p>
+</div>
+</div>
+</section>
+
+<section>
+<h2>三、三重表征贯通</h2>
+<p>本章的概念看似抽象，其实都有对应的实验场景。下面三组贯通，把宏观现象、微观粒子、符号表达钉在一起——选择题的选项往往只考其中一重，三全会，才能以不变应万变。</p>
+
+<h3>贯通组 1：Fe(OH)<sub>3</sub> 胶体的制备与丁达尔效应</h3>
+<p>这组贯通回答一个问题：为什么「红褐色透明液体」是胶体而不是沉淀？答案写在粒子的尺寸与电荷里。</p>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>向沸腾的蒸馏水中逐滴加入 FeCl<sub>3</sub> 饱和溶液，液体逐渐变为<strong>红褐色</strong>，透明、均一，无沉淀产生；用激光笔从侧面照射，杯中液体出现一条<strong>光亮的通路</strong>（丁达尔效应）；静置数日也不分层。若改用 NaOH 溶液与 FeCl<sub>3</sub> 混合，则立即出现红褐色<strong>沉淀</strong>，液体浑浊。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>Fe<sup>3+</sup> 在热水中水解，聚集成直径 1~100 nm 的 Fe(OH)<sub>3</sub> 胶体粒子；胶粒表面选择性吸附阳离子而<strong>带正电</strong>，同种电荷相互排斥，阻止了胶粒聚集变大，故体系稳定不沉降；1~100 nm 的粒子足以散射可见光，于是形成光路。NaOH 直接提供大量 OH<sup>−</sup>，瞬间生成大于 100 nm 的颗粒，只能得到沉淀而非胶体。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<span class="eq">FeCl<sub>3</sub> + 3H<sub>2</sub>O <span class="eq-arrow" data-cond="加热">→</span> Fe(OH)<sub>3</sub>（胶体） + 3HCl</span>
+<p>分散质粒径：1~100 nm</p>
+<p>检验：激光笔照射 → 光亮通路</p>
+<p>对比：FeCl<sub>3</sub> + 3NaOH → Fe(OH)<sub>3</sub>↓ + 3NaCl（得到沉淀）</p>
+</div>
+</div>
+
+<h3>贯通组 2：钠在氯气中燃烧——离子键的形成</h3>
+<p>白烟、黄光、放热，三个现象背后是同一个微观事件：电子从钠原子「搬」到氯原子。</p>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>取一小块金属钠，用滤纸吸干煤油，在空气中加热至熔成小球后伸入盛有黄绿色氯气的集气瓶：钠<strong>剧烈燃烧，发出黄色火焰</strong>，产生<strong>大量白烟</strong>，放出大量的热；反应结束后瓶壁上附着<strong>白色固体</strong>（NaCl 细小晶体）。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>Na 原子（电子层 2、8、1）最外层只有 1 个电子，易失去成为 Na<sup>+</sup>（2、8，稳定结构）；Cl 原子（2、8、7）易得 1 个电子成为 Cl<sup>−</sup>（2、8、8）。Na<sup>+</sup> 与 Cl<sup>−</sup> 通过<strong>静电作用（离子键）</strong>结合，大量离子规则排列成 NaCl 微小晶体——宏观上的「白烟」正是这些固体小颗粒。电子由 Na 原子转移给 Cl 原子，是化合价升降（Na 0→+1，Cl 0→−1）的微观本质。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<span class="eq">2Na<span class="state">(s)</span> + Cl<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="点燃">→</span> 2NaCl<span class="state">(s)</span></span>
+<p>原子结构示意图：Na（+11）2、8、1 → Na<sup>+</sup>（+11）2、8</p>
+<p>电子式：Na<sup>+</sup>[︰Cl︰]<sup>−</sup>（Cl 周围共 8 个电子）</p>
+</div>
+</div>
+
+<h3>贯通组 3：盐酸与氢氧化钠的中和反应</h3>
+<p>酸碱中和是「化学方程式 — 离子本质 — 宏观现象」对应最干净的一组反应，也是下一章离子反应的入口。</p>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>向滴有酚酞的 NaOH 溶液（呈红色）中逐滴加入稀盐酸，溶液红色逐渐变浅，恰好完全反应时<strong>恰好褪为无色</strong>；用手触摸烧杯外壁，明显感觉<strong>发热</strong>——中和反应放热。得到的溶液蒸发后留下白色固体 NaCl。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>盐酸中的 H<sup>+</sup> 与 NaOH 溶液中的 OH<sup>−</sup> 结合生成极难电离的 H<sub>2</sub>O 分子，使溶液中自由移动的 H<sup>+</sup>、OH<sup>−</sup> 减少；Na<sup>+</sup> 与 Cl<sup>−</sup> 自始至终没有结合，只是「旁观」。放热来自 H—O 键的形成。OH<sup>−</sup> 被消耗尽时，酚酞的红色也就消失了。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<span class="eq">HCl + NaOH → NaCl + H<sub>2</sub>O</span>
+<p>离子层面：H<sup>+</sup> + OH<sup>−</sup> → H<sub>2</sub>O</p>
+<p>计量关系：HCl ~ NaOH（1 : 1）</p>
+<p>n(HCl) = n(NaOH) 时恰好中和</p>
+</div>
+</div>
+</section>
+
+<section>
+<h2>四、典型例题分步拆解</h2>
+<p>八道例题覆盖本章全部题型：分类辨析（例 1）、化合价计算（例 2）、化学用语判断（例 3、例 6）、胶体（例 4、例 8）、配平（例 5）、氧化物辨析（例 7）。每题先独立做，再对照拆解找断点。</p>
+
+<div class="card example">
+<span class="tag">例 1 · 物质分类辨析（高考选择题经典模型）</span>
+<p><strong>题目</strong>：下列物质属于纯净物的是（　　）</p>
+<p>A. 盐酸　　B. 液氯　　C. 漂白粉　　D. 洁净的空气</p>
+<p><strong>【思路点拨】</strong>分类题先问一句话：「它只含一种物质吗？」凡是名称带「溶液」或本身是混合体系的（盐酸、空气、漂白粉、氨水、海水），无论多「干净」都是混合物；「液 X」通常是单质液化后的纯净物。</p>
+<div class="step"><span class="no">1</span><p><strong>A 盐酸</strong>：HCl 气体溶于水得到的溶液，含 HCl 和 H<sub>2</sub>O 两种物质 → 混合物。注意：说「氯化氢」才是纯净物，「盐酸」一定是混合物。</p></div>
+<div class="step"><span class="no">2</span><p><strong>B 液氯</strong>：Cl<sub>2</sub> 加压降温液化所得，只含 Cl<sub>2</sub> 分子 → 纯净物（且是单质）。同类：液氧、液氨、水银、干冰均为纯净物。</p></div>
+<div class="step"><span class="no">3</span><p><strong>C 漂白粉</strong>：Cl<sub>2</sub> 通入石灰乳制得，主要成分为 Ca(ClO)<sub>2</sub> 和 CaCl<sub>2</sub> 两种物质 → 混合物（有效成分是 Ca(ClO)<sub>2</sub>）。</p></div>
+<div class="step"><span class="no">4</span><p><strong>D 洁净的空气</strong>：「洁净」不等于「纯净」，空气含 N<sub>2</sub>、O<sub>2</sub>、CO<sub>2</sub> 等多种物质 → 混合物。</p></div>
+<div class="ans"><strong>【答案】</strong>B</div>
+<p><strong>【方法总结】</strong>纯净物判断三问：只含一种物质吗？（是 → 纯净物）只含一种元素吗？（是 → 单质，否 → 化合物）。警惕「冰水混合物」这类名字——它只含 H<sub>2</sub>O 一种分子，是纯净物；「纯净的空气」则仍是混合物。</p>
+<p><strong>【变式自测】</strong>下列各组中前者是混合物、后者是纯净物的是：A. 液氨与氨水（反了）；B. 海水与蒸馏水（对：海水含多种盐，蒸馏水只有 H<sub>2</sub>O）；C. 氧气与臭氧（都是纯净物，但二者混合是混合物）；D. 水玻璃（Na<sub>2</sub>SiO<sub>3</sub> 溶液）与水银（前者混合物、后者纯净物，也对）。做题时警惕「一组全对」式的多选变体。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 2 · 化合价计算</span>
+<p><strong>题目</strong>：求下列物质中指定元素的化合价：（1）K<sub>2</sub>Cr<sub>2</sub>O<sub>7</sub> 中 Cr；（2）Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub> 中 S；（3）NH<sub>4</sub>NO<sub>3</sub> 中两个 N 各自的化合价。</p>
+<p><strong>【思路点拨】</strong>唯一依据是「化合物中正负化合价代数和为零」。已知 H +1、O −2、K/Na +1，设未知列方程。原子团内部的元素要「拆团」单独算。</p>
+<div class="step"><span class="no">1</span><p><strong>K<sub>2</sub>Cr<sub>2</sub>O<sub>7</sub> 中的 Cr</strong>：设 Cr 为 x。2×(+1) + 2x + 7×(−2) = 0 → 2 + 2x − 14 = 0 → x = <strong>+6</strong>。</p></div>
+<div class="step"><span class="no">2</span><p><strong>Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub> 中的 S</strong>：设 S 为 y。2×(+1) + 2y + 3×(−2) = 0 → 2y = 4 → y = <strong>+2</strong>。这是平均化合价（硫代硫酸钠中两个 S 的实际价态不同），说明化合价可以是计算意义上的分数或平均值。</p></div>
+<div class="step"><span class="no">3</span><p><strong>NH<sub>4</sub>NO<sub>3</sub> 中的两个 N</strong>：拆开两个原子团分别列方程。NH<sub>4</sub><sup>+</sup> 中：z + 4×(+1) = +1 → z = <strong>−3</strong>；NO<sub>3</sub><sup>−</sup> 中：w + 3×(−2) = −1 → w = <strong>+5</strong>。同一化合物中同一元素可以呈现不同价态，这正是不能「一锅煮」的原因。</p></div>
+<div class="ans"><strong>【答案】</strong>（1）Cr 为 +6 价；（2）S 平均为 +2 价；（3）NH<sub>4</sub><sup>+</sup> 中 N 为 −3 价，NO<sub>3</sub><sup>−</sup> 中 N 为 +5 价。</div>
+<p><strong>【方法总结】</strong>化合价计算三步：标出已知价（H +1、O −2、碱金属 +1）→ 设未知 → 代数和为零（原子团则用团的总价）列方程。遇到 H<sub>2</sub>O<sub>2</sub>、NaH 等特殊物质，先修正 O、H 的特殊价再计算。</p>
+<p><strong>【变式自测】</strong>速算：KMnO<sub>4</sub> 中 Mn：+1 + x + 4×(−2) = 0 → x = +7；K<sub>2</sub>MnO<sub>4</sub> 中 Mn：2 + x − 8 = 0 → x = +6；HClO 中 Cl：+1 + x − 2 = 0 → x = +1；Na<sub>2</sub>S<sub>4</sub>O<sub>6</sub>（连四硫酸钠）中 S 平均：2 + 4x − 12 = 0 → x = +2.5。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 3 · 化学用语正误判断</span>
+<p><strong>题目</strong>：下列化学用语使用正确的是（　　）</p>
+<p>A. NaCl 的电子式：Na︰Cl︰<br>
+B. CO<sub>2</sub> 的结构式：O=C=O<br>
+C. 中子数为 20 的氯原子：<sup>37</sup><sub>20</sub>Cl<br>
+D. HCl 的电子式：H<sup>+</sup>[︰Cl︰]<sup>−</sup></p>
+<p><strong>【思路点拨】</strong>电子式题先判断化合物类型：离子化合物才有方括号和电荷，共价化合物只有共用电子对。核素符号记牢「左下质子、左上质量」，且质子数决定元素种类。</p>
+<div class="step"><span class="no">1</span><p><strong>A</strong>：NaCl 是<strong>离子化合物</strong>，Na 把电子完全交给 Cl，电子式必须写成 Na<sup>+</sup>[︰Cl︰]<sup>−</sup>（Cl 周围 8 电子、带方括号与电荷）。「Na︰Cl︰」把它当成了共价化合物，错误。</p></div>
+<div class="step"><span class="no">2</span><p><strong>B</strong>：CO<sub>2</sub> 中 C 与每个 O 之间共用两对电子，形成两个 C=O 双键，结构式 O=C=O 正确。</p></div>
+<div class="step"><span class="no">3</span><p><strong>C</strong>：氯元素的质子数固定为 17，左下角必须写 17；中子数 20 时质量数 = 17 + 20 = 37，正确写法是 <sup>37</sup><sub>17</sub>Cl。写成 <sup>37</sup><sub>20</sub> 意味着质子数 20，那是 Ca 而不是 Cl，错误。</p></div>
+<div class="step"><span class="no">4</span><p><strong>D</strong>：HCl 是<strong>共价化合物</strong>，H 与 Cl 共用一对电子，不存在 H<sup>+</sup> 和 Cl<sup>−</sup>，电子式应为 H︰Cl︰（Cl 周围补齐 8 电子），不能带方括号与电荷，错误。A、D 两项恰好是「离子/共价」互换的经典陷阱。</p></div>
+<div class="ans"><strong>【答案】</strong>B</div>
+<p><strong>【方法总结】</strong>电子式书写口诀：「先分类型再动笔——离子括号带电荷，共价共用不加框。」核素符号口诀：「下质上量，质子定元素。」</p>
+<p><strong>【变式自测】</strong>判断正误：①MgCl<sub>2</sub> 的电子式写成 Mg<sup>2+</sup>[︰Cl︰]<sub>2</sub><sup>−</sup>（错，两个 Cl<sup>−</sup> 不能合并，应分写两侧）；②<sup>16</sup>O 与 <sup>18</sup>O 互为同位素（对，质子数同为 8，中子数不同）；③H<sub>2</sub>O 的结构式 H—O—H（对）。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 4 · 胶体的性质与制备（实验判断题）</span>
+<p><strong>题目</strong>：下列关于胶体的说法正确的是（　　）</p>
+<p>A. 用激光笔照射豆浆，可观察到一条光亮的通路<br>
+B. Fe(OH)<sub>3</sub> 胶体粒子带正电，所以 Fe(OH)<sub>3</sub> 胶体带正电<br>
+C. 向 FeCl<sub>3</sub> 溶液中滴加 NaOH 溶液可制得 Fe(OH)<sub>3</sub> 胶体<br>
+D. 胶体粒子直径大于 100 nm，静置后会沉降</p>
+<p><strong>【思路点拨】</strong>胶体题抓三点：粒径 1~100 nm 是本质；带电的是胶粒、胶体整体呈电中性；制备 Fe(OH)<sub>3</sub> 胶体必须用沸水水解法。</p>
+<div class="step"><span class="no">1</span><p><strong>A</strong>：豆浆是胶体，激光笔照射出现丁达尔效应（光亮通路），正确。</p></div>
+<div class="step"><span class="no">2</span><p><strong>B</strong>：Fe(OH)<sub>3</sub> 胶粒吸附阳离子带正电，但胶体中同时还有带负电的离子，胶体作为整体<strong>呈电中性</strong>。「胶体带电」的说法错误——这也正是电泳实验中胶粒定向移动而溶液不显电性的原因。</p></div>
+<div class="step"><span class="no">3</span><p><strong>C</strong>：FeCl<sub>3</sub> 与 NaOH 直接反应：FeCl<sub>3</sub> + 3NaOH → Fe(OH)<sub>3</sub>↓ + 3NaCl，瞬间生成大颗粒，得到的是红褐色<strong>沉淀</strong>而非胶体。正确做法是向沸水中滴加 FeCl<sub>3</sub> 饱和溶液并继续煮沸至红褐色。</p></div>
+<div class="step"><span class="no">4</span><p><strong>D</strong>：粒径大于 100 nm 的是浊液；胶体粒径为 1~100 nm，胶体是介稳体系，静置不会沉降，错误。</p></div>
+<div class="ans"><strong>【答案】</strong>A</div>
+<p><strong>【方法总结】</strong>胶体判断三连问：粒径对吗（1~100 nm）？带电说对了吗（胶粒带电、胶体中性）？制备路径对吗（水解法，非直接复分解）？三问过关，选项立判。</p>
+<p><strong>【变式自测】</strong>「用渗析法可除去 Fe(OH)<sub>3</sub> 胶体中混有的 NaCl」——对：Na<sup>+</sup>、Cl<sup>−</sup> 能透过半透膜，胶粒不能；「过滤可分离胶体与溶液」——错：胶粒和离子都能透过滤纸，过滤分不开，要用半透膜。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 5 · 化学方程式配平（奇数配偶法）</span>
+<p><strong>题目</strong>：配平下列化学方程式（黄铁矿煅烧制硫酸的第一步）：</p>
+<span class="eq">__FeS<sub>2</sub> + __O<sub>2</sub> <span class="eq-arrow" data-cond="高温">→</span> __Fe<sub>2</sub>O<sub>3</sub> + __SO<sub>2</sub></span>
+<p><strong>【思路点拨】</strong>观察发现 Fe 原子左边在 FeS<sub>2</sub> 中、右边在 Fe<sub>2</sub>O<sub>3</sub> 中，右边的 Fe<sub>2</sub>O<sub>3</sub> 含 3 个 O 使 O 原子数易成奇数——先把 Fe<sub>2</sub>O<sub>3</sub> 系数配 2，让 Fe 数变偶数 4，再顺势配平其余原子（奇数配偶法）。</p>
+<div class="step"><span class="no">1</span><p><strong>定 Fe<sub>2</sub>O<sub>3</sub> 系数为 2</strong>：使右边 Fe 为 4 个，同时右边 O 原子数变为 2×3 = 6（偶数），为配平 O<sub>2</sub>（偶数分子）扫清障碍。</p></div>
+<div class="step"><span class="no">2</span><p><strong>配 Fe</strong>：右边 4 个 Fe，故 FeS<sub>2</sub> 前配 4。</p></div>
+<div class="step"><span class="no">3</span><p><strong>配 S</strong>：左边 4 个 FeS<sub>2</sub> 含 8 个 S，故 SO<sub>2</sub> 前配 8。</p></div>
+<div class="step"><span class="no">4</span><p><strong>配 O</strong>：右边 O 原子总数 = 2×3 + 8×2 = 6 + 16 = 22，故 O<sub>2</sub> 前配 11。</p></div>
+<div class="step"><span class="no">5</span><p><strong>验证</strong>：Fe 左 4 = 右 4 ✓；S 左 8 = 右 8 ✓；O 左 11×2 = 22 = 右 22 ✓。</p></div>
+<span class="eq">4FeS<sub>2</sub> + 11O<sub>2</sub> <span class="eq-arrow" data-cond="高温">→</span> 2Fe<sub>2</sub>O<sub>3</sub> + 8SO<sub>2</sub></span>
+<div class="ans"><strong>【答案】</strong>系数依次为 4、11、2、8。</div>
+<p><strong>【方法总结】</strong>配平后必须逐项验证每种原子两边相等；系数应为最简整数比，公约数要约去。工业流程题中「黄铁矿煅烧」方程式是高考常客，4-11-2-8 值得记牢。</p>
+<p><strong>【变式自测】</strong>配平 __KClO<sub>3</sub> <span class="eq-arrow" data-cond="MnO<sub>2</sub>、加热">→</span> __KCl + __O<sub>2</sub>↑：先配 O（3 与 2 的最小公倍数 6），KClO<sub>3</sub> 配 2、O<sub>2</sub> 配 3，再配 KCl 为 2，得 2、2、3。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 6 · 核素符号与原子结构综合</span>
+<p><strong>题目</strong>：钠原子的核素符号为 <sup>23</sup><sub>11</sub>Na。请回答：（1）该原子的质子数、中子数、核外电子数；（2）写出 Na 原子和 Na<sup>+</sup> 的电子层排布；（3）Na<sup>+</sup> 的核外电子数是多少？</p>
+<p><strong>【思路点拨】</strong>核素符号「下质上量」：左下 11 是质子数，左上 23 是质量数；中子数 = 质量数 − 质子数。原子呈电中性时电子数 = 质子数；失电子成阳离子后电子数减少，质子数不变。</p>
+<div class="step"><span class="no">1</span><p><strong>读符号</strong>：质子数 Z = 11；质量数 A = 23；中子数 = 23 − 11 = 12；核外电子数 = 质子数 = 11。</p></div>
+<div class="step"><span class="no">2</span><p><strong>电子层排布</strong>：Na 原子 11 个电子按层填充：第一层 2、第二层 8、第三层 1，记作 2、8、1；Na<sup>+</sup> 失去最外层 1 个电子，排布为 2、8。</p></div>
+<div class="step"><span class="no">3</span><p><strong>Na<sup>+</sup> 电子数</strong>：11 − 1 = 10（与稀有气体 Ne 的电子层结构相同）。</p></div>
+<div class="ans"><strong>【答案】</strong>（1）质子数 11、中子数 12、电子数 11；（2）Na：2、8、1；Na<sup>+</sup>：2、8；（3）10。</div>
+<p><strong>【方法总结】</strong>三条守恒关系要脱口而出：质量数 = 质子数 + 中子数；原子中质子数 = 核外电子数 = 原子序数；阳离子电子数 = 质子数 − 电荷数（阴离子则加）。</p>
+<p><strong>【变式自测】</strong>（1）<sup>35</sup><sub>17</sub>Cl<sup>−</sup> 的质子数 17、中子数 18、电子数 18（阴离子加 1）；（2）<sup>24</sup><sub>12</sub>Mg<sup>2+</sup> 的电子数为 10，电子层排布为 2、8，与 Ne 相同。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 7 · 氧化物说法辨析</span>
+<p><strong>题目</strong>：下列关于氧化物的说法正确的是（　　）</p>
+<p>A. 金属氧化物都是碱性氧化物<br>
+B. 非金属氧化物都是酸性氧化物<br>
+C. 酸性氧化物都能与水反应生成对应的酸<br>
+D. 碱性氧化物都能与酸反应生成盐和水</p>
+<p><strong>【思路点拨】</strong>氧化物辨析靠「反例」制胜：四个选项各想一个反例，找不到反例的就是对的。</p>
+<div class="step"><span class="no">1</span><p><strong>A</strong>：找金属氧化物中的「叛徒」——Al<sub>2</sub>O<sub>3</sub> 是两性氧化物，Mn<sub>2</sub>O<sub>7</sub> 是酸性氧化物，Na<sub>2</sub>O<sub>2</sub> 是过氧化物。错误。</p></div>
+<div class="step"><span class="no">2</span><p><strong>B</strong>：CO、NO 是非金属氧化物，却不能与碱反应生成盐和水（不成盐氧化物）。错误。</p></div>
+<div class="step"><span class="no">3</span><p><strong>C</strong>：SiO<sub>2</sub> 是酸性氧化物（能与 NaOH 反应生成 Na<sub>2</sub>SiO<sub>3</sub> 和水），但它不溶于水、不与水反应。错误。</p></div>
+<div class="step"><span class="no">4</span><p><strong>D</strong>：碱性氧化物的定义就是「能与酸反应生成盐和水的氧化物」，如 CaO + 2HCl → CaCl<sub>2</sub> + H<sub>2</sub>O，无一例外。正确。</p></div>
+<div class="ans"><strong>【答案】</strong>D</div>
+<p><strong>【方法总结】</strong>记住三组反例：Al<sub>2</sub>O<sub>3</sub>（两性）、CO/NO（不成盐）、SiO<sub>2</sub>（不与水反应）。定义类选项回到定义本身核对，不要被「都」「一定」带着走。</p>
+<p><strong>【变式自测】</strong>判断正误：①Na<sub>2</sub>O 是碱性氧化物（对，与酸反应只生成盐和水）；②CO<sub>2</sub> 是酸性氧化物（对，与碱反应生成盐和水）；③Na<sub>2</sub>O<sub>2</sub> 与盐酸反应只生成 NaCl 和 H<sub>2</sub>O（错，还生成 O<sub>2</sub>，不满足碱性氧化物定义）；④含有氧元素的化合物都是氧化物（错，H<sub>2</sub>SO<sub>4</sub>、NaOH 含氧但不是氧化物）。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 8 · 胶体知识的综合应用</span>
+<p><strong>题目</strong>：用胶体知识解释下列现象：（1）长江入海口形成三角洲；（2）钢笔混用不同品牌的墨水容易堵塞；（3）明矾可作净水剂。</p>
+<p><strong>【思路点拨】</strong>生活现象题答题模板：先点明「什么胶体」→ 再说「发生了什么（聚沉/吸附）」→ 最后说「结果如何」。三个现象都指向胶体的聚沉或吸附。</p>
+<div class="step"><span class="no">1</span><p><strong>三角洲</strong>：河水中的泥沙颗粒直径处于胶体范围，属于胶体；入海时遇到海水中的大量电解质（NaCl 等），反号离子中和胶粒电荷，泥沙胶体发生<strong>聚沉</strong>，长年累月沉积成三角洲。</p></div>
+<div class="step"><span class="no">2</span><p><strong>墨水堵笔</strong>：墨水是胶体，不同品牌墨水的胶粒所带<strong>电荷可能相反</strong>，混合后正负胶粒相互中和而聚沉，生成的沉淀堵塞笔尖。</p></div>
+<div class="step"><span class="no">3</span><p><strong>明矾净水</strong>：明矾 KAl(SO<sub>4</sub>)<sub>2</sub>·12H<sub>2</sub>O 溶于水后，Al<sup>3+</sup> 水解生成 Al(OH)<sub>3</sub> <strong>胶体</strong>；胶体表面积大、吸附能力强，能吸附水中悬浮的杂质并一起沉降，使水澄清。</p></div>
+<div class="ans"><strong>【答案】</strong>（1）泥沙胶体遇海水中电解质聚沉；（2）不同墨水胶粒带相反电荷，混合聚沉堵笔；（3）明矾水解生成 Al(OH)<sub>3</sub> 胶体，吸附悬浮杂质共同沉降。</div>
+<p><strong>【方法总结】</strong>胶体应用题的两个「题眼」：看到「两种胶体/胶体遇电解质」想聚沉；看到「吸附杂质、净水」想胶体表面积大。答题时务必写出「胶体」二字点题。</p>
+<p><strong>【变式自测】</strong>「豆浆中加食盐卤水可制成豆腐」——卤水（MgCl<sub>2</sub> 等电解质）使豆浆中的蛋白质胶体聚沉；「雾天车灯光柱更明显」——雾是气溶胶，丁达尔效应增强；「静电除尘」——利用电泳使带电的烟尘胶粒移向电极。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 9 · 化学用语综合判断（考前最后一练）</span>
+<p><strong>题目</strong>：下列说法正确的是（　　）</p>
+<p>A. NH<sub>4</sub>Cl 的电子式中，NH<sub>4</sub><sup>+</sup> 不需加方括号<br>
+B. <sup>1</sup>H<sub>2</sub> 与 <sup>2</sup>H<sub>2</sub> 互为同素异形体<br>
+C. Fe<sub>3</sub>O<sub>4</sub> 中铁元素的平均化合价为 +8/3<br>
+D. 二氧化碳的结构简式为 O=C=O</p>
+<p><strong>【思路点拨】</strong>本题四个选项分别考电子式、同位素与同素异形体辨别、平均化合价、表示方法归类——正是本章四大易错点的集合，逐项排雷即可。</p>
+<div class="step"><span class="no">1</span><p><strong>A</strong>：NH<sub>4</sub><sup>+</sup> 是复杂阳离子，电子式必须用方括号括起并在右上角标「+」，即 [H︰N︰H]<sup>+</sup>（H 上另有电子对）。「不加方括号」错误。</p></div>
+<div class="step"><span class="no">2</span><p><strong>B</strong>：<sup>1</sup>H<sub>2</sub> 与 <sup>2</sup>H<sub>2</sub> 是同一元素不同同位素组成的<strong>同一种单质</strong>的两种分子（H<sub>2</sub>），不是同素异形体（同素异形体必须是结构不同的单质，如 O<sub>2</sub> 与 O<sub>3</sub>）。错误。</p></div>
+<div class="step"><span class="no">3</span><p><strong>C</strong>：Fe<sub>3</sub>O<sub>4</sub> 中 3x + 4×(−2) = 0 → x = +8/3。平均化合价可以是分数，正确（实际为 2 个 Fe<sup>3+</sup> 与 1 个 Fe<sup>2+</sup>）。</p></div>
+<div class="step"><span class="no">4</span><p><strong>D</strong>：O=C=O 是 CO<sub>2</sub> 的<strong>结构式</strong>，不是结构简式。CO<sub>2</sub> 是无机物，一般无「结构简式」之说。错误。</p></div>
+<div class="ans"><strong>【答案】</strong>C</div>
+<p><strong>【方法总结】</strong>综合题的价值在于「一题扫全章」。做错哪个选项，就回到对应易错点重读——这比刷十道同质题更有效。</p>
+</div>
+</section>
+
+<section>
+<h2>五、易错点与成因</h2>
+<p>七条易错点按「表现 → 成因 → 正解 → 口诀」拆解。本章的失分几乎全部来自「想当然」——用定义和成分说话，是唯一的解药。</p>
+
+<div class="card trap">
+<span class="tag">易错点 1</span>
+<p><strong>易错表现</strong>：把盐酸、漂白粉、洁净的空气当纯净物；把纯碱当碱、把 NaHSO<sub>4</sub> 当酸。</p>
+<p><strong>错误成因</strong>：凭名字和「干净程度」做判断，没有回到分类的本质定义——纯净物看「是否只含一种物质」，酸碱看「电离出的阳/阴离子是否全部是 H<sup>+</sup>/OH<sup>−</sup>」。</p>
+<p><strong>正确理解</strong>：盐酸 = HCl + H<sub>2</sub>O（混合物）；漂白粉 = Ca(ClO)<sub>2</sub> + CaCl<sub>2</sub>（混合物）；纯碱 Na<sub>2</sub>CO<sub>3</sub> 由金属离子与酸根构成（盐）；NaHSO<sub>4</sub> 电离还产生 Na<sup>+</sup>（酸式盐）。</p>
+<p><strong>避坑口诀</strong>：「分类看成分不看脸，酸碱看电离全不全。」</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 2</span>
+<p><strong>易错表现</strong>：认为「胶体就是胶状的物质」，或认为「胶体带正电/负电」。</p>
+<p><strong>错误成因</strong>：把生活用语（胶水、果冻）当化学概念；把「胶粒带电」扩大成「胶体带电」，忽略了胶体中同时存在的反号离子。</p>
+<p><strong>正确理解</strong>：胶体是按分散质粒径（1~100 nm）划分的分散系类型，与外观黏不黏无关；胶粒因吸附离子而带电（可发生电泳），但胶体整体呈电中性。</p>
+<p><strong>避坑口诀</strong>：「胶体看粒径不看胶，胶粒带电胶体中和。」</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 3</span>
+<p><strong>易错表现</strong>：用 FeCl<sub>3</sub> 溶液与 NaOH 溶液混合「制备 Fe(OH)<sub>3</sub> 胶体」；制备时长时间煮沸；方程式产物标 ↓。</p>
+<p><strong>错误成因</strong>：只知道产物是 Fe(OH)<sub>3</sub>，不理解胶体对生成速率的要求——水解法缓慢生成 1~100 nm 颗粒，复分解反应瞬间生成大颗粒直接沉淀；加热过度则胶粒聚沉。</p>
+<p><strong>正确理解</strong>：沸水中滴加 FeCl<sub>3</sub> 饱和溶液，煮至红褐色立即停止加热；产物写 Fe(OH)<sub>3</sub>（胶体），不加 ↓；自来水中的电解质会引发聚沉，必须用蒸馏水。</p>
+<p><strong>避坑口诀</strong>：「沸水滴加氯化铁，红褐即停不加沉淀。」</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 4</span>
+<p><strong>易错表现</strong>：把 HCl 电子式写成 H<sup>+</sup>[︰Cl︰]<sup>−</sup>，或把 NaCl 电子式写成 Na︰Cl︰。</p>
+<p><strong>错误成因</strong>：没有先判断化合物类型。HCl 溶于水后才电离出离子，纯 HCl 分子内是共用电子对；NaCl 中则是电子的完全得失。混淆了「电离」与「成键」两个不同过程。</p>
+<p><strong>正确理解</strong>：离子化合物（活泼金属 + 活泼非金属、含原子团的盐）电子式用方括号加电荷；共价化合物（非金属之间）用共用电子对、无括号无电荷。先分类，再动笔。</p>
+<p><strong>避坑口诀</strong>：「离子括号共价点，先分类型再书写。」</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 5</span>
+<p><strong>易错表现</strong>：把 H<sub>2</sub>O<sub>2</sub> 中 O 当作 −2 价；认为 NH<sub>4</sub>NO<sub>3</sub> 中两个 N 价态相同；认为化合价必须是整数。</p>
+<p><strong>错误成因</strong>：把「O 通常 −2」当成绝对规则；不知道同一元素在同一化合物中可因所处原子团不同而价态不同；没见过平均化合价的概念。</p>
+<p><strong>正确理解</strong>：过氧化物中 O 为 −1；NH<sub>4</sub>NO<sub>3</sub> 要拆成 NH<sub>4</sub><sup>+</sup>（N 为 −3）和 NO<sub>3</sub><sup>−</sup>（N 为 +5）分别计算；Fe<sub>3</sub>O<sub>4</sub> 中 Fe 平均 +8/3，平均价可为分数。</p>
+<p><strong>避坑口诀</strong>：「常规价里有特例，原子团要拆着算。」</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 6</span>
+<p><strong>易错表现</strong>：把 O<sub>2</sub> 与 O<sub>3</sub> 互称同位素；把 <sup>1</sup>H 与 <sup>2</sup>H 互称同素异形体；或认为同素异形体的混合物是纯净物。</p>
+<p><strong>错误成因</strong>：两组概念比较的对象不同——同位素比较的是<strong>原子</strong>（质子数同、中子数不同），同素异形体比较的是<strong>单质</strong>（元素同、结构不同）。层次混淆导致张冠李戴。</p>
+<p><strong>正确理解</strong>：先问「讨论对象是原子还是单质」：原子 → 同位素；单质 → 同素异形体。O<sub>2</sub> 与 O<sub>3</sub> 混合含两种分子，是混合物。</p>
+<p><strong>避坑口诀</strong>：「同位素论原子，同素异形体论单质。」</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 7</span>
+<p><strong>易错表现</strong>：把乙酸的最简式 CH<sub>2</sub>O 当成它的分子式；书写结构简式时把乙烯写成 CH<sub>2</sub>CH<sub>2</sub>（省略碳碳双键）；把结构式中的所有短线都算成共用电子对之外的孤对。</p>
+<p><strong>错误成因</strong>：最简式（实验式）、分子式、结构式、结构简式四个概念回答的问题不同——最简式只给原子个数最简比（乙酸 CH<sub>2</sub>O），分子式给真实原子数（C<sub>2</sub>H<sub>4</sub>O<sub>2</sub>），结构式画出每对共用电子，结构简式在结构式基础上省略部分短线。层次混淆导致「张冠李戴」。</p>
+<p><strong>正确理解</strong>：同一物质四种式子逐级「信息量递增」；写结构简式时碳碳双键、碳碳三键、官能团（—OH、—CHO、—COOH）<strong>不能省略或合并</strong>，如乙烯必须写 CH<sub>2</sub>=CH<sub>2</sub>，乙醇写 CH<sub>3</sub>CH<sub>2</sub>OH 或 C<sub>2</sub>H<sub>5</sub>OH。</p>
+<p><strong>避坑口诀</strong>：「最简比、真实数、画成键、简式留键。」</p>
+</div>
+</section>
+
+<section>
+<h2>六、章末自检清单</h2>
+<p>合上材料逐条自测，能流畅说出或写出即可打勾；卡壳的条目回到对应小节重读，并转写成一句「我的易错声明」贴在书桌前。</p>
+<ul class="checklist">
+<li>我能画出物质分类树，并正确分类盐酸、液氯、漂白粉、纯碱、冰水混合物、NaHSO<sub>4</sub> 等易混物质。</li>
+<li>我能说出酸、碱、盐、氧化物的电离或组成判据，知道 Na<sub>2</sub>O<sub>2</sub> 不是碱性氧化物。</li>
+<li>我能说出分散系按粒径的三分类（&lt;1 nm、1~100 nm、&gt;100 nm），并解释粒径是胶体一切性质的本质。</li>
+<li>我能解释丁达尔效应、电泳、聚沉的成因，并举出各一个生活应用实例。</li>
+<li>我能完整描述 Fe(OH)<sub>3</sub> 胶体的制备操作、现象与三个注意事项，并正确书写制备方程式。</li>
+<li>我能区分化学式、电子式、结构式、结构简式、原子结构示意图五种用语的使用场合。</li>
+<li>我能正确书写 NaCl、HCl 等典型物质的电子式，做到「离子括号共价点」不混淆。</li>
+<li>我能读懂并书写核素符号 <sup>A</sup><sub>Z</sub>X，熟练换算质子数、中子数与质量数。</li>
+<li>我能用「代数和为零」计算任意化合物中元素的化合价，包括过氧化物与平均化合价的情形。</li>
+<li>我能用观察法、最小公倍数法、奇数配偶法快速配平方程式，配平后逐元素验证。</li>
+<li>我能说清同位素与同素异形体的区别，并举出各两对实例。</li>
+</ul>
+</section>
+
+<section>
+<h2>七、高考怎么考</h2>
+<p>对照近年全国卷（云南适用）的命题方式，本章考法与应对如下：</p>
+<ul>
+<li><strong>选择题第 1~2 题（必考）</strong>：STSE 情境下的物质分类、胶体性质判断（丁达尔、聚沉应用），属于「开局送分题」，本章例 1、例 4、例 8 是原型。</li>
+<li><strong>选择题（常考）</strong>：化学用语正误判断（电子式、核素符号、结构式、原子结构示意图），4 个选项各考一种用语，本章例 3、例 6 是原型。</li>
+<li><strong>非选择题（渗透考查）</strong>：工业流程题中书写陌生方程式（配平 + 条件 + 状态符号），化合价计算是氧化还原分析的前置步骤。</li>
+<li><strong>答卷建议</strong>：电子式题先在草稿纸上判断化合物类型再落笔；方程式写完立刻逐元素验证，并把条件、↑↓ 回头看一遍——这两步各花 10 秒，能挽回绝大多数「会做却丢分」。</li>
+</ul>
+</section>
+
+<section>
+<h2>八、与前后章节的联系</h2>
+<p>本章与 3.1 共同构成高中化学的「语言与工具层」：化合价是 3.4 氧化还原反应的入口（升失氧、降得还都以化合价变化为依据）；电子式将在化学键（3.10）中升级为离子键与共价键的本质理解；胶体知识会在实验题中与提纯、鉴别结合。建议学完 3.4 后回头重读本章「钠在氯气中燃烧」的三重表征，体会电子转移与化合价、化学键的统一。</p>
+<p>给小兵的一句话：本章没有难题，只有「细节题」。把每一张速查表（分类、变价、分散系）当成可以默写的清单，把电子式的「先分类型」当成肌肉记忆——你在选择题开局节省的每一分钟，都是留给压轴题的弹药。</p>
+</section>
+
+</main>
+<footer class="chap-foot">高考备考 · 化学 · 深度学习材料 · 2026</footer>
+</body>
+</html>

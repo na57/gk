@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>机械振动与机械波 - 深度学习材料</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<nav class="chap-nav">高考备考 · 物理 · 深度学习材料 ｜ 3.6 机械振动与机械波</nav>
+<header class="chap-head">
+  <h1>机械振动与机械波</h1>
+  <p class="chap-meta"></p>
+</header>
+  <div class="subtitle">深度学习材料 · 概念 · 推导 · 模型 · 方法</div>
+  <div class="meta">
+    <span>高中物理 · 力学模块 · 高考常考选考内容</span><br>
+    <span>依据：《高考物理95+分备考指南》3.6节要求</span><br>
+    <span>适用：高一同步学习 &amp; 高考一轮复习</span><br>
+    <span>学生：小兵</span>
+  </div>
+</div>
+
+<p class="hint">
+  💡 提示：所有公式由 MathJax 渲染；带推导的公式请合上书独立推一遍
+</p>
+
+<div class="toc">
+  <strong>目录</strong>
+  <ol>
+    <li><a href="#s1">一、本章总览</a></li>
+    <li><a href="#s2">二、核心概念与物理量</a></li>
+    <li><a href="#s3">三、公式与推导（含适用条件）</a></li>
+    <li><a href="#s4">四、典型例题</a></li>
+    <li><a href="#s5">五、易错点与成因分析</a></li>
+    <li><a href="#s6">六、章末自检清单</a></li>
+  </ol>
+</div>
+
+<h2 id="s1">一、本章总览</h2>
+
+<p>小兵，欢迎来到力学里"最有节奏感"的一章。秋千来回摆动、钟摆滴答作响、琴弦被拨动后发出声音、石子入水激起层层涟漪——这些现象背后是同一条主线：<strong>一个物体在平衡位置附近做往复运动（振动），这种振动通过介质一点点传出去，就形成了波</strong>。可以说，振动是"因"，波是"果"；学好了振动，波就只是"振动 + 传播"的组合。</p>
+
+<h3>1.1 高考定位与分值</h3>
+
+<p>云南高考物理为自主命题，满分 100 分、75 分钟，力学模块约占 40 分。本章"机械振动与机械波"属于力学模块中的常考选考内容，历年考情大致如下：</p>
+
+<table>
+  <tr><th style="width:22%">考查形式</th><th style="width:36%">高频考点</th><th class="l">说明</th></tr>
+  <tr><td>选择题（约 6 分）</td><td>振动图象与波动图象的相互转换、波的多解问题</td><td class="l">几乎是全国卷及云南卷的传统高频题，区分度好</td></tr>
+  <tr><td>实验题（6~8 分）</td><td>用单摆测定重力加速度</td><td class="l">考累积法测周期、摆长测量、数据处理与误差分析</td></tr>
+  <tr><td>选择题概念辨析</td><td>受迫振动与共振、干涉与衍射、多普勒效应</td><td class="l">概念型，重在理解条件而非计算</td></tr>
+  <tr><td>计算题小问</td><td>简谐运动的能量、对称性；与圆周运动、机械能综合</td><td class="l">作为综合题的一个环节出现</td></tr>
+</table>
+
+<p>本章公式不多，但<strong>图象多、条件多、陷阱多</strong>。得分关键不是背公式，而是：看懂两类图象、记清每个公式的适用条件、对"多解"保持敏感。</p>
+
+<h3>1.2 知识体系图</h3>
+
+<div class="map">
+  <div class="row"><div class="node root">机械振动与机械波</div></div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node">机械振动（个体的事）</div>
+    <div class="node">机械波（集体的事）</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">简谐运动：判据 F = −kx</div>
+    <div class="node leaf">单摆：T = 2π√(L/g)</div>
+    <div class="node leaf">受迫振动与共振</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">波的形成与描述：v = λf</div>
+    <div class="node leaf">波的图象 ↔ 振动图象</div>
+    <div class="node leaf">干涉 · 衍射 · 多普勒效应</div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node view">高考三大题型：图象转换 · 波的多解 · 单摆测 g</div>
+  </div>
+</div>
+
+<h3>1.3 学习主线与方法建议</h3>
+
+<p>本章始终围绕三对关系展开，抓住它们就不会迷路：</p>
+
+<ul>
+  <li><strong>振动与波（因与果）</strong>：波是振动在介质中的传播。每个质点都在自己的平衡位置附近"原地振动"，并不随波远行——传出去的只是运动形式和能量。</li>
+  <li><strong>时间与空间（两种周期性）</strong>：振动对时间有周期性（周期 $T$），波在空间上有周期性（波长 $\lambda$），二者由 $v=\lambda f$ 锁死。很多难题就是在"时间差"与"空间差"之间换算。</li>
+  <li><strong>图象与方程（两种语言）</strong>：振动图象 $y\text{-}t$、波动图象 $y\text{-}x$、函数方程 $y=A\sin(\omega t+\varphi)$ 是同一件事的三种表述，高考就爱考"互译"。</li>
+</ul>
+
+<div class="deep">
+<strong>学习建议：</strong>本章每个公式都附有推导思路，请务必合上书自己推一遍——尤其是单摆周期公式的小角度近似和 $v=\lambda f$ 的来历。推导能力一旦长在身上，考试紧张时公式忘了也能现场"重新发明"。
+</div>
+
+<hr>
+
+<h2 id="s2">二、核心概念与物理量</h2>
+
+<h3>2.1 机械振动与简谐运动</h3>
+
+<p><strong>机械振动</strong>：物体（或物体的一部分）在某一中心位置附近所做的往复运动。这个中心位置叫<strong>平衡位置</strong>——即物体不受回复力时静止的位置（弹簧振子的弹簧原长处、单摆的最低点）。</p>
+
+<p><strong>简谐运动</strong>：最简单、最基本的振动。两种等价的定义都要会：</p>
+
+<ul>
+  <li>动力学定义：回复力与位移成正比、方向总与位移相反，即 $F=-kx$；</li>
+  <li>运动学定义：位移随时间按正弦（或余弦）规律变化，即 $x=A\sin(\omega t+\varphi_0)$。</li>
+</ul>
+
+<p>弹簧振子（光滑水平面上的弹簧连着小球）是简谐运动的标准模型，本章所有结论都先在它身上建立，再推广到单摆等。</p>
+
+<svg viewBox="0 0 460 130" width="440" style="display:block;margin:10px auto" role="img" aria-label="弹簧振子示意图">
+  <rect x="8" y="15" width="12" height="90" fill="#4a5568"/>
+  <line x1="20" y1="105" x2="452" y2="105" stroke="#a0aec0" stroke-width="1.5"/>
+  <polyline points="20,60 34,60 42,42 58,78 74,42 90,78 106,42 122,78 138,42 154,78 170,42 186,78 202,42 218,78 226,60 236,60" fill="none" stroke="#2b6cb0" stroke-width="2"/>
+  <rect x="236" y="32" width="56" height="56" rx="8" fill="#2b6cb0"/>
+  <text x="255" y="65" font-size="15" fill="#ffffff">m</text>
+  <line x1="264" y1="95" x2="264" y2="115" stroke="#e53e3e" stroke-width="2"/>
+  <text x="259" y="128" font-size="13" fill="#e53e3e">O</text>
+  <text x="312" y="52" font-size="13" fill="#4a5568">O：平衡位置（弹簧原长）</text>
+  <text x="312" y="76" font-size="13" fill="#4a5568">位移 x 从 O 量起，向右为正</text>
+</svg>
+
+<h3>2.2 描述振动的物理量</h3>
+
+<table>
+  <tr><th style="width:14%">物理量</th><th style="width:10%">符号</th><th class="l" style="width:34%">定义</th><th style="width:14%">单位</th><th class="l">备注</th></tr>
+  <tr><td>位移</td><td>$x$</td><td class="l">振动物体相对<strong>平衡位置</strong>的有向线段</td><td>$\mathrm{m}$（常用 $\mathrm{cm}$）</td><td class="l">矢量（一维用正负号表示方向）</td></tr>
+  <tr><td>振幅</td><td>$A$</td><td class="l">离开平衡位置的最大距离（位移最大值的大小）</td><td>$\mathrm{m}$</td><td class="l">标量，恒为正；反映振动强弱与能量</td></tr>
+  <tr><td>周期</td><td>$T$</td><td class="l">完成一次全振动所用的时间</td><td>$\mathrm{s}$</td><td class="l">标量；简谐运动的 $T$ 与振幅无关</td></tr>
+  <tr><td>频率</td><td>$f$</td><td class="l">单位时间内完成全振动的次数，$f=\dfrac{1}{T}$</td><td>$\mathrm{Hz}$（$\mathrm{s^{-1}}$）</td><td class="l">标量；由振动系统自身决定（自由振动）</td></tr>
+  <tr><td>角频率</td><td>$\omega$</td><td class="l">$\omega=\dfrac{2\pi}{T}=2\pi f$</td><td>$\mathrm{rad/s}$</td><td class="l">联系三角函数与真实时间的桥梁</td></tr>
+  <tr><td>相位 / 初相</td><td>$\omega t+\varphi_0$ / $\varphi_0$</td><td class="l">正弦函数括号里的整体；$t=0$ 时的相位即初相</td><td>$\mathrm{rad}$</td><td class="l">相位唯一确定振动状态（位置与方向）</td></tr>
+</table>
+
+<p><strong>一次全振动</strong>：从某一状态出发，第一次以<strong>相同的位置和相同的速度方向</strong>回到该状态，所经历的过程。例如从最右端出发，回到最右端才算一次全振动；从平衡位置向右出发，则要到"右端 → 左端 → 再回到平衡位置且向右"才算一次。一次全振动通过的路程恰为 $4A$。</p>
+
+<div class="key-point">
+<strong>⚠️ 位移方向约定（本章最重要的一个"规矩"）：</strong>振动物体的位移 $x$ <strong>永远从平衡位置量起</strong>，指向物体当前所在位置；与物体从哪儿出发、正在往哪儿运动毫无关系。向右（或向上）规定为正方向后，物体在平衡位置右侧 $x&gt;0$，在左侧 $x&lt;0$。回复力、加速度的正负都跟着这个约定走：它们永远与 $x$ 反号。把位移错当成"离出发点的距离"是本章第一个高发错误。
+</div>
+
+<h3>2.3 回复力</h3>
+
+<p><strong>回复力</strong>：使振动物体回到平衡位置的力，方向<strong>始终指向平衡位置</strong>。它是按<em>效果</em>命名的力，不是新的力种——弹簧振子里是弹簧弹力；单摆里是重力沿圆弧切线方向的分力。判断一个振动是否为简谐运动，就看回复力是否满足 $F=-kx$（$k$ 为比例常数，不一定是劲度系数）。</p>
+
+<h3>2.4 简谐运动中各物理量的变化规律</h3>
+
+<table>
+  <tr><th>位置 / 过程</th><th>位移 $x$</th><th>回复力 $F=-kx$</th><th>加速度 $a$</th><th>速度 $v$</th><th>势能 $E_\mathrm{p}$</th><th>动能 $E_\mathrm{k}$</th></tr>
+  <tr><td>平衡位置</td><td>$0$</td><td>$0$</td><td>$0$</td><td>最大（$\omega A$）</td><td>最小（取 $0$）</td><td>最大</td></tr>
+  <tr><td>最大位移处</td><td>最大（$\pm A$）</td><td>最大（$\mp kA$）</td><td>最大（$\mp\omega^2 A$）</td><td>$0$</td><td>最大</td><td>$0$</td></tr>
+  <tr><td>平衡位置 → 最大位移</td><td>增大</td><td>增大</td><td>增大</td><td>减小</td><td>增大</td><td>减小</td></tr>
+  <tr><td>最大位移 → 平衡位置</td><td>减小</td><td>减小</td><td>减小</td><td>增大</td><td>减小</td><td>增大</td></tr>
+</table>
+
+<p>记忆诀窍：<strong>$x$、$F$、$a$ 是一伙的（同步增减，方向彼此锁定），$v$ 与它们"此消彼长"</strong>。另外注意对称性：振子经过同一位置时，速度、加速度、回复力、动能、势能的<em>大小</em>都相同，只有速度方向可能相反；关于平衡位置对称的两点之间，往返时间相等。</p>
+
+<h3>2.5 描述波的物理量</h3>
+
+<table>
+  <tr><th style="width:14%">物理量</th><th style="width:10%">符号</th><th class="l" style="width:36%">定义</th><th style="width:14%">单位</th><th class="l">由谁决定</th></tr>
+  <tr><td>波长</td><td>$\lambda$</td><td class="l">振动相位相同的两个<strong>相邻</strong>质点间的距离（相邻波峰、相邻波谷或相邻密部间距）</td><td>$\mathrm{m}$</td><td class="l">介质与波源共同决定（$\lambda=v/f$）</td></tr>
+  <tr><td>波速</td><td>$v$</td><td class="l">振动形式（相位）在介质中传播的快慢</td><td>$\mathrm{m/s}$</td><td class="l"><strong>只由介质决定</strong>，与频率无关</td></tr>
+  <tr><td>频率 / 周期</td><td>$f$ / $T$</td><td class="l">各质点的振动频率，等于波源频率</td><td>$\mathrm{Hz}$ / $\mathrm{s}$</td><td class="l"><strong>只由波源决定</strong>，与介质无关</td></tr>
+</table>
+
+<div class="deep">
+<strong>一条高频结论：</strong>波从一种介质进入另一种介质时，频率 $f$ 不变（波源说了算），波速 $v$ 改变（介质说了算），于是波长 $\lambda=v/f$ 跟着变。例如声音从空气进入水中，音调不变，但波长变长。
+</div>
+
+<h3>2.6 横波与纵波</h3>
+
+<table>
+  <tr><th style="width:18%">　</th><th style="width:41%">横波</th><th>纵波</th></tr>
+  <tr><td>质点振动方向</td><td>与波的传播方向<strong>垂直</strong></td><td>与波的传播方向<strong>平行</strong></td></tr>
+  <tr><td>波形特征</td><td>波峰、波谷相间</td><td>密部、疏部相间</td></tr>
+  <tr><td>典型实例</td><td>绳波、水面的波纹（近似）、电磁波</td><td>空气中的声波、弹簧中的疏密波</td></tr>
+  <tr><td>能在何种介质传播</td><td>固体（横波需要切变弹性）</td><td>固体、液体、气体均可</td></tr>
+</table>
+
+<h3>2.7 振动与波的关系</h3>
+
+<ul>
+  <li>有波必有振动，有振动（在介质中）才可能形成波；真空中不能传机械波。</li>
+  <li>波上<em>每一个</em>质点都做自己平衡位置附近的振动：开始振动的方向与波源起振方向相同，周期都与波源相同。</li>
+  <li>离波源越远的质点，开始振动越晚，相位越落后——"先振带后振"就是波传播的本质。</li>
+</ul>
+
+<div class="key-point">
+<strong>质点不随波迁移！</strong>波传出去的是<strong>运动形式、能量和信息</strong>，介质质点只在原地附近"凑热闹"。漂在水面的树叶只是在原地上下起伏，绝不会跟着波跑到岸边——这是理解一切波动问题的起点。
+</div>
+
+<hr>
+
+<h2 id="s3">三、公式与推导（含适用条件）</h2>
+
+<h3>3.1 简谐运动的判据：$F=-kx$</h3>
+
+<p><strong>推导思路</strong>（以弹簧振子为例）：水平光滑面上，弹簧劲度系数 $k$。取平衡位置为原点，向右为正。小球位于 $x$ 处时弹簧形变量就是 $x$，弹力大小 $kx$：小球在右侧（$x&gt;0$）时弹力向左（为负），在左侧（$x&lt;0$）时弹力向右（为正）。两种情况统一写成</p>
+
+$$F=-kx$$
+
+<p>负号的全部含义就是"方向永远指向平衡位置"。由牛顿第二定律得 $a=-\dfrac{k}{m}x$，即加速度与位移成正比、方向相反——这是简谐运动的动力学特征。</p>
+
+<div class="warn">
+<strong>适用条件与边界：</strong>① $k$ 是"回复力与位移的比例常数"，对弹簧振子恰好是劲度系数，对其他系统（如单摆）是等效值；② 这是一维表达式，正负号已承担方向信息，不要再额外加方向箭头；③ 验证某运动是否简谐，只需证明回复力（或合力沿运动方向的分量）满足 $F=-kx$ 且平衡位置固定。
+</div>
+
+<h3>3.2 运动学方程：$x=A\sin(\omega t+\varphi_0)$</h3>
+
+<p><strong>推导思路</strong>：用"参考圆"最直观——做匀速圆周运动的质点，其在直径方向上的投影恰好做简谐运动。圆周半径即振幅 $A$，角速度即 $\omega$，于是投影的位置为 $x=A\sin(\omega t+\varphi_0)$，其中初相 $\varphi_0$ 由 $t=0$ 时刻的起始状态决定（例如 $t=0$ 时过平衡位置向正方向运动，则 $\varphi_0=0$）。</p>
+
+<p>对时间求一阶、二阶导数，可得速度与加速度：</p>
+
+$$v=\omega A\cos(\omega t+\varphi_0),\qquad a=-\omega^2 A\sin(\omega t+\varphi_0)=-\omega^2 x$$
+
+<p>由 $a=-\omega^2 x$ 结合 $a=-\dfrac{k}{m}x$ 可得 $\omega^2=\dfrac{k}{m}$，这把"运动学"与"动力学"连了起来。由 $\sin^2+\cos^2=1$ 还可得到速度-位移关系（不需记，但要会推）：</p>
+
+$$v=\pm\,\omega\sqrt{A^2-x^2}$$
+
+<div class="deep">
+<strong>相位的妙用：</strong>相位 $\varphi=\omega t+\varphi_0$ 每增加 $2\pi$，运动恰好重复一次。"同相"的两个质点运动状态总相同；"反相"（相位差 $\pi$）的两个质点，位移、速度总等大反向。这个视角在波的干涉中会反复使用。
+</div>
+
+<h3>3.3 简谐运动的能量</h3>
+
+<p>弹簧振子只有弹力做功，机械能守恒。取平衡位置处弹性势能为零，则总能量等于最大位移处的势能，也等于平衡位置的动能：</p>
+
+$$E=\frac{1}{2}kA^2=\frac{1}{2}mv_\mathrm{max}^2,\qquad v_\mathrm{max}=\omega A$$
+
+<p>任意位置 $x$ 处：$E_\mathrm{p}=\dfrac{1}{2}kx^2$，$E_\mathrm{k}=\dfrac{1}{2}k(A^2-x^2)$。<strong>能量只取决于 $k$ 与 $A$</strong>——所以振幅是振动强弱的标志。</p>
+
+<p>数值感受一下：$k=200\ \mathrm{N/m}$、$m=0.5\ \mathrm{kg}$、$A=0.1\ \mathrm{m}$ 的弹簧振子，$\omega=\sqrt{k/m}=20\ \mathrm{rad/s}$，$E=\frac12\times200\times0.1^2=1\ \mathrm{J}$，$v_\mathrm{max}=\omega A=2\ \mathrm{m/s}$；在 $x=0.06\ \mathrm{m}$ 处 $E_\mathrm{p}=0.36\ \mathrm{J}$、$E_\mathrm{k}=0.64\ \mathrm{J}$、$v=1.6\ \mathrm{m/s}$。</p>
+
+<h3>3.4 弹簧振子的周期</h3>
+
+$$T=2\pi\sqrt{\frac{m}{k}}$$
+
+<p><strong>推导思路</strong>：由 $\omega=\sqrt{k/m}$ 与 $\omega=2\pi/T$ 联立即得。<strong>适用条件</strong>：弹簧质量忽略、阻力忽略、形变在弹性限度内。注意周期与振幅无关——这正是"简谐运动具有等时性"的体现（伽利略观察教堂吊灯时发现的正是这一点）。</p>
+
+<h3>3.5 单摆周期公式（本章推导之王）</h3>
+
+$$T=2\pi\sqrt{\frac{L}{g}}$$
+
+<p><strong>推导思路</strong>（务必能独立复现）：</p>
+
+<svg viewBox="0 0 300 250" width="270" style="display:block;margin:10px auto" role="img" aria-label="单摆示意图">
+  <line x1="70" y1="28" x2="230" y2="28" stroke="#4a5568" stroke-width="4"/>
+  <line x1="80" y1="28" x2="72" y2="16" stroke="#4a5568" stroke-width="1.2"/>
+  <line x1="105" y1="28" x2="97" y2="16" stroke="#4a5568" stroke-width="1.2"/>
+  <line x1="130" y1="28" x2="122" y2="16" stroke="#4a5568" stroke-width="1.2"/>
+  <line x1="155" y1="28" x2="147" y2="16" stroke="#4a5568" stroke-width="1.2"/>
+  <line x1="180" y1="28" x2="172" y2="16" stroke="#4a5568" stroke-width="1.2"/>
+  <line x1="205" y1="28" x2="197" y2="16" stroke="#4a5568" stroke-width="1.2"/>
+  <line x1="150" y1="28" x2="150" y2="178" stroke="#a0aec0" stroke-dasharray="4 3"/>
+  <line x1="150" y1="28" x2="210" y2="158" stroke="#4a5568" stroke-width="2"/>
+  <circle cx="210" cy="158" r="14" fill="#2b6cb0"/>
+  <path d="M150 78 A50 50 0 0 1 171 73.4" fill="none" stroke="#e53e3e" stroke-width="1.5"/>
+  <text x="172" y="92" font-size="14" fill="#e53e3e">θ</text>
+  <text x="196" y="85" font-size="14" fill="#4a5568">L</text>
+  <text x="228" y="162" font-size="13" fill="#4a5568">m</text>
+  <path d="M90 158 A150 150 0 0 1 210 158" fill="none" stroke="#a0aec0" stroke-dasharray="4 3"/>
+  <text x="115" y="200" font-size="12" fill="#a0aec0">摆动圆弧（最低点为平衡位置）</text>
+</svg>
+
+<ol>
+  <li><strong>受力分解</strong>：摆球受重力 $mg$ 与绳拉力 $F_T$。沿圆弧切向与法向分解重力：切向分量 $mg\sin\theta$ 指向平衡位置，<strong>它就是回复力</strong>；法向分量与拉力的合力提供向心力。</li>
+  <li><strong>小角度近似</strong>：当摆角很小（$\theta&lt;5^{\circ}$）时，$\sin\theta\approx\theta$（$\theta$ 必须用弧度）。此时弧长 $x=L\theta\approx L\sin\theta$。</li>
+  <li><strong>凑出 $F=-kx$</strong>：回复力 $F=-mg\sin\theta\approx-\dfrac{mg}{L}\,x$。这正好是 $F=-kx$ 的形式，等效比例系数 $k'=\dfrac{mg}{L}$。</li>
+  <li><strong>代入周期公式</strong>：$T=2\pi\sqrt{\dfrac{m}{k'}}=2\pi\sqrt{\dfrac{L}{g}}$。</li>
+</ol>
+
+<div class="warn">
+<strong>适用条件与边界（考试必考）：</strong>
+<ul>
+  <li>摆角 $\theta&lt;5^{\circ}$（此时 $\sin\theta$ 与 $\theta$ 的相对误差约千分之一）；摆角大了公式就有系统误差，周期变长。</li>
+  <li>摆长 $L$ 是<strong>悬点到摆球球心</strong>的距离，$L=l_{绳}+r_{球}$，别忘了加球半径。</li>
+  <li>摆球视为质点、摆线轻且不可伸长、悬点固定、忽略空气阻力——理想化条件缺一不可。</li>
+</ul>
+</div>
+
+<h4>等效摆长与等效重力加速度</h4>
+
+<ul>
+  <li><strong>等效摆长</strong>：找"圆弧运动的圆心"。如摆线中途被钉子挡住，摆球绕钉子摆动，等效摆长变为钉子到球心的距离；周期分段计算再拼接。</li>
+  <li><strong>等效重力加速度 $g'$</strong>：单摆处于加速参考系或受恒力场时，用"摆球相对系统静止时悬线拉力对应的视重加速度"替换 $g$。电梯以加速度 $a$ 加速上升时 $g'=g+a$，加速下降时 $g'=g-a$；完全失重时 $g'=0$，$T\to\infty$，单摆停摆。带电摆球在竖直匀强电场中，则把电场力与重力合并后再算 $g'$。</li>
+</ul>
+
+<p><strong>重要应用——测重力加速度</strong>：由 $T=2\pi\sqrt{L/g}$ 得</p>
+
+$$g=\frac{4\pi^2 L}{T^2}$$
+
+<p>实验用<strong>累积法</strong>测周期（测 $n=30\sim50$ 次全振动的总时间 $t$，$T=t/n$，减小计时误差）。示例：$L=1.000\ \mathrm{m}$，测得 $T=2.006\ \mathrm{s}$，则 $g=\dfrac{4\pi^2\times1.000}{2.006^2}\approx 9.81\ \mathrm{m/s^2}$。顺带一提，$T=2\ \mathrm{s}$ 的单摆叫"秒摆"，其摆长约 $1\ \mathrm{m}$（$L=\dfrac{gT^2}{4\pi^2}\approx0.993\ \mathrm{m}$）。</p>
+
+<h3>3.6 受迫振动与共振</h3>
+
+<ul>
+  <li><strong>阻尼振动</strong>：受阻力，振幅逐渐减小，但周期（频率）基本不变——变的是能量，不是节奏。</li>
+  <li><strong>受迫振动</strong>：在周期性驱动力作用下的振动。稳定后，振动频率<strong>等于驱动力频率 $f_{驱}$</strong>，与固有频率 $f_0$ 无关。</li>
+  <li><strong>共振</strong>：当 $f_{驱}=f_0$ 时振幅最大，这种现象叫共振。$f_{驱}$ 越接近 $f_0$，振幅越大；阻尼越小，共振峰越尖锐。</li>
+</ul>
+
+<svg viewBox="0 0 440 210" width="420" style="display:block;margin:10px auto" role="img" aria-label="共振曲线">
+  <line x1="40" y1="12" x2="40" y2="180" stroke="#4a5568" stroke-width="1.5"/>
+  <polygon points="40,8 36,18 44,18" fill="#4a5568"/>
+  <line x1="30" y1="180" x2="432" y2="180" stroke="#4a5568" stroke-width="1.5"/>
+  <polygon points="438,180 428,176 428,184" fill="#4a5568"/>
+  <text x="14" y="22" font-size="13" fill="#4a5568">A</text>
+  <text x="410" y="200" font-size="13" fill="#4a5568">f驱</text>
+  <path d="M40 173 C 100 172, 150 168, 175 145 C 195 118, 210 50, 220 28 C 230 50, 245 118, 265 145 C 290 168, 340 172, 400 173" fill="none" stroke="#2b6cb0" stroke-width="2.5"/>
+  <line x1="220" y1="28" x2="220" y2="180" stroke="#e53e3e" stroke-dasharray="5 4"/>
+  <text x="213" y="198" font-size="13" fill="#e53e3e">f₀</text>
+  <text x="248" y="58" font-size="13" fill="#e53e3e">f驱 = f₀ 时振幅最大（共振）</text>
+</svg>
+
+<p>共振有利有弊：收音机调谐、核磁共振是利用；桥梁、机器则要防止（部队过桥便步走、机器底座加减震）。</p>
+
+<h3>3.7 波速公式：$v=\lambda f=\dfrac{\lambda}{T}$</h3>
+
+<p><strong>推导思路</strong>：波源每振动一个周期 $T$，就向外"吐"出一个完整波形，即波形向前推进一个波长 $\lambda$。于是传播速度</p>
+
+$$v=\frac{\lambda}{T}=\lambda f$$
+
+<p><strong>适用条件与边界</strong>：</p>
+
+<ul>
+  <li>对一切波（机械波、电磁波）都成立，是本章使用频率最高的公式。</li>
+  <li>$v$ 由介质决定：同一列波在不同介质中 $v$ 不同；同一介质中不同频率的同类波 $v$ 相同（例如空气中各种频率的声速都约为 $340\ \mathrm{m/s}$）。</li>
+  <li>参考数值：$15^{\circ}\mathrm{C}$ 空气中声速约 $340\ \mathrm{m/s}$，水中约 $1500\ \mathrm{m/s}$，钢铁中约 $5000\ \mathrm{m/s}$。</li>
+</ul>
+
+<h3>3.8 波的叠加与干涉</h3>
+
+<p><strong>叠加原理</strong>：几列波相遇区域，质点位移等于各波单独引起位移的矢量和；相遇后各自保持原有特性继续传播（独立性）。</p>
+
+<p><strong>稳定干涉的条件（相干条件，三条缺一不可）</strong>：两列波<strong>频率相同</strong>、<strong>相位差恒定</strong>、<strong>振动方向相同</strong>。</p>
+
+<p><strong>加强、减弱的判据</strong>（两波源<strong>同相</strong>时）：设某点到两波源的波程差 $\Delta r=\lvert r_1-r_2\rvert$，</p>
+
+$$\Delta r=k\lambda\ (k=0,1,2,\cdots)\ \Rightarrow\ \text{加强};\qquad \Delta r=(2k+1)\frac{\lambda}{2}\ \Rightarrow\ \text{减弱}$$
+
+<p>若两波源<strong>反相</strong>，结论恰好对调。推导思路很朴素：波程差是整波长时，两列波"峰对峰、谷对谷"同步到达，始终互相加强；波程差是半波长奇数倍时"峰对谷"，始终互相抵消。</p>
+
+<div class="warn">
+<strong>两个常见误会：</strong>① 加强点不是"位移永远最大"，它仍在振动，只是振幅变为两列波振幅之和，同样会经过平衡位置；② 减弱点若两波振幅相等则始终静止，若不等则振幅为两者之差。
+</div>
+
+<svg viewBox="0 0 440 220" width="420" style="display:block;margin:10px auto" role="img" aria-label="波的干涉示意">
+  <g fill="none" stroke="#90cdf4" stroke-width="1.2">
+    <circle cx="150" cy="110" r="22"/><circle cx="150" cy="110" r="44"/><circle cx="150" cy="110" r="66"/><circle cx="150" cy="110" r="88"/>
+    <circle cx="290" cy="110" r="22"/><circle cx="290" cy="110" r="44"/><circle cx="290" cy="110" r="66"/><circle cx="290" cy="110" r="88"/>
+  </g>
+  <line x1="220" y1="8" x2="220" y2="212" stroke="#e53e3e" stroke-dasharray="5 4"/>
+  <circle cx="150" cy="110" r="5" fill="#1a365d"/>
+  <circle cx="290" cy="110" r="5" fill="#1a365d"/>
+  <text x="141" y="132" font-size="13" fill="#1a365d">S₁</text>
+  <text x="283" y="132" font-size="13" fill="#1a365d">S₂</text>
+  <text x="228" y="22" font-size="12" fill="#e53e3e">中垂线上 Δr=0，加强</text>
+</svg>
+
+<h3>3.9 波的衍射</h3>
+
+<p>波绕过障碍物（或通过小孔）继续传播的现象叫衍射——一切波都能衍射。<strong>发生明显衍射的条件</strong>：障碍物或孔的尺寸<strong>比波长小，或与波长相差不多</strong>。波长越长越容易发生明显衍射，所以声波（米级波长）能绕过墙，而光（微米级波长）日常看起来"沿直线传播"。</p>
+
+<h3>3.10 多普勒效应</h3>
+
+<p><strong>现象</strong>：波源与观察者相互靠近时，接收到的频率变高（音调变尖）；相互远离时频率变低。波源本身频率没变，变的是"单位时间撞进耳朵的波峰数"。</p>
+
+<svg viewBox="0 0 440 200" width="420" style="display:block;margin:10px auto" role="img" aria-label="多普勒效应示意">
+  <g fill="none" stroke="#90cdf4" stroke-width="1.2">
+    <circle cx="120" cy="100" r="70"/>
+    <circle cx="145" cy="100" r="52"/>
+    <circle cx="170" cy="100" r="34"/>
+    <circle cx="195" cy="100" r="16"/>
+  </g>
+  <circle cx="215" cy="100" r="5" fill="#1a365d"/>
+  <line x1="215" y1="100" x2="258" y2="100" stroke="#e53e3e" stroke-width="2"/>
+  <polygon points="266,100 256,95 256,105" fill="#e53e3e"/>
+  <text x="222" y="90" font-size="12" fill="#e53e3e">波源移动方向</text>
+  <text x="52" y="192" font-size="12" fill="#4a5568">后方：波长变长，f 变低</text>
+  <text x="290" y="192" font-size="12" fill="#4a5568">前方：波长变短，f 变高</text>
+</svg>
+
+<p><strong>定量规律</strong>（声速 $u$，均沿连线运动）：</p>
+
+<ul>
+  <li>波源静止、观察者以 $v_0$ 运动：$f'=\dfrac{u\pm v_0}{u}\,f$（靠近取 $+$，远离取 $-$）；</li>
+  <li>观察者静止、波源以 $v_s$ 运动：$f'=\dfrac{u}{u\mp v_s}\,f$（靠近时减号，远离时加号）。</li>
+</ul>
+
+<p>数值对比（$f=500\ \mathrm{Hz}$，$u=340\ \mathrm{m/s}$，速率均为 $20\ \mathrm{m/s}$，相互靠近）：观察者动时 $f'=\dfrac{360}{340}\times500\approx529\ \mathrm{Hz}$；波源动时 $f'=\dfrac{340}{320}\times500=531.25\ \mathrm{Hz}$。<strong>两者不对称</strong>——"谁动"结果不同，这正是考试爱挖坑的地方。应用：测速雷达、彩超、天文学红移。</p>
+
+<hr>
+
+<h2 id="s4">四、典型例题</h2>
+
+<h3>例1　由振动图象写波动方程、定质点运动方向 <span class="stars">★★★</span></h3>
+
+<p>一列简谐横波沿 $x$ 轴正方向传播，波速 $v=4\ \mathrm{m/s}$。$x=0$ 处质点的振动图象为正弦曲线：$t=0$ 时位移为零且向 $y$ 轴正方向运动，振幅 $A=5\ \mathrm{cm}$，周期 $T=2\ \mathrm{s}$。</p>
+
+<p>(1) 写出 $x=0$ 处质点的振动方程；(2) 求波长；(3) 写出任意位置 $x$ 处质点的振动方程（波动方程）；(4) 求 $t=1.5\ \mathrm{s}$ 时 $x=2\ \mathrm{m}$ 处质点的位移和运动方向。</p>
+
+<p><strong>分步拆解：</strong></p>
+
+<p><strong>第(1)步</strong>　角频率 $\omega=\dfrac{2\pi}{T}=\pi\ \mathrm{rad/s}$；由 $t=0$ 时 $y=0$ 且向 $+y$ 运动知初相 $\varphi_0=0$：</p>
+
+$$y_0(t)=5\sin(\pi t)\ \mathrm{cm}$$
+
+<p><strong>第(2)步</strong>　波速公式直接给：</p>
+
+$$\lambda=vT=4\times2=8\ \mathrm{m}$$
+
+<p><strong>第(3)步</strong>　波沿 $+x$ 传播，$x$ 处质点比 $x=0$ 处<strong>晚</strong> $\Delta t=\dfrac{x}{v}$ 开始同样的振动（"先振带后振"），把 $t$ 换成 $t-\dfrac{x}{v}$：</p>
+
+$$y(x,t)=5\sin\pi\!\left(t-\frac{x}{4}\right)=5\sin\!\left(\pi t-\frac{\pi}{4}x\right)\ \mathrm{cm}$$
+
+<p>检验：波数 $\dfrac{2\pi}{\lambda}=\dfrac{2\pi}{8}=\dfrac{\pi}{4}$，与式中系数一致 ✓</p>
+
+<p><strong>第(4)步</strong>　代入 $t=1.5\ \mathrm{s}$、$x=2\ \mathrm{m}$：</p>
+
+$$y=5\sin\!\left(1.5\pi-\frac{\pi}{2}\right)=5\sin\pi=0\ \mathrm{cm}$$
+
+<p>方向判断（用"左邻预告法"）：波右移，质点下一时刻将获得<strong>左邻质点现在</strong>的位移。取 $t$ 稍大一点检验：$y(2,\,1.5+\Delta t)=5\sin(\pi+\pi\Delta t)=-5\sin(\pi\Delta t)&lt;0$，所以该质点正<strong>沿 $y$ 轴负方向</strong>运动。</p>
+
+<div class="deep">
+<strong>点评：</strong>本题串起了"振动方程 → 波动方程"的核心桥梁——时间延迟 $x/v$。记住方向规则：波沿 $+x$ 传，$x$ 处质点重复 $x=0$ 处<strong>之前</strong>的振动，括号里是 $t-x/v$；波沿 $-x$ 传则是 $t+x/v$。
+</div>
+
+<h3>例2　波的多解问题 <span class="stars">★★★★</span></h3>
+
+<p>一列简谐横波在 $x$ 轴上传播，$t_1=0$ 时刻波形如实线（正弦曲线，由图读出波长 $\lambda=8\ \mathrm{m}$），$t_2=0.5\ \mathrm{s}$ 时刻波形如虚线——波形整体向 $+x$ 方向平移了 $\Delta x=2\ \mathrm{m}$（即 $\lambda/4$）。求波速与周期的所有可能值；若已知周期 $T&gt;1\ \mathrm{s}$，结果又如何？</p>
+
+<p><strong>分步拆解：</strong></p>
+
+<p><strong>第(1)步：波沿 $+x$ 传播的情形。</strong>波形平移 $\lambda/4$ 最少用时 $T/4$，但经过一个周期波形完全复原，所以可能平移了 $\left(n+\dfrac14\right)\lambda$：</p>
+
+$$\Delta t=\left(n+\frac14\right)T\ \Rightarrow\ T=\frac{0.5}{n+0.25}=\frac{2}{4n+1}\ \mathrm{s}\quad(n=0,1,2,\cdots)$$
+
+$$v=\frac{\lambda}{T}=\frac{8(4n+1)}{2}=4(4n+1)\ \mathrm{m/s}$$
+
+<p>即 $n=0$：$T=2\ \mathrm{s}$、$v=4\ \mathrm{m/s}$；$n=1$：$T=0.4\ \mathrm{s}$、$v=20\ \mathrm{m/s}$；……</p>
+
+<p><strong>第(2)步：波沿 $-x$ 传播的情形。</strong>波形"看起来右移 $\lambda/4$"，完全等价于"左移 $3\lambda/4$"（因为波形空间周期性），故：</p>
+
+$$\Delta t=\left(n+\frac34\right)T\ \Rightarrow\ T=\frac{2}{4n+3}\ \mathrm{s},\qquad v=4(4n+3)\ \mathrm{m/s}$$
+
+<p>即 $n=0$：$T=\dfrac23\ \mathrm{s}\approx0.67\ \mathrm{s}$、$v=12\ \mathrm{m/s}$；$n=1$：$T=\dfrac{2}{7}\ \mathrm{s}$、$v=28\ \mathrm{m/s}$；……</p>
+
+<p><strong>第(3)步：加条件筛选。</strong>若 $T&gt;1\ \mathrm{s}$，只有"$+x$ 方向、$n=0$"满足，唯一解 $T=2\ \mathrm{s}$、$v=4\ \mathrm{m/s}$。</p>
+
+<div class="warn">
+<strong>点评：</strong>多解性有<strong>两个来源</strong>——时间的周期性（$n$ 个解）与传播方向的双向性（两族解）。规范写法是先列出含 $n$ 的通项，再用题设条件（如周期范围、速度范围）逐一筛选，切忌只写 $n=0$ 的特殊解。
+</div>
+
+<h3>例3　单摆的等效重力加速度 <span class="stars">★★★</span></h3>
+
+<p>摆长 $L=1\ \mathrm{m}$ 的单摆悬挂在电梯中，$g$ 取 $10\ \mathrm{m/s^2}$。分别求下列情形下的小角度振动周期：(1) 电梯静止；(2) 电梯以 $a=2\ \mathrm{m/s^2}$ 匀加速上升；(3) 电梯以 $a=2\ \mathrm{m/s^2}$ 匀减速上升；(4) 电梯缆绳断裂自由下落。</p>
+
+<p><strong>分步拆解：</strong></p>
+
+<p><strong>找等效 $g'$ 的方法</strong>：让摆球相对电梯静止，此时悬线拉力 $F_T$ 对应"视重" $mg'$。加速上升的电梯里，由牛顿第二定律 $F_T-mg=ma$，得 $F_T=m(g+a)$，故 $g'=g+a$。</p>
+
+<p><strong>(1)</strong> 静止：$g'=g=10\ \mathrm{m/s^2}$</p>
+
+$$T_1=2\pi\sqrt{\frac{1}{10}}\approx1.99\ \mathrm{s}$$
+
+<p><strong>(2)</strong> 加速上升：$g'=g+a=12\ \mathrm{m/s^2}$</p>
+
+$$T_2=2\pi\sqrt{\frac{1}{12}}\approx1.81\ \mathrm{s}$$
+
+<p><strong>(3)</strong> 减速上升（加速度向下）：$g'=g-a=8\ \mathrm{m/s^2}$</p>
+
+$$T_3=2\pi\sqrt{\frac{1}{8}}\approx2.22\ \mathrm{s}$$
+
+<p><strong>(4)</strong> 自由下落：$g'=g-g=0$，$T\to\infty$——完全失重，单摆不再往复摆动（回复力消失）。</p>
+
+<div class="deep">
+<strong>点评：</strong>统一口诀"超重加、失重减"：系统向上加速（超重）$g'=g+a$，向下加速（失重）$g'=g-a$。同一思想可迁移到"带电摆球 + 竖直匀强电场""月球表面的单摆"等场景：先把所有恒定体力合并成等效重力，再套 $T=2\pi\sqrt{L/g'}$。
+</div>
+
+<h3>例4　干涉加强点、减弱点的判断 <span class="stars">★★★</span></h3>
+
+<p>两个同相波源 $S_1$、$S_2$ 相距 $10\ \mathrm{m}$，频率均为 $f=5\ \mathrm{Hz}$，波速 $v=10\ \mathrm{m/s}$，在水面上形成稳定干涉图样。</p>
+
+<p>(1) 点 $P$ 满足 $PS_1=7\ \mathrm{m}$、$PS_2=12\ \mathrm{m}$，$P$ 是加强点还是减弱点？</p>
+
+<p>(2) 点 $Q$ 满足 $QS_1=6\ \mathrm{m}$、$QS_2=10\ \mathrm{m}$，$Q$ 呢？</p>
+
+<p>(3) 在线段 $S_1S_2$ 上，加强点和减弱点各有几个？</p>
+
+<p>(4) 若把 $S_2$ 换成反相波源，$P$ 点的结论如何变化？</p>
+
+<p><strong>分步拆解：</strong></p>
+
+<p><strong>第(0)步：先求波长</strong>（这类题永恒的第一步）：</p>
+
+$$\lambda=\frac{v}{f}=\frac{10}{5}=2\ \mathrm{m}$$
+
+<p><strong>第(1)步</strong>　$\Delta r=\lvert 7-12\rvert=5\ \mathrm{m}=2.5\lambda=(2\times2+1)\cdot\dfrac{\lambda}{2}$，半波长的奇数倍 → <strong>减弱点</strong>。</p>
+
+<p><strong>第(2)步</strong>　$\Delta r=\lvert 6-10\rvert=4\ \mathrm{m}=2\lambda$，波长的整数倍 → <strong>加强点</strong>。</p>
+
+<p><strong>第(3)步</strong>　在线段 $S_1S_2$ 上设动点距 $S_1$ 为 $x$（$0&lt;x&lt;10$），则 $\Delta r=\lvert 2x-10\rvert$，取值范围 $(0,10)\ \mathrm{m}$。</p>
+
+<ul>
+  <li>加强：$\Delta r=0,2,4,6,8\ \mathrm{m}$，即 $\lvert 2x-10\rvert=2k$，$k=0,1,2,3,4$，对应 $x=5;\ 4,6;\ 3,7;\ 2,8;\ 1,9$（关于中点对称），共 <strong>9 个加强点</strong>（$\Delta r=10\ \mathrm{m}$ 对应波源本身，舍去）。</li>
+  <li>减弱：$\Delta r=1,3,5,7,9\ \mathrm{m}$，每个值对应线段上两个对称点，共 <strong>10 个减弱点</strong>。</li>
+</ul>
+
+<p><strong>第(4)步</strong>　波源反相时结论对调：$P$ 点由减弱变为<strong>加强</strong>。</p>
+
+<div class="deep">
+<strong>点评：</strong>固定套路三步走——① 算 $\lambda$；② 算波程差 $\Delta r$ 并写成 $\lambda$ 的倍数；③ 对照判据（同相源：整波长加强、半波奇数倍减弱；反相源反过来）。数点个数时先确定 $\Delta r$ 的取值范围，再逐个列举，注意对称性。
+</div>
+
+<hr>
+
+<h2 id="s5">五、易错点与成因分析</h2>
+
+<h4>易错点 1：把振动位移当成"离出发点的距离"</h4>
+
+<p><strong>典型表现</strong>：判断回复力、加速度方向时盯着出发点看，结果正负号全反。</p>
+<p><strong>成因</strong>：初中"位移 = 初位置指向末位置"的旧概念迁移过度。简谐运动里位移特指<strong>相对平衡位置</strong>，这是为了配合 $F=-kx$ 的表达而专门约定的。</p>
+<p><strong>对策</strong>：每道题先标出平衡位置 $O$ 和正方向，再读题；默念"位移从 $O$ 量，回复力指向 $O$"。</p>
+
+<h4>易错点 2：振动图象与波动图象张冠李戴</h4>
+
+<p><strong>典型表现</strong>：拿着 $y\text{-}t$ 图去"看波形往哪边平移"，或拿着 $y\text{-}x$ 图把横轴读成周期。</p>
+<p><strong>成因</strong>：两图都是正弦曲线，外形几乎一样，但横轴物理意义根本不同——一个是"一个质点的录像"，一个是"一群质点的照片"。</p>
+
+<table>
+  <tr><th style="width:22%">对比项</th><th style="width:39%">振动图象 $y\text{-}t$</th><th>波动图象 $y\text{-}x$</th></tr>
+  <tr><td>研究对象</td><td>某一个质点</td><td>某一时刻的全体质点</td></tr>
+  <tr><td>相邻波峰间距</td><td>周期 $T$</td><td>波长 $\lambda$</td></tr>
+  <tr><td>随时间推移</td><td>图象向后延展，已画部分不变</td><td>整幅图沿传播方向平移</td></tr>
+  <tr><td>判断质点运动方向</td><td>看下一时刻纵坐标（曲线斜率）</td><td>波形平移法 / "上坡下、下坡上"</td></tr>
+</table>
+
+<div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;margin:10px 0">
+<svg viewBox="0 0 220 175" width="200" role="img" aria-label="振动图象">
+  <line x1="20" y1="10" x2="20" y2="140" stroke="#4a5568" stroke-width="1.5"/>
+  <polygon points="20,6 16,16 24,16" fill="#4a5568"/>
+  <line x1="12" y1="80" x2="210" y2="80" stroke="#4a5568" stroke-width="1.5"/>
+  <polygon points="216,80 206,76 206,84" fill="#4a5568"/>
+  <text x="6" y="16" font-size="12" fill="#4a5568">y</text>
+  <text x="204" y="98" font-size="12" fill="#4a5568">t</text>
+  <text x="8" y="84" font-size="12" fill="#4a5568">O</text>
+  <polyline points="20,80 30,58.8 40,50 50,58.8 60,80 70,101.2 80,110 90,101.2 100,80 110,58.8 120,50 130,58.8 140,80 150,101.2 160,110 170,101.2 180,80 190,58.8 200,50" fill="none" stroke="#2b6cb0" stroke-width="2"/>
+  <text x="48" y="165" font-size="12" fill="#4a5568">相邻峰间距 = T</text>
+</svg>
+<svg viewBox="0 0 220 175" width="200" role="img" aria-label="波动图象">
+  <line x1="20" y1="10" x2="20" y2="140" stroke="#4a5568" stroke-width="1.5"/>
+  <polygon points="20,6 16,16 24,16" fill="#4a5568"/>
+  <line x1="12" y1="80" x2="210" y2="80" stroke="#4a5568" stroke-width="1.5"/>
+  <polygon points="216,80 206,76 206,84" fill="#4a5568"/>
+  <text x="6" y="16" font-size="12" fill="#4a5568">y</text>
+  <text x="204" y="98" font-size="12" fill="#4a5568">x</text>
+  <text x="8" y="84" font-size="12" fill="#4a5568">O</text>
+  <polyline points="20,80 30,58.8 40,50 50,58.8 60,80 70,101.2 80,110 90,101.2 100,80 110,58.8 120,50 130,58.8 140,80 150,101.2 160,110 170,101.2 180,80 190,58.8 200,50" fill="none" stroke="#2b6cb0" stroke-width="2"/>
+  <text x="48" y="165" font-size="12" fill="#4a5568">相邻峰间距 = λ</text>
+</svg>
+</div>
+
+<p><strong>对策</strong>：读图先读横轴！横轴是 $t$ 就启用"时间逻辑"，是 $x$ 就启用"空间逻辑"。</p>
+
+<h4>易错点 3：波的多解问题漏解</h4>
+
+<p><strong>典型表现</strong>：由两时刻波形求波速，只算出 $n=0$ 且单一方向的一个答案。</p>
+<p><strong>成因</strong>：没意识到波形的<strong>时间周期性</strong>（隔整数个周期波形复原，平移量可多若干个 $\lambda$）与<strong>传播方向的双向性</strong>（题目没给方向就必须分两类）。</p>
+<p><strong>对策</strong>：条件反射式地写出通项 $v=\dfrac{(n+k_0)\lambda}{\Delta t}$（$k_0$ 由图读出的最小平移分数确定，两个方向各一个），再用条件筛选。</p>
+
+<h4>易错点 4：单摆回复力与向心力（合力）混为一谈</h4>
+
+<p><strong>典型表现</strong>：认为"回复力就是摆球所受合力"，或认为最低点合力为零。</p>
+<p><strong>成因</strong>：单摆做的是<strong>变速圆周运动</strong>，合力既要提供切向的回复效果，又要提供法向的向心效果，两个角色由不同分力承担。</p>
+<p><strong>对策</strong>：沿切向、法向分解重力——回复力 $=mg\sin\theta$（仅切向分量）；最低点回复力为零，但速度最大，$F_T-mg=\dfrac{mv^2}{L}$，合力（向心力）反而最大。</p>
+
+<h4>易错点 5：单摆周期公式乱用条件</h4>
+
+<p><strong>典型表现</strong>：摆角 $30^{\circ}$ 也套 $T=2\pi\sqrt{L/g}$；摆长忘加小球半径；电梯中等效 $g'$ 的正负号写反。</p>
+<p><strong>成因</strong>：只背了结论，跳过了推导里的每一步近似与理想化假设，条件自然记不住。</p>
+<p><strong>对策</strong>：自己推一遍公式，把"小角度、质点、轻绳、固定悬点"四个条件标注在公式旁边；等效 $g'$ 用"静止时拉力 ÷ 质量"的现场推导代替背口诀。</p>
+
+<h4>易错点 6：认为"频率变了波速就变"</h4>
+
+<p><strong>典型表现</strong>：波从空气进入水中，认为音调会变；或认为同一介质里高频声波传得快。</p>
+<p><strong>成因</strong>：对 $v=\lambda f$ 做了"数学式"的误读——把它当成三个量平起平坐的关系式，而物理上三者有明确的"主从关系"：$v$ 由介质定、$f$ 由波源定、$\lambda$ 是被动的结果。</p>
+<p><strong>对策</strong>：记住决策链"介质定 $v$、波源定 $f$、二者共同定 $\lambda$"；跨界问题先写"$f$ 不变"。</p>
+
+<h4>易错点 7：以为质点随波迁移</h4>
+
+<p><strong>典型表现</strong>：认为波传过去质点也跟着走；求质点在某段时间的路程时用波速乘时间。</p>
+<p><strong>成因</strong>：把"波形整体平移"的视觉效果误当成质点的真实运动。波速 $v$ 是相位（波形）的传播速度，与质点振动速度是两个完全不同的量——后者由 $\omega\sqrt{A^2-x^2}$ 决定，时大时小。</p>
+<p><strong>对策</strong>：求质点路程只认"$n$ 个周期走 $4nA$"；波形平移的距离才用 $v\Delta t$。</p>
+
+<h4>易错点 8：多普勒效应中"谁动"不分、频率与响度混淆</h4>
+
+<p><strong>典型表现</strong>：观察者动与波源动用同一个公式；认为"频率变高 = 声音变响"。</p>
+<p><strong>成因</strong>：两种情况物理机制不同——观察者动，改变的是"单位时间接收的波峰数"，波长未变；波源动，是介质中波长本身被压缩或拉长，所以公式不对称。而响度取决于振幅，与频率无关。</p>
+<p><strong>对策</strong>：先问"谁在动"，再选公式；牢记"靠近频率升、远离频率降，振幅管响度、频率管音调"。</p>
+
+<h4>易错点 9：对干涉理解浮于表面</h4>
+
+<p><strong>典型表现</strong>：相干条件只记得"频率相同"，漏掉"相位差恒定、振动方向相同"；以为加强点的位移永远最大、不随时间变化。</p>
+<p><strong>成因</strong>：把"振幅最大"静态化，忘记加强点本身仍在做全幅振动。</p>
+<p><strong>对策</strong>：回到叠加原理——加强点只是振幅变为 $A_1+A_2$，位移照样在 $\pm(A_1+A_2)$ 之间随时间正弦变化。</p>
+
+<hr>
+
+<h2 id="s6">六、章末自检清单</h2>
+
+<p>合上书本，逐项打勾。任何一项犹豫超过 5 秒，就回到对应小节再过一遍。</p>
+
+<h4>□ 概念理解</h4>
+<ul>
+  <li>□ 能说清平衡位置、位移（从平衡位置量起）、振幅、周期、频率、相位的定义与单位</li>
+  <li>□ 知道一次全振动的判定标准，以及一个周期内路程为 $4A$</li>
+  <li>□ 理解回复力是按效果命名的力，方向恒指向平衡位置</li>
+  <li>□ 能默写简谐运动中 $x$、$F$、$a$、$v$、$E_\mathrm{p}$、$E_\mathrm{k}$ 的变化规律表</li>
+  <li>□ 说清横波与纵波的区别及各自实例</li>
+  <li>□ 坚信并会解释"质点不随波迁移"</li>
+</ul>
+
+<h4>□ 公式与推导</h4>
+<ul>
+  <li>□ 会用 $F=-kx$ 判断一个振动是否为简谐运动</li>
+  <li>□ 能由 $x=A\sin(\omega t+\varphi_0)$ 写出 $v$、$a$，并推得 $a=-\omega^2 x$</li>
+  <li>□ 会推 $E=\dfrac12 kA^2$ 及任意位置的 $E_\mathrm{p}$、$E_\mathrm{k}$</li>
+  <li>□ 能独立推导单摆周期公式，并说出小角度近似等四个适用条件</li>
+  <li>□ 会求等效摆长（钉子问题）与等效重力加速度（电梯、电场）</li>
+  <li>□ 理解 $v=\lambda f$ 的来历，说清 $v$、$f$、$\lambda$ 各由谁决定</li>
+  <li>□ 记得相干三条件，会默写同相源加强/减弱的波程差判据</li>
+  <li>□ 知道明显衍射的条件，会区分多普勒效应的两种公式</li>
+</ul>
+
+<h4>□ 模型与题型</h4>
+<ul>
+  <li>□ 振动图象 ↔ 波动图象：先看横轴，会互相转换（例1 的方法）</li>
+  <li>□ 由波形平移求波速：先写含 $n$ 的双方向通项，再用条件筛选（例2）</li>
+  <li>□ 单摆测 $g$ 实验：累积法测周期、$L=l_{绳}+r_{球}$、$g=4\pi^2L/T^2$</li>
+  <li>□ 干涉三步走：算 $\lambda$ → 算 $\Delta r$ → 对照判据；会数加强/减弱点个数（例4）</li>
+  <li>□ 会判断波传播方向或质点振动方向（波形平移法、上下坡法）</li>
+</ul>
+
+<h4>□ 易错防范</h4>
+<ul>
+  <li>□ 位移永远从平衡位置量起，不与出发点混淆</li>
+  <li>□ 多解问题不漏方向、不漏 $n$</li>
+  <li>□ 单摆最低点回复力为零但合力不为零</li>
+  <li>□ 波跨介质：$f$ 不变，$v$、$\lambda$ 变</li>
+  <li>□ 多普勒先问"谁动"，频率与响度不混</li>
+</ul>
+
+<div class="deep">
+<strong>结语：</strong>本章是力学从"恒力世界"走向"周期世界"的第一步，也是后续学习电磁振荡、光的本性（干涉、衍射、多普勒都会在光里再见面）的重要铺垫。把两类图象练到"看一眼横轴就知道该用哪套逻辑"，把单摆推导练到不假思索，本章就是你在云南高考力学部分最稳的得分点之一。加油，小兵！
+</div>
+
+</body>
+</html>

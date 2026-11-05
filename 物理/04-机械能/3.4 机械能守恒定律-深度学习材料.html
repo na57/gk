@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>机械能守恒定律 - 深度学习材料</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<nav class="chap-nav">高考备考 · 物理 · 深度学习材料 ｜ 3.4 机械能守恒定律</nav>
+<header class="chap-head">
+  <h1>机械能守恒定律</h1>
+  <p class="chap-meta">高中物理 · 力学模块 · 高考必考重点 ｜ 依据：《高考物理95+分备考指南》3.4节要求 ｜ 适用：高一同步学习 &amp; 高考一轮复习 ｜ 学生：小兵</p>
+</header>
+<h2 id="s1">一、本章总览</h2>
+
+<p>如果说牛顿运动定律是从"力"的角度看世界，那么本章就是从"能量"的角度看世界。力的分析要盯紧每一个瞬间，而能量的分析只关心<strong>初、末两个状态</strong>——这使得很多用牛顿定律极难求解的问题（变力、曲线、多过程），用能量观点几步就能解决。可以说，本章是整个高中力学"从难到易"的分水岭：学完本章，你的物理工具箱里将多出一件比牛顿定律更顺手的武器。</p>
+
+<h3>高考定位与分值</h3>
+<p>云南高考物理满分 100 分、考试时长 75 分钟，力学板块约占 40 分。功和能是力学的两大主线之一，几乎年年必考：选择题中常考"功的正负判断""功率估算""机械能守恒条件判断"；实验题中"验证机械能守恒定律"是高频实验；计算题中动能定理、机械能守恒与传送带、圆周、平抛等模型结合，常作为压轴题的前两问。保守估计，本章直接分值在 <strong>10~16 分</strong>，间接渗透（与电场、磁场中的能量问题）还会更多。</p>
+
+<h3>知识体系图</h3>
+<div class="map">
+  <div class="row"><div class="node root">机械能及其守恒定律</div></div>
+  <div class="arrow-down">↓ 基本概念 ↓</div>
+  <div class="row">
+    <div class="node">功 $W$</div>
+    <div class="node">功率 $P$</div>
+    <div class="node">动能 $E_k$</div>
+    <div class="node">势能 $E_p$</div>
+  </div>
+  <div class="arrow-down">↓ 核心规律 ↓</div>
+  <div class="row">
+    <div class="node">动能定理</div>
+    <div class="node">机械能守恒定律</div>
+    <div class="node">功能关系</div>
+  </div>
+  <div class="arrow-down">↓ 经典模型 ↓</div>
+  <div class="row">
+    <div class="node leaf">多过程问题</div>
+    <div class="node leaf">竖直圆周临界</div>
+    <div class="node leaf">传送带能量</div>
+    <div class="node leaf">变力做功</div>
+  </div>
+</div>
+
+<h3>本章学习主线</h3>
+<p>本章的逻辑链条非常清晰，建议按下面的顺序建立框架：</p>
+<ol>
+  <li><strong>先学"功"</strong>——能量转化的量度。会算功（包括正负），才算入了门。</li>
+  <li><strong>再学"功率"</strong>——做功的快慢，联系实际（机车、起重机）的桥梁。</li>
+  <li><strong>核心规律一：动能定理</strong>——合外力做功改变动能。普适性最强，优先级最高。</li>
+  <li><strong>核心规律二：机械能守恒定律</strong>——只有重力或弹力做功时，动能与势能相互转化、总量不变。有条件才能用。</li>
+  <li><strong>升华：功能关系</strong>——"什么力做功，就对应什么能量的变化"，这是整个高中能量问题的总纲。</li>
+</ol>
+
+<div class="deep">
+  <strong>给小兵的学习建议：</strong>本章公式不多，但"适用条件"比公式本身更重要。每学一个公式，都要问自己三个问题：①它是怎么推出来的？②什么条件下才能用？③什么情况下会算错？带着这三个问题学，本章会非常扎实。
+</div>
+
+<!-- ==================== 二、核心概念与物理量 ==================== -->
+<h2 id="s2">二、核心概念与物理量</h2>
+
+<h3>1. 功</h3>
+<p><strong>定义：</strong>一个物体受到力的作用，并且在力的方向上发生了一段位移，就说这个力对物体做了功。功是<strong>力在空间上的积累效果</strong>，是能量转化的量度。</p>
+<p><strong>符号：</strong>$W$　<strong>单位：</strong>焦耳（J），$1\,\text{J} = 1\,\text{N}\cdot\text{m}$　<strong>标矢性：</strong><span style="color: var(--danger); font-weight: 600;">标量，但有正负</span>。</p>
+
+<div class="key-point">
+  <strong>⚠️ 功的正负与夹角约定（本章第一个大坑）：</strong><br>
+  功的计算式 $W = Fx\cos\theta$ 中，$\theta$ 是<strong>力 $\vec{F}$ 与位移 $\vec{x}$ 方向之间的夹角</strong>（取 $0 \le \theta \le 180^{\circ}$）。
+  <ul style="margin: 6px 0 0 20px;">
+    <li>$0^{\circ} \le \theta &lt; 90^{\circ}$：$\cos\theta &gt; 0$，力做<strong>正功</strong>（力促进物体运动，如动力）；</li>
+    <li>$\theta = 90^{\circ}$：$\cos\theta = 0$，力<strong>不做功</strong>（如匀速圆周运动的向心力、支持力在光滑水平面上）；</li>
+    <li>$90^{\circ} &lt; \theta \le 180^{\circ}$：$\cos\theta &lt; 0$，力做<strong>负功</strong>（力阻碍物体运动，如阻力、摩擦力）。</li>
+  </ul>
+  某力做负功 $-W$，常说成"物体<strong>克服</strong>该力做功 $W$"。例如摩擦力做功 $-20\,\text{J}$，即物体克服摩擦力做功 $20\,\text{J}$。
+</div>
+
+<div class="deep">
+  <strong>深度理解：功是标量，为什么还有正负？</strong>功的正负不代表方向，而代表<strong>能量的流向</strong>：正功表示这个力把能量"注入"物体，负功表示这个力把能量从物体"抽走"。几个力对同一物体做功，总功等于各力做功的<strong>代数和</strong>（直接加减，不用矢量合成）——这正是能量观点比力的观点方便的第一个原因。
+</div>
+
+<h3>2. 功率</h3>
+<p><strong>定义：</strong>功与完成这些功所用时间的比值，表示<strong>做功的快慢</strong>（不是做功的多少！）。</p>
+<p><strong>符号：</strong>$P$　<strong>单位：</strong>瓦特（W），$1\,\text{W} = 1\,\text{J/s}$　<strong>标矢性：</strong>标量。</p>
+<p><strong>两个层面：</strong></p>
+<ul>
+  <li><strong>平均功率</strong> $\bar{P} = \dfrac{W}{t}$：一段时间内做功快慢的平均描述；</li>
+  <li><strong>瞬时功率</strong> $P = Fv\cos\theta$：某一时刻的功率，$\theta$ 为力与<strong>速度</strong>方向的夹角（注意这里是与速度 $\vec{v}$ 的夹角，不要与功的夹角混淆）。</li>
+</ul>
+<p>生活中的"额定功率"（如汽车发动机铭牌功率）指发动机长期正常工作的最大输出功率。机车启动问题是瞬时功率公式的经典应用，核心抓手是：$P = Fv$，牵引力与速度此消彼长。</p>
+
+<h3>3. 动能</h3>
+<p><strong>定义：</strong>物体由于<strong>运动</strong>而具有的能量。</p>
+<p><strong>符号：</strong>$E_k$　<strong>定义式：</strong>$E_k = \dfrac{1}{2}mv^2$　<strong>单位：</strong>焦耳（J）　<strong>标矢性：</strong>标量，且恒有 $E_k \ge 0$。</p>
+<p>三点注意：① $v$ 是<strong>速率</strong>（速度的大小），动能没有方向；② $v$ 具有相对性，默认相对地面；③动能是<strong>状态量</strong>——某一时刻（某一位置）有一个确定的动能，与过程无关。速度是矢量，速度方向改变而大小不变时（如匀速圆周运动），动能不变。</p>
+
+<h3>4. 势能</h3>
+<h4>重力势能</h4>
+<p><strong>定义：</strong>物体由于被举高而具有的能量。$E_p = mgh$，其中 $h$ 是物体相对<strong>零势能面</strong>的高度。</p>
+<p>三点注意：①<strong>相对性</strong>：零势能面任选（通常选地面或最低点），零势能面之上为正、之下为负；②重力势能的<strong>变化量</strong> $\Delta E_p = mg\Delta h$ 与零势能面的选取<strong>无关</strong>，有绝对意义；③重力势能是物体与地球组成的<strong>系统</strong>共有的，平时说"物体的重力势能"是简称。</p>
+<h4>弹性势能</h4>
+<p><strong>定义：</strong>发生弹性形变的物体具有的能。弹簧的弹性势能 $E_p = \dfrac{1}{2}kx^2$（$x$ 为形变量），形变量越大、劲度系数越大，弹性势能越大。本式在课标中为了解要求，高考中一般通过"弹力做功与弹性势能变化的关系"间接考查，而不直接代入计算。</p>
+
+<h3>5. 机械能</h3>
+<p><strong>定义：</strong>动能与势能（重力势能、弹性势能）的总和：</p>
+$$E = E_k + E_p$$
+<p><strong>符号：</strong>$E$　<strong>单位：</strong>焦耳（J）　<strong>标矢性：</strong>标量。机械能是<strong>状态量</strong>，其数值依赖于零势能面的选取；机械能的<strong>变化量</strong>与零势能面无关。</p>
+
+<h3>物理量汇总表</h3>
+<table>
+  <tr><th>物理量</th><th>符号</th><th>定义式</th><th>单位</th><th>标/矢量</th><th>关键性质</th></tr>
+  <tr><td class="l">功</td><td>$W$</td><td>$W = Fx\cos\theta$</td><td>J</td><td>标量（有正负）</td><td class="l">过程量，能量转化的量度</td></tr>
+  <tr><td class="l">功率</td><td>$P$</td><td>$P = \dfrac{W}{t}$，$P = Fv\cos\theta$</td><td>W</td><td>标量</td><td class="l">描述做功快慢</td></tr>
+  <tr><td class="l">动能</td><td>$E_k$</td><td>$E_k = \dfrac{1}{2}mv^2$</td><td>J</td><td>标量（$\ge 0$）</td><td class="l">状态量，$v$ 为速率</td></tr>
+  <tr><td class="l">重力势能</td><td>$E_p$</td><td>$E_p = mgh$</td><td>J</td><td>标量（可正可负）</td><td class="l">相对零势能面；变化量与零面无关</td></tr>
+  <tr><td class="l">弹性势能</td><td>$E_p$</td><td>$E_p = \dfrac{1}{2}kx^2$（了解）</td><td>J</td><td>标量（$\ge 0$）</td><td class="l">由形变量决定</td></tr>
+  <tr><td class="l">机械能</td><td>$E$</td><td>$E = E_k + E_p$</td><td>J</td><td>标量</td><td class="l">状态量，守恒有条件</td></tr>
+</table>
+
+<blockquote>
+  <p><strong>深度思考 1：</strong>用力提着一个箱子在水平走廊里匀速走 10 m，你对箱子做功了吗？——支持力（提力）竖直向上，位移水平，夹角 $90^{\circ}$，做功为零。但你的手臂确实酸了，那是肌肉内部的生理消耗，不是对箱子做的机械功。<strong>物理上的"功"和生活中的"辛苦"不是一回事。</strong></p>
+</blockquote>
+
+<blockquote>
+  <p><strong>深度思考 2：</strong>动能能不能是负的？重力势能呢？——动能 $\frac12 mv^2$ 中 $m&gt;0$、$v^2\ge 0$，所以动能不可能为负；而重力势能可正可负，全看零势能面选在哪里。所以"某处重力势能是 $-50\,\text{J}$"完全合理，"某时刻动能是 $-50\,\text{J}$"一定算错了。</p>
+</blockquote>
+
+<!-- ==================== 三、公式与推导 ==================== -->
+<h2 id="s3">三、公式与推导（含适用条件）</h2>
+
+<h3>3.1 恒力做功：$W = Fx\cos\theta$</h3>
+<p><strong>推导思路：</strong>当力 $\vec{F}$ 与位移 $\vec{x}$ 不同向时，把力分解为沿位移方向的分力 $F\cos\theta$（做功）和垂直位移方向的分力 $F\sin\theta$（不做功），只有前者对位移有"推动"贡献，故 $W = (F\cos\theta)\cdot x = Fx\cos\theta$。等效地，也可以把位移分解到力的方向上：$W = F\cdot(x\cos\theta)$。</p>
+<div class="warn">
+  <strong>适用条件与边界：</strong>
+  <ul style="margin: 6px 0 0 20px;">
+    <li>只适用于<strong>恒力</strong>（大小、方向都不变）做功，且位移为直线段（位移矢量明确）；</li>
+    <li>力的大小或方向变化（变力）、物体做曲线运动时，<strong>不能直接套用</strong>，须用下面三种方法。</li>
+  </ul>
+</div>
+<p><strong>变力做功的三种常用方法：</strong></p>
+<ol>
+  <li><strong>图象法：</strong>作出 $F$–$x$ 图象（$F$ 沿位移方向的分力对位移的图象），图线与 $x$ 轴围成的<strong>面积</strong>即等于功。适用于力随位移规律变化（如线性变化 $F = F_0 + kx$、弹簧弹力）；</li>
+  <li><strong>微元法：</strong>把全过程切成许多小段，每小段内力可视为恒力做功，再求和。适用于方向变化但有规律的情形（如物体沿圆周运动一周摩擦力做功 $W = -f\cdot 2\pi R$）；</li>
+  <li><strong>动能定理法：</strong>当其他力做功易求、而某个变力做功难求时，用动能定理反解：$W_{变} = \Delta E_k - W_{其他}$。这是高考中最常用的"曲线救国"法（见例 4）。</li>
+</ol>
+
+<h3>3.2 功率的两个公式</h3>
+<p><strong>平均功率：</strong>$P = \dfrac{W}{t}$，定义式，普适。若力恒定且物体沿力方向运动，还可写成 $\bar{P} = F\bar{v}$。</p>
+<p><strong>瞬时功率：</strong>由 $W = Fx\cos\theta$ 出发，取极短时间 $\Delta t$，有 $P = \dfrac{\Delta W}{\Delta t} = F\cos\theta\cdot\dfrac{\Delta x}{\Delta t} = Fv\cos\theta$。</p>
+<div class="warn">
+  <strong>适用条件与边界：</strong>$P = Fv\cos\theta$ 中 $v$ 必须是<strong>该时刻的瞬时速度</strong>，$\theta$ 是力与<strong>速度</strong>（不是位移）的夹角。当 $F$ 与 $v$ 共线时简化为 $P = Fv$。机车启动问题中，额定功率 $P_额$、牵引力 $F$、速度 $v$ 三者始终满足 $P = Fv$——速度增大时牵引力必然减小，这是分析两种启动方式（恒定功率、恒定加速度）的总钥匙。
+</div>
+
+<h3>3.3 动能定理（本章第一核心）</h3>
+<p><strong>内容：</strong>合外力对物体所做的功，等于物体动能的变化量：</p>
+$$W_{合} = \Delta E_k = \frac{1}{2}mv_2^2 - \frac{1}{2}mv_1^2$$
+<p><strong>推导思路（以匀加速直线运动为例）：</strong>设物体质量 $m$，在恒定的合外力 $F_合$ 作用下沿直线运动，速度由 $v_1$ 变为 $v_2$，位移为 $x$。</p>
+<ul>
+  <li>由牛顿第二定律：$F_合 = ma$；</li>
+  <li>由运动学公式：$v_2^2 - v_1^2 = 2ax$，即 $x = \dfrac{v_2^2 - v_1^2}{2a}$；</li>
+  <li>合外力做功：$W_合 = F_合\cdot x = ma\cdot\dfrac{v_2^2 - v_1^2}{2a} = \dfrac{1}{2}mv_2^2 - \dfrac{1}{2}mv_1^2$。</li>
+</ul>
+<p>推导借助了匀变速直线运动，但进一步的理论和实验都表明：<strong>动能定理是普适的</strong>——无论恒力还是变力、直线还是曲线、单个过程还是多段过程，它都成立。</p>
+<div class="key-point">
+  <strong>⭐ 方法论：为什么动能定理要"优先"考虑？</strong><br>
+  遇到求功、求速度（速率）、求位移的力学题，思考顺序建议是：<strong>① 机械能守恒？② 动能定理？③ 最后才轮到牛顿第二定律+运动学</strong>。因为动能定理只问初末状态、不问中间细节，对变力、曲线、多过程问题常常一步到顶。高考阅卷中，动能定理列式正确即可拿到核心分数。
+</div>
+<p><strong>应用动能定理的四个步骤：</strong></p>
+<ol>
+  <li><strong>定对象、定过程：</strong>明确研究对象和所研究的运动过程（初、末状态）；</li>
+  <li><strong>受力分析：</strong>找出过程中<strong>所有</strong>力（一个都不能漏），判断哪些力做功、做正功还是负功；</li>
+  <li><strong>列总功：</strong>写出各力做功的代数和 $W_{合} = W_1 + W_2 + \cdots$；</li>
+  <li><strong>列方程：</strong>$W_{合} = \dfrac12 mv_2^2 - \dfrac12 mv_1^2$，代入数据求解，检验合理性。</li>
+</ol>
+<div class="warn">
+  <strong>适用条件与边界：</strong>动能定理几乎没有"禁用"情形，但有三点纪律：①右边永远是<strong>末动能减初动能</strong>，次序不能反；②左边是<strong>合外力</strong>做的功（或各力做功代数和），重力、摩擦力等一个都不能漏；③适用于<strong>单个物体</strong>（或可视为质点的物体），对系统使用时要格外小心内力做功。
+</div>
+
+<h3>3.4 重力做功与重力势能变化</h3>
+<p><strong>推导：</strong>物体从高度 $h_1$ 处沿任意路径运动到高度 $h_2$ 处。把路径切成无数小段，每小段上重力 $mg$（竖直向下）只在<strong>竖直方向的位移分量</strong>上做功，水平分量不做功。所有小段的竖直位移分量之和正好是高度差 $h_1 - h_2$，故</p>
+$$W_G = mg(h_1 - h_2) = mgh_1 - mgh_2$$
+<p><strong>两个重要结论：</strong></p>
+<ul>
+  <li>重力做功<strong>只与初、末位置的高度差有关，与路径无关</strong>（重力是"保守力"）；</li>
+  <li>重力做功等于重力势能变化量的<strong>负值</strong>：$W_G = -\Delta E_p = -(E_{p2} - E_{p1})$。重力做正功，重力势能减少；重力做负功（克服重力做功），重力势能增加。</li>
+</ul>
+<p>同理，弹簧弹力做功与弹性势能变化也有同样关系：$W_{弹} = -\Delta E_{p弹}$。</p>
+
+<h3>3.5 机械能守恒定律（本章第二核心）</h3>
+<p><strong>推导思路：</strong>设物体在运动过程中<strong>只有重力做功</strong>。由动能定理：$W_G = E_{k2} - E_{k1}$；又由重力做功与重力势能的关系：$W_G = E_{p1} - E_{p2}$。两式联立得</p>
+$$E_{k2} - E_{k1} = E_{p1} - E_{p2} \;\Rightarrow\; E_{k1} + E_{p1} = E_{k2} + E_{p2}$$
+<p>即初状态的机械能等于末状态的机械能——<strong>机械能守恒</strong>。若系统内还有弹簧弹力做功（同样满足 $W_弹 = -\Delta E_p$），把弹性势能计入 $E_p$，结论依然成立。</p>
+
+<div class="warn">
+  <strong>守恒条件的准确含义（判断正误题的重灾区）：</strong><br>
+  "<strong>只有重力或系统内弹力做功</strong>"——注意是"做功"而不是"受力"！
+  <ul style="margin: 6px 0 0 20px;">
+    <li>物体可以受其他力（如支持力、绳的拉力），只要这些力<strong>不做功</strong>（力与速度始终垂直，如光滑轨道上的支持力），机械能仍守恒；</li>
+    <li>其他力做功但<strong>代数和为零</strong>时，机械能总量也不变；</li>
+    <li>一旦有摩擦力、空气阻力做功，或外界有动力（如电动机、推力）做功，机械能必不守恒；</li>
+    <li>判断对象是"系统"还是"单个物体"：单个物体的机械能守恒只看重力；含弹簧的系统要把弹性势能算进来。</li>
+  </ul>
+</div>
+
+<p><strong>三种常用表达式（按场景选择）：</strong></p>
+<table>
+  <tr><th>形式</th><th>表达式</th><th>含义</th><th>是否需要零势能面</th></tr>
+  <tr><td class="l">① 守恒式</td><td>$E_{k1} + E_{p1} = E_{k2} + E_{p2}$</td><td class="l">初态机械能 = 末态机械能</td><td>需要</td></tr>
+  <tr><td class="l">② 转化式</td><td>$\Delta E_k = -\Delta E_p$</td><td class="l">动能的增加量 = 势能的减少量</td><td>不需要</td></tr>
+  <tr><td class="l">③ 转移式</td><td>$\Delta E_A = -\Delta E_B$</td><td class="l">A 物体增加的机械能 = B 物体减少的机械能</td><td>不需要</td></tr>
+</table>
+<p>单物体问题常用①②；连接体（如绳两端两物体一升一降）常用③，可避免选零势能面，列式最简洁。</p>
+
+<p><strong>应用机械能守恒的四个步骤：</strong>① 定对象与过程；② <strong>先判断守恒条件是否满足</strong>（不满足就改用动能定理）；③ 选零势能面（若用守恒式）；④ 找出初、末状态的动能和势能，列方程求解。</p>
+
+<h3>3.6 功能关系（本章的总纲）</h3>
+<p>能量不会凭空产生或消失，只会在不同形式间转化或转移，而<strong>功是能量转化的量度</strong>——做了多少功，就有多少能量发生了转化。掌握下面这张"对号入座"表，所有能量问题都有了统一的分析框架：</p>
+<table>
+  <tr><th>做功的力</th><th>对应的能量变化</th><th>定量关系</th></tr>
+  <tr><td class="l">合外力做功 $W_{合}$</td><td class="l">动能变化</td><td>$W_{合} = \Delta E_k$</td></tr>
+  <tr><td class="l">重力做功 $W_G$</td><td class="l">重力势能变化</td><td>$W_G = -\Delta E_{p重}$</td></tr>
+  <tr><td class="l">弹簧弹力做功 $W_{弹}$</td><td class="l">弹性势能变化</td><td>$W_{弹} = -\Delta E_{p弹}$</td></tr>
+  <tr><td class="l">除重力、弹力外的其他力做功 $W_{其他}$</td><td class="l">机械能变化</td><td>$W_{其他} = \Delta E$</td></tr>
+  <tr><td class="l">一对滑动摩擦力做功的代数和</td><td class="l">系统内能（热量）</td><td>$Q = f\cdot \Delta s_{相对}$</td></tr>
+</table>
+<div class="key-point">
+  <strong>⭐ 第四行是"机械能守恒定律的广义版"：</strong>机械能不守恒时，并不是"能量丢了"，而是其他力做功使机械能发生了变化——$W_{其他} = E_2 - E_1$。例如物体受摩擦力作用减速，$W_{其他}&lt;0$，机械能减少，减少的部分转化成了内能。这个关系让"不守恒"的问题也有了精确方程。
+</div>
+<blockquote>
+  <p><strong>深度思考 3：</strong>为什么"一对滑动摩擦力"做的功才等于热量，而单个摩擦力做功不等于？因为热量是<strong>系统</strong>的内能增量，属于两个相互摩擦的物体共有。地面上的木块滑行：摩擦力对木块做负功 $-fx_块$，若地面不动，摩擦力对地面不做功，代数和为 $-fx_块$，这正好等于产生的热量。但传送带上：摩擦力对工件做<strong>正</strong>功 $fx_工件$，对传送带做<strong>负</strong>功 $-fx_带$，代数和 $-f(x_带 - x_工件) = -f\Delta s_{相对}$，所以 $Q = f\Delta s_{相对}$——热量只由<strong>相对滑动的那一段</strong>决定。这就是例 3 的核心。</p>
+</blockquote>
+
+<!-- ==================== 四、典型例题 ==================== -->
+<h2 id="s4">四、典型例题</h2>
+
+<h3>例 1 ｜ 多过程问题：动能定理一步到顶 <span class="stars">★★★</span></h3>
+<p>如图所示，斜面高 $h = 1.8\,\text{m}$，斜面长 $L = 3.0\,\text{m}$（倾角 $37^{\circ}$，取 $\sin 37^{\circ} = 0.6$、$\cos 37^{\circ} = 0.8$）。一小物块从斜面顶端由静止滑下，经底端平滑过渡到粗糙水平面，最终停在水平面上。物块与斜面、水平面间的动摩擦因数均为 $\mu = 0.25$。求物块在水平面上滑行的距离 $s$。</p>
+<svg width="560" height="180" viewBox="0 0 560 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="斜面与水平面示意图">
+  <polygon points="60,150 260,150 60,42" fill="#ebf8ff" stroke="#2b6cb0" stroke-width="2"/>
+  <line x1="60" y1="150" x2="520" y2="150" stroke="#2d3748" stroke-width="2"/>
+  <rect x="52" y="26" width="18" height="14" rx="2" fill="#2b6cb0"/>
+  <text x="26" y="90" font-size="13" fill="#2d3748">h = 1.8 m</text>
+  <line x1="60" y1="42" x2="60" y2="150" stroke="#718096" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="150" y="95" font-size="13" fill="#2d3748">L = 3.0 m</text>
+  <text x="76" y="146" font-size="13" fill="#2d3748">37°</text>
+  <rect x="430" y="138" width="20" height="12" rx="2" fill="#e53e3e"/>
+  <text x="330" y="135" font-size="13" fill="#2d3748">s = ?（μ = 0.25，全程相同）</text>
+  <line x1="262" y1="135" x2="428" y2="135" stroke="#e53e3e" stroke-width="1.5" stroke-dasharray="5 3"/>
+</svg>
+<p><strong>过程分析（分步拆解）：</strong></p>
+<ol>
+  <li><strong>定过程：</strong>取"顶端静止"为初状态、"水平面停下"为末状态。初、末动能都是零——这是选全过程的最大理由；</li>
+  <li><strong>受力与做功清单：</strong>全程受重力、支持力、摩擦力。支持力始终与速度垂直，不做功；重力做功 $W_G = mgh$（只与高度差有关）；斜面上摩擦力 $f_1 = \mu mg\cos 37^{\circ}$，做功 $W_1 = -\mu mgL\cos 37^{\circ}$；水平面上摩擦力 $f_2 = \mu mg$，做功 $W_2 = -\mu mgs$；</li>
+  <li><strong>列动能定理：</strong>$W_G + W_1 + W_2 = 0 - 0$。</li>
+</ol>
+<p><strong>解：</strong>由动能定理（全过程）：</p>
+$$mgh - \mu mgL\cos 37^{\circ} - \mu mgs = 0$$
+<p>约去 $m$（本题无需给出质量与 $g$），代入数据：</p>
+$$s = \frac{h - \mu L\cos 37^{\circ}}{\mu} = \frac{1.8 - 0.25\times 3.0\times 0.8}{0.25}\,\text{m} = \frac{1.8 - 0.60}{0.25}\,\text{m} = 4.8\,\text{m}$$
+<p><strong>点评：</strong>若用牛顿定律分段做，需先求底端速度（$v^2 = 2g(h-\mu L\cos37^{\circ}) = 24\,\text{m}^2/\text{s}^2$，取 $g = 10\,\text{m/s}^2$），再由 $s = v^2/(2\mu g) = 24/5 = 4.8\,\text{m}$，结果一致但步骤翻倍。<strong>多过程、只求初末速率（位移）的问题，全过程动能定理几乎总是最优解。</strong>注意斜面上摩擦力要用 $f = \mu mg\cos\theta$ 而不是 $\mu mg$。</p>
+
+<h3>例 2 ｜ 机械能守恒 + 竖直圆周最高点临界 <span class="stars">★★★★</span></h3>
+<p>如图所示，一小球从高度 $H$ 处由静止沿光滑轨道滑下，进入半径 $R = 0.40\,\text{m}$ 的光滑竖直圆轨道。要使小球<strong>恰好能通过圆轨道最高点</strong>，$H$ 至少为多大？（取 $g = 10\,\text{m/s}^2$）</p>
+<svg width="380" height="220" viewBox="0 0 380 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="竖直圆轨道示意图">
+  <circle cx="230" cy="120" r="80" fill="none" stroke="#2b6cb0" stroke-width="2.5"/>
+  <line x1="20" y1="30" x2="150" y2="200" stroke="#2b6cb0" stroke-width="2.5"/>
+  <rect x="14" y="18" width="16" height="14" rx="2" fill="#2b6cb0"/>
+  <line x1="20" y1="200" x2="360" y2="200" stroke="#2d3748" stroke-width="2"/>
+  <text x="36" y="26" font-size="13" fill="#2d3748">H（待求）</text>
+  <line x1="230" y1="120" x2="230" y2="40" stroke="#718096" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="236" y="84" font-size="13" fill="#2d3748">R</text>
+  <circle cx="230" cy="40" r="7" fill="#e53e3e"/>
+  <text x="244" y="36" font-size="13" fill="#e53e3e">最高点临界：mg = mv²/R</text>
+  <text x="160" y="216" font-size="12" fill="#718096">轨道光滑，全程只有重力做功</text>
+</svg>
+<p><strong>过程分析（分步拆解）：</strong></p>
+<ol>
+  <li><strong>守恒判断：</strong>轨道光滑，支持力始终指向圆心、与速度垂直，不做功；只有重力做功 → 机械能守恒，可以用守恒定律；</li>
+  <li><strong>临界条件：</strong>"恰好通过最高点"意味着在最高点轨道支持力 $N = 0$，此时<strong>只有重力提供向心力</strong>：$mg = m\dfrac{v^2}{R}$，得临界速度 $v^2 = gR$；</li>
+  <li><strong>守恒方程：</strong>取圆轨道最低点为零势能面，初态（释放点）只有势能 $mgH$，末态（最高点）有势能 $mg\cdot 2R$ 和动能 $\frac12 mv^2$。</li>
+</ol>
+<p><strong>解：</strong>最高点临界条件：</p>
+$$mg = m\frac{v^2}{R} \;\Rightarrow\; v^2 = gR = 10\times 0.40\,\text{m}^2/\text{s}^2 = 4.0\,\text{m}^2/\text{s}^2$$
+<p>由机械能守恒（守恒式）：</p>
+$$mgH = mg\cdot 2R + \frac{1}{2}mv^2 = mg\cdot 2R + \frac{1}{2}mgR = \frac{5}{2}mgR$$
+$$H = \frac{5}{2}R = 2.5\times 0.40\,\text{m} = 1.0\,\text{m}$$
+<p><strong>点评：</strong>本题是"守恒 + 临界"的标配组合，两个结论值得记住：①竖直圆周最高点（轨道内侧）最小速度 $v = \sqrt{gR}$；②从最低点所在水平面之上静止释放，恰好过最高点的释放高度 $H = \dfrac{5}{2}R$。检验一下：若 $H = 2R$（与最高点等高）就释放，到最高点速度为零，早在到达之前就脱离轨道了——所以 $H$ 必须比 $2R$ 多出的那 $\frac12 R$，正是用来"攒"最高点所需动能的。</p>
+
+<h3>例 3 ｜ 传送带能量问题 <span class="stars">★★★★★</span></h3>
+<p>水平传送带以 $v = 2.0\,\text{m/s}$ 的速度匀速运行。将一质量 $m = 10\,\text{kg}$ 的工件<strong>无初速</strong>地轻放在传送带左端，工件与传送带间的动摩擦因数 $\mu = 0.20$，工件经一段时间后与传送带共速。取 $g = 10\,\text{m/s}^2$。求：（1）工件加速到与传送带共速所用的时间 $t$；（2）加速过程中工件的位移 $x_1$ 与传送带的位移 $x_2$；（3）因摩擦产生的热量 $Q$；（4）电动机因传送该工件而多做的功 $W$。</p>
+<svg width="560" height="150" viewBox="0 0 560 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="水平传送带示意图">
+  <rect x="60" y="60" width="440" height="24" rx="12" fill="#ebf8ff" stroke="#2b6cb0" stroke-width="2"/>
+  <circle cx="72" cy="72" r="11" fill="none" stroke="#2b6cb0" stroke-width="2"/>
+  <circle cx="488" cy="72" r="11" fill="none" stroke="#2b6cb0" stroke-width="2"/>
+  <rect x="80" y="38" width="34" height="22" rx="3" fill="#e53e3e"/>
+  <text x="84" y="30" font-size="13" fill="#2d3748">工件 m（v₀ = 0）</text>
+  <line x1="300" y1="52" x2="380" y2="52" stroke="#2b6cb0" stroke-width="2" marker-end="url(#arr)"/>
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#2b6cb0"/></marker></defs>
+  <text x="386" y="57" font-size="13" fill="#2b6cb0">v = 2.0 m/s</text>
+  <text x="180" y="110" font-size="13" fill="#2d3748">滑动阶段：工件受向右的滑动摩擦力 f = μmg，做匀加速运动</text>
+</svg>
+<p><strong>过程分析（分步拆解）：</strong></p>
+<ol>
+  <li><strong>受力判断：</strong>工件刚放上时速度为零，比传送带慢 → 相对传送带向<strong>左</strong>滑 → 滑动摩擦力向<strong>右</strong>，成为工件的动力（摩擦力不一定是阻力！）；</li>
+  <li><strong>运动性质：</strong>工件在恒定摩擦力 $f = \mu mg$ 下做初速为零的匀加速运动，加速度 $a = \mu g$，直到与带共速；共速后无相对滑动，摩擦力消失（水平方向不再受力），一起做匀速运动；</li>
+  <li><strong>能量流向：</strong>电动机多消耗的电能 = 工件增加的动能 + 摩擦产生的热量，其中热量只与<strong>相对位移</strong>有关。</li>
+</ol>
+<p><strong>解：</strong>（1）工件加速度 $a = \dfrac{f}{m} = \mu g = 0.20\times 10\,\text{m/s}^2 = 2.0\,\text{m/s}^2$，故</p>
+$$t = \frac{v}{a} = \frac{2.0}{2.0}\,\text{s} = 1.0\,\text{s}$$
+<p>（2）工件位移（匀加速）：$x_1 = \dfrac{1}{2}at^2 = \dfrac{1}{2}\times 2.0\times 1.0^2\,\text{m} = 1.0\,\text{m}$；传送带位移（匀速）：$x_2 = vt = 2.0\times 1.0\,\text{m} = 2.0\,\text{m}$。相对位移 $\Delta s = x_2 - x_1 = 1.0\,\text{m}$。</p>
+<p>（3）摩擦力大小 $f = \mu mg = 0.20\times 10\times 10\,\text{N} = 20\,\text{N}$，热量：</p>
+$$Q = f\cdot \Delta s = 20\times 1.0\,\text{J} = 20\,\text{J}$$
+<p>（4）工件动能增量 $\Delta E_k = \dfrac12 mv^2 = \dfrac12\times 10\times 2.0^2\,\text{J} = 20\,\text{J}$。由能量守恒，电动机多做的功：</p>
+$$W = \Delta E_k + Q = 20\,\text{J} + 20\,\text{J} = 40\,\text{J}$$
+<p>（验证：电动机克服摩擦力对传送带做的功 $W = f\cdot x_2 = 20\times 2.0\,\text{J} = 40\,\text{J}$ ✓）</p>
+<div class="key-point">
+  <strong>⭐ 传送带能量结论（记住能省一半时间）：</strong>水平传送带上，工件从静止加速到带速 $v$ 的过程中：工件位移恰好是相对位移（也是传送带位移的一半），所以<strong>产生的热量恰好等于工件获得的动能</strong>（$Q = \Delta E_k$），电动机多消耗的电能是工件动能的 <strong>2 倍</strong>——"一半变动能，一半变热"。若传送带倾斜或工件有初速度，此比例不再成立，必须回到 $Q = f\Delta s_{相对}$ 与能量守恒重新计算。
+</div>
+
+<h3>例 4 ｜ 变力做功：图象法 + 动能定理 <span class="stars">★★★</span></h3>
+<p>质量 $m = 2.0\,\text{kg}$ 的物块静止在水平面上，在水平拉力 $F$ 作用下开始运动。拉力随位移按 $F = (10 - 2x)\,\text{N}$ 的规律变化（$x$ 以米为单位，$0 \le x \le 5.0\,\text{m}$）。物块与水平面间的动摩擦因数 $\mu = 0.20$，取 $g = 10\,\text{m/s}^2$。求物块运动到 $x = 5.0\,\text{m}$ 处时的速度大小。</p>
+<p><strong>过程分析（分步拆解）：</strong></p>
+<ol>
+  <li><strong>识别变力：</strong>$F$ 随 $x$ 线性减小（从 $10\,\text{N}$ 减到 $0$），不能直接套 $W = Fx\cos\theta$；</li>
+  <li><strong>选方法：</strong>力随位移线性变化 → 首选<strong>图象法</strong>，$F$–$x$ 图线下的面积就是拉力做的功；</li>
+  <li><strong>其余力：</strong>重力、支持力垂直于位移不做功；滑动摩擦力 $f = \mu mg$ 恒定，做负功；</li>
+  <li><strong>列动能定理：</strong>$W_F + W_f = \dfrac12 mv^2 - 0$。</li>
+</ol>
+<p><strong>解：</strong>$F$–$x$ 图象为一直线，拉力做功等于梯形（此处为三角形）面积：</p>
+$$W_F = \frac{F_0 + F_5}{2}\cdot x = \frac{10 + 0}{2}\times 5.0\,\text{J} = 25\,\text{J}$$
+<p>摩擦力 $f = \mu mg = 0.20\times 2.0\times 10\,\text{N} = 4.0\,\text{N}$，做功 $W_f = -fx = -4.0\times 5.0\,\text{J} = -20\,\text{J}$。由动能定理：</p>
+$$25\,\text{J} - 20\,\text{J} = \frac{1}{2}\times 2.0\times v^2 \;\Rightarrow\; v^2 = 5.0\,\text{m}^2/\text{s}^2 \;\Rightarrow\; v = \sqrt{5}\,\text{m/s} \approx 2.2\,\text{m/s}$$
+<p><strong>点评：</strong>图象法的关键是确认横轴为位移、纵轴为<strong>沿位移方向</strong>的力；面积在轴上方为正功、下方为负功。若力与位移的关系更复杂（如弹簧变加速过程），图象法失效，就要回到微元法或用动能定理反解变力做功——三种方法的选择，取决于题目给了什么条件。</p>
+
+<!-- ==================== 五、易错点与成因分析 ==================== -->
+<h2 id="s5">五、易错点与成因分析</h2>
+
+<div class="warn">
+  <strong>易错点 1：把 $W = Fx\cos\theta$ 中的 $\theta$ 张冠李戴。</strong><br>
+  <strong>典型错法：</strong>把 $\theta$ 当成力与水平面的夹角、斜面倾角或力与速度的夹角。<br>
+  <strong>成因分析：</strong>没有抓住定义——$\theta$ 是<strong>力与位移方向</strong>的夹角。斜面上重力做功时，位移沿斜面向下，重力竖直向下，夹角是 $90^{\circ} - \theta_{斜}$（$\theta_{斜}$ 为倾角），所以 $W_G = mgL\sin\theta_{斜}$；很多同学误写成 $mgL\cos\theta_{斜}$，根源是把斜面倾角直接当成了公式里的 $\theta$。<strong>对策：每次用公式前，先画出力与位移两个箭头，夹角一目了然。</strong>
+</div>
+
+<div class="warn">
+  <strong>易错点 2：认为"有力的作用、物体又动了，力就一定做了功"。</strong><br>
+  <strong>典型错法：</strong>认为匀速圆周运动中向心力做功、认为人提箱子水平走路时提力做功。<br>
+  <strong>成因分析：</strong>忽略了功的两个要素必须同时满足且<strong>不垂直</strong>：力，以及力方向上的位移分量。力与位移（速度）垂直时，$\cos 90^{\circ} = 0$，做功为零。这类"有力无功"的例子（向心力、洛伦兹力、光滑面上的支持力）恰恰是高考选择题的常客。
+</div>
+
+<div class="warn">
+  <strong>易错点 3：动能定理左边漏力、右边减反。</strong><br>
+  <strong>典型错法：</strong>漏掉重力做功（尤其竖直方向有位移时）或某段摩擦力做功；或把方程写成 $\frac12 mv_1^2 - \frac12 mv_2^2 = W$。<br>
+  <strong>成因分析：</strong>受力分析不完整就急于列式；对"动能定理是标量方程、只管大小不管方向"理解不深，导致符号混乱。<strong>对策：① 按"重力→弹力→摩擦力→其他力"的顺序清点所有力并逐个判断做功正负；② 死记右边永远是"末 − 初"。</strong>
+</div>
+
+<div class="warn">
+  <strong>易错点 4：机械能守恒条件误判。</strong><br>
+  <strong>典型错法：</strong>认为"只要物体沿光滑面运动就守恒"（方向反了也可能错：看到有拉力就说不守恒）；认为"系统内两物体用绳连着，各自机械能都守恒"。<br>
+  <strong>成因分析：</strong>把条件记成了"表面光滑"这种表象，而不是"只有重力或系统内弹力<strong>做功</strong>"这一本质。例如：匀速下落的降落伞受重力与阻力，机械能不守恒（阻力做负功）；而沿光滑圆弧滑下的物体受支持力，但支持力不做功，机械能守恒。连接体问题中，<strong>单个物体</strong>的机械能一般不守恒（绳的拉力对它做功），但<strong>系统</strong>的机械能守恒——研究对象选错，全盘皆输。
+</div>
+
+<div class="warn">
+  <strong>易错点 5：把"单个摩擦力做的功"当成热量。</strong><br>
+  <strong>典型错法：</strong>传送带问题中用 $Q = fx_{工件}$ 或 $Q = fx_{带}$ 求热量。<br>
+  <strong>成因分析：</strong>热量是<strong>系统内能</strong>的增量，必须由"一对"滑动摩擦力做功的代数和来量度：$Q = f\Delta s_{相对}$。单个摩擦力做功只对应某个物体机械能的变化。静摩擦力无相对滑动，一对静摩擦力做功代数和恒为零，<strong>不产生热量</strong>——这也是常见的判断陷阱。
+</div>
+
+<div class="warn">
+  <strong>易错点 6：重力势能零势能面混乱，或误以为势能变化与零面有关。</strong><br>
+  <strong>典型错法：</strong>同一道题里前后换零势能面；或因为换了零面就觉得"势能变了，答案要变"。<br>
+  <strong>成因分析：</strong>没有区分"势能的数值"（相对量，随零面而变）与"势能的变化量"（绝对量，$\Delta E_p = mg\Delta h$，与零面无关）。机械能守恒的转化式 $\Delta E_k = -\Delta E_p$ 只含变化量，所以根本不用选零面；只有用守恒式 $E_1 = E_2$ 时才必须选零面且<strong>前后一致</strong>。
+</div>
+
+<div class="warn">
+  <strong>易错点 7：$P = Fv$ 的使用条件不清。</strong><br>
+  <strong>典型错法：</strong>用平均速度代入求"瞬时功率"，或力与速度有夹角时漏掉 $\cos\theta$；机车启动时认为"额定功率下可以一直匀加速"。<br>
+  <strong>成因分析：</strong>$P = Fv\cos\theta$ 是<strong>瞬时</strong>关系，$v$ 变 $F$ 就变。额定功率下 $P$ 恒定，速度增大牵引力减小，加速度随之减小——机车不可能在额定功率下保持匀加速到最大速度，这正是"恒定功率启动"与"恒定加速度启动"两种模型的分水岭。
+</div>
+
+<div class="warn">
+  <strong>易错点 8：对变力直接套 $W = Fx\cos\theta$。</strong><br>
+  <strong>典型错法：</strong>弹簧压缩过程中用 $W = \frac12 kx\cdot x$ 或 $W = kx^2$ 随手代入某个瞬时的力。<br>
+  <strong>成因分析：</strong>忽略了公式的恒力前提。变力做功只有三条正路：$F$–$x$ 图象面积、微元求和、动能定理反解。识别题目中"力随位置/时间变化"的关键词（"逐渐增大""与位移成正比""缓慢拉动"），是避免此错的第一步。
+</div>
+
+<!-- ==================== 六、章末自检清单 ==================== -->
+<h2 id="s6">六、章末自检清单</h2>
+<p>合上书本，逐项自测。能毫不迟疑地做到，就在心里打个勾；有犹豫的，回到对应小节再读一遍。</p>
+
+<h3>概念关</h3>
+<ul>
+  <li>☐ 能说出功的定义、单位，并解释"功是标量为什么有正负"（正负代表能量流向，不代表方向）；</li>
+  <li>☐ 能准确指出 $W = Fx\cos\theta$ 中 $\theta$ 是力与<strong>位移</strong>的夹角，并熟练判断正功、负功、不做功三种情形；</li>
+  <li>☐ 能区分平均功率与瞬时功率，知道 $P = Fv\cos\theta$ 中 $v$ 是瞬时速度、$\theta$ 是力与<strong>速度</strong>的夹角；</li>
+  <li>☐ 能说出动能 $E_k = \frac12 mv^2$ 中 $v$ 是速率、动能恒非负，且"速度方向变、大小不变则动能不变"；</li>
+  <li>☐ 理解重力势能的相对性（零势能面任选）与势能变化量的绝对性（与零面无关）；</li>
+  <li>☐ 能说出机械能 = 动能 + 势能，是状态量、标量。</li>
+</ul>
+
+<h3>公式关</h3>
+<ul>
+  <li>☐ 能独立推导 $W = Fx\cos\theta$（分解力或位移），并说出"恒力、直线"的适用前提；</li>
+  <li>☐ 能说出变力做功的三种方法（图象法、微元法、动能定理法）及各自适用场景；</li>
+  <li>☐ 能用牛顿第二定律 + 运动学公式独立推导动能定理，并说出它的普适性（变力、曲线、多过程均适用）；</li>
+  <li>☐ 能写出并解释 $W_G = -\Delta E_p$（重力做正功、势能减少），知道重力做功与路径无关；</li>
+  <li>☐ 能独立推导机械能守恒定律（动能定理 + 重力做功特点联立）；</li>
+  <li>☐ 能准确复述守恒条件"<strong>只有重力或系统内弹力做功</strong>"，并举出"受力但不做功仍守恒"的反例；</li>
+  <li>☐ 能写出机械能守恒的三种表达式，并说明哪些不需要选零势能面；</li>
+  <li>☐ 能背出功能关系对应表（合外力功↔动能、重力功↔重力势能、弹力功↔弹性势能、其他力功↔机械能、一对滑动摩擦力功↔热量）。</li>
+</ul>
+
+<h3>模型关</h3>
+<ul>
+  <li>☐ <strong>多过程问题</strong>：会选"全过程"用动能定理一步求解，斜面摩擦力不漏 $\cos\theta$（例 1）；</li>
+  <li>☐ <strong>竖直圆周临界</strong>：记住最高点最小速度 $v = \sqrt{gR}$、释放高度 $H = \frac52 R$ 的由来（例 2）；</li>
+  <li>☐ <strong>传送带能量</strong>：会求共速时间、两段位移、相对位移，熟练用 $Q = f\Delta s_{相对}$ 与 $W_{电} = \Delta E_k + Q$（例 3）；</li>
+  <li>☐ <strong>变力做功</strong>：看到 $F$ 随 $x$ 线性变化能立刻想到 $F$–$x$ 图象面积（例 4）。</li>
+</ul>
+
+<h3>易错关</h3>
+<ul>
+  <li>☐ 用 $W = Fx\cos\theta$ 前必先画力与位移箭头确认夹角，不再张冠李戴；</li>
+  <li>☐ 能识别"有力无功"（向心力、垂直于速度的支持力等）；</li>
+  <li>☐ 动能定理列式前完整清点所有力，右边严格"末动能 − 初动能"；</li>
+  <li>☐ 判断机械能是否守恒时，看"做功"不看"受力"，并先明确研究对象是物体还是系统；</li>
+  <li>☐ 牢记热量 $Q = f\Delta s_{相对}$，绝不把单个摩擦力做的功当热量；</li>
+  <li>☐ 用守恒式时零势能面前后一致；用转化式时不选零面；</li>
+  <li>☐ 遇到"力随位移变化"字样，立即警觉：这是变力，$W = Fx\cos\theta$ 不能直接用。</li>
+</ul>
+
+<hr>
+<p style="text-align: center; color: var(--muted);">小兵，能量观点是高中物理最优雅的工具——它不关心过程的曲折，只在意初末的得失。<br>把本章的"三个问题"（怎么推的？何时能用？会怎样错？）养成习惯，力学综合题就打通了任督二脉。加油！</p>
+
+</body>
+</html>

@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.14 水溶液中的离子平衡-深度学习材料</title>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#0e7c7b; --subject-soft:#eef7f6;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 化学点缀层（无 JS，纯文本方程式） ===== */
+/* 语义卡片（例题=紫 / 易错=琥珀 / 概念=蓝 / 提示=科目色 / 结构=中性墨） */
+.card { border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 18px; margin: 14px 0; page-break-inside: avoid; }
+.card .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
+.card.concept { background: var(--c-concept-bg); } .card.concept .tag { background: var(--c-concept); color: #fff; }
+.card.example { background: var(--c-example-bg); } .card.example .tag { background: var(--c-example); color: #fff; }
+.card.trap { background: var(--c-trap-bg); } .card.trap .tag { background: var(--c-trap); color: #fff; }
+.card.note { background: var(--subject-soft); } .card.note .tag { background: var(--subject); color: #fff; }
+.card.violet { background: var(--canvas); } .card.violet .tag { background: var(--ink); color: #fff; }
+/* 方程式容器（统一灰底盒 + 科目色左边条） */
+.eq { display: block; background: var(--formula-bg); border: 1px solid var(--line); border-left: 4px solid var(--subject); border-radius: 8px; padding: var(--formula-pad); margin: 10px 0; font-size: 16px; text-align: center; letter-spacing: .3px; page-break-inside: avoid; }
+.eq-arrow { position: relative; display: inline-block; margin: 0 6px; font-weight: 600; }
+.eq-arrow::before { content: attr(data-cond); position: absolute; left: 50%; transform: translateX(-50%); top: -1.05em; font-size: 10.5px; font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
+.state { font-size: .72em; font-style: italic; color: var(--ink-soft); }
+sub, sup { font-size: .72em; line-height: 0; }
+.formula { font-size: 1.05em; }
+.kbd { background: #f0f2f5; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 13px; }
+/* 三栏对比 */
+.triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; page-break-inside: avoid; }
+.triple .cell { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: 14px; }
+.triple .cell h4 { margin: 0 0 8px; font-size: 13.5px; text-align: center; padding: 4px 0; border-radius: 6px; color: #fff; }
+.triple .cell:nth-child(1) h4 { background: var(--c-trap); }
+.triple .cell:nth-child(2) h4 { background: var(--c-example); }
+.triple .cell:nth-child(3) h4 { background: var(--subject); }
+/* 步骤与答案 */
+.step { display: flex; gap: 10px; margin: 8px 0; }
+.step .no { flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--c-method); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.ans { background: #fff; border: 1px dashed var(--c-method); border-radius: 8px; padding: 8px 14px; margin: 8px 0; }
+.chap-foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-soft); text-align: center; }
+@media (max-width: 640px) { .triple { grid-template-columns: 1fr; } }
+@media print {
+  .card { border: 1px solid #999; background: #fff !important; }
+  .card .tag { border: 1px solid #333; background: #fff !important; color: #000; }
+  .eq { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .chap-foot { border-top: none; }
+}
+</style>
+</head>
+<body>
+<nav class="chap-nav">高考备考 · 化学 · 深度学习材料 ｜ 化学反应原理 ｜ 3.14 水溶液中的离子平衡</nav>
+<header class="chap-head">
+  <h1>3.14 水溶液中的离子平衡</h1>
+  <p class="chap-meta">高中化学 · 深度学习材料 · 面向 2029 届云南高考</p>
+  <p class="chap-intro">
+    前面学的是"气体反应的平衡"，这一章把平衡思想搬进水溶液：弱电解质的电离、水的电离、盐类的水解、难溶盐的溶解——四种平衡共用同一套语言（平衡常数、勒夏特列原理）。
+    本章是选择题压轴（离子浓度大小比较）和第 17 题反应原理大题的高频考点，三大守恒（电荷/物料/质子）是你必须练到"条件反射"的核心武器。
+  </p>
+</header>
+<main>
+
+<section>
+<h2>一、本章知识全景</h2>
+<table>
+<tr>
+<th>知识点</th>
+<th>核心内容</th>
+<th>高考要求</th>
+</tr>
+<tr>
+<td>弱电解质的电离</td>
+<td>部分电离、电离平衡、电离常数 K<sub>a</sub>/K<sub>b</sub>；越稀越电离</td>
+<td>理解部分电离，能用 K 比较弱酸弱碱相对强弱，会判断电离平衡移动</td>
+</tr>
+<tr>
+<td>水的电离与溶液 pH</td>
+<td>K<sub>w</sub> = c(H<sup>+</sup>)·c(OH<sup>−</sup>)，25 ℃时 K<sub>w</sub> = 1×10<sup>−14</sup>；pH = −lg c(H<sup>+</sup>)</td>
+<td>pH 计算熟练（强酸强碱、稀释、混合），知道 K<sub>w</sub> 随温度升高而增大</td>
+</tr>
+<tr>
+<td>酸碱中和滴定</td>
+<td>原理 c(待) = c(标)V(标)/V(待)；指示剂选择；误差分析</td>
+<td>操作规范、指示剂会选、误差分析全掌握</td>
+</tr>
+<tr>
+<td>盐类的水解</td>
+<td>有弱才水解、越弱越水解、谁强显谁性；水解方程式书写</td>
+<td>能判断盐溶液酸碱性，能解释加热、稀释等对水解的影响</td>
+</tr>
+<tr>
+<td>离子浓度大小比较</td>
+<td>单一溶液与混合溶液；电荷守恒、物料守恒、质子守恒</td>
+<td>三大守恒运用自如，复杂溶液离子浓度排序正确率 100%</td>
+</tr>
+<tr>
+<td>难溶电解质溶解平衡</td>
+<td>K<sub>sp</sub> 表达式与计算；沉淀生成（Q &gt; K<sub>sp</sub>）、溶解与转化</td>
+<td>K<sub>sp</sub> 计算熟练，能判断沉淀生成顺序与转化方向</td>
+</tr>
+</table>
+<div class="card note">
+<span class="tag">高考怎么考</span>
+<p>本章在高考中"一轻一重"：<strong>轻</strong>的是概念辨析（电离/水解/溶解平衡移动，常在选择题出现）；<strong>重</strong>的是两类题——① 离子浓度大小比较（选择题压轴常客，必须靠三大守恒而不是感觉）；② 反应原理大题中的 pH、K<sub>a</sub>、K<sub>sp</sub> 计算（常与平衡常数、图象结合，3~4 分）。滴定的误差分析还常在实验题中露脸。</p>
+</div>
+<div class="card violet">
+<span class="tag">学法建议</span>
+<p>本章"一种思想、四种平衡、三大守恒"：</p>
+<ul>
+<li><strong>一种思想</strong>：平衡思想。四种平衡都服从勒夏特列原理，先问自己"平衡朝哪边移动"，再谈结论；</li>
+<li><strong>三种守恒</strong>：把电荷守恒、物料守恒的写法各默写 5 个典型溶液（Na<sub>2</sub>CO<sub>3</sub>、NaHCO<sub>3</sub>、NH<sub>4</sub>Cl、CH<sub>3</sub>COONa、NH<sub>4</sub>HSO<sub>4</sub>），质子守恒用"电荷守恒与物料守恒联立消元"推一遍，理解了就永远不忘；</li>
+<li><strong>计算过关</strong>：pH 计算和 K<sub>sp</sub> 计算各练 10 题，限时完成，把 −lg 2 = 0.30、−lg 3 = 0.48 这类常用对数记住。</li>
+</ul>
+</div>
+</section>
+
+<section>
+<h2>二、核心概念精讲</h2>
+
+<h3>2.1 弱电解质的电离平衡与电离常数</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：弱酸、弱碱（如 CH<sub>3</sub>COOH、NH<sub>3</sub>·H<sub>2</sub>O）溶于水后只有一小部分分子电离成离子，且电离出的离子又能重新结合成分子，最终达到动态平衡——这就是电离平衡。以醋酸为例：</p>
+<p class="eq"><span class="formula">CH<sub>3</sub>COOH(aq) ⇌ CH<sub>3</sub>COO<sup>−</sup>(aq) + H<sup>+</sup>(aq)</span></p>
+<p><strong>电离常数</strong>（25 ℃时 HAc 的 K<sub>a</sub> ≈ 1.8×10<sup>−5</sup>）：</p>
+<p class="eq"><span class="formula">K<sub>a</sub> = c(CH<sub>3</sub>COO<sup>−</sup>)·c(H<sup>+</sup>) / c(CH<sub>3</sub>COOH)</span></p>
+<p><strong>为什么（微观解释）</strong>：弱电解质分子内化学键较强，水分子只能"拆散"其中一小部分；电离与结合两个过程速率相等时达到平衡。K 越小，说明平衡越靠左，酸（碱）越弱。</p>
+<p><strong>重要规律——越稀越电离</strong>：加水稀释，平衡右移，电离度 α 增大。但注意：<strong>电离度增大 ≠ 离子浓度增大</strong>——溶液体积增大的幅度更大，c(H<sup>+</sup>) 反而减小，pH 升高（对弱酸而言）。这是选择题最爱考的"坑"。</p>
+<p><strong>适用边界与常见混淆</strong>：</p>
+<ul>
+<li>K 只与<strong>温度</strong>有关（电离吸热，升温 K 增大），与浓度无关；</li>
+<li>强酸强碱盐（NaCl 等）在水中完全电离，不存在电离平衡；</li>
+<li>多元弱酸分步电离，且 K<sub>a1</sub> ≫ K<sub>a2</sub> ≫ K<sub>a3</sub>，酸性主要由第一步决定。如 H<sub>2</sub>CO<sub>3</sub>：K<sub>a1</sub> ≈ 4.3×10<sup>−7</sup>，K<sub>a2</sub> ≈ 5.6×10<sup>−11</sup>；</li>
+<li>比较两种酸的强弱：同温度下 K<sub>a</sub> 大的酸性强（25 ℃：HF 的 K<sub>a</sub> ≈ 6.8×10<sup>−4</sup> &gt; CH<sub>3</sub>COOH 的 1.8×10<sup>−5</sup>，故 HF 酸性更强）。</li>
+</ul>
+<p><strong>常见弱酸电离常数（25 ℃，数量级印象）</strong>：</p>
+<table>
+<tr><th>弱酸</th><th>K<sub>a</sub></th><th>弱酸</th><th>K<sub>a</sub></th></tr>
+<tr><td>HF</td><td>6.8×10<sup>−4</sup></td><td>CH<sub>3</sub>COOH</td><td>1.8×10<sup>−5</sup></td></tr>
+<tr><td>H<sub>2</sub>CO<sub>3</sub>（K<sub>a1</sub>）</td><td>4.3×10<sup>−7</sup></td><td>H<sub>2</sub>S（K<sub>a1</sub>）</td><td>9.1×10<sup>−8</sup></td></tr>
+<tr><td>HClO</td><td>3.0×10<sup>−8</sup></td><td>HCN</td><td>6.2×10<sup>−10</sup></td></tr>
+</table>
+<p>由表可知酸性强弱：HF &gt; CH<sub>3</sub>COOH &gt; H<sub>2</sub>CO<sub>3</sub> &gt; HClO &gt; HCN。由此推出两条高考常客：① 醋酸能与碳酸盐反应放出 CO<sub>2</sub>（强酸制弱酸），而苯酚不能；② CO<sub>2</sub> 通入 NaClO 溶液只能生成 HClO 和 HCO<sub>3</sub><sup>−</sup>（因为 H<sub>2</sub>CO<sub>3</sub> 的 K<sub>a1</sub> &gt; HClO 的 K<sub>a</sub> &gt; H<sub>2</sub>CO<sub>3</sub> 的 K<sub>a2</sub>）。</p>
+</div>
+
+<h3>2.2 水的电离与水的离子积 K<sub>w</sub></h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：纯水也会微弱电离：</p>
+<p class="eq"><span class="formula">H<sub>2</sub>O(l) ⇌ H<sup>+</sup>(aq) + OH<sup>−</sup>(aq)　　ΔH &gt; 0</span></p>
+<p>定义水的离子积：</p>
+<p class="eq"><span class="formula">K<sub>w</sub> = c(H<sup>+</sup>)·c(OH<sup>−</sup>)</span>　　25 ℃时 K<sub>w</sub> = 1×10<sup>−14</sup></p>
+<p><strong>三个关键理解</strong>：</p>
+<ol>
+<li><strong>任何水溶液中都同时存在 H<sup>+</sup> 和 OH<sup>−</sup></strong>，且 25 ℃时二者乘积恒为 10<sup>−14</sup>。酸溶液中 c(H<sup>+</sup>) &gt; c(OH<sup>−</sup>)，碱溶液中反之，但乘积不变；</li>
+<li><strong>水电离出的 c(H<sup>+</sup>) 恒等于水电离出的 c(OH<sup>−</sup>)</strong>（1∶1 产生）。酸溶液中 OH<sup>−</sup> 全部来自水，故水电离出的 c(H<sup>+</sup>) = 溶液中 c(OH<sup>−</sup>) = K<sub>w</sub>/c(H<sup>+</sup>)——酸、碱都<strong>抑制</strong>水的电离；</li>
+<li><strong>K<sub>w</sub> 随温度升高而增大</strong>（电离吸热）：100 ℃时 K<sub>w</sub> ≈ 10<sup>−12</sup>，此时纯水 c(H<sup>+</sup>) = 10<sup>−6</sup> mol/L，pH = 6，但纯水仍是<strong>中性</strong>——因为 c(H<sup>+</sup>) 仍等于 c(OH<sup>−</sup>)。</li>
+</ol>
+<p><strong>促进水电离的方法</strong>：升温；加入能水解的盐（如 CH<sub>3</sub>COONa、NH<sub>4</sub>Cl）——弱离子"吃掉"水电离出的 H<sup>+</sup> 或 OH<sup>−</sup>，拉动水的电离平衡右移。</p>
+</div>
+
+<h3>2.3 溶液的 pH 及其计算</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p class="eq"><span class="formula">pH = −lg c(H<sup>+</sup>)　　pOH = −lg c(OH<sup>−</sup>)　　25 ℃时 pH + pOH = 14</span></p>
+<p><strong>计算模型清单（25 ℃）</strong>：</p>
+<table>
+<tr><th>情形</th><th>方法</th><th>示例</th></tr>
+<tr><td>强酸（一元，浓度 c）</td><td>c(H<sup>+</sup>) = c</td><td>0.01 mol/L HCl → pH = 2</td></tr>
+<tr><td>强碱（一元，浓度 c）</td><td>先求 c(OH<sup>−</sup>) = c，再用 K<sub>w</sub> 换算</td><td>0.01 mol/L NaOH → c(H<sup>+</sup>) = 10<sup>−12</sup> → pH = 12</td></tr>
+<tr><td>强酸稀释 10<sup>n</sup> 倍</td><td>pH 增大 n 个单位（但始终 &lt; 7）</td><td>pH = 2 的盐酸稀释 100 倍 → pH = 4</td></tr>
+<tr><td>强酸 + 强碱混合</td><td>先中和，谁过量算谁</td><td>见例题一</td></tr>
+<tr><td>弱酸（浓度 c，K<sub>a</sub>）</td><td>近似 c(H<sup>+</sup>) ≈ √(K<sub>a</sub>·c)（α &lt; 5% 时可用）</td><td>见例题一方法延伸</td></tr>
+</table>
+<p><strong>常用对数速记</strong>：lg 2 = 0.30，lg 3 = 0.48，lg 5 = 0.70。c(H<sup>+</sup>) = 2×10<sup>−4</sup> → pH = 4 − lg 2 = 3.70。</p>
+<p><strong>稀释对照小表（25 ℃）</strong>：</p>
+<table>
+<tr><th>溶液</th><th>操作</th><th>pH 变化</th><th>原因要点</th></tr>
+<tr><td>pH = 2 的盐酸</td><td>稀释 10 倍</td><td>pH = 3</td><td>强酸完全电离，c(H<sup>+</sup>) 直接除以 10</td></tr>
+<tr><td>pH = 2 的醋酸</td><td>稀释 10 倍</td><td>2 &lt; pH &lt; 3</td><td>稀释促进电离，补充了一部分 H<sup>+</sup>，pH 增幅小于 1</td></tr>
+<tr><td>pH = 12 的 NaOH 溶液</td><td>稀释 10 倍</td><td>pH = 11</td><td>先算 c(OH<sup>−</sup>) = 10<sup>−3</sup>，再用 K<sub>w</sub> 换算</td></tr>
+<tr><td>pH = 12 的氨水</td><td>稀释 10 倍</td><td>11 &lt; pH &lt; 12</td><td>同理，弱碱电离被促进</td></tr>
+</table>
+<p>由此可推出高频考法：pH 相同的盐酸与醋酸分别稀释相同倍数，醋酸的 pH 更小；要使其 pH 仍相等，醋酸需要加更多的水。</p>
+<p><strong>边界提醒</strong>：酸无论怎么稀释，pH 只能无限接近 7，永远小于 7；碱同理永远大于 7。因为无限稀释后溶液中 H<sup>+</sup> 主要来自水的电离。</p>
+</div>
+
+<h3>2.4 酸碱中和滴定</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>原理</strong>：利用已知浓度的酸（碱）标准液滴定未知浓度的碱（酸），当恰好完全中和时：</p>
+<p class="eq"><span class="formula">c(待测) = c(标准)·V(标准) / V(待测)</span>（一元酸对一元碱）</p>
+<p><strong>仪器与操作要点</strong>：</p>
+<ul>
+<li>滴定管读数精确到 <strong>0.01 mL</strong>（量筒只有 0.1 mL）；酸式滴定管有玻璃活塞（不能装碱液），碱式滴定管下端是橡皮管（不能装酸液和强氧化性溶液如 KMnO<sub>4</sub>）；</li>
+<li>操作顺序：检漏 → 洗涤 → <strong>润洗 2~3 次（用待装液，不能用蒸馏水润洗完就直接装液）</strong> → 装液、赶气泡、调零 → 取待测液（移液管或滴定管）→ 加指示剂 → 滴定（左手控活塞、右手摇锥形瓶、眼睛盯锥形瓶内颜色变化）→ 终点判断：最后一滴使颜色突变且半分钟内不恢复原色；</li>
+<li>锥形瓶只用蒸馏水洗净即可，<strong>不能用待测液润洗</strong>（否则待测物偏多，结果偏高）；</li>
+<li>滴定管读数：平视凹液面最低点。滴定前仰视、滴定后俯视 → 读数差偏小 → 结果偏低。</li>
+</ul>
+<p><strong>指示剂选择</strong>（滴定突跃范围决定）：</p>
+<table>
+<tr><th>滴定类型</th><th>恰好中和时溶液</th><th>选用指示剂</th></tr>
+<tr><td>强酸滴强碱（或反之）</td><td>中性（pH = 7）</td><td>酚酞或甲基橙均可</td></tr>
+<tr><td>强酸滴弱碱</td><td>酸性（生成强酸弱碱盐）</td><td><strong>甲基橙</strong>（变色范围 3.1~4.4，酸性区变色）</td></tr>
+<tr><td>强碱滴弱酸</td><td>碱性（生成强碱弱酸盐）</td><td><strong>酚酞</strong>（变色范围 8.2~10，碱性区变色）</td></tr>
+</table>
+<p>注意：石蕊变色不敏锐（红→紫→蓝过渡太宽），中和滴定中<strong>不用石蕊</strong>作指示剂。</p>
+<p><strong>误差分析通法</strong>：一切误差都归结到"V(标准) 的读数偏大还是偏小"——凡是让标准液消耗偏多的操作，测得浓度就偏高。例如：酸式滴定管未用标准酸润洗（标准液被稀释，用量偏多，结果偏高）；锥形瓶中有少量蒸馏水（无影响，物质的量不变）。</p>
+</div>
+
+<h3>2.5 盐类的水解</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：盐电离出的弱酸根或弱碱阳离子，与水电离出的 H<sup>+</sup> 或 OH<sup>−</sup> 结合生成弱电解质，破坏水的电离平衡，使溶液显酸性或碱性。如 CH<sub>3</sub>COONa 溶液显碱性：</p>
+<p class="eq"><span class="formula">CH<sub>3</sub>COO<sup>−</sup>(aq) + H<sub>2</sub>O(l) ⇌ CH<sub>3</sub>COOH(aq) + OH<sup>−</sup>(aq)</span></p>
+<p><strong>水解规律口诀</strong>：<strong>有弱才水解，无弱不水解；越弱越水解；谁强显谁性；同强显中性。</strong></p>
+<ul>
+<li>有弱才水解：NaCl（强酸强碱盐）不水解，溶液中性；</li>
+<li>越弱越水解：组成盐的酸（碱）越弱，对应离子水解程度越大。如同浓度时 Na<sub>2</sub>CO<sub>3</sub> 碱性 &gt; NaHCO<sub>3</sub>（因为 HCO<sub>3</sub><sup>−</sup> 的酸性弱于 H<sub>2</sub>CO<sub>3</sub>，CO<sub>3</sub><sup>2−</sup> 水解更强）；</li>
+<li>谁强显谁性：CH<sub>3</sub>COONH<sub>4</sub> 中 K<sub>a</sub>(HAc) ≈ K<sub>b</sub>(NH<sub>3</sub>·H<sub>2</sub>O)，溶液接近中性；而 NH<sub>4</sub>HCO<sub>3</sub> 溶液显碱性（H<sub>2</sub>CO<sub>3</sub> 的 K<sub>a1</sub> &lt; NH<sub>3</sub>·H<sub>2</sub>O 的 K<sub>b</sub>，CO<sub>3</sub> 系水解占优）。</li>
+</ul>
+<p><strong>书写注意</strong>：水解程度微弱，用 ⇌ 连接；一般不标 ↓↑（不写 Fe(OH)<sub>3</sub>↓）；多元弱酸根<strong>分步水解、以第一步为主</strong>：</p>
+<p class="eq"><span class="formula">CO<sub>3</sub><sup>2−</sup> + H<sub>2</sub>O ⇌ HCO<sub>3</sub><sup>−</sup> + OH<sup>−</sup>（主）　HCO<sub>3</sub><sup>−</sup> + H<sub>2</sub>O ⇌ H<sub>2</sub>CO<sub>3</sub> + OH<sup>−</sup>（次）</span></p>
+<p><strong>影响因素</strong>：升温促进水解（水解是中和的逆反应，吸热）；越稀越水解（但溶液酸碱性减弱——与弱电解质稀释同理）；加酸抑制弱碱阳离子水解、加碱抑制弱酸根水解。配制 FeCl<sub>3</sub> 溶液时加入少量盐酸，就是为了抑制 Fe<sup>3+</sup> 水解：Fe<sup>3+</sup> + 3H<sub>2</sub>O ⇌ Fe(OH)<sub>3</sub> + 3H<sup>+</sup>。</p>
+<p><strong>双水解（相互促进）</strong>：Al<sup>3+</sup> 与 HCO<sub>3</sub><sup>−</sup>、CO<sub>3</sub><sup>2−</sup>、S<sup>2−</sup>、AlO<sub>2</sub><sup>−</sup> 等相遇时水解互相促进进行到底，写等号并标 ↓↑：</p>
+<p class="eq"><span class="formula">Al<sup>3+</sup> + 3HCO<sub>3</sub><sup>−</sup> <span class="eq-arrow" data-cond="">=</span> Al(OH)<sub>3</sub>↓ + 3CO<sub>2</sub>↑</span>　（泡沫灭火器原理）</p>
+<p><strong>酸式盐溶液的酸碱性（电离与水解的"拔河"）</strong>：多元弱酸的酸式酸根既能电离又能水解，溶液酸碱性取决于二者的相对强弱：</p>
+<ul>
+<li><strong>水解 &gt; 电离（显碱性）</strong>：HCO<sub>3</sub><sup>−</sup>、HS<sup>−</sup>、HPO<sub>4</sub><sup>2−</sup>——所以 NaHCO<sub>3</sub> 溶液显碱性；</li>
+<li><strong>电离 &gt; 水解（显酸性）</strong>：HSO<sub>3</sub><sup>−</sup>、H<sub>2</sub>PO<sub>4</sub><sup>−</sup>、HC<sub>2</sub>O<sub>4</sub><sup>−</sup>——所以 NaHSO<sub>3</sub> 溶液显酸性；</li>
+<li>强酸的酸式盐（NaHSO<sub>4</sub>）只电离不水解，水溶液中完全拆成 Na<sup>+</sup>、H<sup>+</sup>、SO<sub>4</sub><sup>2−</sup>，相当于一元强酸。</li>
+</ul>
+</div>
+
+<h3>2.6 离子浓度大小比较与三大守恒</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>三大守恒是解这类题的唯一可靠工具。</strong>以 0.1 mol/L Na<sub>2</sub>CO<sub>3</sub> 溶液为例：</p>
+<p><strong>① 电荷守恒</strong>（溶液电中性，阳离子正电荷总数 = 阴离子负电荷总数，注意乘电荷数）：</p>
+<p class="eq"><span class="formula">c(Na<sup>+</sup>) + c(H<sup>+</sup>) = c(OH<sup>−</sup>) + c(HCO<sub>3</sub><sup>−</sup>) + 2c(CO<sub>3</sub><sup>2−</sup>)</span></p>
+<p><strong>② 物料守恒</strong>（某元素投料总量 = 溶液中该元素各种存在形式之和）：Na 与 C 投料比 2∶1：</p>
+<p class="eq"><span class="formula">c(Na<sup>+</sup>) = 2[c(CO<sub>3</sub><sup>2−</sup>) + c(HCO<sub>3</sub><sup>−</sup>) + c(H<sub>2</sub>CO<sub>3</sub>)]</span></p>
+<p><strong>③ 质子守恒</strong>（水电离出的 H<sup>+</sup> 总量 = 水电离出的 OH<sup>−</sup> 总量，得质子产物与失质子产物列两边）：</p>
+<p class="eq"><span class="formula">c(OH<sup>−</sup>) = c(H<sup>+</sup>) + c(HCO<sub>3</sub><sup>−</sup>) + 2c(H<sub>2</sub>CO<sub>3</sub>)</span></p>
+<p>质子守恒可由"电荷守恒与物料守恒消去不参与质子转移的 Na<sup>+</sup>"得到——忘掉写法时就现场推导。</p>
+<p><strong>排序思维模板</strong>（单一盐溶液）：</p>
+<ol>
+<li>盐的"骨架离子"最多（不水解的那个通常排第一）；</li>
+<li>水解产生酸碱性：显什么性，对应的 H<sup>+</sup> 或 OH<sup>−</sup> 就大于另一个；</li>
+<li>水解产物（如 HCO<sub>3</sub><sup>−</sup>）次之，H<sup>+</sup> 或 OH<sup>−</sup> 中"弱的那个"最少。</li>
+</ol>
+<p>于是 Na<sub>2</sub>CO<sub>3</sub> 溶液：c(Na<sup>+</sup>) &gt; c(CO<sub>3</sub><sup>2−</sup>) &gt; c(OH<sup>−</sup>) &gt; c(HCO<sub>3</sub><sup>−</sup>) &gt; c(H<sup>+</sup>)。</p>
+<p><strong>三大守恒书写速查表（建议默写到滚瓜烂熟）</strong>：</p>
+<table>
+<tr><th>溶液</th><th>电荷守恒</th><th>物料守恒</th><th>质子守恒</th></tr>
+<tr><td>Na<sub>2</sub>CO<sub>3</sub></td><td>c(Na<sup>+</sup>)+c(H<sup>+</sup>) = c(OH<sup>−</sup>)+c(HCO<sub>3</sub><sup>−</sup>)+2c(CO<sub>3</sub><sup>2−</sup>)</td><td>c(Na<sup>+</sup>) = 2[c(CO<sub>3</sub><sup>2−</sup>)+c(HCO<sub>3</sub><sup>−</sup>)+c(H<sub>2</sub>CO<sub>3</sub>)]</td><td>c(OH<sup>−</sup>) = c(H<sup>+</sup>)+c(HCO<sub>3</sub><sup>−</sup>)+2c(H<sub>2</sub>CO<sub>3</sub>)</td></tr>
+<tr><td>NaHCO<sub>3</sub></td><td>c(Na<sup>+</sup>)+c(H<sup>+</sup>) = c(OH<sup>−</sup>)+c(HCO<sub>3</sub><sup>−</sup>)+2c(CO<sub>3</sub><sup>2−</sup>)</td><td>c(Na<sup>+</sup>) = c(CO<sub>3</sub><sup>2−</sup>)+c(HCO<sub>3</sub><sup>−</sup>)+c(H<sub>2</sub>CO<sub>3</sub>)</td><td>c(OH<sup>−</sup>)+c(CO<sub>3</sub><sup>2−</sup>) = c(H<sup>+</sup>)+c(H<sub>2</sub>CO<sub>3</sub>)</td></tr>
+<tr><td>NH<sub>4</sub>Cl</td><td>c(NH<sub>4</sub><sup>+</sup>)+c(H<sup>+</sup>) = c(Cl<sup>−</sup>)+c(OH<sup>−</sup>)</td><td>c(Cl<sup>−</sup>) = c(NH<sub>4</sub><sup>+</sup>)+c(NH<sub>3</sub>·H<sub>2</sub>O)</td><td>c(H<sup>+</sup>) = c(OH<sup>−</sup>)+c(NH<sub>3</sub>·H<sub>2</sub>O)</td></tr>
+<tr><td>CH<sub>3</sub>COONa</td><td>c(Na<sup>+</sup>)+c(H<sup>+</sup>) = c(CH<sub>3</sub>COO<sup>−</sup>)+c(OH<sup>−</sup>)</td><td>c(Na<sup>+</sup>) = c(CH<sub>3</sub>COO<sup>−</sup>)+c(CH<sub>3</sub>COOH)</td><td>c(OH<sup>−</sup>) = c(H<sup>+</sup>)+c(CH<sub>3</sub>COOH)</td></tr>
+</table>
+<p>观察规律：质子守恒式中，"得质子产物"和"失质子产物"分列两边，每得/失一个质子系数加一（如 H<sub>2</sub>CO<sub>3</sub> 是 CO<sub>3</sub><sup>2−</sup> 得两个质子的产物，系数为 2）。</p>
+<p><strong>混合溶液先判断"发生什么反应、剩余什么"</strong>，再按单一溶液思路比较。例如等物质的量的 CH<sub>3</sub>COOH 与 CH<sub>3</sub>COONa 混合，电离大于水解，溶液显酸性：c(CH<sub>3</sub>COO<sup>−</sup>) &gt; c(Na<sup>+</sup>) &gt; c(H<sup>+</sup>) &gt; c(OH<sup>−</sup>)。</p>
+</div>
+
+<h3>2.7 难溶电解质的溶解平衡与溶度积 K<sub>sp</sub></h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：AgCl 虽"难溶"，但并非不溶——溶解与沉淀两个过程达到动态平衡：</p>
+<p class="eq"><span class="formula">AgCl(s) ⇌ Ag<sup>+</sup>(aq) + Cl<sup>−</sup>(aq)　　K<sub>sp</sub> = c(Ag<sup>+</sup>)·c(Cl<sup>−</sup>)</span></p>
+<p>通式：对 M<sub>m</sub>A<sub>n</sub>(s) ⇌ mM<sup>n+</sup>(aq) + nA<sup>m−</sup>(aq)，K<sub>sp</sub> = c<sup>m</sup>(M<sup>n+</sup>)·c<sup>n</sup>(A<sup>m−</sup>)。固体不写入表达式。</p>
+<p><strong>沉淀生成与溶解的判断</strong>（离子积 Q 与 K<sub>sp</sub> 比较）：</p>
+<ul>
+<li>Q &gt; K<sub>sp</sub>：过饱和，生成沉淀直至 Q = K<sub>sp</sub>；</li>
+<li>Q = K<sub>sp</sub>：恰好饱和，处于平衡；</li>
+<li>Q &lt; K<sub>sp</sub>：不饱和，沉淀继续溶解。</li>
+</ul>
+<p><strong>沉淀的转化</strong>：溶解度小的沉淀更容易生成，沉淀可向更难溶的方向转化。如向 AgCl 悬浊液中加 KI 溶液，白色沉淀转化为黄色 AgI：</p>
+<p class="eq"><span class="formula">AgCl(s) + I<sup>−</sup>(aq) ⇌ AgI(s) + Cl<sup>−</sup>(aq)</span>　K = K<sub>sp</sub>(AgCl)/K<sub>sp</sub>(AgI) = 1.8×10<sup>−10</sup> / 8.5×10<sup>−17</sup> ≈ 2.1×10<sup>6</sup></p>
+<p>K 很大，说明转化几乎完全。<strong>注意边界</strong>：只有"同类型"难溶物（离子比相同）才能直接用 K<sub>sp</sub> 比溶解度；不同类型（如 AgCl 与 Ag<sub>2</sub>CrO<sub>4</sub>）必须通过计算比较。</p>
+</div>
+
+<h3>2.8 电离平衡的影响因素（动态分析表）</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p>以 0.1 mol/L 醋酸溶液（CH<sub>3</sub>COOH ⇌ CH<sub>3</sub>COO<sup>−</sup> + H<sup>+</sup>）为例，逐项分析条件改变的结果：</p>
+<table>
+<tr><th>条件改变</th><th>平衡移动</th><th>电离度 α</th><th>c(H<sup>+</sup>)</th><th>K<sub>a</sub></th></tr>
+<tr><td>升温（电离吸热）</td><td>右移</td><td>增大</td><td>增大</td><td><strong>增大</strong></td></tr>
+<tr><td>加水稀释</td><td>右移</td><td>增大</td><td><strong>减小</strong></td><td>不变</td></tr>
+<tr><td>加入 CH<sub>3</sub>COONa 固体（同离子效应）</td><td>左移</td><td>减小</td><td>减小</td><td>不变</td></tr>
+<tr><td>加入少量 NaOH 固体</td><td>右移（H<sup>+</sup> 被消耗）</td><td>增大</td><td>减小</td><td>不变</td></tr>
+<tr><td>加入锌粒（消耗 H<sup>+</sup>）</td><td>右移</td><td>增大</td><td>减小</td><td>不变</td></tr>
+<tr><td>加入冰醋酸（增大浓度）</td><td>右移</td><td><strong>减小</strong></td><td>增大</td><td>不变</td></tr>
+</table>
+<p><strong>两个关键提醒</strong>：</p>
+<ul>
+<li>K<sub>a</sub> 只随温度变化，其余条件再怎么折腾它都不变——表格最后一列是最容易被出成判断题的地方；</li>
+<li>加冰醋酸时平衡虽然右移，但电离度反而<strong>减小</strong>——浓度越大电离度越小，这正是"越稀越电离"的另一面。判断电离度看"电离的分子占分子的比例"，判断 c(H<sup>+</sup>) 看"体积与总量的赛跑"，二者经常背离。</li>
+</ul>
+</div>
+
+<h3>2.9 滴定曲线与突跃（深入理解指示剂选择）</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p>用 0.1000 mol/L NaOH 溶液滴定 20.00 mL 0.1000 mol/L 盐酸，几个关键点的 pH（25 ℃）：</p>
+<ul>
+<li>未滴加时：c(H<sup>+</sup>) = 0.1 mol/L，pH = 1.0；</li>
+<li>加入 19.98 mL（差半滴到终点）：剩余 H<sup>+</sup> = 0.1000 × 0.02/1000 = 2×10<sup>−6</sup> mol，总体积约 39.98 mL，c(H<sup>+</sup>) ≈ 5×10<sup>−5</sup> mol/L，pH ≈ 4.3；</li>
+<li>加入 20.00 mL（恰好中和）：pH = 7.0；</li>
+<li>加入 20.02 mL（多半滴）：过量 OH<sup>−</sup> 同理 c(OH<sup>−</sup>) ≈ 5×10<sup>−5</sup> mol/L，pOH ≈ 4.3，pH ≈ 9.7。</li>
+</ul>
+<p><strong>突跃</strong>：从 19.98 mL 到 20.02 mL，只加了 0.04 mL（约一滴）NaOH，pH 却从 4.3 跳到 9.7——这个急剧变化的区间叫<strong>滴定突跃</strong>。指示剂的变色范围只要落在突跃范围内（酚酞 8.2~10、甲基橙 3.1~4.4 都落在 4.3~9.7 之内），终点误差就在允许范围内。</p>
+<p><strong>用强碱滴定弱酸时</strong>：起点 pH 较高（弱酸只部分电离）、计量点因生成强碱弱酸盐而偏碱性（pH &gt; 7）、突跃范围变小且整体上移——所以只能选酚酞，不能选甲基橙。反过来强酸滴弱碱只能选甲基橙。<strong>指示剂选择的本质就是"让变色点尽量贴近计量点"</strong>。</p>
+</div>
+
+<h3>2.10 盐类水解的应用（高考常考清单）</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<ul>
+<li><strong>明矾净水</strong>：KAl(SO<sub>4</sub>)<sub>2</sub>·12H<sub>2</sub>O 溶于水后 Al<sup>3+</sup> 水解生成 Al(OH)<sub>3</sub> 胶体，吸附悬浮杂质：Al<sup>3+</sup> + 3H<sub>2</sub>O ⇌ Al(OH)<sub>3</sub>(胶体) + 3H<sup>+</sup>；</li>
+<li><strong>泡沫灭火器</strong>：Al<sub>2</sub>(SO<sub>4</sub>)<sub>3</sub> 溶液与 NaHCO<sub>3</sub> 溶液混合发生双水解：Al<sup>3+</sup> + 3HCO<sub>3</sub><sup>−</sup> = Al(OH)<sub>3</sub>↓ + 3CO<sub>2</sub>↑，CO<sub>2</sub> 和泡沫覆盖可燃物隔绝空气；</li>
+<li><strong>配制易水解盐溶液</strong>：配 FeCl<sub>3</sub>、SnCl<sub>2</sub> 溶液时先溶于较浓的相应酸中，再加水稀释，抑制水解防止浑浊；</li>
+<li><strong>蒸干与灼烧产物的判断</strong>：AlCl<sub>3</sub> 溶液蒸干灼烧最终得到 Al<sub>2</sub>O<sub>3</sub>（HCl 挥发拉动水解到底，Al(OH)<sub>3</sub> 再分解）；而 Al<sub>2</sub>(SO<sub>4</sub>)<sub>3</sub> 溶液蒸干仍得原溶质（H<sub>2</sub>SO<sub>4</sub> 难挥发，冷却后水解逆向复原）。判断依据是看对应酸是否挥发；</li>
+<li><strong>热纯碱去油污</strong>：升温促进 CO<sub>3</sub><sup>2−</sup> 水解，碱性增强，油脂在碱性条件下水解更彻底；</li>
+<li><strong>化肥混用禁忌</strong>：草木灰（主要成分 K<sub>2</sub>CO<sub>3</sub>，水解显碱性）不能与铵态氮肥混用，否则 NH<sub>4</sub><sup>+</sup> + OH<sup>−</sup> → NH<sub>3</sub>↑ + H<sub>2</sub>O，肥效流失；</li>
+<li><strong>Mg 与 NH<sub>4</sub>Cl 溶液反应放 H<sub>2</sub></strong>：NH<sub>4</sub><sup>+</sup> 水解使溶液显酸性，Mg 与其中的 H<sup>+</sup> 反应：Mg + 2NH<sub>4</sub><sup>+</sup> → Mg<sup>2+</sup> + 2NH<sub>3</sub>↑ + H<sub>2</sub>↑。</li>
+</ul>
+</div>
+
+<h3>2.11 沉淀溶解平衡的应用（除杂与转化）</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>① 调 pH 除杂（工业流程高频考点）</strong>：除去 CuCl<sub>2</sub> 溶液中混有的少量 FeCl<sub>3</sub>，可加入 CuO（或 Cu(OH)<sub>2</sub>、CuCO<sub>3</sub>）调节 pH。依据是两种氢氧化物 K<sub>sp</sub> 的巨大差异（25 ℃，K<sub>sp</sub>[Fe(OH)<sub>3</sub>] ≈ 2.8×10<sup>−39</sup>，K<sub>sp</sub>[Cu(OH)<sub>2</sub>] ≈ 2.2×10<sup>−20</sup>）：</p>
+<ul>
+<li>Fe<sup>3+</sup> 沉淀完全（c ≤ 10<sup>−5</sup> mol/L）时：c(OH<sup>−</sup>) ≥ (2.8×10<sup>−39</sup>/10<sup>−5</sup>)<sup>1/3</sup> ≈ 6.5×10<sup>−12</sup> mol/L，即 pOH ≤ 11.2，<strong>pH ≥ 2.8</strong>；</li>
+<li>0.1 mol/L Cu<sup>2+</sup> 开始沉淀时：c(OH<sup>−</sup>) = (2.2×10<sup>−20</sup>/0.1)<sup>1/2</sup> ≈ 4.7×10<sup>−10</sup> mol/L，即 <strong>pH ≈ 4.7</strong>；</li>
+<li>所以把 pH 调到 3~4.7 之间，Fe<sup>3+</sup> 沉淀完全而 Cu<sup>2+</sup> 留在溶液中。选 CuO 而不选 NaOH 的原因：CuO 消耗 H<sup>+</sup> 抬升 pH 且<strong>不引入新杂质</strong>（过量的 CuO 过滤即可除去）。</li>
+</ul>
+<p><strong>② 沉淀转化用于除垢</strong>：锅炉水垢中的 CaSO<sub>4</sub> 致密且难溶于酸，处理方法是先用 Na<sub>2</sub>CO<sub>3</sub> 溶液浸泡：CaSO<sub>4</sub>(s) + CO<sub>3</sub><sup>2−</sup>(aq) ⇌ CaCO<sub>3</sub>(s) + SO<sub>4</sub><sup>2−</sup>(aq)（K<sub>sp</sub>：CaSO<sub>4</sub> ≈ 9.1×10<sup>−6</sup> &gt; CaCO<sub>3</sub> ≈ 2.8×10<sup>−9</sup>，转化可行），再用盐酸溶解 CaCO<sub>3</sub>。</p>
+<p><strong>③ 钡餐的选择</strong>：医学造影用 BaSO<sub>4</sub> 而不用 BaCO<sub>3</sub>——BaCO<sub>3</sub> 会与胃酸反应 BaCO<sub>3</sub> + 2H<sup>+</sup> → Ba<sup>2+</sup> + CO<sub>2</sub>↑ + H<sub>2</sub>O，产生有毒的可溶性钡盐；BaSO<sub>4</sub> 的 K<sub>sp</sub> 极小且不与酸反应，Ba<sup>2+</sup> 浓度低到无害。</p>
+<p><strong>④ 分步沉淀</strong>：向等浓度的 Cl<sup>−</sup>、I<sup>−</sup> 混合液中逐滴加入 AgNO<sub>3</sub>，K<sub>sp</sub> 更小的 AgI（8.5×10<sup>−17</sup>）先沉淀，AgCl（1.8×10<sup>−10</sup>）后沉淀——沉淀顺序由"达到 K<sub>sp</sub> 所需的 Ag<sup>+</sup> 浓度"决定，不是由 K<sub>sp</sub> 的绝对大小直接决定（同类型时两者一致）。</p>
+</div>
+
+<h3>2.12 本章核心公式与数据速查</h3>
+<div class="card note">
+<span class="tag">考前必背</span>
+<table>
+<tr><th>名称</th><th>表达式 / 数值</th><th>注意事项</th></tr>
+<tr><td>水的离子积</td><td>K<sub>w</sub> = c(H<sup>+</sup>)·c(OH<sup>−</sup>)，25 ℃时 = 1×10<sup>−14</sup></td><td>升温 K<sub>w</sub> 增大；任何水溶液中均成立</td></tr>
+<tr><td>pH 定义</td><td>pH = −lg c(H<sup>+</sup>)；pH + pOH = 14（25 ℃）</td><td>先求准 c(H<sup>+</sup>)，碱溶液先用 K<sub>w</sub> 换算</td></tr>
+<tr><td>弱酸电离常数</td><td>K<sub>a</sub> = c(H<sup>+</sup>)·c(A<sup>−</sup>)/c(HA)</td><td>只随温度变；近似式 c(H<sup>+</sup>) ≈ √(K<sub>a</sub>·c)</td></tr>
+<tr><td>一元弱酸稀释</td><td>α 增大但 c(H<sup>+</sup>) 减小</td><td>"程度"与"浓度"要分开看</td></tr>
+<tr><td>溶度积（AB 型）</td><td>K<sub>sp</sub> = c(A<sup>+</sup>)·c(B<sup>−</sup>)，纯水中 s = √K<sub>sp</sub></td><td>AB<sub>2</sub>/A<sub>2</sub>B 型 s = ∛(K<sub>sp</sub>/4)</td></tr>
+<tr><td>沉淀判据</td><td>Q &gt; K<sub>sp</sub> 生成沉淀；Q &lt; K<sub>sp</sub> 继续溶解</td><td>混合后先按新体积重算离子浓度</td></tr>
+<tr><td>沉淀转化平衡常数</td><td>AgCl + I<sup>−</sup> ⇌ AgI + Cl<sup>−</sup>，K = K<sub>sp</sub>(AgCl)/K<sub>sp</sub>(AgI)</td><td>K 越大转化越彻底</td></tr>
+<tr><td>中和滴定计算</td><td>c(待) = c(标)·V(标)/V(待)</td><td>误差归结到 V(标) 的偏大偏小</td></tr>
+</table>
+<p>常用数据：lg 2 = 0.30、lg 3 = 0.48、lg 5 = 0.70；K<sub>w</sub>(25 ℃) = 1×10<sup>−14</sup>；K<sub>sp</sub>(AgCl) = 1.8×10<sup>−10</sup>。</p>
+</div>
+</section>
+
+<section>
+<h2>三、三重表征贯通</h2>
+
+<h4>第 1 组：醋酸溶液中的电离平衡</h4>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>0.1 mol/L 醋酸使紫色石蕊试液变红，但与同浓度盐酸相比：pH 更大（约 2.9 vs 1）、与镁带反应产生气泡更慢、导电能力更弱、稀释时 pH 变化更缓慢。说明醋酸中 H<sup>+</sup> 浓度小，且"存货"多——反应消耗 H<sup>+</sup> 后还能继续电离补充。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>溶液中大量 CH<sub>3</sub>COOH 分子保持分子形态，只有约 1.3% 电离为 CH<sub>3</sub>COO<sup>−</sup> 和 H<sup>+</sup>；同时离子又不断结合回分子，电离与结合速率相等，形成动态平衡。加水稀释时，平衡正向移动，电离的分子比例上升，但单位体积内 H<sup>+</sup> 数目仍减少。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p>CH<sub>3</sub>COOH(aq) ⇌ CH<sub>3</sub>COO<sup>−</sup>(aq) + H<sup>+</sup>(aq)</p>
+<p>K<sub>a</sub> = c(CH<sub>3</sub>COO<sup>−</sup>)·c(H<sup>+</sup>)/c(CH<sub>3</sub>COOH) ≈ 1.8×10<sup>−5</sup>（25 ℃）</p>
+<p>离子方程式中醋酸不可拆：CH<sub>3</sub>COOH + OH<sup>−</sup> <span class="eq-arrow" data-cond="">→</span> CH<sub>3</sub>COO<sup>−</sup> + H<sub>2</sub>O</p>
+</div>
+</div>
+
+<h4>第 2 组：碳酸钠溶液为什么显碱性</h4>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>纯碱（Na<sub>2</sub>CO<sub>3</sub>）明明是一种盐，水溶液却能使酚酞变红、能洗去油污（碱性条件利于油脂水解）。加热后红色加深——升温促进水解，碱性增强。向其中滴入盐酸，先无气泡，加盐酸到一定量后才开始大量冒气泡（先生成 HCO<sub>3</sub><sup>−</sup>，再生成 CO<sub>2</sub>）。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>CO<sub>3</sub><sup>2−</sup> 不断"抢夺"水电离出的 H<sup>+</sup> 生成 HCO<sub>3</sub><sup>−</sup>（少量再进一步生成 H<sub>2</sub>CO<sub>3</sub>），使溶液中 c(OH<sup>−</sup>) &gt; c(H<sup>+</sup>)；水的电离平衡被拉动右移。粒子浓度格局：Na<sup>+</sup> 最多，CO<sub>3</sub><sup>2−</sup> 次之（只水解掉一小部分），OH<sup>−</sup> 多于 HCO<sub>3</sub><sup>−</sup>（水解还叠加水的电离），H<sup>+</sup> 最少。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p>CO<sub>3</sub><sup>2−</sup> + H<sub>2</sub>O ⇌ HCO<sub>3</sub><sup>−</sup> + OH<sup>−</sup>（主要）</p>
+<p>HCO<sub>3</sub><sup>−</sup> + H<sub>2</sub>O ⇌ H<sub>2</sub>CO<sub>3</sub> + OH<sup>−</sup>（次要）</p>
+<p>分步滴加盐酸：CO<sub>3</sub><sup>2−</sup> + H<sup>+</sup> → HCO<sub>3</sub><sup>−</sup>；HCO<sub>3</sub><sup>−</sup> + H<sup>+</sup> → CO<sub>2</sub>↑ + H<sub>2</sub>O</p>
+</div>
+</div>
+
+<h4>第 3 组：氯化银沉淀的生成、溶解与转化</h4>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>向 NaCl 溶液中滴加 AgNO<sub>3</sub> 溶液，立即生成白色沉淀；继续加入氨水，白色沉淀逐渐溶解（得到无色溶液）；若改加 KI 溶液，白色沉淀慢慢变成黄色沉淀。三个操作对应溶解平衡的三次移动。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>悬浊液中 AgCl(s) 表面不断有 Ag<sup>+</sup>、Cl<sup>−</sup> 进入溶液，溶液中的 Ag<sup>+</sup>、Cl<sup>−</sup> 也不断回到固体表面，速率相等形成平衡，c(Ag<sup>+</sup>)·c(Cl<sup>−</sup>) = K<sub>sp</sub> 恒定。加氨水时 NH<sub>3</sub> 与 Ag<sup>+</sup> 结合成 [Ag(NH<sub>3</sub>)<sub>2</sub>]<sup>+</sup>，c(Ag<sup>+</sup>) 骤降，Q &lt; K<sub>sp</sub>，平衡向溶解方向移动；加 I<sup>−</sup> 时生成了 K<sub>sp</sub> 更小的 AgI，沉淀发生转化。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p>AgCl(s) ⇌ Ag<sup>+</sup>(aq) + Cl<sup>−</sup>(aq)　K<sub>sp</sub> = 1.8×10<sup>−10</sup></p>
+<p>AgCl(s) + 2NH<sub>3</sub>·H<sub>2</sub>O → [Ag(NH<sub>3</sub>)<sub>2</sub>]<sup>+</sup> + Cl<sup>−</sup> + 2H<sub>2</sub>O</p>
+<p>AgCl(s) + I<sup>−</sup>(aq) ⇌ AgI(s) + Cl<sup>−</sup>(aq)　K ≈ 2.1×10<sup>6</sup></p>
+</div>
+</div>
+
+<h4>第 4 组：酸碱中和滴定的终点判断</h4>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>锥形瓶中是加了 2 滴酚酞的 NaOH 溶液，呈浅红色；随着盐酸逐滴加入，红色逐渐变浅；当滴入最后半滴盐酸时，溶液突然由浅红色变为无色，且振荡后半分钟内不再变红——这就是滴定终点。多做几次会发现：终点前后只差一滴，颜色却判若两液。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>滴定过程中 H<sup>+</sup> 与 OH<sup>−</sup> 不断结合成 H<sub>2</sub>O，c(OH<sup>−</sup>) 持续下降；临近计量点时溶液中 OH<sup>−</sup> 已所剩无几，最后半滴盐酸（约 0.02 mL）使 c(H<sup>+</sup>) 从 10<sup>−9.7</sup> 量级跃升到 10<sup>−4.3</sup> 量级——pH 在 0.04 mL 内跳变约 5 个单位，这就是"突跃"。酚酞在 pH &lt; 8.2 时呈无色，恰好在突跃范围内变色，所以能灵敏指示终点。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p>H<sup>+</sup>(aq) + OH<sup>−</sup>(aq) <span class="eq-arrow" data-cond="">→</span> H<sub>2</sub>O(l)</p>
+<p>计量点：c(HCl)·V(HCl) = c(NaOH)·V(NaOH)</p>
+<p>终点判断用语：当滴入最后半滴标准液时，溶液由浅红色恰好变为无色，且半分钟内不恢复原色</p>
+</div>
+</div>
+</section>
+
+<section>
+<h2>四、典型例题分步拆解</h2>
+
+<div class="card example">
+<span class="tag">例 1 · pH 计算（混合溶液）</span>
+<p><strong>题目</strong>：25 ℃时，将 100 mL 0.10 mol/L 的盐酸与 100 mL 0.050 mol/L 的 NaOH 溶液混合（体积可加和），求混合后溶液的 pH。（lg 2.5 = 0.40）</p>
+<p><strong>【思路点拨】</strong>强酸强碱混合先发生中和反应 H<sup>+</sup> + OH<sup>−</sup> → H<sub>2</sub>O。关键三步：① 算两种离子的物质的量；② 判断谁过量、剩多少；③ 用<strong>混合后总体积</strong>求浓度，再算 pH。</p>
+<div class="step"><span class="no">1</span><p>n(H<sup>+</sup>) = 0.100 L × 0.10 mol/L = 0.010 mol；n(OH<sup>−</sup>) = 0.100 L × 0.050 mol/L = 0.0050 mol。</p></div>
+<div class="step"><span class="no">2</span><p>H<sup>+</sup> 过量，反应后剩余 n(H<sup>+</sup>) = 0.010 − 0.0050 = 0.0050 mol。</p></div>
+<div class="step"><span class="no">3</span><p>总体积 V = 0.200 L，c(H<sup>+</sup>) = 0.0050 / 0.200 = 2.5×10<sup>−2</sup> mol/L。</p></div>
+<div class="step"><span class="no">4</span><p>pH = −lg(2.5×10<sup>−2</sup>) = 2 − lg 2.5 = 2 − 0.40 = 1.60。</p></div>
+<div class="ans"><strong>【答案】</strong>pH = 1.6</div>
+<p><strong>【方法总结】</strong>酸碱混合求 pH 的口诀："<strong>先中和、再求余、除以总体积</strong>"。最常见的错误是用单一溶液体积去除，或者忘了判断谁过量。若碱过量，则先算 c(OH<sup>−</sup>)，再用 K<sub>w</sub> 换算 c(H<sup>+</sup>)（千万别直接对 c(OH<sup>−</sup>) 取 −lg 就当作 pH）。</p>
+<p><strong>【延伸】</strong>若题目改为 0.10 mol/L 的醋酸（K<sub>a</sub> = 1.8×10<sup>−5</sup>），则 c(H<sup>+</sup>) ≈ √(K<sub>a</sub>·c) = √(1.8×10<sup>−5</sup>×0.10) = √(1.8×10<sup>−6</sup>) ≈ 1.34×10<sup>−3</sup> mol/L，pH ≈ 3 − lg 1.34 ≈ 2.87，电离度 α ≈ 1.34%。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 2 · 离子浓度大小比较（三大守恒）</span>
+<p><strong>题目</strong>：常温下，0.1 mol/L 的 NH<sub>4</sub>Cl 溶液中，下列关系正确的是（　）</p>
+<p>A．c(Cl<sup>−</sup>) = c(NH<sub>4</sub><sup>+</sup>) &gt; c(H<sup>+</sup>) = c(OH<sup>−</sup>)<br>
+B．c(Cl<sup>−</sup>) &gt; c(NH<sub>4</sub><sup>+</sup>) &gt; c(H<sup>+</sup>) &gt; c(OH<sup>−</sup>)<br>
+C．c(NH<sub>4</sub><sup>+</sup>) &gt; c(Cl<sup>−</sup>) &gt; c(OH<sup>−</sup>) &gt; c(H<sup>+</sup>)<br>
+D．c(Cl<sup>−</sup>) + c(OH<sup>−</sup>) = c(NH<sub>4</sub><sup>+</sup>) + c(H<sup>+</sup>) 且 c(Cl<sup>−</sup>) = c(NH<sub>4</sub><sup>+</sup>)</p>
+<p><strong>【思路点拨】</strong>先确定溶质和水解情况：NH<sub>4</sub>Cl 完全电离出 NH<sub>4</sub><sup>+</sup> 和 Cl<sup>−</sup>，Cl<sup>−</sup> 不水解，NH<sub>4</sub><sup>+</sup> 微弱水解显酸性。再用排序模板 + 守恒验证。</p>
+<div class="step"><span class="no">1</span><p>写水解方程式：NH<sub>4</sub><sup>+</sup> + H<sub>2</sub>O ⇌ NH<sub>3</sub>·H<sub>2</sub>O + H<sup>+</sup>，溶液显酸性，故 c(H<sup>+</sup>) &gt; c(OH<sup>−</sup>)。排除 A、C。</p></div>
+<div class="step"><span class="no">2</span><p>Cl<sup>−</sup> 不水解，NH<sub>4</sub><sup>+</sup> 会损耗一小部分，故 c(Cl<sup>−</sup>) &gt; c(NH<sub>4</sub><sup>+</sup>)。排除 D（等式本身虽是电荷守恒，但 c(Cl<sup>−</sup>) = c(NH<sub>4</sub><sup>+</sup>) 不成立）。</p></div>
+<div class="step"><span class="no">3</span><p>水解程度微弱，NH<sub>4</sub><sup>+</sup> 只减少约万分之一，所以 c(NH<sub>4</sub><sup>+</sup>) 仍远大于 c(H<sup>+</sup>)（水解产生的 H<sup>+</sup> 极少）。</p></div>
+<div class="step"><span class="no">4</span><p>验证电荷守恒：c(NH<sub>4</sub><sup>+</sup>) + c(H<sup>+</sup>) = c(Cl<sup>−</sup>) + c(OH<sup>−</sup>)。因为 c(H<sup>+</sup>) &gt; c(OH<sup>−</sup>)，所以 c(NH<sub>4</sub><sup>+</sup>) &lt; c(Cl<sup>−</sup>)，与第 2 步一致，自洽。</p></div>
+<div class="ans"><strong>【答案】</strong>B</div>
+<p><strong>【方法总结】</strong>盐溶液排序三步："<strong>定溶质 → 看水解（谁水解谁减少，显什么性）→ 守恒验证</strong>"。排序题的答案必须能通过电荷守恒检验——这是考场上最快的自查手段。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 3 · K<sub>sp</sub> 计算与沉淀判断</span>
+<p><strong>题目</strong>：已知 25 ℃时 K<sub>sp</sub>(AgCl) = 1.8×10<sup>−10</sup>。</p>
+<p>(1) 求 AgCl 在纯水中的溶解度 s（以 mol/L 计，√1.8 ≈ 1.34）；</p>
+<p>(2) 向 1.0 L 0.010 mol/L 的 NaCl 溶液中加入 1 滴（约 0.05 mL，体积变化忽略）0.010 mol/L 的 AgNO<sub>3</sub> 溶液，是否有 AgCl 沉淀生成？</p>
+<p><strong>【思路点拨】</strong>(1) 纯水中 c(Ag<sup>+</sup>) = c(Cl<sup>−</sup>) = s，代入 K<sub>sp</sub> 表达式即可；(2) 算离子积 Q，与 K<sub>sp</sub> 比较。</p>
+<div class="step"><span class="no">1</span><p>设溶解度为 s，则 K<sub>sp</sub> = c(Ag<sup>+</sup>)·c(Cl<sup>−</sup>) = s<sup>2</sup> = 1.8×10<sup>−10</sup>。</p></div>
+<div class="step"><span class="no">2</span><p>s = √(1.8×10<sup>−10</sup>) = 1.34×10<sup>−5</sup> mol/L。</p></div>
+<div class="step"><span class="no">3</span><p>(2) 混合后 c(Cl<sup>−</sup>) ≈ 0.010 mol/L（体积几乎不变）；加入的 Ag<sup>+</sup> 的物质的量 n = 0.010 × 5×10<sup>−5</sup> = 5×10<sup>−7</sup> mol，分散在约 1.0 L 中，c(Ag<sup>+</sup>) ≈ 5×10<sup>−7</sup> mol/L。</p></div>
+<div class="step"><span class="no">4</span><p>Q = c(Ag<sup>+</sup>)·c(Cl<sup>−</sup>) = 5×10<sup>−7</sup> × 1.0×10<sup>−2</sup> = 5×10<sup>−9</sup>。</p></div>
+<div class="step"><span class="no">5</span><p>Q = 5×10<sup>−9</sup> &gt; K<sub>sp</sub> = 1.8×10<sup>−10</sup>，过饱和，<strong>有沉淀生成</strong>。</p></div>
+<div class="ans"><strong>【答案】</strong>(1) s = 1.34×10<sup>−5</sup> mol/L；(2) 有 AgCl 沉淀生成。</div>
+<p><strong>【方法总结】</strong>沉淀判断就一句话："<strong>算 Q、比 K<sub>sp</sub>、Q 大则沉</strong>"。注意两个细节：① 混合后两种离子的浓度都要按新体积重新计算；② 同离子效应——AgCl 在 NaCl 溶液中的溶解度 = K<sub>sp</sub>/c(Cl<sup>−</sup>) = 1.8×10<sup>−8</sup> mol/L，比纯水中小约三个数量级，这就是"同离子抑制溶解"。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 4 · 酸碱中和滴定误差分析</span>
+<p><strong>题目</strong>：用 0.1000 mol/L 的标准盐酸滴定 20.00 mL 未知浓度的 NaOH 溶液（以酚酞为指示剂）。下列操作使测得的 NaOH 浓度偏高、偏低还是无影响？</p>
+<p>① 酸式滴定管水洗后未用标准盐酸润洗就装液；② 锥形瓶水洗后用待测 NaOH 溶液润洗；③ 滴定前滴定管尖嘴有气泡，滴定后气泡消失；④ 锥形瓶水洗后留有少量蒸馏水；⑤ 滴定终点读数时俯视刻度。</p>
+<p><strong>【思路点拨】</strong>把一切影响归到"V(盐酸) 的测量值"上：c(NaOH) = c(盐酸)·V(盐酸)/V(NaOH)。</p>
+<div class="step"><span class="no">1</span><p>① 未润洗 → 管内残留水稀释了标准盐酸 → 实际浓度变小 → 消耗体积偏大 → <strong>偏高</strong>。</p></div>
+<div class="step"><span class="no">2</span><p>② 锥形瓶润洗 → 瓶内多留了 NaOH → 待测碱的物质的量变大 → 耗酸偏多 → <strong>偏高</strong>。</p></div>
+<div class="step"><span class="no">3</span><p>③ 气泡占体积：气泡在滴定中"被读成"流出的酸 → V(盐酸) 读数偏大 → <strong>偏高</strong>。</p></div>
+<div class="step"><span class="no">4</span><p>④ 锥形瓶里少量蒸馏水 → NaOH 物质的量不变 → <strong>无影响</strong>。</p></div>
+<div class="step"><span class="no">5</span><p>⑤ 终点俯视读数 → 读数偏小 → V(盐酸) 偏小 → <strong>偏低</strong>。</p></div>
+<div class="ans"><strong>【答案】</strong>①偏高　②偏高　③偏高　④无影响　⑤偏低</div>
+<p><strong>【方法总结】</strong>误差分析万能思路："<strong>盯住公式里的 V(标准)</strong>：让标准液'显得用多了'就偏高，'显得用少了'就偏低，不改变物质的量的就无影响。"注意仰视/俯视要分清是哪一次读数出错（滴定管 0 刻度在上，俯视读数偏小、仰视偏大）。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 5 · 离子浓度大小比较（酸式盐溶液进阶）</span>
+<p><strong>题目</strong>：常温下，0.1 mol/L NaHCO<sub>3</sub> 溶液显碱性。比较该溶液中各粒子浓度大小，并写出电荷守恒、物料守恒、质子守恒式。</p>
+<p><strong>【思路点拨】</strong>NaHCO<sub>3</sub> 是酸式盐，HCO<sub>3</sub><sup>−</sup> 既能电离（HCO<sub>3</sub><sup>−</sup> ⇌ H<sup>+</sup> + CO<sub>3</sub><sup>2−</sup>）又能水解（HCO<sub>3</sub><sup>−</sup> + H<sub>2</sub>O ⇌ H<sub>2</sub>CO<sub>3</sub> + OH<sup>−</sup>）。溶液显碱性说明<strong>水解 &gt; 电离</strong>，这是排序的关键依据。</p>
+<div class="step"><span class="no">1</span><p>NaHCO<sub>3</sub> 完全电离：Na<sup>+</sup> 不水解，浓度最大；HCO<sub>3</sub><sup>−</sup> 有少量损耗，排第二：c(Na<sup>+</sup>) &gt; c(HCO<sub>3</sub><sup>−</sup>)。</p></div>
+<div class="step"><span class="no">2</span><p>溶液显碱性 → c(OH<sup>−</sup>) &gt; c(H<sup>+</sup>)；水解 &gt; 电离 → 水解产物 H<sub>2</sub>CO<sub>3</sub> 多于电离产物 CO<sub>3</sub><sup>2−</sup>。</p></div>
+<div class="step"><span class="no">3</span><p>OH<sup>−</sup> 有两个来源（水解 + 水的电离），而 CO<sub>3</sub><sup>2−</sup> 只来自 HCO<sub>3</sub><sup>−</sup> 的电离，故 c(OH<sup>−</sup>) &gt; c(CO<sub>3</sub><sup>2−</sup>)；H<sup>+</sup> 被大量消耗，浓度最小。</p></div>
+<div class="step"><span class="no">4</span><p>综合排序：c(Na<sup>+</sup>) &gt; c(HCO<sub>3</sub><sup>−</sup>) &gt; c(OH<sup>−</sup>) &gt; c(H<sub>2</sub>CO<sub>3</sub>) &gt; c(H<sup>+</sup>) &gt; c(CO<sub>3</sub><sup>2−</sup>)。注意 H<sub>2</sub>CO<sub>3</sub> 能排在 H<sup>+</sup> 前面，是因为水解程度（约百分之几）远大于此时溶液的 c(H<sup>+</sup>) ≈ 10<sup>−10</sup> 量级。</p></div>
+<div class="step"><span class="no">5</span><p>三大守恒：<br>电荷守恒：c(Na<sup>+</sup>) + c(H<sup>+</sup>) = c(OH<sup>−</sup>) + c(HCO<sub>3</sub><sup>−</sup>) + 2c(CO<sub>3</sub><sup>2−</sup>)；<br>物料守恒：c(Na<sup>+</sup>) = c(HCO<sub>3</sub><sup>−</sup>) + c(CO<sub>3</sub><sup>2−</sup>) + c(H<sub>2</sub>CO<sub>3</sub>)；<br>质子守恒（两式相减消去 Na<sup>+</sup>）：c(H<sub>2</sub>CO<sub>3</sub>) + c(H<sup>+</sup>) = c(OH<sup>−</sup>) + c(CO<sub>3</sub><sup>2−</sup>)。</p></div>
+<div class="ans"><strong>【答案】</strong>c(Na<sup>+</sup>) &gt; c(HCO<sub>3</sub><sup>−</sup>) &gt; c(OH<sup>−</sup>) &gt; c(H<sub>2</sub>CO<sub>3</sub>) &gt; c(H<sup>+</sup>) &gt; c(CO<sub>3</sub><sup>2−</sup>)；三大守恒式如上第 5 步。</div>
+<p><strong>【方法总结】</strong>酸式盐排序的灵魂只有一句——"<strong>先判电离与水解谁强，再定产物谁多谁少</strong>"。显碱性则水解产物多，显酸性则电离产物多。质子守恒不要死记，用"电荷 − 物料"消元法现场推，30 秒就能推出来。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 6 · pH 计算（非常温与综合稀释）</span>
+<p><strong>题目</strong>：(1) 某温度下纯水的 c(H<sup>+</sup>) = 2×10<sup>−7</sup> mol/L，求该温度下 0.005 mol/L Ba(OH)<sub>2</sub> 溶液的 pH；(2) 25 ℃时将 pH = 13 的 NaOH 溶液稀释 1000 倍，求稀释后溶液的 pH。</p>
+<p><strong>【思路点拨】</strong>(1) 温度变了，K<sub>w</sub> 就不是 10<sup>−14</sup>，必须先从纯水求出该温度的 K<sub>w</sub>；(2) 碱溶液稀释无限倍，pH 只能趋近 7，绝不能小于 7——先算一算，再用"边界"检验结果是否合理。</p>
+<div class="step"><span class="no">1</span><p>(1) 纯水中 c(H<sup>+</sup>) = c(OH<sup>−</sup>) = 2×10<sup>−7</sup> mol/L，故该温度 K<sub>w</sub> = 4×10<sup>−14</sup>。</p></div>
+<div class="step"><span class="no">2</span><p>Ba(OH)<sub>2</sub> 是二元强碱：c(OH<sup>−</sup>) = 2 × 0.005 = 0.01 mol/L = 10<sup>−2</sup> mol/L。</p></div>
+<div class="step"><span class="no">3</span><p>c(H<sup>+</sup>) = K<sub>w</sub>/c(OH<sup>−</sup>) = 4×10<sup>−14</sup>/10<sup>−2</sup> = 4×10<sup>−12</sup> mol/L，pH = 12 − lg 4 = 12 − 0.60 = <strong>11.40</strong>。</p></div>
+<div class="step"><span class="no">4</span><p>(2) pH = 13 → c(OH<sup>−</sup>) = 0.1 mol/L；稀释 1000 倍后若简单相除得 c(OH<sup>−</sup>) = 10<sup>−4</sup> mol/L，pOH = 4，pH = 10。检验：10 &gt; 7，且稀释方向正确（从 13 向 7 靠近），合理。</p></div>
+<div class="step"><span class="no">5</span><p>反思边界：若稀释 10<sup>8</sup> 倍，简单计算会得 pH = 5，这<strong>不可能</strong>——碱溶液再怎么稀释 pH 也只会无限趋近 7（此时必须考虑水电离出的 OH<sup>−</sup>）。本题稀释 1000 倍尚在中等浓度范围，结果可信。</p></div>
+<div class="ans"><strong>【答案】</strong>(1) pH = 11.4；(2) pH = 10。</div>
+<p><strong>【方法总结】</strong>pH 计算两条军规：① <strong>温度不明先用纯水求 K<sub>w</sub></strong>，"pH = 7 为中性"只在 25 ℃成立；② 算完用边界检验——酸不过 7、碱不过 7，稀释方向要合理。另外注意二元强碱要乘 2（Ba(OH)<sub>2</sub>），这是最常丢的系数。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 7 · K<sub>sp</sub> 沉淀转化计算</span>
+<p><strong>题目</strong>：已知 25 ℃时 K<sub>sp</sub>(BaSO<sub>4</sub>) = 1.1×10<sup>−10</sup>，K<sub>sp</sub>(BaCO<sub>3</sub>) = 2.6×10<sup>−9</sup>。医学上用 BaSO<sub>4</sub> 作"钡餐"。若误服 BaCO<sub>3</sub> 会中毒，可用 Na<sub>2</sub>SO<sub>4</sub> 溶液洗胃解毒。写出该解毒反应的离子方程式，并计算其平衡常数 K。</p>
+<p><strong>【思路点拨】</strong>沉淀转化的本质是沉淀溶解平衡与生成沉淀的叠加，转化平衡常数 = 两 K<sub>sp</sub> 之比。</p>
+<div class="step"><span class="no">1</span><p>写反应：BaCO<sub>3</sub>(s) + SO<sub>4</sub><sup>2−</sup>(aq) ⇌ BaSO<sub>4</sub>(s) + CO<sub>3</sub><sup>2−</sup>(aq)。</p></div>
+<div class="step"><span class="no">2</span><p>平衡常数表达式：K = c(CO<sub>3</sub><sup>2−</sup>)/c(SO<sub>4</sub><sup>2−</sup>)（固体不写入）。</p></div>
+<div class="step"><span class="no">3</span><p>分子分母同乘 c(Ba<sup>2+</sup>)：K = [c(Ba<sup>2+</sup>)·c(CO<sub>3</sub><sup>2−</sup>)] / [c(Ba<sup>2+</sup>)·c(SO<sub>4</sub><sup>2−</sup>)] = K<sub>sp</sub>(BaCO<sub>3</sub>)/K<sub>sp</sub>(BaSO<sub>4</sub>)。</p></div>
+<div class="step"><span class="no">4</span><p>代入：K = 2.6×10<sup>−9</sup> / 1.1×10<sup>−10</sup> ≈ 23.6 &gt; 1，转化能够自发进行，洗胃有效。</p></div>
+<div class="ans"><strong>【答案】</strong>BaCO<sub>3</sub>(s) + SO<sub>4</sub><sup>2−</sup>(aq) ⇌ BaSO<sub>4</sub>(s) + CO<sub>3</sub><sup>2−</sup>(aq)；K ≈ 23.6。</div>
+<p><strong>【方法总结】</strong>"沉淀 A + 离子 ⇌ 沉淀 B + 离子"型转化的平衡常数 K = K<sub>sp</sub>(A)/K<sub>sp</sub>(B)。K 越大转化越彻底；K 不太小时（如本题 23.6），增大转化剂浓度（用较浓的 Na<sub>2</sub>SO<sub>4</sub> 溶液、多次洗涤）也能把转化"拉"向完全——这解释了为什么 CaSO<sub>4</sub> 水垢能被 Na<sub>2</sub>CO<sub>3</sub> 溶液转化。</p>
+</div>
+
+<div class="card note">
+<span class="tag">答题模板</span>
+<p><strong>① 离子浓度大小比较答题模板</strong>：先写溶质（及发生的反应）→ 再写"存在哪些平衡"（电离/水解）→ 排出"骨架离子 &gt; 水解（电离）剩余离子 &gt; 显性离子 &gt; 产物离子 &gt; 隐性离子"→ 最后用电荷守恒验证。</p>
+<p><strong>② 解释类表述模板</strong>（如"为什么 Na<sub>2</sub>CO<sub>3</sub> 溶液显碱性"）：Na<sub>2</sub>CO<sub>3</sub> 溶于水完全电离出 CO<sub>3</sub><sup>2−</sup>，CO<sub>3</sub><sup>2−</sup> 结合水电离出的 H<sup>+</sup> 发生水解：CO<sub>3</sub><sup>2−</sup> + H<sub>2</sub>O ⇌ HCO<sub>3</sub><sup>−</sup> + OH<sup>−</sup>，使水的电离平衡正向移动，溶液中 c(OH<sup>−</sup>) &gt; c(H<sup>+</sup>)，故显碱性。——"溶质电离 → 离子水解（写方程式）→ 水的平衡移动 → 浓度比较 → 结论"五步走。</p>
+<p><strong>③ 沉淀是否生成的表述</strong>：计算混合后 Q = c(M<sup>n+</sup>)<sup>m</sup>·c(A<sup>m−</sup>)<sup>n</sup>，与 K<sub>sp</sub> 比较：Q &gt; K<sub>sp</sub> 则生成沉淀，Q ≤ K<sub>sp</sub> 则无沉淀。必须写出具体数值比较过程才给满分。</p>
+</div>
+</section>
+
+<section>
+<h2>五、易错点与成因分析</h2>
+
+<div class="card trap">
+<span class="tag">易错点 1</span>
+<p><strong>易错表现</strong>：认为"加水稀释醋酸，电离平衡右移，所以 c(H<sup>+</sup>) 增大、pH 减小"。</p>
+<p><strong>错误成因</strong>：只盯平衡移动方向，忽略了体积这个更大的变量。电离度 α 增大只表示"电离的分子比例"上升，而 H<sup>+</sup> 的总量增加的幅度远小于溶液体积的增大，浓度必然下降。</p>
+<p><strong>正确理解</strong>：越稀越电离（α 增大），但越稀离子浓度越小（c(H<sup>+</sup>) 减小、pH 增大）。比较"程度"用 α，比较"浓度"要算 c。</p>
+<p><strong>一句话避坑</strong>：电离度看比例，浓度看体积——稀释永远是"比例升、浓度降"。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 2</span>
+<p><strong>易错表现</strong>：把"恰好中和"等同于"溶液呈中性"，如认为 NaOH 与 CH<sub>3</sub>COOH 恰好完全反应后 pH = 7。</p>
+<p><strong>错误成因</strong>：混淆了两个概念——"恰好中和"指<strong>物质的量</strong>恰好按方程式比例反应完；"呈中性"指 c(H<sup>+</sup>) = c(OH<sup>−</sup>)。中和的产物是盐，强碱弱酸盐会水解显碱性。</p>
+<p><strong>正确理解</strong>：恰好中和后看生成的盐：强酸强碱盐（NaCl）→ 中性；强碱弱酸盐（CH<sub>3</sub>COONa）→ 碱性；强酸弱碱盐（NH<sub>4</sub>Cl）→ 酸性。这也是滴定指示剂选择的依据。</p>
+<p><strong>一句话避坑</strong>：恰好中和 ≠ 中性，先看盐里有没有"弱离子"。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 3</span>
+<p><strong>易错表现</strong>：写电荷守恒时漏乘离子电荷数，如把 Na<sub>2</sub>CO<sub>3</sub> 溶液的电荷守恒写成 c(Na<sup>+</sup>) + c(H<sup>+</sup>) = c(OH<sup>−</sup>) + c(HCO<sub>3</sub><sup>−</sup>) + c(CO<sub>3</sub><sup>2−</sup>)。</p>
+<p><strong>错误成因</strong>：把"电荷守恒"误当成"粒子数守恒"。一个 CO<sub>3</sub><sup>2−</sup> 带 2 个单位负电荷，对电荷的贡献是浓度的 2 倍。</p>
+<p><strong>正确理解</strong>：电荷守恒中每个离子的浓度必须乘以其所带电荷数的绝对值：…+ 2c(CO<sub>3</sub><sup>2−</sup>)、3c(PO<sub>4</sub><sup>3−</sup>)。写完后可用"阴阳离子分列等号两边，逐一核对电荷系数"自查。</p>
+<p><strong>一句话避坑</strong>：电荷守恒数"电荷"不数"粒子"，多电荷离子前面乘系数。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 4</span>
+<p><strong>易错表现</strong>：测 pH 时先把 pH 试纸用蒸馏水润湿，认为"润湿更好接触溶液"。</p>
+<p><strong>错误成因</strong>：与石蕊试纸、淀粉 KI 试纸混淆（后两者测气体时确实需要润湿）。pH 试纸润湿相当于把待测液稀释，若待测液是酸，pH 偏大；是碱则偏小；只有中性溶液才无影响。</p>
+<p><strong>正确理解</strong>：正确操作是用洁净干燥的玻璃棒蘸取待测液，点在干燥的 pH 试纸中央，变色后与标准比色卡对比读数，读数为整数。</p>
+<p><strong>一句话避坑</strong>：pH 试纸怕"水"——润湿等于稀释，酸大碱小。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 5</span>
+<p><strong>易错表现</strong>：直接由 K<sub>sp</sub>(Ag<sub>2</sub>CrO<sub>4</sub>) ≈ 1.1×10<sup>−12</sup> &lt; K<sub>sp</sub>(AgCl) = 1.8×10<sup>−10</sup>，就断定 Ag<sub>2</sub>CrO<sub>4</sub> 溶解度更小、向 AgNO<sub>3</sub> 中滴加含 Cl<sup>−</sup> 和 CrO<sub>4</sub><sup>2−</sup> 的混合液时 Ag<sub>2</sub>CrO<sub>4</sub> 先沉淀。</p>
+<p><strong>错误成因</strong>：忽略了两者的"类型"不同（1∶1 型 vs 2∶1 型），K<sub>sp</sub> 表达式中浓度的幂次不同，不能直接比大小。</p>
+<p><strong>正确理解</strong>：必须算各自的溶解度或开始沉淀所需离子浓度再比较。AgCl：s = √(1.8×10<sup>−10</sup>) ≈ 1.34×10<sup>−5</sup> mol/L；Ag<sub>2</sub>CrO<sub>4</sub>：K<sub>sp</sub> = 4s<sup>3</sup>，s = ∛(1.1×10<sup>−12</sup>/4) ≈ 6.5×10<sup>−5</sup> mol/L，反而 AgCl 溶解度更小。在等浓度的 Cl<sup>−</sup>、CrO<sub>4</sub><sup>2−</sup> 混合液中滴加 AgNO<sub>3</sub>，先析出的是 AgCl（这就是莫尔法测 Cl<sup>−</sup> 的原理）。</p>
+<p><strong>一句话避坑</strong>：K<sub>sp</sub> 直接比大小，只限同类型（离子比相同）的难溶物。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 6</span>
+<p><strong>易错表现</strong>：写多元弱酸根水解时"一步到位"：CO<sub>3</sub><sup>2−</sup> + 2H<sub>2</sub>O ⇌ H<sub>2</sub>CO<sub>3</sub> + 2OH<sup>−</sup>，并在普通水解方程式中标 ↓↑。</p>
+<p><strong>错误成因</strong>：没有理解水解是微弱的、分步的。第一步水解产生的 OH<sup>−</sup> 会抑制第二步，所以第二步程度极小，绝不能合并书写（这与多元弱酸的"分步电离"是对称的）。</p>
+<p><strong>正确理解</strong>：分步写、以第一步为主：CO<sub>3</sub><sup>2−</sup> + H<sub>2</sub>O ⇌ HCO<sub>3</sub><sup>−</sup> + OH<sup>−</sup>。普通水解用 ⇌ 且不标 ↓↑；只有<strong>双水解进行到底</strong>（如 Al<sup>3+</sup> 与 HCO<sub>3</sub><sup>−</sup>）才写等号并标 ↓↑。</p>
+<p><strong>一句话避坑</strong>：多元弱酸根水解分步写、第一步为主；单水解用可逆号，双水解才到底。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 7</span>
+<p><strong>易错表现</strong>：认为"0.01 mol/L 盐酸中水电离出的 c(H<sup>+</sup>) = 10<sup>−2</sup> mol/L"或"盐酸抑制水的电离，所以水中不再有 H<sup>+</sup> 产生"。</p>
+<p><strong>错误成因</strong>：没有区分"溶液中的 c(H<sup>+</sup>)"与"水电离出的 c(H<sup>+</sup>)"这两个不同的量。酸溶液中 H<sup>+</sup> 绝大部分来自酸，水电离被抑制（水的电离平衡左移），但并没有停止。</p>
+<p><strong>正确理解</strong>：水电离出的 H<sup>+</sup> 与 OH<sup>−</sup> 永远等量。酸溶液中 OH<sup>−</sup> 只能来自水，故水电离出的 c(H<sup>+</sup>) = c(OH<sup>−</sup>) = K<sub>w</sub>/c(H<sup>+</sup>)<sub>溶液</sub> = 10<sup>−14</sup>/10<sup>−2</sup> = 10<sup>−12</sup> mol/L。反过来，可水解的盐溶液中 H<sup>+</sup>、OH<sup>−</sup> 都来自水，如 pH = 5 的 NH<sub>4</sub>Cl 溶液中水电离出的 c(H<sup>+</sup>) = 10<sup>−5</sup> mol/L，远大于纯水的 10<sup>−7</sup>。</p>
+<p><strong>一句话避坑</strong>：酸碱抑制水电离（酸取小头、碱取小头），盐类水解促进水电离（取大头）。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 8</span>
+<p><strong>易错表现</strong>：认为"pH = 2 的盐酸和醋酸分别与足量锌反应，醋酸产生的 H<sub>2</sub> 更多"或"反应速率一样快，产生 H<sub>2</sub> 一样多"。</p>
+<p><strong>错误成因</strong>：混淆了"pH 相同"（此时溶液中 c(H<sup>+</sup>) 相同）与"酸的总储量"。pH = 2 的醋酸浓度远大于 0.01 mol/L（因为只部分电离），醋酸里还有大量未电离的"库存"分子，随反应进行不断电离补充 H<sup>+</sup>。</p>
+<p><strong>正确理解</strong>：① 起始瞬间两溶液 c(H<sup>+</sup>) 相同，<strong>起始反应速率相同</strong>；② 反应过程中醋酸持续电离，c(H<sup>+</sup>) 下降慢，<strong>平均速率醋酸更快</strong>；③ 若酸均足量且等体积，醋酸能提供的 n(H<sup>+</sup>) 总量大得多，<strong>产生的 H<sub>2</sub> 醋酸更多</strong>。若题目改为"等浓度等体积"，则两者产生的 H<sub>2</sub> 一样多（酸的物质的量相同）。</p>
+<p><strong>一句话避坑</strong>：pH 相同比"库存"，弱酸储量大、后劲足；浓度相同比"总量"，产氢一样多。</p>
+</div>
+</section>
+
+<section>
+<h2>六、与前后章节的联系</h2>
+<table>
+<tr><th>关联章节</th><th>联系点</th></tr>
+<tr><td>1.x 离子反应（必修一）</td><td>弱电解质、可水解的盐决定了"哪些物质在离子方程式中不能拆"；离子共存的判断大量借助水解与沉淀平衡</td></tr>
+<tr><td>3.13 化学反应速率与化学平衡</td><td>电离、水解、溶解都是化学平衡的特例，勒夏特列原理和 K 的思想完全通用，本章是平衡思想在水溶液中的"实战演练"</td></tr>
+<tr><td>3.12 化学反应与能量</td><td>中和热测定实验与本章中和反应直接相关；水解是中和的逆反应，故水解吸热</td></tr>
+<tr><td>3.15 电化学基础</td><td>电极反应式书写必须考虑溶液酸碱性（H<sup>+</sup>/OH<sup>−</sup> 参与），电解后溶液 pH 的计算要用 K<sub>w</sub></td></tr>
+<tr><td>工业流程题（高考题型）</td><td>"调 pH 除杂""沉淀转化""洗涤沉淀"等流程步骤的原理全在本章</td></tr>
+</table>
+<p>学好本章后再回头看必修一的离子共存、离子方程式，你会有"降维打击"的感觉——当年死记硬背的"不共存组合"，现在都能从电离与水解的角度讲出道理。</p>
+</section>
+
+<section>
+<h2>七、章末自检清单</h2>
+<ul class="checklist">
+<li>我能说出弱电解质电离平衡的特征，并用 K<sub>a</sub>/K<sub>b</sub> 比较不同弱酸弱碱的相对强弱。</li>
+<li>我能解释"越稀越电离"与"稀释后 c(H<sup>+</sup>) 反而减小"为什么不矛盾。</li>
+<li>我能记住 25 ℃时 K<sub>w</sub> = 1×10<sup>−14</sup>，并说出温度、酸、碱、可水解的盐对水电离的影响。</li>
+<li>我能熟练计算强酸强碱溶液（含稀释、混合）的 pH，知道酸稀释 pH 只能趋近 7 而不等于 7。</li>
+<li>我能用 c(H<sup>+</sup>) ≈ √(K<sub>a</sub>·c) 估算一元弱酸溶液的 pH 和电离度。</li>
+<li>我能完整叙述酸碱中和滴定的操作步骤，为三类滴定（强强、强酸滴弱碱、强碱滴弱酸）正确选择指示剂。</li>
+<li>我能在滴定误差分析中把每种操作归结为"V(标准) 偏大/偏小"，从而判断结果偏高或偏低。</li>
+<li>我能用"有弱才水解、越弱越水解、谁强显谁性"判断任意盐溶液的酸碱性，并正确书写分步水解方程式。</li>
+<li>我能独立写出常见溶液（Na<sub>2</sub>CO<sub>3</sub>、NH<sub>4</sub>Cl、NaHCO<sub>3</sub> 等）的电荷守恒、物料守恒、质子守恒式，并用它们比较离子浓度大小。</li>
+<li>我能写出难溶电解质的 K<sub>sp</sub> 表达式，计算其溶解度，并用 Q 与 K<sub>sp</sub> 比较判断沉淀是否生成。</li>
+<li>我能解释沉淀转化的方向（向更难溶的方向），知道只有同类型难溶物才能直接用 K<sub>sp</sub> 比较溶解度。</li>
+<li>我能计算沉淀转化的平衡常数（K = 两 K<sub>sp</sub> 之比），并解释调 pH 除杂的原理与试剂选择。</li>
+</ul>
+</section>
+
+</main>
+<footer class="chap-foot">高考备考 · 化学 · 深度学习材料 · 2026</footer>
+</body>
+</html>

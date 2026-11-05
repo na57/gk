@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>电磁感应 - 深度学习材料</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover：替换 {{章节名}} {{模块定位与分值}} {{章节号}} -->
+<nav class="chap-nav">高考备考 · 物理 · 深度学习材料 ｜ 3.10 电磁感应</nav>
+<header class="chap-head">
+  <h1>电磁感应</h1>
+  <p class="chap-meta"></p>
+</header>
+  <div class="subtitle">深度学习材料 · 概念 · 推导 · 模型 · 方法</div>
+  <div class="meta">
+    <span>高中物理 · 电磁学模块 · 压轴题首选</span><br>
+    <span>依据：《高考物理95+分备考指南》3.10节要求</span><br>
+    <span>适用：高一同步学习 &amp; 高考一轮复习</span><br>
+    <span>学生：小兵</span>
+  </div>
+</div>
+
+<p class="hint">
+  💡 提示：所有公式由 MathJax 渲染；带推导的公式请合上书独立推一遍
+</p>
+
+<!-- 目录：与正文 h2 的 id 对应 -->
+<div class="toc">
+  <strong>目录</strong>
+  <ol>
+    <li><a href="#s1">一、本章总览</a></li>
+    <li><a href="#s2">二、核心概念与物理量</a></li>
+    <li><a href="#s3">三、公式与推导（含适用条件）</a></li>
+    <li><a href="#s4">四、典型例题</a></li>
+    <li><a href="#s5">五、易错点与成因分析</a></li>
+    <li><a href="#s6">六、章末自检清单</a></li>
+  </ol>
+</div>
+
+<h2 id="s1">一、本章总览</h2>
+
+<p>小兵你好。电磁感应这一章，在高考物理里有一个非常特殊的地位：<strong>它是"电磁学的收官之战"，也是压轴计算题的首选考点</strong>。原因很简单——它天生就是一个"综合题模板"：一个导体棒在导轨上运动，既可以考电路（闭合电路欧姆定律），又可以考力学（牛顿第二定律、收尾速度），还可以考能量（动能定理、焦耳热），甚至还能考动量（双棒模型）。一道题把高中物理的主干知识串成一条线，命题老师没有理由不爱它。</p>
+
+<p>在云南高考物理 100 分中，电磁学约占 40 分，而电磁感应几乎每年必考：选择题里常出现<strong>楞次定律判断</strong>、<strong>图象问题（$i$-$t$、$F$-$t$、$v$-$t$）</strong>；计算压轴题里则高频出现<strong>单棒导轨、线框穿磁场、双棒模型</strong>。本章学扎实了，等于提前锁定了压轴题的一半分数。</p>
+
+<p>对现在的你（高一）来说，本章属于"拔高自学"内容。建议的节奏是：先把"磁通量"这个新概念吃透（它是全章的地基），再理解楞次定律的物理内涵（不要只背口诀），最后在法拉第电磁感应定律的基础上，把"电路—力学—能量"三条线拧成一股绳。</p>
+
+<div class="map">
+  <div class="row"><span class="node root">电磁感应</span></div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <span class="node">现象与条件</span>
+    <span class="node">方向判定</span>
+    <span class="node">大小计算</span>
+    <span class="node">自感与涡流</span>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <span class="node leaf">磁通量 Φ<br>磁通量变化 ΔΦ</span>
+    <span class="node leaf">楞次定律<br>右手定则</span>
+    <span class="node leaf">法拉第定律<br>E = nΔΦ/Δt<br>E = BLv</span>
+    <span class="node leaf">通电自感<br>断电自感<br>涡流</span>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <span class="node view">综合应用</span>
+  </div>
+  <div class="row">
+    <span class="node leaf">电路问题：等效电源 + 闭合电路欧姆定律</span>
+    <span class="node leaf">力学问题：安培力 + 收尾速度</span>
+    <span class="node leaf">能量问题：克服安培力做功 → 焦耳热</span>
+    <span class="node leaf">图象问题：i-t、F-t 分段分析</span>
+  </div>
+</div>
+
+<h3>本章知识主线</h3>
+<p>一条主线贯穿全章：<strong>磁通量变化 → 产生感应电动势 → （回路闭合时）产生感应电流 → 感应电流受安培力 → 安培力影响运动 → 运动又反过来改变磁通量变化率</strong>。压轴题的全部"戏"，都在这个闭环里演。</p>
+
+<div class="key-point">
+<strong>学习目标（对标 3.10 节）：</strong>① 理解磁通量的概念，会算会判断变化；② 熟练用楞次定律（含推广结论）判断感应电流方向；③ 掌握法拉第电磁感应定律，区分感生与动生、平均与瞬时；④ 会分析通电/断电自感现象；⑤ 能把电磁感应与电路、力学、能量综合起来解决单棒、线框等典型问题。
+</div>
+
+<h2 id="s2">二、核心概念与物理量</h2>
+
+<h3>2.1 磁通量 Φ —— 全章最重要的新概念</h3>
+
+<p><strong>定义</strong>：设在磁感应强度为 $B$ 的匀强磁场中，有一个面积为 $S$ 的平面，若 $B$ 与平面垂直，则穿过该面的磁通量为</p>
+
+$$\Phi = BS$$
+
+<p>若 $B$ 与平面不垂直，设 $B$ 与平面<strong>法线方向</strong>（垂直于平面的方向）的夹角为 $\theta$，则</p>
+
+$$\Phi = BS\cos\theta$$
+
+<p>也可以理解为 $\Phi = B_{\perp}S = BS_{\perp}$：取垂直于面的磁场分量，或取面在垂直于磁场方向上的投影面积，两种理解等价。</p>
+
+<ul>
+  <li><strong>符号</strong>：$\Phi$（读作"斐"，大写希腊字母 Phi）</li>
+  <li><strong>单位</strong>：韦伯，符号 $\text{Wb}$，$1\,\text{Wb}=1\,\text{T}\cdot\text{m}^2$</li>
+  <li><strong>标矢性</strong>：磁通量是<strong>标量</strong>，没有方向——但它有<span style="color: var(--danger);"><strong>正负</strong></span>！</li>
+</ul>
+
+<div class="warn">
+<strong>⚠️ 磁通量的正负与"面的正方向"约定（单独强调，必考陷阱）</strong><br>
+磁通量的正负不表示方向，而表示磁感线从面的哪一侧穿过。规定：为面选定一个<strong>正方向（法线正方向）</strong>，磁感线沿正方向穿入时 $\Phi &gt; 0$，沿反方向穿入时 $\Phi &lt; 0$。<br>
+<strong>关键推论</strong>：若把面翻转 $180°$（或磁场反向），磁通量由 $+BS$ 变为 $-BS$，则磁通量的变化量大小为
+$$|\Delta\Phi| = |(-BS) - (+BS)| = 2BS$$
+而不是 0！线圈翻转类问题（如线圈在磁场中转过 $180°$）是这里的经典考题。
+</div>
+
+<div class="deep">
+<strong>深度理解①：磁通量与匝数无关。</strong>穿过某个面的磁通量 $\Phi = BS\cos\theta$，无论线圈是 1 匝还是 1000 匝，穿过"每一匝"的磁通量都是 $\Phi$。匝数 $n$ 只出现在感应电动势 $E = n\dfrac{\Delta\Phi}{\Delta t}$ 里，绝不出现在磁通量本身。把 $\Phi$ 写成 $nBS$ 是高一开始最容易犯、且后果很严重的错误（见第五章易错点）。<br><br>
+<strong>深度理解②：磁通量的三种变化方式。</strong>由 $\Phi = BS\cos\theta$，磁通量变化有三条路径：
+<ul>
+<li>$B$ 变（$S$、$\theta$ 不变）→ 产生<strong>感生电动势</strong>，如线圈不动、磁场随时间变化；</li>
+<li>$S$ 变（$B$ 不变）→ 产生<strong>动生电动势</strong>，如导体棒切割磁感线改变回路面积；</li>
+<li>$\theta$ 变（$B$、$S$ 不变）→ 如线圈在磁场中转动，这是交流发电机的原理（选择性必修内容，本章只需定性了解）。</li>
+</ul>
+做题第一步永远是：<strong>先判断磁通量为什么变、怎么变</strong>。
+</div>
+
+<h3>2.2 电磁感应现象与产生条件</h3>
+
+<p><strong>电磁感应现象</strong>：当穿过闭合电路的磁通量发生变化时，电路中会产生电流，这种现象叫电磁感应，产生的电流叫<strong>感应电流</strong>，产生电流的电动势叫<strong>感应电动势</strong>。</p>
+
+<table>
+  <tr><th>情形</th><th>磁通量是否变化</th><th>是否有感应电动势</th><th>是否有感应电流</th></tr>
+  <tr><td class="l">回路闭合，Φ 变化</td><td>是</td><td>有</td><td><strong>有</strong></td></tr>
+  <tr><td class="l">回路<strong>断开</strong>，Φ 变化</td><td>是</td><td><strong>有</strong></td><td>无（断路无电流）</td></tr>
+  <tr><td class="l">回路闭合，Φ 不变</td><td>否</td><td>无</td><td>无</td></tr>
+</table>
+
+<div class="key-point">
+<strong>一句话区分</strong>：感应电动势的产生条件是"<strong>磁通量变化</strong>"（对回路是否闭合无要求）；感应电流的产生条件是"<strong>磁通量变化 <span style="color: var(--danger);">且</span> 回路闭合</strong>"。例如线框完全在匀强磁场中匀速运动时，两条对边各自切割磁感线、各自产生电动势，但整个回路磁通量不变，总电动势为零，无感应电流——选择题常在这里设套。
+</div>
+
+<h3>2.3 感应电动势 E 与感应电流 I</h3>
+
+<ul>
+  <li><strong>感应电动势</strong>：电磁感应现象中产生的电动势，符号 $E$，单位伏特（$\,\text{V}$）。产生感应电动势的那部分导体（切割磁感线的导体棒、磁场穿过的线圈）相当于<strong>电源</strong>，它的电阻在电路中充当<strong>内阻</strong>。</li>
+  <li><strong>感应电流</strong>：闭合回路中由感应电动势驱动的电流，$I = \dfrac{E}{R_{总}}$（闭合电路欧姆定律），单位安培（$\,\text{A}$）。</li>
+</ul>
+
+<blockquote>
+<p><strong>深度思考：等效电源思想——本章电路问题的总钥匙</strong></p>
+<p>把"发生电磁感应的那部分导体"看作一个电源：电动势为 $E$，内阻为它自身的电阻 $r$，外电路是其余部分。之后，一切问题都回到你熟悉的闭合电路：路端电压 $U = E - Ir$、电功率分配、含容电路的电荷量……全部套用恒定电流的方法。压轴题里"求某电阻两端的电压""求某段时间通过某电阻的电荷量"，本质都是在考你能不能把电磁感应电路翻译成普通电路。</p>
+</blockquote>
+
+<h3>2.4 楞次定律 —— 感应电流方向的判据</h3>
+
+<p><strong>内容</strong>：感应电流具有这样的方向，即感应电流的磁场总要<strong>阻碍</strong>引起感应电流的磁通量的变化。</p>
+
+<p>理解楞次定律要抓住四个层次：</p>
+
+<ol>
+  <li><strong>谁阻碍谁</strong>：是"感应电流的磁场"阻碍"原磁通量的变化"，不是阻碍原磁场本身，更不是阻止变化——只是<strong>延缓</strong>、<strong>反抗</strong>变化的趋势。</li>
+  <li><strong>阻碍是能量守恒的必然结果</strong>：如果感应电流的磁场"帮助"原磁通量变化，变化会愈演愈烈，能量无中生有，违背能量守恒。楞次定律本质上是能量守恒定律在电磁感应中的体现。</li>
+  <li><strong>判断步骤（四步走）</strong>：① 明确原磁场方向；② 判断穿过回路的磁通量是增还是减；③ 由"增反减同"定感应电流的磁场方向（$\Phi$ 增大时感应磁场与原磁场反方向，减小时同方向）；④ 用安培定则（右手螺旋）由感应磁场方向定感应电流方向。</li>
+  <li><strong>两个好用的推广结论</strong>（由"阻碍"二字直接推出，可大幅提高解题速度）：
+    <ul>
+      <li><strong>"来拒去留"</strong>：从力的效果看，感应电流受到的安培力总是阻碍导体与磁场的相对运动——磁铁靠近线圈时被"拒绝"（受排斥力），远离时被"挽留"（受吸引力）。</li>
+      <li><strong>"增缩减扩"</strong>：从形变趋势看，回路磁通量增大时，线圈有<strong>收缩</strong>趋势（缩小面积以阻碍 Φ 增大）；磁通量减小时，线圈有<strong>扩张</strong>趋势。⚠️ 注意此结论仅当磁场方向穿过线圈且分布均匀趋势时直接成立，套于磁体内部（如条形磁铁穿过闭合线圈中间）等"净磁通"情形要小心，先用四步走验证。</li>
+    </ul>
+  </li>
+</ol>
+
+<div class="deep">
+<strong>右手定则（楞次定律在切割情形下的特例）</strong>：伸开右手，让拇指与其余四指垂直并处于同一平面，磁感线垂直穿入掌心，拇指指向导体运动方向，则四指所指即感应电流方向（也即动生电动势内部由负极指向正极的方向）。对"导体棒切割磁感线"模型，右手定则比四步走的楞次定律更快；但遇到磁场变化、多段导体时，仍要回到楞次定律这个根本大法。
+</div>
+
+<div style="text-align: center; margin: 20px 0;">
+<svg width="640" height="200" viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="楞次定律示意图">
+  <rect x="0" y="0" width="640" height="200" fill="#f7fafc" rx="8"/>
+  <!-- 左图：磁铁靠近 -->
+  <g>
+    <rect x="40" y="70" width="80" height="50" fill="#e53e3e" rx="4"/>
+    <rect x="120" y="70" width="80" height="50" fill="#2b6cb0" rx="4"/>
+    <text x="75" y="100" font-size="18" fill="#fff" text-anchor="middle" font-weight="bold">N</text>
+    <text x="165" y="100" font-size="18" fill="#fff" text-anchor="middle" font-weight="bold">S</text>
+    <text x="120" y="55" font-size="14" fill="#2d3748" text-anchor="middle">条形磁铁向右靠近线圈</text>
+    <path d="M210 95 L245 95" stroke="#dd6b20" stroke-width="3" fill="none" marker-end="url(#arr)"/>
+    <ellipse cx="285" cy="95" rx="14" ry="40" fill="none" stroke="#1a365d" stroke-width="4"/>
+    <text x="285" y="160" font-size="13" fill="#2d3748" text-anchor="middle">线圈Φ向右增大</text>
+    <text x="285" y="180" font-size="12" fill="#9c4221" text-anchor="middle">→ 感应磁场向左("增反") → 线圈左端为N极，排斥磁铁</text>
+  </g>
+  <!-- 右图：远离 -->
+  <g>
+    <rect x="390" y="70" width="60" height="40" fill="#e53e3e" rx="4"/>
+    <rect x="450" y="70" width="60" height="40" fill="#2b6cb0" rx="4"/>
+    <text x="415" y="95" font-size="15" fill="#fff" text-anchor="middle" font-weight="bold">N</text>
+    <text x="485" y="95" font-size="15" fill="#fff" text-anchor="middle" font-weight="bold">S</text>
+    <ellipse cx="365" cy="90" rx="12" ry="36" fill="none" stroke="#1a365d" stroke-width="4"/>
+    <path d="M520 90 L560 90" stroke="#dd6b20" stroke-width="3" fill="none" marker-end="url(#arr2)"/>
+    <text x="480" y="55" font-size="14" fill="#2d3748" text-anchor="middle">磁铁向右远离线圈</text>
+    <text x="480" y="160" font-size="13" fill="#2d3748" text-anchor="middle">Φ向右减小 → 感应磁场向右("减同")</text>
+    <text x="480" y="180" font-size="12" fill="#9c4221" text-anchor="middle">→ 线圈右端为S极，吸引磁铁("去留")</text>
+  </g>
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#dd6b20"/>
+    </marker>
+    <marker id="arr2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#dd6b20"/>
+    </marker>
+  </defs>
+</svg>
+<p style="color: var(--muted); font-size: 0.9em;">图：楞次定律"来拒去留"——磁铁靠近时被排斥、远离时被吸引</p>
+</div>
+
+<h3>2.5 自感与涡流</h3>
+
+<h4>自感现象</h4>
+<p><strong>定义</strong>：由于导体<strong>自身</strong>电流的变化而产生的电磁感应现象，叫自感现象。自感电动势 $E = L\dfrac{\Delta I}{\Delta t}$，其中 $L$ 为自感系数，单位亨利（$\,\text{H}$），$L$ 由线圈本身决定（匝数、长短、粗细、有无铁芯），与电流无关。自感电动势同样遵守楞次定律：<strong>电流增大时阻碍其增大，电流减小时阻碍其减小</strong>——线圈就像电路中的"惯性元件"。</p>
+
+<table>
+  <tr><th>现象</th><th>电路特征</th><th>现象解释（用楞次定律）</th><th>典型表现</th></tr>
+  <tr>
+    <td class="l"><strong>通电自感</strong></td>
+    <td class="l">线圈 L 与灯泡 A₁ 串联后，再与（灯泡 A₂ + 电阻）支路并联，闭合开关</td>
+    <td class="l">闭合瞬间，线圈中电流要从 0 增大，自感电动势阻碍其增大，使 A₁ 支路电流只能缓慢上升</td>
+    <td class="l">A₂ 立即亮，A₁ <strong>逐渐变亮</strong>，最后两灯同样亮（稳定后线圈相当于导线，理想情况）</td>
+  </tr>
+  <tr>
+    <td class="l"><strong>断电自感</strong></td>
+    <td class="l">线圈 L 与灯泡 A 并联（线圈直流电阻 $R_L$ 很小），断开开关</td>
+    <td class="l">断开瞬间，线圈中电流要减小，自感电动势阻碍其减小，线圈充当临时电源，与灯泡构成闭合回路放电</td>
+    <td class="l">若原来 $I_L &gt; I_A$（即 $R_L &lt; R_A$），灯泡会<strong>闪亮一下再熄灭</strong>；若 $R_L \geq R_A$，灯泡只是逐渐熄灭，不闪亮</td>
+  </tr>
+</table>
+
+<div class="warn">
+<strong>⚠️ "闪亮一下"的条件判断</strong>：断电自感中灯泡是否闪亮，取决于断开前线圈支路电流 $I_L$ 与灯泡支路电流 $I_A$ 的大小关系。并联电压相同，$I = U/R$，所以 $R_L &lt; R_A$（线圈电阻小于灯泡电阻）⇒ $I_L &gt; I_A$ ⇒ 断开瞬间通过灯泡的电流从 $I_A$ 突增为 $I_L$ 再衰减 ⇒ <strong>闪亮</strong>。反过来，若 $R_L \geq R_A$，电流只会从 $I_L \leq I_A$ 开始衰减，灯泡不会更亮。判断方向也要注意：放电电流通过灯泡的方向与原来<strong>相反</strong>。
+</div>
+
+<h4>涡流</h4>
+<p>整块金属处于变化的磁场中（或在磁场中运动）时，金属内部会激发出<strong>漩涡状的感应电流</strong>，称为涡流。</p>
+<ul>
+  <li><strong>利用</strong>：电磁炉（交变磁场在金属锅底产生涡流加热食物）、真空冶炼炉、金属探测器。</li>
+  <li><strong>防止</strong>：变压器、电机的铁芯用<strong>相互绝缘的硅钢片</strong>叠成，增大电阻、把大涡流切割成小回路，减小涡流损耗。</li>
+  <li><strong>电磁阻尼与电磁驱动</strong>：磁电式仪表的铝框、电气火车的电磁制动利用电磁阻尼（涡流受安培力阻碍相对运动）；交流感应电动机利用电磁驱动。</li>
+</ul>
+
+<h3>2.6 本章物理量速查表</h3>
+
+<table>
+  <tr><th>物理量</th><th>符号</th><th>定义/含义</th><th>单位（符号）</th><th>标量/矢量</th></tr>
+  <tr><td class="l">磁通量</td><td>$\Phi$</td><td class="l">$\Phi = BS\cos\theta$，穿过面的磁感线"净条数"</td><td>韦伯（$\,\text{Wb}$）</td><td>标量（有正负）</td></tr>
+  <tr><td class="l">磁通量变化量</td><td>$\Delta\Phi$</td><td class="l">$\Delta\Phi = \Phi_2 - \Phi_1$（注意正负！）</td><td>韦伯（$\,\text{Wb}$）</td><td>标量（有正负）</td></tr>
+  <tr><td class="l">磁通量变化率</td><td>$\dfrac{\Delta\Phi}{\Delta t}$</td><td class="l">磁通量变化的快慢，决定电动势大小</td><td>韦伯/秒（$\,\text{Wb/s}$）</td><td>标量</td></tr>
+  <tr><td class="l">感应电动势</td><td>$E$</td><td class="l">电磁感应中产生的电动势</td><td>伏特（$\,\text{V}$）</td><td>标量（有方向约定）</td></tr>
+  <tr><td class="l">感应电流</td><td>$I$</td><td class="l">$I = E/R_{总}$</td><td>安培（$\,\text{A}$）</td><td>标量（有方向）</td></tr>
+  <tr><td class="l">自感系数</td><td>$L$</td><td class="l">由线圈自身结构决定</td><td>亨利（$\,\text{H}$）</td><td>标量</td></tr>
+</table>
+
+<div class="key-point">
+<strong>三个量的层次要分清</strong>：$\Phi$ 大 ≠ 感应电动势大；$\Delta\Phi$ 大 ≠ 感应电动势大；只有 $\dfrac{\Delta\Phi}{\Delta t}$（变化<strong>率</strong>）大，感应电动势才大。磁通量最大时（如线圈平面与磁场垂直）变化率可能为零；磁通量为零时（线圈平面与磁场平行）变化率反而可能最大。这与振动中"位移最大时速度为零"的错位关系异曲同工。
+</div>
+
+<h2 id="s3">三、公式与推导（含适用条件）</h2>
+
+<h3>3.1 公式总览</h3>
+
+<table>
+  <tr><th>公式</th><th>名称/用途</th><th>适用条件</th><th>易错提醒</th></tr>
+  <tr><td class="l">$\Phi = BS\cos\theta$</td><td class="l">磁通量</td><td class="l">匀强磁场；$\theta$ 为 $B$ 与<strong>面法线</strong>的夹角</td><td class="l">θ 是法线夹角不是与面的夹角；不乘匝数</td></tr>
+  <tr><td class="l">$E = n\dfrac{\Delta\Phi}{\Delta t}$</td><td class="l">法拉第电磁感应定律</td><td class="l">一切电磁感应现象；算的是 <strong>Δt 内的平均值</strong></td><td class="l">n 是匝数；E 与 ΔΦ 无关、与变化率有关</td></tr>
+  <tr><td class="l">$E = BLv$</td><td class="l">动生电动势（切割）</td><td class="l">$B$、$L$、$v$ <strong>两两垂直</strong>；匀强磁场</td><td class="l">不垂直时取有效分量；v 取有效长度端的速度</td></tr>
+  <tr><td class="l">$E = \dfrac{1}{2}BL^2\omega$</td><td class="l">转动切割电动势</td><td class="l">导体棒绕一端在匀强磁场中匀速转动，转轴 ⊥ B</td><td class="l">由 $E=BL\bar{v}$ 推出，$\bar v = \omega L/2$</td></tr>
+  <tr><td class="l">$q = n\dfrac{\Delta\Phi}{R_{总}}$</td><td class="l">通过回路的电荷量</td><td class="l">回路总电阻 $R_{总}$ 恒定</td><td class="l">q 与过程快慢无关，只取决于 ΔΦ 与 R</td></tr>
+  <tr><td class="l">$E = L\dfrac{\Delta I}{\Delta t}$</td><td class="l">自感电动势</td><td class="l">电流变化时</td><td class="l">方向：增反减同（相对自身电流）</td></tr>
+</table>
+
+<h3>3.2 法拉第电磁感应定律 $E = n\dfrac{\Delta\Phi}{\Delta t}$</h3>
+
+<p><strong>内容</strong>：闭合电路中感应电动势的大小，跟穿过这一电路的磁通量的变化率成正比。若线圈有 $n$ 匝，每匝磁通量变化率相同，则总电动势是每匝之和。</p>
+
+<p><strong>推导思路</strong>：这是实验定律（法拉第由实验归纳），中学阶段不要求理论推导，但要理解两点：</p>
+<ol>
+  <li>为什么与 $\Delta\Phi/\Delta t$（变化<strong>率</strong>）而不是 $\Delta\Phi$ 成正比？——实验事实：同样大的磁通量变化，用时越短，感应电流越大，说明电动势由"变化的快慢"决定。</li>
+  <li>为什么乘 $n$？——$n$ 匝线圈相当于 $n$ 个相同的电源<strong>串联</strong>，总电动势为 $n$ 倍。</li>
+</ol>
+
+<div class="warn">
+<strong>⚠️ 适用条件与边界——平均值与瞬时值的区别（本章最大的坑之一）</strong><br>
+由 $E = n\dfrac{\Delta\Phi}{\Delta t}$ 算出的是 <strong>Δt 这段时间内的平均感应电动势</strong>。只有当磁通量<strong>均匀变化</strong>（$\Phi$-$t$ 图线为直线）时，平均值才等于瞬时值。若 $\Phi$ 随时间非线性变化（如 $\Phi = \Phi_0\sin\omega t$），某时刻的瞬时电动势须用该点的变化率（$\Phi$-$t$ 图线的切线斜率）求，不能拿一段时间内的大平均去代替。<br>
+<strong>对比记忆</strong>：$E = n\Delta\Phi/\Delta t$ → 平均值；$E = BLv$（v 取瞬时速度）→ <strong>瞬时值</strong>。题目说"求某时刻的电动势"而导体棒在变速运动，必须用 $E=BLv$ 代该时刻的 v。
+</div>
+
+<h3>3.3 动生电动势 $E = BLv$</h3>
+
+<p><strong>推导思路（由法拉第定律推出，要求会推）</strong>：</p>
+<p>如图，导体棒长 $L$，在间距为 $L$ 的水平导轨上以速度 $v$ 向右匀速滑动，回路处于垂直纸面向里的匀强磁场 $B$ 中。设时间 $\Delta t$ 内棒移动距离 $\Delta x = v\Delta t$，回路面积增加 $\Delta S = L\Delta x = Lv\Delta t$，磁通量增加 $\Delta\Phi = B\Delta S = BLv\Delta t$。代入法拉第定律（单匝 $n=1$）：</p>
+
+$$E = \frac{\Delta\Phi}{\Delta t} = \frac{BLv\Delta t}{\Delta t} = BLv$$
+
+<div style="text-align: center; margin: 20px 0;">
+<svg width="560" height="200" viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="导体棒切割磁感线">
+  <rect x="0" y="0" width="560" height="200" fill="#f7fafc" rx="8"/>
+  <!-- 磁场区域 -->
+  <rect x="60" y="30" width="320" height="140" fill="#ebf8ff" stroke="#bee3f8"/>
+  <g fill="#2b6cb0" font-size="16">
+    <text x="90" y="60">×</text><text x="150" y="60">×</text><text x="210" y="60">×</text><text x="270" y="60">×</text><text x="330" y="60">×</text>
+    <text x="90" y="100">×</text><text x="150" y="100">×</text><text x="210" y="100">×</text><text x="270" y="100">×</text><text x="330" y="100">×</text>
+    <text x="90" y="140">×</text><text x="150" y="140">×</text><text x="210" y="140">×</text><text x="270" y="140">×</text><text x="330" y="140">×</text>
+  </g>
+  <text x="355" y="50" font-size="14" fill="#2b6cb0" font-weight="bold">B（向里）</text>
+  <!-- 导轨 -->
+  <line x1="40" y1="55" x2="420" y2="55" stroke="#1a365d" stroke-width="3"/>
+  <line x1="40" y1="145" x2="420" y2="145" stroke="#1a365d" stroke-width="3"/>
+  <!-- 电阻 -->
+  <rect x="30" y="90" width="20" height="20" fill="#fff" stroke="#1a365d" stroke-width="2"/>
+  <text x="14" y="105" font-size="14" fill="#1a365d" font-weight="bold">R</text>
+  <line x1="40" y1="55" x2="40" y2="90" stroke="#1a365d" stroke-width="3"/>
+  <line x1="40" y1="110" x2="40" y2="145" stroke="#1a365d" stroke-width="3"/>
+  <!-- 导体棒 -->
+  <line x1="220" y1="48" x2="220" y2="152" stroke="#dd6b20" stroke-width="6"/>
+  <text x="226" y="45" font-size="14" fill="#dd6b20" font-weight="bold">棒ab，长L</text>
+  <!-- 速度箭头 -->
+  <line x1="220" y1="30" x2="290" y2="30" stroke="#38a169" stroke-width="3" marker-end="url(#arr3)"/>
+  <text x="255" y="22" font-size="14" fill="#38a169" font-weight="bold">v</text>
+  <!-- 电流方向 -->
+  <path d="M220 70 L220 120" stroke="#e53e3e" stroke-width="2.5" marker-end="url(#arr4)"/>
+  <text x="240" y="100" font-size="13" fill="#e53e3e">I（棒内b→a或a→b由右手定则判定）</text>
+  <defs>
+    <marker id="arr3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#38a169"/>
+    </marker>
+    <marker id="arr4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#e53e3e"/>
+    </marker>
+  </defs>
+</svg>
+<p style="color: var(--muted); font-size: 0.9em;">图：导体棒切割磁感线模型——棒是电源，R 是外电路</p>
+</div>
+
+<div class="deep">
+<strong>适用条件与推广（必须逐条过关）：</strong>
+<ul>
+<li><strong>两两垂直</strong>：$E=BLv$ 要求 $B \perp L$、$B \perp v$、$L \perp v$ 三者同时成立。若 $v$ 与 $B$ 夹角为 $\theta$，则 $E = BLv\sin\theta$（取垂直于 B 的速度分量）；若磁场只覆盖棒的一部分，$L$ 取<strong>处在磁场中的有效长度</strong>。</li>
+<li><strong>弯曲导线的有效长度</strong>：任意形状导线切割时，$L$ 取导线两端点在"垂直于 v 方向"上的投影长度（首尾连线长度，当 B ⊥ 纸面、v 在纸面内时）。</li>
+<li><strong>转动切割</strong>：长 $L$ 的棒绕一端以角速度 $\omega$ 转动（转轴与 B 平行），棒上各点速度 $v = \omega r$ 不同，用平均速度 $\bar v = \dfrac{0 + \omega L}{2} = \dfrac{\omega L}{2}$ 代入：$E = BL\bar v = \dfrac{1}{2}BL^2\omega$。</li>
+<li><strong>瞬时性</strong>：$E = BLv$ 中 $v$ 取该时刻的瞬时速度，得到的是瞬时电动势——变速运动（如收尾速度分析）中全靠它写瞬时方程。</li>
+</ul>
+</div>
+
+<h3>3.4 感生电动势 $E = nS\dfrac{\Delta B}{\Delta t}$</h3>
+
+<p>当回路面积 $S$ 不变、磁场 $B$ 随时间变化时，由 $\Phi = BS$（设法线方向与 B 平行）得：</p>
+
+$$E = n\frac{\Delta\Phi}{\Delta t} = nS\frac{\Delta B}{\Delta t}$$
+
+<p><strong>适用条件</strong>：$S$ 不变且磁场分布区域不变（$S$ 取磁场实际穿过的面积，若磁场只覆盖线圈的一部分，$S$ 取<strong>有磁场穿过的有效面积</strong>而非线圈总面积——经典陷阱）。若题目给出 $B = kt + B_0$，则 $\dfrac{\Delta B}{\Delta t} = k$，电动势为定值。</p>
+
+<h3>3.5 通过回路的电荷量 $q = n\dfrac{\Delta\Phi}{R_{总}}$</h3>
+
+<p><strong>推导思路（要求默推）</strong>：设过程历时 $\Delta t$，平均感应电动势 $\bar E = n\dfrac{\Delta\Phi}{\Delta t}$，回路总电阻 $R_{总}$，则平均电流 $\bar I = \dfrac{\bar E}{R_{总}}$。于是</p>
+
+$$q = \bar I \,\Delta t = \frac{\bar E}{R_{总}}\,\Delta t = \frac{n\Delta\Phi}{\Delta t \cdot R_{总}}\,\Delta t = n\frac{\Delta\Phi}{R_{总}}$$
+
+<div class="key-point">
+<strong>这个公式的价值</strong>：$q$ 只取决于 <strong>ΔΦ</strong> 和 <strong>R<sub>总</sub></strong>，与过程进行的<strong>快慢、方式</strong>完全无关。无论线框是匀速还是加速穿过磁场，只要始末磁通量差相同、电阻不变，通过回路某截面的电荷量就相同。常配合动量定理使用：$\sum BI L\,\Delta t = BLq = \Delta p$，这是"电磁感应 + 动量"综合题的桥梁。
+</div>
+
+<h3>3.6 电磁感应中的电路与能量公式链</h3>
+
+<p>以"水平导轨上单棒"为例（导轨间距 $L$、匀强磁场 $B$、回路总电阻 $R$、棒速 $v$），一整条公式链：</p>
+
+$$E = BLv \;\Rightarrow\; I = \frac{BLv}{R} \;\Rightarrow\; F_{安} = BIL = \frac{B^2L^2v}{R} \;\Rightarrow\; P_{安} = F_{安}v = \frac{B^2L^2v^2}{R} = \frac{E^2}{R} = P_{电}$$
+
+<p><strong>能量守恒（本章的"上帝视角"）</strong>：克服安培力做的功，全部转化为回路的电能；纯电阻电路中，电能又全部转化为焦耳热：</p>
+
+$$W_{克安} = Q_{总}$$
+
+<ul>
+  <li>若回路有多个电阻<strong>串联</strong>：各电阻热量按阻值比例分配，$Q_i = \dfrac{R_i}{R_{总}}Q_{总}$（因 $Q = I^2Rt$，串联 I 相同）。</li>
+  <li>动力学通式（恒力 F 拉动单棒）：$F - \dfrac{B^2L^2v}{R} = ma$。随着 v 增大，安培力增大，加速度减小，最终 $a = 0$，达到<strong>收尾速度</strong> $v_m = \dfrac{FR}{B^2L^2}$（若是棒沿光滑斜面下滑，把 F 换成 $mg\sin\theta$）。</li>
+</ul>
+
+<blockquote>
+<p><strong>深度思考：为什么安培力总是"阻力"？</strong></p>
+<p>安培力 $F_{安} = \dfrac{B^2L^2v}{R}$ 总与速度 $v$ 方向相反——这正是楞次定律"阻碍相对运动"的定量表达。也正因为这个力随速度线性增大、方向与速度相反，它扮演的角色与"空气阻力"惊人地相似：单棒问题与"雨滴下落收尾速度"问题在数学上完全同构。学物理学到这种"处处是旧相识"的感觉，就是真的学通了。</p>
+</blockquote>
+
+<h2 id="s4">四、典型例题</h2>
+
+<h3>例 1 ｜ 楞次定律方向判断（基础题，选择题原型）</h3>
+
+<p>如图，水平放置的闭合金属圆环固定不动，一条形磁铁的 N 极竖直向下，从圆环正上方由静止释放，沿圆环轴线竖直下落（不接触圆环）。下列判断正确的是（&nbsp;&nbsp;）</p>
+
+<p style="margin-left: 20px;">
+A. 磁铁下落过程中，从上往下看，圆环中感应电流方向先逆时针后顺时针<br>
+B. 磁铁下落过程中，圆环中感应电流方向始终保持不变<br>
+C. 磁铁在整个下落过程中，加速度始终小于 $g$<br>
+D. 磁铁穿过圆环中心平面的瞬间，圆环中感应电流最大
+</p>
+
+<p><strong>分步拆解：</strong></p>
+
+<ol>
+  <li><strong>分段</strong>：过程分两段——磁铁在环上方下落靠近环（N 极朝下，穿过环的磁通量方向向下且<strong>增大</strong>）；穿过环面后在下方远离环（磁通量方向仍向下但<strong>减小</strong>）。</li>
+  <li><strong>第一段（上方靠近）</strong>：Φ 向下增大 → 感应磁场方向向上（"增反"）→ 右手螺旋定则：从上往下看，电流为<strong>逆时针</strong>。</li>
+  <li><strong>第二段（下方远离）</strong>：Φ 向下减小 → 感应磁场方向向下（"减同"）→ 从上往下看，电流为<strong>顺时针</strong>。A 正确，B 错误。</li>
+  <li><strong>受力（"来拒去留"）</strong>：靠近时环对磁铁有向上的斥力，远离时环对磁铁有向上的引力，全过程安培力都向上 → $a &lt; g$ 始终成立，C 正确。</li>
+  <li><strong>中心瞬间</strong>：磁铁在环心处，穿过环的磁通量达到<strong>最大</strong>，但此刻磁通量的<strong>变化率为零</strong>（由增大转为减小的拐点），感应电流为零！D 错误。</li>
+</ol>
+
+<p><strong>答案：AC</strong></p>
+
+<div class="deep">
+<strong>本题收获</strong>：① "来拒去留"直接秒杀受力选项；② 牢记"Φ 最大 ⇏ I 最大"，感应电流取决于<strong>变化率</strong>——本题 D 选项就是 2.6 节那个 key-point 的直接应用；③ 楞次定律四步走是慢功夫，推广结论是快车道，考场上先走快车道、遇险再回慢车道。
+</div>
+
+<h3>例 2 ｜ 线框匀速穿磁场：i-t 图象与电荷量（中档题）</h3>
+
+<p>边长 $L = 0.20\,\text{m}$ 的正方形单匝线框，总电阻 $R = 0.10\,\Omega$，以 $v = 2.0\,\text{m/s}$ 的速度水平向右匀速穿过一个有理想边界的匀强磁场区域。磁感应强度 $B = 0.50\,\text{T}$，方向垂直纸面向里，磁场区域沿运动方向的宽度 $d = 0.40\,\text{m}$（$d &gt; L$）。以线框右边刚进入磁场时 $t = 0$，规定逆时针方向为电流正方向。</p>
+
+<p><strong>求：</strong>（1）各时间段内线框中的感应电流大小与方向，并定性画出 $i$-$t$ 图象；（2）线框进入磁场的过程中，通过线框某截面的电荷量 $q$；（3）整个穿越过程中线框产生的焦耳热 $Q$。</p>
+
+<p><strong>分步拆解：</strong></p>
+
+<p><strong>第一步：按位置分段</strong>（这是线框问题的标准起手式）。</p>
+<ul>
+  <li>进入段：右边进入磁场，左边还在场外，只有右边一条边切割磁感线，历时 $t_1 = \dfrac{L}{v} = \dfrac{0.20}{2.0}\,\text{s} = 0.10\,\text{s}$；</li>
+  <li>完全在场内：$\Phi$ 不变，无感应电流，历时 $t_2 = \dfrac{d - L}{v} = \dfrac{0.40 - 0.20}{2.0}\,\text{s} = 0.10\,\text{s}$；</li>
+  <li>穿出段：左边切割磁感线，历时 $t_3 = \dfrac{L}{v} = 0.10\,\text{s}$。</li>
+</ul>
+
+<p><strong>第二步：算电流</strong>。进入段与穿出段：</p>
+
+$$E = BLv = 0.50 \times 0.20 \times 2.0\,\text{V} = 0.20\,\text{V}, \qquad I = \frac{E}{R} = \frac{0.20}{0.10}\,\text{A} = 2.0\,\text{A}$$
+
+<p><strong>第三步：定方向</strong>。进入时 Φ 向里增大 → 感应磁场向外 → 逆时针电流（正方向，$i = +2.0\,\text{A}$）；完全在场内 $i = 0$；穿出时 Φ 向里减小 → 感应磁场向里 → 顺时针电流（$i = -2.0\,\text{A}$）。</p>
+
+<div style="text-align: center; margin: 20px 0;">
+<svg width="520" height="200" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="i-t图象">
+  <rect x="0" y="0" width="520" height="200" fill="#f7fafc" rx="8"/>
+  <!-- 坐标轴 -->
+  <line x1="60" y1="100" x2="480" y2="100" stroke="#2d3748" stroke-width="1.5" marker-end="url(#ax)"/>
+  <line x1="60" y1="170" x2="60" y2="30" stroke="#2d3748" stroke-width="1.5" marker-end="url(#ay)"/>
+  <text x="475" y="120" font-size="13" fill="#2d3748">t/s</text>
+  <text x="45" y="35" font-size="13" fill="#2d3748">i/A</text>
+  <!-- 刻度 -->
+  <text x="30" y="70" font-size="12" fill="#2d3748">+2.0</text>
+  <text x="34" y="140" font-size="12" fill="#2d3748">-2.0</text>
+  <line x1="55" y1="65" x2="65" y2="65" stroke="#2d3748"/>
+  <line x1="55" y1="135" x2="65" y2="135" stroke="#2d3748"/>
+  <!-- 图线 -->
+  <line x1="60" y1="65" x2="160" y2="65" stroke="#e53e3e" stroke-width="3"/>
+  <line x1="160" y1="100" x2="260" y2="100" stroke="#e53e3e" stroke-width="3"/>
+  <line x1="260" y1="135" x2="360" y2="135" stroke="#e53e3e" stroke-width="3"/>
+  <line x1="160" y1="65" x2="160" y2="100" stroke="#e53e3e" stroke-width="1.5" stroke-dasharray="3,3"/>
+  <line x1="260" y1="100" x2="260" y2="135" stroke="#e53e3e" stroke-width="1.5" stroke-dasharray="3,3"/>
+  <!-- 时间刻度 -->
+  <line x1="160" y1="95" x2="160" y2="105" stroke="#2d3748"/>
+  <line x1="260" y1="95" x2="260" y2="105" stroke="#2d3748"/>
+  <line x1="360" y1="95" x2="360" y2="105" stroke="#2d3748"/>
+  <text x="150" y="118" font-size="12" fill="#2d3748">0.1</text>
+  <text x="250" y="118" font-size="12" fill="#2d3748">0.2</text>
+  <text x="350" y="118" font-size="12" fill="#2d3748">0.3</text>
+  <text x="380" y="70" font-size="12" fill="#718096">进入：+2.0A（逆时针）</text>
+  <text x="380" y="145" font-size="12" fill="#718096">穿出：-2.0A</text>
+  <defs>
+    <marker id="ax" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#2d3748"/>
+    </marker>
+    <marker id="ay" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#2d3748"/>
+    </marker>
+  </defs>
+</svg>
+<p style="color: var(--muted); font-size: 0.9em;">图：线框匀速穿磁场的 i-t 图象（0~0.1s 进入，0.1~0.2s 完全在场内，0.2~0.3s 穿出）</p>
+</div>
+
+<p><strong>第四步：电荷量</strong>（用 3.5 节公式，进入过程 $\Delta\Phi = B\cdot\Delta S = BL^2$）：</p>
+
+$$q = n\frac{\Delta\Phi}{R} = \frac{BL^2}{R} = \frac{0.50 \times 0.20^2}{0.10}\,\text{C} = \frac{0.50 \times 0.040}{0.10}\,\text{C} = 0.20\,\text{C}$$
+
+<p><strong>验证</strong>（用 $q = It$ 直接算）：$q = 2.0\,\text{A} \times 0.10\,\text{s} = 0.20\,\text{C}$ ✓ 两种方法一致。</p>
+
+<p><strong>第五步：焦耳热</strong>。只有进入和穿出两段有电流：</p>
+
+$$Q = I^2R(t_1 + t_3) = 2.0^2 \times 0.10 \times 0.20\,\text{J} = 0.080\,\text{J}$$
+
+<p><strong>交叉验证（能量观点）</strong>：线框匀速，拉力 $F$ 等于安培力 $F_{安} = BIL = 0.50 \times 2.0 \times 0.20\,\text{N} = 0.20\,\text{N}$；拉力总位移为进入与穿出各走 $L$，共 $2L = 0.40\,\text{m}$。$W_F = F \times 2L = 0.20 \times 0.40\,\text{J} = 0.080\,\text{J}$，动能不变，故 $Q = W_F = 0.080\,\text{J}$ ✓。</p>
+
+<p><strong>答案</strong>：（1）进入段 $2.0\,\text{A}$ 逆时针，场内 $0$，穿出段 $2.0\,\text{A}$ 顺时针；（2）$q = 0.20\,\text{C}$；（3）$Q = 0.080\,\text{J}$。</p>
+
+<div class="warn">
+<strong>⚠️ 本题的两个常见陷阱</strong>：① 若 $d &lt; L$（磁场比线框窄），则线框不存在"完全在场内"的阶段，进入尚未结束就已开始穿出，图象两段直接相连，$\Phi$ 全程都在变——分段前必须先比较 $d$ 与 $L$！② 电荷量 $q = n\Delta\Phi/R$ 中的 $\Delta\Phi$ 是<strong>该阶段</strong>的磁通量变化量：求"全过程"的净电荷量是 0（进出相等相反），但求发热不能用净电荷量，必须分段算 $I^2Rt$。平均电流算电荷量可以，算焦耳热不行（焦耳热与 $I^2$ 成正比，平均不能乱取）。
+</div>
+
+<h3>例 3 ｜ 恒力拉动单棒：收尾速度、热量分配（压轴题原型）</h3>
+
+<p>水平放置的光滑平行导轨，间距 $L = 0.50\,\text{m}$，左端接有定值电阻 $R_1 = 0.30\,\Omega$。导体棒 ab 质量 $m = 0.10\,\text{kg}$，电阻 $R_2 = 0.20\,\Omega$，垂直搁在导轨上且接触良好。整个装置处于竖直向下的匀强磁场中，$B = 1.0\,\text{T}$。现用水平恒力 $F = 2.0\,\text{N}$ 向右拉棒，棒由静止开始运动。导轨电阻不计且足够长。</p>
+
+<p><strong>求：</strong>（1）棒的最大速度（收尾速度）$v_m$；（2）当棒的速度达到 $v = 2.0\,\text{m/s}$ 时的加速度 $a$；（3）棒从静止开始运动 $x = 4.0\,\text{m}$ 时速度恰为 $2.0\,\text{m/s}$，求此过程中回路产生的总焦耳热 $Q_{总}$，以及 $R_1$、$R_2$ 上各自产生的热量。</p>
+
+<p><strong>分步拆解：</strong></p>
+
+<p><strong>第一步：受力分析（画 v 增大的连锁反应）</strong>。棒受拉力 $F$（向右）与安培力 $F_{安}$（向左，"来拒"）。任意时刻：</p>
+
+$$E = BLv, \qquad I = \frac{BLv}{R_1 + R_2}, \qquad F_{安} = BIL = \frac{B^2L^2v}{R_1 + R_2}$$
+
+<p>回路总电阻 $R_{总} = 0.30 + 0.20 = 0.50\,\Omega$，故 $F_{安} = \dfrac{1.0^2 \times 0.50^2}{0.50}v = 0.50v\;(\text{N})$（v 以 m/s 计）。</p>
+
+<p><strong>第二步：收尾速度</strong>。随着 $v$ 增大，$F_{安}$ 增大，当 $F_{安} = F$ 时 $a = 0$，速度不再增大：</p>
+
+$$v_m = \frac{F(R_1 + R_2)}{B^2L^2} = \frac{2.0 \times 0.50}{1.0^2 \times 0.50^2}\,\text{m/s} = \frac{1.0}{0.25}\,\text{m/s} = 4.0\,\text{m/s}$$
+
+<p><strong>第三步：v = 2.0 m/s 时的加速度</strong>。此时 $F_{安} = 0.50 \times 2.0 = 1.0\,\text{N}$，由牛顿第二定律：</p>
+
+$$a = \frac{F - F_{安}}{m} = \frac{2.0 - 1.0}{0.10}\,\text{m/s}^2 = 10\,\text{m/s}^2$$
+
+<p><strong>第四步：能量守恒求总热量</strong>。拉力做功 $W_F = Fx = 2.0 \times 4.0\,\text{J} = 8.0\,\text{J}$。棒的末动能 $E_k = \dfrac{1}{2}mv^2 = \dfrac{1}{2} \times 0.10 \times 2.0^2\,\text{J} = 0.20\,\text{J}$。由功能关系（$W_F = \Delta E_k + Q_{总}$）：</p>
+
+$$Q_{总} = Fx - \frac{1}{2}mv^2 = 8.0 - 0.20\,\text{J} = 7.8\,\text{J}$$
+
+<p><strong>第五步：热量按阻值分配</strong>（串联，$I$ 相同，$Q \propto R$）：</p>
+
+$$Q_1 = \frac{R_1}{R_1 + R_2}Q_{总} = \frac{0.30}{0.50} \times 7.8\,\text{J} = 4.68\,\text{J}, \qquad Q_2 = \frac{0.20}{0.50} \times 7.8\,\text{J} = 3.12\,\text{J}$$
+
+<p><strong>验证</strong>：$Q_1 + Q_2 = 4.68 + 3.12 = 7.8\,\text{J}$ ✓，且 $Q_1 : Q_2 = 0.30 : 0.20 = 3:2$ ✓。</p>
+
+<p><strong>答案</strong>：（1）$v_m = 4.0\,\text{m/s}$；（2）$a = 10\,\text{m/s}^2$；（3）$Q_{总} = 7.8\,\text{J}$，$Q_1 = 4.68\,\text{J}$，$Q_2 = 3.12\,\text{J}$。</p>
+
+<div class="deep">
+<strong>本题的"模型思维"总结</strong>：<br>
+① <strong>动力学线</strong>：$F - \dfrac{B^2L^2v}{R_{总}} = ma$ —— 这是单棒问题的"万能方程"，收尾速度、任意状态加速度都由它出；<br>
+② <strong>能量线</strong>：$W_F = \Delta E_k + Q_{总}$ —— 求热量首选能量守恒，比积分 $I^2Rt$ 快得多（变加速过程根本没法直接用 $I^2Rt$）；<br>
+③ <strong>分配线</strong>：串联电路热量按 $R$ 正比分配；<br>
+④ 若题目改问"从静止达到 $v_m$ 过程中的位移或时间"，则要用<strong>动量定理</strong>：$Ft - BLq = mv_m$，配合 $q = \dfrac{BLx}{R_{总}}$ 联立求解——这是本模型的进阶形态，高三一轮还会再见。
+</div>
+
+<h3>例 4 ｜ 感生电动势与电路综合（B 随时间变化）</h3>
+
+<p>匝数 $n = 100$ 的圆形线圈，半径 $r = 10\,\text{cm}$，总电阻 $R = 10\,\Omega$。线圈平面与匀强磁场垂直，磁感应强度 $B$ 随时间均匀变化，变化率 $\dfrac{\Delta B}{\Delta t} = 0.20\,\text{T/s}$（磁场增强中）。求：（1）线圈中的感应电动势 $E$ 与感应电流 $I$；（2）$2.0\,\text{s}$ 内线圈产生的焦耳热与通过线圈的电荷量。（$\pi$ 取 $3.14$）</p>
+
+<p><strong>分步拆解：</strong></p>
+
+<p><strong>第一步：感生电动势</strong>（S 不变、B 变，用 3.4 节公式）：</p>
+
+$$E = nS\frac{\Delta B}{\Delta t} = n\pi r^2 \frac{\Delta B}{\Delta t} = 100 \times 3.14 \times 0.10^2 \times 0.20\,\text{V} = 100 \times 3.14 \times 0.010 \times 0.20\,\text{V} = 0.628\,\text{V}$$
+
+<p><strong>第二步：电流</strong>：</p>
+
+$$I = \frac{E}{R} = \frac{0.628}{10}\,\text{A} \approx 0.063\,\text{A} = 6.3 \times 10^{-2}\,\text{A}$$
+
+<p><strong>第三步：焦耳热与电荷量</strong>（B 均匀变化 ⇒ E、I 恒定，平均=瞬时，可放心用 $I^2Rt$）：</p>
+
+$$Q = I^2Rt = (0.0628)^2 \times 10 \times 2.0\,\text{J} \approx 0.079\,\text{J}$$
+
+$$q = It = 0.0628 \times 2.0\,\text{C} \approx 0.13\,\text{C}$$
+
+<p><strong>验证 q</strong>（用 $q = n\Delta\Phi/R$）：$\Delta\Phi = S\Delta B = 3.14 \times 0.010 \times (0.20 \times 2.0)\,\text{Wb} = 0.01256\,\text{Wb}$，$q = \dfrac{100 \times 0.01256}{10}\,\text{C} = 0.1256\,\text{C} \approx 0.13\,\text{C}$ ✓。</p>
+
+<p><strong>答案</strong>：（1）$E = 0.628\,\text{V}$，$I \approx 0.063\,\text{A}$；（2）$Q \approx 0.079\,\text{J}$，$q \approx 0.13\,\text{C}$。</p>
+
+<div class="key-point">
+<strong>感生 vs 动生</strong>：例 4 与例 2、例 3 正好构成对照组——磁通量变化率相同时，无论是"B 变"还是"S 变"产生的效果完全等价（这正是麦克斯韦电磁场理论的入口）。考试识别方法：回路不动、B 变 → 感生；B 不变、导体动 → 动生；两者同时变 → 分别算再叠加（注意方向）。
+</div>
+
+<h2 id="s5">五、易错点与成因分析</h2>
+
+<h3>易错点 1：磁通量乘以匝数 $\Phi = nBS$ <span class="stars">★★★★★</span></h3>
+<p><strong>典型错误</strong>：算 $n$ 匝线圈的磁通量时写成 $\Phi = nBS$。</p>
+<p><strong>成因分析</strong>：把"磁通量"与"磁链"（$n\Phi$，大学概念）混淆；更深层的原因是死记硬背 $E = n\Delta\Phi/\Delta t$ 的形式，把 $n$ 误塞进 $\Phi$ 里。<strong>物理图像上</strong>：磁通量是"穿过一个面的磁感线净条数"，匝数是绕在同一个面上的圈数——穿过去 100 根磁感线，绕 1000 匝也还是那 100 根。</p>
+<p><strong>纠正</strong>：$\Phi = BS\cos\theta$（单匝），$E = n\Delta\Phi/\Delta t$（匝数只在这里出现）。</p>
+
+<h3>易错点 2：混淆 $\Phi$、$\Delta\Phi$、$\Delta\Phi/\Delta t$ <span class="stars">★★★★★</span></h3>
+<p><strong>典型错误</strong>：认为"磁通量越大，感应电动势越大"；或磁铁穿线圈时认为"环心处磁通量最大，所以电流最大"（例 1 的 D 选项）。</p>
+<p><strong>成因分析</strong>：三个量的物理意义没拆开——$\Phi$ 是"状态量"（现在有多少），$\Delta\Phi$ 是"过程量"（变了多少），$\Delta\Phi/\Delta t$ 是"变化快慢"。电动势只认变化率。这与高一学过的 $x$、$\Delta x$、$v = \Delta x/\Delta t$ 的层次完全同构，类比起来就不会错。</p>
+<p><strong>纠正</strong>：遇到判断题，先问自己"这一瞬间 $\Phi$-$t$ 图线的斜率是多少"，而不是"$\Phi$ 是多少"。</p>
+
+<h3>易错点 3：楞次定律推广结论用反 <span class="stars">★★★★</span></h3>
+<p><strong>典型错误</strong>："增反减同"记成"增同减反"；或认为磁铁靠近线圈时被吸引（与"来拒"相反）。</p>
+<p><strong>成因分析</strong>：只背口诀不理解"阻碍"二字。口诀只是"阻碍磁通量变化"的速记：Φ 增大，感应磁场就得跟原磁场<strong>反着来</strong>才能拖住它；Φ 减小，感应磁场得跟原磁场<strong>同方向</strong>才能补上。力的效果也一样：靠近（Φ 增）必须排斥才能把变化"顶回去"。</p>
+<p><strong>纠正</strong>：忘掉口诀也能做题——用"能量守恒"兜底：如果感应效果助长变化，能量就无中生有了，物理上不可能。每次用口诀前先用这条金线自检一遍。</p>
+
+<h3>易错点 4：左手右手定则混用 <span class="stars">★★★★</span></h3>
+<p><strong>典型错误</strong>：判断感应电流方向用左手，判断安培力方向用右手。</p>
+<p><strong>成因分析</strong>：两只手的分工没记牢。<strong>口诀</strong>："<strong>左力右电</strong>"——求力（安培力、洛伦兹力）用左手；求电流方向/电动势方向（切割产生电）用右手。因果顺序也能帮你记："因电而动"（通电导体受力）用左手，"因动生电"（运动产生电流）用右手。</p>
+<p><strong>纠正</strong>：做题时心里默念因果——先有电流后受力 → 左手；先运动后生电 → 右手。</p>
+
+<h3>易错点 5：$E = BLv$ 不管垂直条件直接用 <span class="stars">★★★★</span></h3>
+<p><strong>典型错误</strong>：棒的速度与 B 成 $30°$ 角，仍写 $E = BLv$；或磁场只覆盖棒的一半，L 仍取全长。</p>
+<p><strong>成因分析</strong>：公式只记形式不记条件。$E = BLv$ 是 $E = BLv\sin\theta$ 在两两垂直时的特例；L 也必须是"处在磁场中且与 v 垂直的有效长度"。</p>
+<p><strong>纠正</strong>：用公式前先过"三垂直检查"：$B \perp L$？$B \perp v$？$L \perp v$？哪个不满足，取哪个的有效分量。</p>
+
+<h3>易错点 6：平均值与瞬时值张冠李戴 <span class="stars">★★★★</span></h3>
+<p><strong>典型错误</strong>：用 $E = n\Delta\Phi/\Delta t$ 求"某时刻"的电动势；或用平均电流算焦耳热 $Q = \bar I^2 R t$。</p>
+<p><strong>成因分析</strong>：没意识到 $E = n\Delta\Phi/\Delta t$ 本质是<strong>平均</strong>电动势。焦耳热 $Q = \int I^2 R\,dt$，而 $(\bar I)^2 \neq \overline{I^2}$（平方的平均不等于平均的平方），所以平均电流只能用来算电荷量 $q = \bar I t$，绝不能算热。</p>
+<p><strong>纠正</strong>：求瞬时用 $E = BLv$（v 取瞬时值）或 $\Phi$-$t$ 图线斜率；求热量用能量守恒或 $I^2Rt$（I 恒定才行）；平均电流只配电荷量。</p>
+
+<h3>易错点 7：焦耳热分配搞错 <span class="stars">★★★</span></h3>
+<p><strong>典型错误</strong>：认为"导体棒是电源，热量都产生在棒上"；或串联电路中把热量按电阻<strong>反比</strong>分配。</p>
+<p><strong>成因分析</strong>：能量转化位置搞混——克服安培力做功转化成的电能产生在<strong>回路</strong>中，再按电路规律分配。串联电流处处相等，$Q = I^2Rt$，$Q$ 与 $R$ <strong>成正比</strong>，阻值大的分得多。</p>
+<p><strong>纠正</strong>：先算总热量（能量守恒），再按 $Q_i = \dfrac{R_i}{R_{总}}Q_{总}$ 分配（串联）。并联则相反（$Q = \dfrac{U^2}{R}t$，与 R 反比），看清电路结构再分配。</p>
+
+<h3>易错点 8：自感中"闪亮"条件不清 <span class="stars">★★★</span></h3>
+<p><strong>典型错误</strong>：认为断电自感时灯泡一定闪亮一下。</p>
+<p><strong>成因分析</strong>：忽略了闪亮的前提是"断开前线圈电流大于灯泡电流"（$R_L &lt; R_A$）。断电瞬间，灯泡电流从原来的 $I_A$ 跳变为线圈的 $I_L$，只有 $I_L &gt; I_A$ 时灯泡才更亮。</p>
+<p><strong>纠正</strong>：先比较 $R_L$ 与 $R_A$ 再下结论；同时注意放电电流通过灯泡的方向与原方向<strong>相反</strong>。</p>
+
+<h3>易错点 9：有效面积/有效长度没搞清 <span class="stars">★★★</span></h3>
+<p><strong>典型错误</strong>：感生电动势中，磁场只覆盖线圈的一半面积，S 仍取线圈全面积；线框部分在磁场外时，L 取整条边长。</p>
+<p><strong>成因分析</strong>：公式中的 S 是"<strong>有磁感线穿过的有效面积</strong>"，L 是"<strong>处在磁场中切割的有效长度</strong>"。磁通量 $\Phi$ 只数"真正穿过"的磁感线。</p>
+<p><strong>纠正</strong>：养成习惯——写 $\Phi = BS$ 或 $E = BLv$ 前，先在图上把"有效区域"圈出来。</p>
+
+<h3>易错点 10：把"阻碍"理解成"阻止" <span class="stars">★★★</span></h3>
+<p><strong>典型错误</strong>：认为感应电流的磁场能"抵消"原磁场的变化，使磁通量保持不变。</p>
+<p><strong>成因分析</strong>：对"阻碍"的语义理解过头。感应效果只能<strong>延缓</strong>变化，变化最终照样发生——磁铁该穿过去还是穿过去，只是多花点时间（这正是电磁阻尼的价值）。</p>
+<p><strong>纠正</strong>：记住三个"不是"：阻碍 ≠ 阻止 ≠ 相反。感应磁场方向只在"增"时与原磁场相反，"减"时与原磁场相同。</p>
+
+<h2 id="s6">六、章末自检清单</h2>
+
+<p>合上书本，逐项自测。任何一项答不上来，回到对应小节重学——这比盲目刷题有效得多。</p>
+
+<h3>概念关</h3>
+<ul>
+  <li>□ 能说出磁通量的定义式 $\Phi = BS\cos\theta$，知道 $\theta$ 是 $B$ 与面<strong>法线</strong>的夹角，单位是 $\text{Wb}$</li>
+  <li>□ 清楚磁通量是标量但有正负，知道正负取决于面的正方向约定，会算线圈翻转 $180°$ 时 $\Delta\Phi = 2BS$</li>
+  <li>□ 明确磁通量与匝数<strong>无关</strong>，匝数只出现在 $E = n\Delta\Phi/\Delta t$ 中</li>
+  <li>□ 能区分 $\Phi$、$\Delta\Phi$、$\Delta\Phi/\Delta t$ 三个量，知道感应电动势只取决于变化率</li>
+  <li>□ 能完整复述楞次定律，并能用四步走独立判断任意情形的感应电流方向</li>
+  <li>□ 理解"阻碍"的三个表现：感应磁场的方向（增反减同）、安培力的效果（来拒去留）、形变趋势（增缩减扩），并知道其根源是能量守恒</li>
+  <li>□ 能区分感应电动势与感应电流的产生条件（前者只要 Φ 变，后者还要回路闭合）</li>
+</ul>
+
+<h3>公式关</h3>
+<ul>
+  <li>□ 能默写并独立推导 $E = BLv$（从 $\Delta\Phi = BLv\Delta t$ 出发）</li>
+  <li>□ 能默写并独立推导 $q = n\Delta\Phi/R$（从 $q = \bar I\Delta t$ 出发），知道它与过程快慢无关</li>
+  <li>□ 能默写转动切割公式 $E = \dfrac{1}{2}BL^2\omega$，并说出"平均速度"的来历</li>
+  <li>□ 清楚 $E = n\Delta\Phi/\Delta t$ 是平均值、$E = BLv$ 可给瞬时值，知道各自的使用场合</li>
+  <li>□ 能写出单棒公式链 $E = BLv \to I = \dfrac{BLv}{R} \to F_{安} = \dfrac{B^2L^2v}{R}$ 与收尾速度 $v_m = \dfrac{FR}{B^2L^2}$</li>
+  <li>□ 能写出能量关系 $W_{克安} = Q_{总}$，并知道串联回路中 $Q_i = \dfrac{R_i}{R_{总}}Q_{总}$</li>
+  <li>□ 知道自感电动势 $E = L\Delta I/\Delta t$，L 由线圈自身决定、与电流无关</li>
+</ul>
+
+<h3>模型关</h3>
+<ul>
+  <li>□ <strong>楞次定律判断题</strong>：会用四步走，会用"来拒去留"快速判断受力方向（如例 1）</li>
+  <li>□ <strong>线框穿磁场</strong>：会先比较 $d$ 与 $L$ 分段，会画 $i$-$t$、$F$-$t$ 图象，会算 $q$ 与 $Q$（如例 2）</li>
+  <li>□ <strong>恒力单棒</strong>：会写动力学方程、求收尾速度、用能量守恒求热量并分配（如例 3）</li>
+  <li>□ <strong>感生电路</strong>：B 均匀变化时会用 $E = nS\dfrac{\Delta B}{\Delta t}$，知道此时 I 恒定可用 $I^2Rt$（如例 4）</li>
+  <li>□ <strong>通电/断电自感</strong>：会分析两灯亮度变化顺序，会判断"闪亮"条件 $R_L &lt; R_A$，知道放电电流反向</li>
+  <li>□ <strong>进阶预告</strong>：了解 $BLq = \Delta p$（安培力冲量）这条电磁感应与动量的桥梁，为双棒、含容导轨题做铺垫</li>
+</ul>
+
+<h3>易错关（每条能说出"为什么错"）</h3>
+<ul>
+  <li>□ 磁通量不乘匝数</li>
+  <li>□ 不用 $\Phi$ 的大小判断 E 的大小，只看变化率</li>
+  <li>□ "增反减同"不记反，受力判断用能量守恒兜底</li>
+  <li>□ 左力右电不混用（因电而动→左手，因动生电→右手）</li>
+  <li>□ $E = BLv$ 先查三垂直、有效长度</li>
+  <li>□ 平均电流算电荷量可以，算焦耳热不行</li>
+  <li>□ 热量分配串联按 R 正比、并联按 R 反比，先看电路结构</li>
+  <li>□ 有效面积只取磁场实际覆盖的部分</li>
+  <li>□ 断电自感先比 $R_L$ 与 $R_A$ 再说闪不闪亮</li>
+</ul>
+
+<div class="deep">
+<strong>写给小兵</strong>：电磁感应是高中物理"从学会到会学"的分水岭——它逼着你把电路、力学、能量三条线织成一张网。第一遍学时觉得乱，是因为网还没织完；把每个公式亲手推一遍、每道例题盖住答案重做一遍，你会突然发现：压轴题其实只有那么三四副面孔。加油，2029 年的考场上，这一章会是你的提分利器。
+</div>
+
+</body>
+</html>

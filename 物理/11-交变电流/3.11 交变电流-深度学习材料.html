@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>交变电流 - 深度学习材料</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<nav class="chap-nav">高考备考 · 物理 · 深度学习材料 ｜ 3.11 交变电流</nav>
+<header class="chap-head">
+  <h1>交变电流</h1>
+  <p class="chap-meta">高中物理 · 电磁学模块 · 高考常考选择题 ｜ 依据：《高考物理95+分备考指南》3.11 节要求 ｜ 适用：高一同步学习 &amp; 高考一轮复习 ｜ 学生：小兵</p>
+</header>
+<h2 id="s1">一、本章总览</h2>
+
+<p>小兵，欢迎来到电磁学的「应用篇」。前面电磁感应告诉我们「磁能生电」，而这一章要回答两个非常实际的问题：<strong>我们家插座里的电是什么样的电？水电站发的电又是怎么翻山越岭送到家里的？</strong>这两个问题的答案，就是本章的三大块内容——交变电流的产生与描述、变压器、远距离输电。</p>
+
+<p>从高考定位看，云南高考物理满分 100 分、考试时间 75 分钟，电磁学模块约占 40 分。本章通常以<strong>一道选择题（4~6 分）</strong>的形式出现：要么考正弦交流电的图象与「四值」，要么考理想变压器的动态分析或远距离输电的损失计算；偶尔也会作为电磁感应综合题的一个环节。题目不难，但<strong>陷阱密度全章闻名</strong>——有效值与平均值混用、电流比乱用、输电电压与电压损失混淆，都是命题人爱挖的坑。本章学扎实，是稳拿分、少丢分的关键。</p>
+
+<div class="map">
+  <div class="row"><div class="node root">交变电流（3.11）</div></div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node">产生与描述</div>
+    <div class="node">变压器</div>
+    <div class="node">远距离输电</div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node leaf">线圈在匀强磁场中匀速转动 → 正弦交流电</div>
+    <div class="node leaf">四值：瞬时值 / 最大值 / 有效值 / 平均值</div>
+    <div class="node leaf">周期、频率、角频率、相位</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">电压比：$U_1:U_2=n_1:n_2$</div>
+    <div class="node leaf">电流比：$I_1:I_2=n_2:n_1$（仅单副线圈）</div>
+    <div class="node leaf">功率关系：$P_1=P_2$（理想）</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">电压损失 $\Delta U = Ir$</div>
+    <div class="node leaf">功率损失 $\Delta P = I^2 r$</div>
+    <div class="node leaf">高压输电 → 减小电流 → 减小损失</div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node view">核心思想：电磁感应（产生）＋ 能量守恒（传输）</div>
+  </div>
+</div>
+
+<h3>本章与前后知识的联系</h3>
+<ul>
+  <li><strong>上游——电磁感应</strong>：正弦交流电的产生本质是法拉第电磁感应定律 $e=n\dfrac{\Delta \varPhi}{\Delta t}$ 在旋转线圈上的具体应用；中性面、峰值面的判断全靠「磁通量」与「磁通量变化率」这对老朋友的区分。</li>
+  <li><strong>本章内部</strong>：描述交流电的物理量（四值、周期频率相位）是「语言」，变压器和远距离输电是用这套语言讲的两个「故事」。</li>
+  <li><strong>下游——电磁振荡与电磁波、传感器</strong>：交流电的周期性变化是理解 LC 振荡、电磁波的直接基础。</li>
+</ul>
+
+<h3>三个学习抓手</h3>
+<ol>
+  <li><strong>抓住「两个面」</strong>：中性面与峰值面，把磁通量 $\varPhi$、感应电动势 $e$、电流方向变化三件事串成一条线；</li>
+  <li><strong>抓住「四个值」</strong>：瞬时值、最大值、有效值、平均值，每个值都要能回答「定义是什么、符号是什么、什么时候用它」；</li>
+  <li><strong>抓住「一条链」</strong>：远距离输电的功率链与电压链，画一张示意图，所有公式都在图上找到位置。</li>
+</ol>
+
+<blockquote>
+<p><strong>深度思考：</strong>为什么全世界电网都用交流电而不是直流电？学完本章你会发现，答案就藏在「变压器只能用于交流」这一句话里——交流电能方便地升降电压，从而实现高压输电、低压用电，把输电损耗压到最低。一个技术选择，背后是一条完整的物理逻辑链。</p>
+</blockquote>
+
+<!-- ==================== 二、核心概念与物理量 ==================== -->
+<h2 id="s2">二、核心概念与物理量</h2>
+
+<h3>2.1 交变电流</h3>
+<p><strong>定义</strong>：大小和方向都随时间做<strong>周期性变化</strong>的电流，叫做交变电流，简称交流（AC）。</p>
+<p>两个关键词缺一不可：</p>
+<ul>
+  <li><strong>方向变化</strong>是交流电与直流电（DC）的<strong>本质区别</strong>。大小变化但方向不变的电流（如脉动直流）不是交流电；</li>
+  <li><strong>周期性</strong>意味着电流的变化规律不断重复。按正弦规律变化的交变电流叫<strong>正弦式交变电流</strong>，是本章唯一深入研究的交流电，日常电网供电就是 50 Hz 的正弦交流电。</li>
+</ul>
+
+<h3>2.2 中性面与峰值面（位置约定）</h3>
+<p>矩形线圈在匀强磁场中绕<strong>垂直于磁场方向</strong>的轴匀速转动，是产生正弦交流电的标准模型。线圈转动时有两个特殊位置，全章的「地理坐标系」就建立在这两个面上：</p>
+
+<table>
+  <tr>
+    <th>位置</th>
+    <th>线圈平面与磁场的关系</th>
+    <th>磁通量 $\varPhi$</th>
+    <th>磁通量变化率 $\dfrac{\Delta\varPhi}{\Delta t}$</th>
+    <th>感应电动势 $e$</th>
+    <th>电流方向</th>
+  </tr>
+  <tr>
+    <td class="l"><strong>中性面</strong></td>
+    <td>与磁场方向<strong>垂直</strong></td>
+    <td><strong>最大</strong>，$\varPhi_m = BS$</td>
+    <td><strong>为零</strong></td>
+    <td><strong>为零</strong></td>
+    <td>在此处<strong>发生改变</strong></td>
+  </tr>
+  <tr>
+    <td class="l"><strong>峰值面</strong>（与中性面垂直）</td>
+    <td>与磁场方向<strong>平行</strong></td>
+    <td><strong>为零</strong></td>
+    <td><strong>最大</strong></td>
+    <td><strong>最大</strong>，$E_m = NBS\omega$</td>
+    <td>方向不变，大小最大</td>
+  </tr>
+</table>
+
+<div class="key-point">
+<strong>中性面位置约定（务必牢记）：</strong>
+<ul style="margin: 6px 0 0 20px;">
+  <li>线圈平面与磁感线<strong>垂直</strong>的位置叫中性面——记「面垂磁」，即"面"垂直于"磁"；</li>
+  <li>中性面上：$\varPhi$ 最大、$e=0$、电流方向<strong>反转</strong>；线圈每转一周经过中性面 <strong>2 次</strong>，电流方向改变 <strong>2 次</strong>；</li>
+  <li>电动势 $e$ 正比于磁通量的<strong>变化率</strong>，而不是磁通量本身——"$\varPhi$ 最大时 $e$ 为零"恰好是法拉第定律最漂亮的体现，也是本章第一大易错点。</li>
+</ul>
+</div>
+
+<h3>2.3 描述交流电的「四值」</h3>
+
+<p>交流电时刻在变，一个数字描述不了它，于是物理中引入了四个「值」，各有各的岗位：</p>
+
+<table>
+  <tr>
+    <th>物理量</th>
+    <th>符号</th>
+    <th>定义</th>
+    <th>单位</th>
+    <th>用途</th>
+  </tr>
+  <tr>
+    <td class="l">瞬时值</td>
+    <td>$e$、$u$、$i$</td>
+    <td class="l">某一时刻交流电的数值，$e=E_m\sin(\omega t+\varphi_0)$</td>
+    <td>V、V、A</td>
+    <td class="l">分析某时刻的受力、发光情况、二极管导通等</td>
+  </tr>
+  <tr>
+    <td class="l">最大值（峰值）</td>
+    <td>$E_m$、$U_m$、$I_m$</td>
+    <td class="l">一个周期内瞬时值的最大数值</td>
+    <td>V、V、A</td>
+    <td class="l">电容器、二极管的<strong>耐压</strong>判断</td>
+  </tr>
+  <tr>
+    <td class="l">有效值</td>
+    <td>$E$、$U$、$I$</td>
+    <td class="l">热效应等效定义：交流与某直流分别通过<strong>相同电阻</strong>，若一个周期内产生的<strong>热量相等</strong>，则该直流值叫交流的有效值</td>
+    <td>V、V、A</td>
+    <td class="l">计算电功、电热、电功率；电表读数、用电器铭牌参数均为有效值</td>
+  </tr>
+  <tr>
+    <td class="l">平均值</td>
+    <td>$\bar{E}$、$\bar{I}$</td>
+    <td class="l">由法拉第定律定义：$\bar{E}=N\dfrac{\Delta\varPhi}{\Delta t}$</td>
+    <td>V、A</td>
+    <td class="l">计算一段时间内通过导体横截面的<strong>电荷量</strong> $q=\bar{I}\Delta t$</td>
+  </tr>
+</table>
+
+<div class="deep">
+<strong>有效值定义的三层理解：</strong>① 「等效」的对象是<strong>发热</strong>，不是别的；② 比较的前提是三同——<strong>同一电阻、同一时间（一个周期）、同样热量</strong>；③ 对正弦交流电，定义算出来的结果是 $I=\dfrac{I_m}{\sqrt{2}}$（推导见 3.3），但<strong>这个结论只属于正弦波</strong>，其他波形的有效值必须回到定义去算（见 3.4 与例 2）。
+</div>
+
+<p>下面这张 $u\text{-}t$ 图象把瞬时值、最大值、有效值画在了一起，请对照着看：</p>
+
+<div style="text-align: center; margin: 20px 0;">
+<svg viewBox="0 0 580 260" width="620" style="max-width: 100%; height: auto;" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr-u" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#2d3748"></path>
+    </marker>
+  </defs>
+  <!-- 坐标轴 -->
+  <line x1="60" y1="120" x2="555" y2="120" stroke="#2d3748" stroke-width="1.5" marker-end="url(#arr-u)"></line>
+  <line x1="70" y1="230" x2="70" y2="18" stroke="#2d3748" stroke-width="1.5" marker-end="url(#arr-u)"></line>
+  <text x="548" y="142" font-size="14" fill="#2d3748">t</text>
+  <text x="56" y="32" font-size="14" fill="#2d3748">u</text>
+  <text x="62" y="138" font-size="12" fill="#718096">O</text>
+  <!-- 正弦曲线 -->
+  <path d="M70,120 Q100,45 130,45 T190,120 T250,195 T310,120 T370,45 T430,120 T490,195 T550,120"
+        fill="none" stroke="#2b6cb0" stroke-width="2.5"></path>
+  <!-- 最大值标注 -->
+  <line x1="130" y1="45" x2="70" y2="45" stroke="#a0aec0" stroke-width="1" stroke-dasharray="4 3"></line>
+  <text x="38" y="50" font-size="13" fill="#2d3748">Uₘ</text>
+  <!-- 有效值虚线 -->
+  <line x1="70" y1="67" x2="550" y2="67" stroke="#e53e3e" stroke-width="1.5" stroke-dasharray="6 4"></line>
+  <text x="290" y="32" font-size="13" fill="#e53e3e" text-anchor="middle">红虚线：有效值 U = Uₘ/√2 ≈ 0.707Uₘ</text>
+  <!-- 瞬时值点 -->
+  <circle cx="110" cy="55" r="3.5" fill="#e53e3e"></circle>
+  <line x1="110" y1="55" x2="152" y2="44" stroke="#e53e3e" stroke-width="1"></line>
+  <text x="156" y="48" font-size="13" fill="#e53e3e">瞬时值 u（随时间变化）</text>
+  <!-- 周期标注 -->
+  <line x1="70" y1="228" x2="70" y2="240" stroke="#718096" stroke-width="1"></line>
+  <line x1="310" y1="228" x2="310" y2="240" stroke="#718096" stroke-width="1"></line>
+  <line x1="70" y1="240" x2="310" y2="240" stroke="#718096" stroke-width="1"></line>
+  <text x="190" y="258" font-size="13" fill="#718096" text-anchor="middle">T</text>
+</svg>
+</div>
+
+<h3>2.4 周期、频率与角频率</h3>
+
+<table>
+  <tr>
+    <th>物理量</th>
+    <th>符号</th>
+    <th>定义</th>
+    <th>单位（符号）</th>
+    <th>相互关系</th>
+  </tr>
+  <tr>
+    <td class="l">周期</td>
+    <td>$T$</td>
+    <td class="l">完成一次周期性变化所需的时间</td>
+    <td>秒（s）</td>
+    <td rowspan="3" class="l">$f=\dfrac{1}{T}$，$\omega=\dfrac{2\pi}{T}=2\pi f$<br>我国电网：$T=0.02\ \mathrm{s}$，$f=50\ \mathrm{Hz}$，$\omega=100\pi\ \mathrm{rad/s}$</td>
+  </tr>
+  <tr>
+    <td class="l">频率</td>
+    <td>$f$</td>
+    <td class="l">1 s 内完成周期性变化的次数</td>
+    <td>赫兹（Hz），$1\ \mathrm{Hz}=1\ \mathrm{s^{-1}}$</td>
+  </tr>
+  <tr>
+    <td class="l">角频率（角速度）</td>
+    <td>$\omega$</td>
+    <td class="l">线圈转动的角速度，数值上等于 $2\pi$ 乘频率</td>
+    <td>弧度每秒（rad/s）</td>
+  </tr>
+</table>
+
+<p>注意一个常考的事实：线圈转一周（$2\pi$），电流完成一次周期性变化，但<strong>方向改变 2 次</strong>（两次经过中性面）。我国市电每秒电流方向改变 100 次。</p>
+
+<h3>2.5 相位与初相位（相位约定）</h3>
+
+<p>正弦交流电的瞬时值写成</p>
+$$e = E_m\sin(\omega t + \varphi_0)$$
+<ul>
+  <li>括号里的整体 $\omega t + \varphi_0$ 叫做<strong>相位</strong>，单位是弧度（rad）。相位是交流电的「时钟读数」：相位确定，线圈位置与电动势大小方向就完全确定；</li>
+  <li>$t=0$ 时的相位 $\varphi_0$ 叫做<strong>初相位</strong>（初相），它完全由<strong>计时起点</strong>决定；</li>
+  <li>两个同频率交流电的<strong>相位差</strong> $\Delta\varphi = \varphi_1 - \varphi_2$ 不随时间变化（频率不同则相位差没有意义）。</li>
+</ul>
+
+<div class="key-point">
+<strong>相位约定（解题的「起跑线」）：</strong>
+<ul style="margin: 6px 0 0 20px;">
+  <li>从<strong>中性面</strong>开始计时：$\varphi_0 = 0$，$e = E_m\sin\omega t$；</li>
+  <li>从<strong>峰值面</strong>（线圈平面与磁场平行）开始计时：$\varphi_0 = \dfrac{\pi}{2}$，$e = E_m\sin\left(\omega t + \dfrac{\pi}{2}\right) = E_m\cos\omega t$；</li>
+  <li>题目没说计时起点时，<strong>默认从中性面开始计时</strong>，用正弦函数。</li>
+</ul>
+</div>
+
+<h3>2.6 变压器的基本概念</h3>
+<ul>
+  <li><strong>构造</strong>：闭合铁芯 + 绕在铁芯上的两组线圈。接电源的叫<strong>原线圈</strong>（初级线圈，匝数 $n_1$），接负载的叫<strong>副线圈</strong>（次级线圈，匝数 $n_2$）。铁芯由涂有绝缘漆的硅钢片叠合而成，目的是减小涡流损耗。</li>
+  <li><strong>工作原理</strong>：<strong>互感现象</strong>。原线圈中变化的电流 → 铁芯中变化的磁通量 → 副线圈中产生感应电动势。所以变压器<strong>只对交流电起作用</strong>，恒定直流输入时副线圈没有输出。</li>
+  <li><strong>理想变压器</strong>的三个理想化假设（题目不说明时按理想变压器处理）：① 无漏磁——穿过原、副线圈每一匝的磁通量 $\varPhi$ 完全相同；② 无铜损——线圈电阻为零，不产生焦耳热；③ 无铁损——铁芯中没有涡流与磁滞损耗。三条合起来，输入功率 = 输出功率。</li>
+  <li><strong>升压与降压</strong>：$n_2 > n_1$ 为升压变压器；$n_2 < n_1$ 为降压变压器。</li>
+</ul>
+
+<h3>2.7 远距离输电的基本概念</h3>
+<ul>
+  <li><strong>输送功率 $P$</strong>：发电站向外输送的总功率，通常视为题目给定的不变量；</li>
+  <li><strong>输电电压 $U$</strong>：指输电线<strong>始端</strong>（升压变压器副线圈两端）的电压，是线路输送的电压，单位 V（实际电网用 kV）；</li>
+  <li><strong>输电线电阻 $r$</strong>：往返两根导线的<strong>总电阻</strong>，单位 $\Omega$；</li>
+  <li><strong>电压损失 $\Delta U$</strong>：电流流过线路电阻分走的电压，$\Delta U = Ir$；用户端得到的电压是 $U - \Delta U$；</li>
+  <li><strong>功率损失 $\Delta P$</strong>：线路发热损耗，$\Delta P = I^2 r$；</li>
+  <li><strong>输电效率</strong>：$\eta = \dfrac{P_{\text{用户}}}{P_{\text{输送}}} = \dfrac{P - \Delta P}{P}$。</li>
+</ul>
+
+<!-- ==================== 三、公式与推导 ==================== -->
+<h2 id="s3">三、公式与推导（含适用条件）</h2>
+
+<h3>3.1 正弦交流电的产生与峰值公式 $E_m = NBS\omega$</h3>
+
+<div style="text-align: center; margin: 20px 0;">
+<svg viewBox="0 0 720 260" width="700" style="max-width: 100%; height: auto;" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr-c" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#2d3748"></path>
+    </marker>
+    <marker id="arr-b" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#63b3ed"></path>
+    </marker>
+  </defs>
+
+  <!-- ===== 左：线圈截面 ===== -->
+  <!-- 磁极 -->
+  <rect x="40" y="15" width="200" height="36" fill="#e2e8f0" stroke="#a0aec0"></rect>
+  <text x="140" y="40" font-size="16" fill="#4a5568" text-anchor="middle">N</text>
+  <rect x="40" y="195" width="200" height="36" fill="#e2e8f0" stroke="#a0aec0"></rect>
+  <text x="140" y="220" font-size="16" fill="#4a5568" text-anchor="middle">S</text>
+  <!-- 磁感线 -->
+  <line x1="75" y1="55" x2="75" y2="190" stroke="#63b3ed" stroke-width="1.5" marker-end="url(#arr-b)"></line>
+  <line x1="140" y1="55" x2="140" y2="82" stroke="#63b3ed" stroke-width="1.5"></line>
+  <line x1="140" y1="82" x2="140" y2="90" stroke="#63b3ed" stroke-width="1.5" marker-end="url(#arr-b)"></line>
+  <line x1="205" y1="55" x2="205" y2="190" stroke="#63b3ed" stroke-width="1.5" marker-end="url(#arr-b)"></line>
+  <text x="218" y="125" font-size="14" fill="#2b6cb0">B</text>
+  <!-- 线圈平面（虚线） -->
+  <line x1="90" y1="87" x2="190" y2="159" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="5 4"></line>
+  <!-- 转轴 -->
+  <circle cx="140" cy="123" r="3" fill="#2d3748"></circle>
+  <text x="146" y="120" font-size="13" fill="#2d3748">O</text>
+  <!-- 导线截面 a、d -->
+  <circle cx="105" cy="98" r="9" fill="#fff" stroke="#2b6cb0" stroke-width="2"></circle>
+  <text x="105" y="102" font-size="11" fill="#2b6cb0" text-anchor="middle">a</text>
+  <circle cx="175" cy="148" r="9" fill="#fff" stroke="#2b6cb0" stroke-width="2"></circle>
+  <text x="175" y="152" font-size="11" fill="#2b6cb0" text-anchor="middle">d</text>
+  <!-- 速度方向 -->
+  <line x1="105" y1="98" x2="90" y2="119" stroke="#e53e3e" stroke-width="1.5" marker-end="url(#arr-c)"></line>
+  <text x="76" y="112" font-size="13" fill="#e53e3e">v</text>
+  <!-- 旋转方向 -->
+  <path d="M182,118 A42,42 0 0 1 168,152" fill="none" stroke="#dd6b20" stroke-width="1.5" marker-end="url(#arr-c)"></path>
+  <text x="188" y="150" font-size="13" fill="#dd6b20">ω</text>
+  <text x="140" y="252" font-size="12.5" fill="#718096" text-anchor="middle">线圈 abcd 绕垂直于磁场的轴以角速度 ω 匀速转动（截面图）</text>
+
+  <!-- ===== 右：e-t 图象 ===== -->
+  <line x1="340" y1="130" x2="705" y2="130" stroke="#2d3748" stroke-width="1.5" marker-end="url(#arr-c)"></line>
+  <line x1="360" y1="235" x2="360" y2="35" stroke="#2d3748" stroke-width="1.5" marker-end="url(#arr-c)"></line>
+  <text x="698" y="152" font-size="14" fill="#2d3748">t</text>
+  <text x="346" y="30" font-size="14" fill="#2d3748">e</text>
+  <text x="350" y="146" font-size="12" fill="#718096">O</text>
+  <!-- 正弦曲线 -->
+  <path d="M360,130 Q385,55 410,55 T460,130 T510,205 T560,130 T610,55 T660,130"
+        fill="none" stroke="#2b6cb0" stroke-width="2.5"></path>
+  <!-- 峰值虚线 -->
+  <line x1="360" y1="55" x2="410" y2="55" stroke="#a0aec0" stroke-width="1" stroke-dasharray="4 3"></line>
+  <text x="332" y="60" font-size="13" fill="#2d3748">Eₘ</text>
+  <line x1="360" y1="205" x2="510" y2="205" stroke="#a0aec0" stroke-width="1" stroke-dasharray="4 3"></line>
+  <text x="324" y="210" font-size="13" fill="#2d3748">−Eₘ</text>
+  <!-- 位置标注 -->
+  <line x1="410" y1="55" x2="410" y2="130" stroke="#cbd5e0" stroke-width="1" stroke-dasharray="3 3"></line>
+  <text x="410" y="42" font-size="12.5" fill="#dd6b20" text-anchor="middle">峰值面</text>
+  <text x="368" y="120" font-size="12.5" fill="#dd6b20">t=0 中性面</text>
+  <line x1="460" y1="130" x2="460" y2="205" stroke="#cbd5e0" stroke-width="1" stroke-dasharray="3 3"></line>
+  <text x="460" y="228" font-size="12.5" fill="#dd6b20" text-anchor="middle">中性面</text>
+  <!-- 周期标注 -->
+  <line x1="360" y1="240" x2="360" y2="246" stroke="#718096" stroke-width="1"></line>
+  <line x1="560" y1="240" x2="560" y2="246" stroke="#718096" stroke-width="1"></line>
+  <line x1="360" y1="243" x2="560" y2="243" stroke="#718096" stroke-width="1"></line>
+  <text x="460" y="258" font-size="13" fill="#718096" text-anchor="middle">T</text>
+</svg>
+</div>
+
+<h4>公式</h4>
+$$E_m = NBS\omega$$
+其中 $N$ 为线圈匝数，$B$ 为磁感应强度（T），$S$ 为线圈面积（m²），$\omega$ 为线圈转动的角速度（rad/s），$E_m$ 为感应电动势的最大值（V）。
+
+<h4>推导思路（请合上书独立推一遍）</h4>
+<ol>
+  <li>设线圈 $abcd$ 中 $ab = cd = L_1$（切割边），$ad = bc = L_2$，绕垂直于磁场的中心轴以角速度 $\omega$ 转动。则 $ab$、$cd$ 边的线速度大小 $v = \omega \cdot \dfrac{L_2}{2}$，方向时刻沿圆周的切线。</li>
+  <li>从中性面开始计时，经过时间 $t$ 线圈转过角度 $\theta = \omega t$。此时 $v$ 与磁场 $B$ 方向的夹角为 $\theta$，有效切割速度 $v_{\perp} = v\sin\omega t$。</li>
+  <li>单匝线圈中，$ab$、$cd$ 两边产生的感应电动势<strong>串联相加</strong>：
+  $$e_{\text{单匝}} = 2BL_1 v\sin\omega t = 2BL_1\cdot\frac{\omega L_2}{2}\sin\omega t = BS\omega\sin\omega t$$</li>
+  <li>$N$ 匝串联：$e = NBS\omega\sin\omega t$。当 $\sin\omega t = 1$（线圈位于峰值面）时取最大值 $E_m = NBS\omega$。</li>
+</ol>
+
+<div class="deep">
+<strong>适用条件与边界：</strong>
+<ul style="margin: 6px 0 0 20px;">
+  <li>成立前提：<strong>匀强磁场</strong>、转轴<strong>垂直于磁场方向</strong>、线圈<strong>匀速</strong>转动；</li>
+  <li>$E_m$ 与线圈<strong>形状无关</strong>（矩形、圆形都行），只取决于面积 $S$；也与转轴在线圈平面内的<strong>具体位置无关</strong>（不一定过中心）；</li>
+  <li>$E_m$ 与计时起点无关——计时起点只影响初相位，不影响峰值。</li>
+</ul>
+</div>
+
+<h3>3.2 瞬时值表达式</h3>
+$$e = E_m\sin(\omega t + \varphi_0)\qquad u = U_m\sin(\omega t + \varphi_0)\qquad i = I_m\sin(\omega t + \varphi_0)$$
+<ul>
+  <li>对纯电阻电路，$u$、$i$ 与 $e$ <strong>同频率、同相位</strong>，且满足欧姆定律的瞬时值形式 $i = \dfrac{u}{R}$，峰值满足 $U_m = I_m R$；</li>
+  <li>写瞬时值表达式的三步法：<strong>① 定峰值</strong>（$E_m = NBS\omega$ 或 $U_m = \sqrt{2}\,U$）；<strong>② 定角频率</strong>（$\omega = 2\pi f = \dfrac{2\pi}{T}$）；<strong>③ 定初相位</strong>（看计时起点：中性面 → 正弦，峰值面 → 余弦）。</li>
+</ul>
+
+<h3>3.3 正弦交流电的有效值 $E = \dfrac{E_m}{\sqrt{2}}$</h3>
+
+<h4>公式</h4>
+$$E = \frac{E_m}{\sqrt{2}} \approx 0.707E_m,\qquad U = \frac{U_m}{\sqrt{2}},\qquad I = \frac{I_m}{\sqrt{2}}$$
+
+<h4>推导思路（热效应等效）</h4>
+<ol>
+  <li>设正弦电流 $i = I_m\sin\omega t$ 通过电阻 $R$，其瞬时热功率 $p = i^2 R = I_m^2 R\sin^2\omega t$。</li>
+  <li>关键数学事实：一个周期内 $\sin^2\omega t$ 的平均值为 $\dfrac{1}{2}$。理由：$\sin^2\theta + \cos^2\theta = 1$，而 $\sin^2$ 与 $\cos^2$ 只是「错开」了四分之一周期，一个周期内两者的平均值必然相等，故各为 $\dfrac{1}{2}$。</li>
+  <li>一个周期内交流电产生的热量 $Q_{\text{交}} = \overline{i^2}RT = \dfrac{1}{2}I_m^2 RT$。</li>
+  <li>按有效值定义，直流 $I$ 在同样时间内产生热量 $Q_{\text{直}} = I^2 RT$。令两者相等：
+  $$I^2 RT = \frac{1}{2}I_m^2 RT \;\Rightarrow\; I = \frac{I_m}{\sqrt{2}}$$</li>
+  <li>电压、电动势同理（它们产生的电流也是同规律的正弦电流）。</li>
+</ol>
+
+<div class="warn">
+<strong>适用限制（命题人最爱在这里设陷阱）：</strong>$E = \dfrac{E_m}{\sqrt{2}}$ <strong>仅适用于正弦（余弦）式交流电</strong>！方波、锯齿波、半波整流波形等非正弦交流电<strong>绝不能</strong>直接除以 $\sqrt{2}$，必须回到有效值的热效应定义分段计算（见 3.4 与例 2）。
+</div>
+
+<p>有效值的应用场景请记住两句话：<strong>「凡算能量，必用有效值」</strong>（电功、电热、电功率、保险丝熔断电流、电表读数、铭牌额定值）；<strong>「凡问耐压，必看最大值」</strong>（电容器击穿电压、二极管反向耐压都与瞬时的最大电压比较）。</p>
+
+<h3>3.4 非正弦交流电有效值的分段算法</h3>
+<p>对任意周期性电流 $i(t)$，有效值 $I$ 由定义唯一确定：</p>
+$$I^2 RT = \sum_k i_k^2(t)\,R\,\Delta t_k \quad\Longrightarrow\quad I = \sqrt{\frac{1}{T}\sum_k i_k^2\,\Delta t_k}$$
+<p>操作流程（四步）：</p>
+<ol>
+  <li>画出一个周期内的 $i\text{-}t$ 图象，按波形把周期分成若干段；</li>
+  <li>对每一段求「该段产生的热量」：恒定电流段用 $I_k^2 R\,\Delta t_k$；正弦片段若恰好是完整的半波或 1/4 波的整数倍组合，可用其片段内的方均根值 $\dfrac{I_m}{\sqrt{2}}$ 计算该段热量（推导同 3.3，$\sin^2$ 在半周期内平均值仍为 $\dfrac{1}{2}$）；</li>
+  <li>各段热量相加，等于 $I^2RT$；</li>
+  <li>解出 $I$。注意：某段电流为负时，平方参与计算，<strong>负号不参与</strong>。</li>
+</ol>
+
+<h3>3.5 平均值与电荷量</h3>
+$$\bar{E} = N\frac{\Delta\varPhi}{\Delta t},\qquad \bar{I} = \frac{\bar{E}}{R_{\text{总}}},\qquad q = \bar{I}\,\Delta t = N\frac{\Delta\varPhi}{R_{\text{总}}}$$
+<ul>
+  <li>用途唯一：<strong>求一段时间内通过导体横截面的电荷量</strong>；</li>
+  <li>常用磁通量变化量：从中性面转过 $90°$，$\Delta\varPhi = BS$；转过 $180°$，$\Delta\varPhi = 2BS$；转 $360°$，$\Delta\varPhi = 0$（故整周期平均电动势为零）；</li>
+  <li>注意 $q = N\dfrac{\Delta\varPhi}{R_{\text{总}}}$ 与 $\Delta t$ <strong>无关</strong>——转得快慢只影响过程长短，不影响通过的电荷总量；</li>
+  <li>正弦交流电在<strong>半个周期</strong>内的平均值大小 $\bar{E} = \dfrac{2}{\pi}E_m \approx 0.637E_m$，它既不等于有效值 $0.707E_m$，也不能用来算热量。</li>
+</ul>
+
+<h3>3.6 理想变压器的三个关系</h3>
+
+<h4>① 电压比（推导）</h4>
+$$ \frac{U_1}{U_2} = \frac{n_1}{n_2} $$
+<p>推导：理想变压器无漏磁，原、副线圈中每一匝的磁通量 $\varPhi$ 相同，变化率 $\dfrac{\Delta\varPhi}{\Delta t}$ 也相同。由法拉第电磁感应定律，$U_1 = n_1\dfrac{\Delta\varPhi}{\Delta t}$，$U_2 = n_2\dfrac{\Delta\varPhi}{\Delta t}$，两式相除即得。<strong>该关系对任意多个副线圈都成立</strong>：$U_1 : U_2 : U_3 = n_1 : n_2 : n_3$。</p>
+
+<h4>② 功率关系</h4>
+$$ P_1 = P_2 \quad(\text{单副线圈});\qquad P_1 = P_2 + P_3 + \cdots \quad(\text{多副线圈})$$
+<p>推导：理想变压器无损耗，由能量守恒，输入功率等于输出（总）功率。这是变压器问题的<strong>总纲</strong>。</p>
+
+<h4>③ 电流比</h4>
+$$ \frac{I_1}{I_2} = \frac{n_2}{n_1} $$
+<p>推导：由 $P_1 = P_2$ 得 $U_1 I_1 = U_2 I_2$，代入电压比整理即得。</p>
+
+<div class="warn">
+<strong>电流比的适用条件——只适用于单个副线圈！</strong>因为它是由「单副线圈功率守恒」$U_1 I_1 = U_2 I_2$ 推出来的。有多个副线圈时，必须用功率守恒 $U_1 I_1 = U_2 I_2 + U_3 I_3 + \cdots$（等价的写法是 $n_1 I_1 = n_2 I_2 + n_3 I_3 + \cdots$），不能再写成匝数反比。
+</div>
+
+<h4>变压器各量的「决定关系」（动态分析的逻辑链）</h4>
+<ul>
+  <li><strong>电压</strong>：输入电压 $U_1$ 决定输出电压 $U_2 = \dfrac{n_2}{n_1}U_1$，与负载无关——电源不变、匝数不变，$U_2$ 就不变；</li>
+  <li><strong>电流与功率</strong>：负载决定输出电流 $I_2 = \dfrac{U_2}{R_{\text{负载}}}$ 和输出功率 $P_2 = \dfrac{U_2^2}{R_{\text{负载}}}$，再由功率守恒「反过来」决定输入电流 $I_1$ 与输入功率 $P_1$——<strong>输出决定输入</strong>；</li>
+  <li><strong>频率</strong>：变压器不改变交流电的频率，$f_1 = f_2$；</li>
+  <li><strong>边界</strong>：变压器<strong>不能提升功率</strong>（理想情况 $P_1 = P_2$，实际 $P_1 > P_2$），也不能用于恒定直流（原线圈接直流时无变化磁通，副线圈输出为零，且原线圈直流电阻很小，电流极大，可能烧毁）。</li>
+</ul>
+
+<h3>3.7 远距离输电的公式组</h3>
+
+<div style="text-align: center; margin: 20px 0;">
+<svg viewBox="0 0 780 220" width="760" style="max-width: 100%; height: auto;" xmlns="http://www.w3.org/2000/svg">
+  <!-- 发电机 -->
+  <circle cx="55" cy="105" r="20" fill="#fff" stroke="#2d3748" stroke-width="2"></circle>
+  <path d="M45,105 q5,-9 10,0 t10,0" fill="none" stroke="#2d3748" stroke-width="1.5"></path>
+  <!-- 发电机到升压变压器的导线 -->
+  <line x1="55" y1="85" x2="152" y2="85" stroke="#2d3748" stroke-width="1.5"></line>
+  <line x1="55" y1="125" x2="152" y2="125" stroke="#2d3748" stroke-width="1.5"></line>
+  <!-- 升压变压器 -->
+  <path d="M152,85 A5,5 0 0 0 152,95 M152,95 A5,5 0 0 0 152,105 M152,105 A5,5 0 0 0 152,115 M152,115 A5,5 0 0 0 152,125"
+        fill="none" stroke="#2d3748" stroke-width="1.5"></path>
+  <line x1="155" y1="78" x2="155" y2="132" stroke="#2d3748" stroke-width="3"></line>
+  <line x1="160" y1="78" x2="160" y2="132" stroke="#2d3748" stroke-width="3"></line>
+  <path d="M160,78 A4.5,4.5 0 0 1 160,87 M160,87 A4.5,4.5 0 0 1 160,96 M160,96 A4.5,4.5 0 0 1 160,105 M160,105 A4.5,4.5 0 0 1 160,114 M160,114 A4.5,4.5 0 0 1 160,123 M160,123 A4.5,4.5 0 0 1 160,132"
+        fill="none" stroke="#2d3748" stroke-width="1.5"></path>
+  <!-- 输电线 -->
+  <line x1="164" y1="78" x2="340" y2="78" stroke="#2d3748" stroke-width="1.5"></line>
+  <line x1="390" y1="78" x2="561" y2="78" stroke="#2d3748" stroke-width="1.5"></line>
+  <rect x="340" y="70" width="50" height="16" fill="#fff" stroke="#2d3748" stroke-width="1.5"></rect>
+  <text x="365" y="63" font-size="13" fill="#2d3748" text-anchor="middle">r</text>
+  <text x="365" y="105" font-size="12.5" fill="#e53e3e" text-anchor="middle">ΔU = I₂r</text>
+  <line x1="164" y1="132" x2="561" y2="132" stroke="#2d3748" stroke-width="1.5"></line>
+  <text x="245" y="68" font-size="13" fill="#2b6cb0" text-anchor="middle">I₂</text>
+  <!-- 降压变压器 -->
+  <path d="M561,78 A4.5,4.5 0 0 0 561,87 M561,87 A4.5,4.5 0 0 0 561,96 M561,96 A4.5,4.5 0 0 0 561,105 M561,105 A4.5,4.5 0 0 0 561,114 M561,114 A4.5,4.5 0 0 0 561,123 M561,123 A4.5,4.5 0 0 0 561,132"
+        fill="none" stroke="#2d3748" stroke-width="1.5"></path>
+  <line x1="565" y1="78" x2="565" y2="132" stroke="#2d3748" stroke-width="3"></line>
+  <line x1="570" y1="78" x2="570" y2="132" stroke="#2d3748" stroke-width="3"></line>
+  <path d="M570,85 A5,5 0 0 1 570,95 M570,95 A5,5 0 0 1 570,105 M570,105 A5,5 0 0 1 570,115 M570,115 A5,5 0 0 1 570,125"
+        fill="none" stroke="#2d3748" stroke-width="1.5"></path>
+  <!-- 用户灯泡 -->
+  <line x1="574" y1="85" x2="655" y2="85" stroke="#2d3748" stroke-width="1.5"></line>
+  <line x1="655" y1="85" x2="655" y2="89" stroke="#2d3748" stroke-width="1.5"></line>
+  <circle cx="655" cy="105" r="16" fill="#fff" stroke="#2d3748" stroke-width="2"></circle>
+  <path d="M647,113 Q655,94 663,113" fill="none" stroke="#2d3748" stroke-width="1.5"></path>
+  <line x1="655" y1="121" x2="655" y2="125" stroke="#2d3748" stroke-width="1.5"></line>
+  <line x1="655" y1="125" x2="574" y2="125" stroke="#2d3748" stroke-width="1.5"></line>
+  <!-- 电压标注 -->
+  <text x="105" y="72" font-size="13" fill="#2b6cb0" text-anchor="middle">U₁</text>
+  <text x="185" y="68" font-size="13" fill="#2b6cb0" text-anchor="middle">U₂</text>
+  <text x="525" y="68" font-size="13" fill="#2b6cb0" text-anchor="middle">U₃</text>
+  <text x="655" y="68" font-size="13" fill="#2b6cb0" text-anchor="middle">U₄</text>
+  <!-- 匝数标注 -->
+  <text x="132" y="152" font-size="12.5" fill="#718096" text-anchor="middle">n₁</text>
+  <text x="172" y="152" font-size="12.5" fill="#718096" text-anchor="middle">n₂</text>
+  <text x="548" y="152" font-size="12.5" fill="#718096" text-anchor="middle">n₃</text>
+  <text x="582" y="152" font-size="12.5" fill="#718096" text-anchor="middle">n₄</text>
+  <!-- 底部标签 -->
+  <text x="55" y="172" font-size="12.5" fill="#4a5568" text-anchor="middle">发电机 P</text>
+  <text x="157" y="172" font-size="12.5" fill="#4a5568" text-anchor="middle">升压变压器</text>
+  <text x="362" y="172" font-size="12.5" fill="#4a5568" text-anchor="middle">远距离输电线（电阻 r）</text>
+  <text x="567" y="172" font-size="12.5" fill="#4a5568" text-anchor="middle">降压变压器</text>
+  <text x="655" y="172" font-size="12.5" fill="#4a5568" text-anchor="middle">用户</text>
+</svg>
+</div>
+
+<p>对照上图，记住三条「链」：</p>
+<ol>
+  <li><strong>电压链</strong>：$U_2 = \Delta U + U_3$，即升压副线圈电压 = 线路电压损失 + 降压原线圈电压；变压器处满足 $\dfrac{U_1}{U_2} = \dfrac{n_1}{n_2}$，$\dfrac{U_3}{U_4} = \dfrac{n_3}{n_4}$；</li>
+  <li><strong>电流链</strong>：$I_2 = I_3 = \dfrac{P_2}{U_2}$（输送回路电流相同）；变压器两侧 $\dfrac{I_1}{I_2} = \dfrac{n_2}{n_1}$；</li>
+  <li><strong>功率链</strong>：$P_1 = P_2 = \Delta P + P_3$，$P_3 = P_4$；其中线路损失
+  $$\Delta P = I_2^2 r = \left(\frac{P_2}{U_2}\right)^2 r$$</li>
+</ol>
+
+<div class="deep">
+<strong>高压输电的原理（公式背后的物理）：</strong>输送功率 $P_2$ 一定时，由 $I_2 = \dfrac{P_2}{U_2}$，电压提高到 $k$ 倍，电流降为 $\dfrac{1}{k}$；代入 $\Delta P = I_2^2 r$，功率损失降为 $\dfrac{1}{k^2}$。<strong>损失与电压的平方成反比</strong>——这就是世界各国都选择高压（甚至特高压）输电的根本原因。输电效率 $\eta = \dfrac{P_2 - \Delta P}{P_2} = 1 - \dfrac{P_2 r}{U_2^2}$。
+</div>
+
+<div class="warn">
+<strong>公式边界提醒：</strong>$\Delta U = I_2 r$ 中的 $\Delta U$ 只是<strong>输电线电阻上损失的那部分电压</strong>，它远小于输电电压 $U_2$；千万别把 $\Delta U$ 当成 $U_2$，更别用 $\dfrac{U_2}{r}$ 去算线路电流（输电线不是纯电阻用电器，$U_2$ 不是加在 $r$ 两端的电压）。
+</div>
+
+<!-- ==================== 四、典型例题 ==================== -->
+<h2 id="s4">四、典型例题</h2>
+
+<h3>例 1　正弦交流电的产生与瞬时值表达式 <span class="stars">★★★</span></h3>
+<p>一个 $N = 100$ 匝的矩形线圈，面积 $S = 0.02\ \mathrm{m^2}$，在磁感应强度 $B = 0.5\ \mathrm{T}$ 的匀强磁场中，绕垂直于磁场方向的轴以角速度 $\omega = 100\pi\ \mathrm{rad/s}$ 匀速转动。线圈电阻 $r = 10\ \mathrm{\Omega}$，外接电阻 $R = 90\ \mathrm{\Omega}$。</p>
+<ol>
+  <li>求感应电动势的最大值 $E_m$、周期 $T$、频率 $f$，并写出从中性面开始计时的瞬时值表达式 $e(t)$；</li>
+  <li>若改从峰值面开始计时，表达式又如何？</li>
+  <li>求 $t = \dfrac{T}{8}$ 时刻电动势的瞬时值；</li>
+  <li>求电路中电流的有效值 $I$ 与电阻 $R$ 两端电压表的读数 $U$；</li>
+  <li>求线圈从中性面转过 $90°$ 的过程中，通过电阻 $R$ 的电荷量 $q$。</li>
+</ol>
+
+<blockquote>
+<p><strong>过程分析（三步拆解）：</strong></p>
+<ul>
+  <li><strong>定峰值</strong>：用 $E_m = NBS\omega$，注意 $S$ 是线圈面积（与形状无关），$\omega$ 题目直接给出；</li>
+  <li><strong>定相位</strong>：中性面起计时 → 正弦函数；峰值面起计时 → 余弦函数；</li>
+  <li><strong>分「值」使用</strong>：第 (3) 问求瞬时值代入表达式；第 (4) 问电表读数 → 有效值；第 (5) 问求电荷量 → 平均值通路 $q = N\dfrac{\Delta\varPhi}{R_{\text{总}}}$。</li>
+</ul>
+</blockquote>
+
+<p><strong>解：</strong></p>
+<p>(1) 由峰值公式：</p>
+$$E_m = NBS\omega = 100\times 0.5\times 0.02\times 100\pi\ \mathrm{V} = 100\pi\ \mathrm{V} \approx 314\ \mathrm{V}$$
+$$T = \frac{2\pi}{\omega} = \frac{2\pi}{100\pi}\ \mathrm{s} = 0.02\ \mathrm{s},\qquad f = \frac{1}{T} = 50\ \mathrm{Hz}$$
+<p>从中性面开始计时，初相位为零：</p>
+$$e = 100\pi\sin(100\pi t)\ \mathrm{V}\;(\approx 314\sin(314t)\ \mathrm{V})$$
+<p>(2) 从峰值面开始计时，初相位为 $\dfrac{\pi}{2}$：</p>
+$$e = 100\pi\cos(100\pi t)\ \mathrm{V}$$
+<p>(3) $t = \dfrac{T}{8} = \dfrac{0.02}{8}\ \mathrm{s} = 2.5\times 10^{-3}\ \mathrm{s}$，此时相位 $\omega t = 100\pi\times 2.5\times 10^{-3} = \dfrac{\pi}{4}$，</p>
+$$e = 100\pi\sin\frac{\pi}{4} = 100\pi\times\frac{\sqrt{2}}{2} = 50\sqrt{2}\,\pi\ \mathrm{V} \approx 222\ \mathrm{V}$$
+<p>(4) 电动势有效值</p>
+$$E = \frac{E_m}{\sqrt{2}} = \frac{100\pi}{\sqrt{2}} = 50\sqrt{2}\,\pi\ \mathrm{V} \approx 222\ \mathrm{V}$$
+<p>由闭合电路欧姆定律（有效值形式）：</p>
+$$I = \frac{E}{R + r} = \frac{50\sqrt{2}\,\pi}{90 + 10} = \frac{\sqrt{2}\,\pi}{2}\ \mathrm{A} \approx 2.22\ \mathrm{A}$$
+<p>电压表测路端电压（$R$ 两端电压）有效值：</p>
+$$U = IR = \frac{\sqrt{2}\,\pi}{2}\times 90 = 45\sqrt{2}\,\pi\ \mathrm{V} \approx 200\ \mathrm{V}$$
+<p>(5) 从中性面转过 $90°$ 到达峰值面，$\Delta\varPhi = BS - 0 = 0.5\times 0.02\ \mathrm{Wb} = 0.01\ \mathrm{Wb}$，</p>
+$$q = N\frac{\Delta\varPhi}{R + r} = 100\times\frac{0.01}{100}\ \mathrm{C} = 0.01\ \mathrm{C}$$
+
+<div class="deep">
+<strong>检验与反思：</strong>① 数值自洽：$E = \dfrac{E_m}{\sqrt{2}}$ 与第 (3) 问 $t=\dfrac{T}{8}$ 的瞬时值恰好相等（因为 $\sin\dfrac{\pi}{4} = \dfrac{1}{\sqrt{2}}$），都是 $50\sqrt{2}\,\pi \approx 222\ \mathrm{V}$，这不是巧合，是正弦函数的性质；② 第 (5) 问 $q = 0.01\ \mathrm{C}$ 与转动快慢无关，若题目改问「转过 $180°$」则 $\Delta\varPhi = 2BS$，$q' = 0.02\ \mathrm{C}$；③ 常见错误：第 (4) 问误用峰值 $E_m$ 直接除以 $(R+r)$ 得 $3.14\ \mathrm{A}$——电表读数和功率计算必须用有效值。
+</div>
+
+<h3>例 2　非正弦交流电的有效值 <span class="stars">★★★★</span></h3>
+<p>某交变电流 $i$ 随时间 $t$ 按如下规律变化：在 $0 \sim \dfrac{T}{2}$ 内，电流为正弦式电流的正半周，峰值 $I_m = 4\ \mathrm{A}$；在 $\dfrac{T}{2} \sim T$ 内，$i = 0$。周期 $T = 0.02\ \mathrm{s}$。</p>
+<ol>
+  <li>求该交变电流的有效值 $I$；</li>
+  <li>若该电流通过 $R = 100\ \mathrm{\Omega}$ 的电阻，求通电 $1\ \mathrm{min}$ 电阻上产生的热量 $Q$。</li>
+</ol>
+
+<blockquote>
+<p><strong>过程分析：</strong>这不是完整的正弦波（后半周为零），<strong>不能</strong>直接用 $I = \dfrac{I_m}{\sqrt{2}}$。回到有效值的定义：让该电流与直流 $I$ 分别通过同一电阻 $R$，比较一个周期 $T$ 内的热量。前半周是正弦半波——虽然只存在半个周期，但在这半个周期内，$\sin^2$ 的平均值仍是 $\dfrac{1}{2}$，所以该半周在其存在期间产生的热量，可以用 $\left(\dfrac{I_m}{\sqrt{2}}\right)^2 R\cdot\dfrac{T}{2}$ 计算。</p>
+</blockquote>
+
+<p><strong>解：</strong></p>
+<p>(1) 前半个周期（$0 \sim \dfrac{T}{2}$）为正弦半波，峰值 $I_m = 4\ \mathrm{A}$，该段时间内产生的热量</p>
+$$Q_1 = \left(\frac{I_m}{\sqrt{2}}\right)^2 R\cdot\frac{T}{2} = \frac{16}{2}R\cdot\frac{T}{2} = 4RT$$
+<p>后半个周期（$\dfrac{T}{2} \sim T$）电流为零，$Q_2 = 0$。</p>
+<p>按有效值定义：$I^2 RT = Q_1 + Q_2 = 4RT$，解得</p>
+$$I^2 = 4\ \mathrm{A^2} \quad\Rightarrow\quad I = 2\ \mathrm{A}$$
+<p>(2) 由焦耳定律，$1\ \mathrm{min} = 60\ \mathrm{s}$ 内产生的热量</p>
+$$Q = I^2 R t = 2^2\times 100\times 60\ \mathrm{J} = 2.4\times 10^{4}\ \mathrm{J}$$
+
+<div class="deep">
+<strong>检验与反思：</strong>① 典型错解一：直接套 $I = \dfrac{I_m}{\sqrt{2}} = 2\sqrt{2} \approx 2.83\ \mathrm{A}$——忘了该公式只适用于<strong>完整</strong>正弦波；② 典型错解二：把两个半周「平均」一下，得 $I = \sqrt{2}\ \mathrm{A}$ 之类——有效值是「平方的平均再开方」（方均根），不是算术平均；③  sanity check：半波电流的有效值（2 A）应当小于完整正弦波的有效值（$2\sqrt{2}$ A），因为后半周不发热，方向正确。④ 若改成方波：$0\sim\dfrac{T}{2}$ 为 $+2\ \mathrm{A}$、$\dfrac{T}{2}\sim T$ 为 $-2\ \mathrm{A}$，则 $I^2RT = 2^2R\cdot\dfrac{T}{2} + 2^2R\cdot\dfrac{T}{2} = 4RT$，有效值恰为 $2\ \mathrm{A}$（大小恒定的电流，方向变化不影响发热）。
+</div>
+
+<h3>例 3　理想变压器及其动态分析 <span class="stars">★★★★</span></h3>
+<p>一理想变压器，原线圈匝数 $n_1 = 1100$ 匝，接入电压 $u_1 = 220\sqrt{2}\sin(100\pi t)\ \mathrm{V}$ 的交流电源；副线圈匝数 $n_2 = 110$ 匝，接有定值电阻 $R = 11\ \mathrm{\Omega}$。</p>
+<ol>
+  <li>求副线圈两端电压的有效值 $U_2$、副线圈电流 $I_2$ 与原线圈电流 $I_1$；</li>
+  <li>若在 $R$ 两端再并联一个相同的电阻（总电阻变为 $5.5\ \mathrm{\Omega}$），$U_2$、$I_2$、$I_1$、$P_1$ 如何变化？</li>
+  <li>若把副线圈匝数改为 $n_2' = 220$ 匝（负载仍为一个 $R$），$U_2'$ 变为多少？</li>
+</ol>
+
+<blockquote>
+<p><strong>过程分析（决定关系链）：</strong>① 电源电压 $U_1$（有效值）与匝数比先「钉死」$U_2$——$U_2$ 与负载无关；② 负载电阻决定 $I_2 = \dfrac{U_2}{R}$ 与 $P_2$；③ 由功率守恒反推 $I_1$、$P_1$。动态分析时按「$U_2$ 不变 → 负载变 → $I_2$、$P_2$ 变 → $I_1$、$P_1$ 跟着变」的顺序走，就不会乱。注意 $u_1$ 表达式中的 $220\sqrt{2}$ 是<strong>最大值</strong>，计算变压器一律用有效值 $220\ \mathrm{V}$。</p>
+</blockquote>
+
+<p><strong>解：</strong></p>
+<p>(1) 原线圈电压有效值 $U_1 = \dfrac{220\sqrt{2}}{\sqrt{2}}\ \mathrm{V} = 220\ \mathrm{V}$。由电压比：</p>
+$$U_2 = \frac{n_2}{n_1}U_1 = \frac{110}{1100}\times 220\ \mathrm{V} = 22\ \mathrm{V}$$
+$$I_2 = \frac{U_2}{R} = \frac{22}{11}\ \mathrm{A} = 2\ \mathrm{A}$$
+<p>由电流比（单副线圈）：</p>
+$$I_1 = \frac{n_2}{n_1}I_2 = \frac{110}{1100}\times 2\ \mathrm{A} = 0.2\ \mathrm{A}$$
+<p>(2) 并联后负载总电阻 $R' = \dfrac{11}{2}\ \mathrm{\Omega} = 5.5\ \mathrm{\Omega}$。</p>
+<ul>
+  <li>$U_2$：<strong>不变</strong>，仍为 $22\ \mathrm{V}$（$U_1$、匝数比均未变）；</li>
+  <li>$I_2' = \dfrac{U_2}{R'} = \dfrac{22}{5.5}\ \mathrm{A} = 4\ \mathrm{A}$，增大为原来的 2 倍；</li>
+  <li>$P_2' = U_2 I_2' = 22\times 4\ \mathrm{W} = 88\ \mathrm{W}$，故 $P_1' = 88\ \mathrm{W}$，增大为原来的 2 倍；</li>
+  <li>$I_1' = \dfrac{P_1'}{U_1} = \dfrac{88}{220}\ \mathrm{A} = 0.4\ \mathrm{A}$（或用电流比 $\dfrac{110}{1100}\times 4 = 0.4\ \mathrm{A}$），增大为原来的 2 倍。</li>
+</ul>
+<p>(3) 匝数改为 $n_2' = 220$ 匝：</p>
+$$U_2' = \frac{n_2'}{n_1}U_1 = \frac{220}{1100}\times 220\ \mathrm{V} = 44\ \mathrm{V}$$
+
+<div class="deep">
+<strong>检验与反思：</strong>① 功率自洽：第 (1) 问 $P_2 = U_2 I_2 = 22\times 2 = 44\ \mathrm{W}$，$P_1 = U_1 I_1 = 220\times 0.2 = 44\ \mathrm{W}$，两者相等 ✓；第 (2) 问 $P_1' = 220\times 0.4 = 88\ \mathrm{W} = P_2'$ ✓；② 动态结论：负载越「重」（并联支路越多、总电阻越小），$I_2$、$P_2$ 越大，$I_1$、$P_1$ 同步变大，$U_2$ 岿然不动——这就是「输出决定输入」；③ 常见错误：认为「负载电阻变小，$U_2$ 会变小」——那是实际电源有内阻时的路端电压问题，理想变压器的 $U_2$ 只由 $U_1$ 和匝数比决定，两套逻辑别混淆。
+</div>
+
+<h3>例 4　远距离输电的损失计算 <span class="stars">★★★★</span></h3>
+<p>某水电站输出功率 $P = 44\ \mathrm{kW}$，输电线的总电阻 $r = 0.5\ \mathrm{\Omega}$。</p>
+<ol>
+  <li>若不经过升压，直接以 $U = 220\ \mathrm{V}$ 输电，求输电线上的电流 $I$、电压损失 $\Delta U$、功率损失 $\Delta P$ 和输电效率 $\eta$；</li>
+  <li>若用升压变压器（匝数比 $n_1 : n_2 = 1 : 10$）把电压升高到 $U_2 = 2200\ \mathrm{V}$ 再输电，求输电线电流 $I_2$、电压损失 $\Delta U'$、功率损失 $\Delta P'$ 和输电效率 $\eta'$；</li>
+  <li>到达用户端后用降压变压器（$n_3 : n_4 = 10 : 1$）降压，求降压变压器原线圈两端的电压 $U_3$ 与用户得到的电压 $U_4$。</li>
+</ol>
+
+<blockquote>
+<p><strong>过程分析（先画图再列式）：</strong>画出「发电机 → 升压 → 输电线 $r$ → 降压 → 用户」示意图，把 $U_2 = \Delta U' + U_3$ 标在图上。核心顺序：输送功率 $P$ 一定 → 由 $I = \dfrac{P}{U}$ 定线路电流 → 由 $\Delta U = Ir$、$\Delta P = I^2 r$ 算损失 → 用户端得到「剩下的」电压与功率。</p>
+</blockquote>
+
+<p><strong>解：</strong></p>
+<p>(1) 直接以 $220\ \mathrm{V}$ 输电：</p>
+$$I = \frac{P}{U} = \frac{44\times 10^{3}}{220}\ \mathrm{A} = 200\ \mathrm{A}$$
+$$\Delta U = Ir = 200\times 0.5\ \mathrm{V} = 100\ \mathrm{V}$$
+$$\Delta P = I^2 r = 200^2\times 0.5\ \mathrm{W} = 2\times 10^{4}\ \mathrm{W} = 20\ \mathrm{kW}$$
+$$\eta = \frac{P - \Delta P}{P} = \frac{44 - 20}{44} \approx 54.5\%$$
+<p>近一半的电能「烧」在了输电线上（用户端电压仅剩 $220 - 100 = 120\ \mathrm{V}$），完全无法接受。</p>
+<p>(2) 升压至 $U_2 = 2200\ \mathrm{V}$（匝数比 $1:10$，$220\ \mathrm{V}\to 2200\ \mathrm{V}$，自洽 ✓）：</p>
+$$I_2 = \frac{P}{U_2} = \frac{44\times 10^{3}}{2200}\ \mathrm{A} = 20\ \mathrm{A}$$
+$$\Delta U' = I_2 r = 20\times 0.5\ \mathrm{V} = 10\ \mathrm{V}$$
+$$\Delta P' = I_2^2 r = 20^2\times 0.5\ \mathrm{W} = 200\ \mathrm{W} = 0.2\ \mathrm{kW}$$
+$$\eta' = \frac{P - \Delta P'}{P} = \frac{44 - 0.2}{44} \approx 99.5\%$$
+<p>(3) 降压变压器原线圈两端电压（线路末端电压）：</p>
+$$U_3 = U_2 - \Delta U' = 2200 - 10 = 2190\ \mathrm{V}$$
+<p>由电压比 $\dfrac{U_3}{U_4} = \dfrac{n_3}{n_4}$：</p>
+$$U_4 = \frac{n_4}{n_3}U_3 = \frac{1}{10}\times 2190\ \mathrm{V} = 219\ \mathrm{V}$$
+<p>用户得到约 $219\ \mathrm{V}$ 的电压，与 $220\ \mathrm{V}$ 的用电标准相差无几。</p>
+
+<div class="deep">
+<strong>检验与反思：</strong>① 对比 (1)(2)：电压提高到 10 倍 → 电流降为 $\dfrac{1}{10}$ → 功率损失降为 $\dfrac{1}{100}$（$20\ \mathrm{kW} \to 0.2\ \mathrm{kW}$），完美验证 $\Delta P \propto \dfrac{1}{U^2}$；② 电压链自洽：$U_2 = \Delta U' + U_3$ 即 $2200 = 10 + 2190$ ✓；③ 最常见的两处错误：用 $\dfrac{U_2}{r} = \dfrac{2200}{0.5} = 4400\ \mathrm{A}$ 算线路电流（错把 $U_2$ 当成 $r$ 两端的电压）；把 $\Delta P$ 写成 $\dfrac{U_2^2}{r}$（同错，且 $\dfrac{2200^2}{0.5} = 9.68\ \mathrm{MW}$，比输送功率还大，明显荒谬——量纲和数量级检查是好习惯）。
+</div>
+
+<!-- ==================== 五、易错点与成因分析 ==================== -->
+<h2 id="s5">五、易错点与成因分析</h2>
+
+<h3>易错点 1　用平均值算热量、用有效值算电荷量</h3>
+<p><strong>典型错误</strong>：求焦耳热时用 $Q = \bar{I}^2Rt$；或求电荷量时用 $q = I_{\text{有效}}\cdot t$。</p>
+<p><strong>成因分析</strong>：两个概念都是「等效思想」的产物，但<strong>等效的对象不同</strong>——有效值对<strong>发热</strong>等效（与 $i^2$ 的平均挂钩），平均值对<strong>电荷搬运</strong>等效（与 $i$ 本身的平均挂钩）。不加区分地互相代用，说明只记住了「等效」两个字，没记住等效的是什么。记忆锚点：<strong>热量↔有效值，电荷量↔平均值</strong>。另外注意数值上 $\bar{E} = \dfrac{2}{\pi}E_m \approx 0.637E_m \neq 0.707E_m = E_{\text{有效}}$，二者本就不相等。</p>
+
+<h3>易错点 2　对非正弦波套 $E = \dfrac{E_m}{\sqrt{2}}$</h3>
+<p><strong>典型错误</strong>：方波、半波、锯齿波的有效值也直接「峰值除以 $\sqrt{2}$」。</p>
+<p><strong>成因分析</strong>：把「结论」当「定义」记。$\dfrac{1}{\sqrt{2}}$ 这个系数是正弦波形特有的（来自 $\sin^2$ 平均值为 $\dfrac{1}{2}$），换了波形，$\overline{i^2}$ 与 $I_m^2$ 的比例关系就变了。对策：见到非正弦波，立刻回到 $I^2RT = \sum i_k^2 R\,\Delta t_k$ 分段计算（如例 2）。</p>
+
+<h3>易错点 3　电流比用于多副线圈变压器</h3>
+<p><strong>典型错误</strong>：一个原线圈带两个副线圈时，仍写 $\dfrac{I_1}{I_2} = \dfrac{n_2}{n_1}$。</p>
+<p><strong>成因分析</strong>：不清楚公式的「出身」。电流比是从<strong>单副线圈</strong>的功率守恒 $U_1I_1 = U_2I_2$ 推出的；多副线圈时功率守恒应写成 $U_1I_1 = U_2I_2 + U_3I_3$，电流比形式不再成立。而电压比 $\dfrac{U_1}{n_1} = \dfrac{U_2}{n_2} = \dfrac{U_3}{n_3}$ 来自「每匝磁通量相同」，与副线圈个数无关，依然成立。<strong>电压比无门槛，电流比有门槛</strong>，门槛就是「单个副线圈」。</p>
+
+<h3>易错点 4　输电电压 $U_2$ 与电压损失 $\Delta U$ 混淆</h3>
+<p><strong>典型错误</strong>：用 $I = \dfrac{U_2}{r}$ 求线路电流，或用 $\Delta P = \dfrac{U_2^2}{r}$ 求功率损失。</p>
+<p><strong>成因分析</strong>：把输电线当成了「接在 $U_2$ 下的用电器」。实际上 $U_2$ 是整条输电回路（线路电阻 $r$ + 降压变压器原线圈）两端的总电压，落在 $r$ 上的只有 $\Delta U = U_2 - U_3$ 这一小部分。正确链条是 $I_2 = \dfrac{P_2}{U_2}$，再 $\Delta U = I_2 r$、$\Delta P = I_2^2r$。 sanity check：若 $\Delta P$ 算出来接近甚至超过 $P$，必错无疑。</p>
+
+<h3>易错点 5　中性面上「$\varPhi$ 最大故 $e$ 最大」</h3>
+<p><strong>典型错误</strong>：认为线圈位于中性面时磁通量最大，所以感应电动势也最大。</p>
+<p><strong>成因分析</strong>：混淆了「磁通量 $\varPhi$」与「磁通量变化率 $\dfrac{\Delta\varPhi}{\Delta t}$」——这正是电磁感应一章最核心的一对概念。法拉第定律 $e = N\dfrac{\Delta\varPhi}{\Delta t}$ 中，$e$ 只看变化率。中性面处 $\varPhi$ 取最大值，恰是变化率为零的时刻（正弦函数在峰值处切线水平）；峰值面处 $\varPhi = 0$，变化率反而最大。可以联想振动中的类比：位移最大时速度为零，位移为零时速度最大——$\varPhi$ 与 $e$ 的关系正如 $x$ 与 $v$。</p>
+
+<h3>易错点 6　瞬时值表达式计时起点张冠李戴</h3>
+<p><strong>典型错误</strong>：题目说「线圈从中性面位置开始计时」，却写出 $e = E_m\cos\omega t$；或图象过原点却按余弦处理。</p>
+<p><strong>成因分析</strong>：背公式时丢掉了前提条件。对策是理解而非死记：中性面处 $e = 0$，而 $t = 0$ 时 $\sin\omega t = 0$、$\cos\omega t = 1$——哪个在 $t=0$ 时为零，一眼可判。<strong>中性面起计时用正弦，峰值面起计时用余弦</strong>；题目未说明时默认中性面、用正弦。</p>
+
+<h3>易错点 7　最大值与有效值的应用场景颠倒</h3>
+<p><strong>典型错误</strong>：用有效值 $220\ \mathrm{V}$ 判断耐压 $300\ \mathrm{V}$ 的电容器能否接入市电（结论错误地说"可以"）。</p>
+<p><strong>成因分析</strong>：市电电压最大值高达 $220\sqrt{2} \approx 311\ \mathrm{V}$，超过 $300\ \mathrm{V}$，电容器会被击穿。判断是否击穿看的是<strong>每一瞬间</strong>的实际电压，必须用最大值比较；而电表读数、铭牌额定值、保险丝熔断电流都是有效值。一句话：<strong>发热问题用有效值，击穿问题用最大值</strong>。</p>
+
+<h3>易错点 8　认为变压器能「变频」或「省能」</h3>
+<p><strong>典型错误</strong>：认为副线圈频率与原线圈不同；或认为「升压后电压高了，就能向外多输送能量」。</p>
+<p><strong>成因分析</strong>：互感过程中，副线圈的磁通量变化节奏完全由原线圈电流决定，频率天然相同，变压器<strong>不改变频率</strong>；能量方面，理想变压器 $P_1 = P_2$，实际变压器因铜损、铁损、漏磁还有 $P_1 > P_2$——变压器只是能量的「搬运工」，从不生产能量。升压输电「省」的不是能量本身，而是<strong>输电线上的损耗</strong>。</p>
+
+<!-- ==================== 六、章末自检清单 ==================== -->
+<h2 id="s6">六、章末自检清单</h2>
+
+<p>合上这份材料，逐项自测。能流畅完成就打勾，打不了勾的回到对应小节再过一遍。</p>
+
+<h3>概念关</h3>
+<ul style="list-style: none; margin-left: 0;">
+  <li>☐ 能说出交变电流的定义，并指出「方向变化」是交流电区别于直流电的本质特征；</li>
+  <li>☐ 能指出中性面的位置（线圈平面⊥磁场），并一口气说出它的三个特点：$\varPhi$ 最大、$e=0$、电流方向反转；知道一个周期内两次经过中性面；</li>
+  <li>☐ 能写出四值（瞬时值、最大值、有效值、平均值）的符号与单位，并各说出一个使用场景；</li>
+  <li>☐ 能复述有效值的热效应定义（同电阻、同时间、同热量），知道电表读数、铭牌参数均为有效值，电容耐压看最大值；</li>
+  <li>☐ 记住 $\omega = 2\pi f = \dfrac{2\pi}{T}$，知道我国市电 $f=50\ \mathrm{Hz}$、$T=0.02\ \mathrm{s}$；</li>
+  <li>☐ 理解相位、初相位的意义，知道计时起点如何决定初相位。</li>
+</ul>
+
+<h3>公式关</h3>
+<ul style="list-style: none; margin-left: 0;">
+  <li>☐ 能独立推导 $E_m = NBS\omega$，并说出它与线圈形状、轴位置无关的结论；</li>
+  <li>☐ 会用「三步法」（定峰值、定角频率、定初相位）书写瞬时值表达式；</li>
+  <li>☐ 能讲清 $E = \dfrac{E_m}{\sqrt{2}}$ 的推导思路（$\sin^2$ 一个周期平均值为 $\dfrac{1}{2}$），并明确它<strong>只适用于正弦波</strong>；</li>
+  <li>☐ 会按有效值定义分段计算方波、半波等非正弦电流的有效值；</li>
+  <li>☐ 默写变压器三关系：$\dfrac{U_1}{U_2}=\dfrac{n_1}{n_2}$（任意副线圈数）、$P_1=P_2$、$\dfrac{I_1}{I_2}=\dfrac{n_2}{n_1}$（仅单副线圈），并能说出各自的推导依据；</li>
+  <li>☐ 默写输电公式组 $\Delta U = I_2 r$、$\Delta P = I_2^2 r = \left(\dfrac{P_2}{U_2}\right)^2 r$，并据此解释高压输电的道理（电压提高 $k$ 倍，损失降为 $\dfrac{1}{k^2}$）。</li>
+</ul>
+
+<h3>模型关</h3>
+<ul style="list-style: none; margin-left: 0;">
+  <li>☐ 线圈旋转模型：给定线圈位置（与磁场夹角），能判断该时刻 $\varPhi$ 与 $e$ 的大小、能写出从该位置计时的瞬时值表达式；</li>
+  <li>☐ 理想变压器动态分析：能按「$U_1$ 定 $U_2$ → 负载定 $I_2$、$P_2$ → 功率守恒定 $I_1$、$P_1$」的链条分析负载变化问题；</li>
+  <li>☐ 远距离输电：能不看书画出「发电机→升压→输电线→降压→用户」示意图，并标出 $U_1$、$U_2$、$\Delta U$、$U_3$、$U_4$、$I_2$、$P$、$\Delta P$ 的位置，写出电压链 $U_2 = \Delta U + U_3$ 与功率链 $P_2 = \Delta P + P_3$。</li>
+</ul>
+
+<h3>易错关</h3>
+<ul style="list-style: none; margin-left: 0;">
+  <li>☐ 算热量、功率时不会误用平均值；算电荷量时不会误用有效值；</li>
+  <li>☐ 遇到非正弦波形，第一反应是回到热效应定义分段计算，而不是除以 $\sqrt{2}$；</li>
+  <li>☐ 多副线圈问题中只用电圧比和功率守恒，不用电流比；</li>
+  <li>☐ 输电问题中严格区分 $U_2$（输电电压）与 $\Delta U$（线路电压损失），不用 $\dfrac{U_2}{r}$ 算电流；</li>
+  <li>☐ 判断电容器、二极管耐压时记得用最大值 $U_m = \sqrt{2}\,U$ 比较；</li>
+  <li>☐ 知道变压器不改变频率、不创造能量，且只能用于交流。</li>
+</ul>
+
+<hr>
+
+<p style="color: var(--muted); text-align: center;">小兵，本章公式不多，但「条件」极多——每个公式问自己一句「它什么时候不能用」，你就已经超过了大多数同龄人。加油！💪</p>
+
+</body>
+</html>

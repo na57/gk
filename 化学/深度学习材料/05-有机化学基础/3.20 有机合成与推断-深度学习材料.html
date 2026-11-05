@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.20 有机合成与推断-深度学习材料</title>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#0e7c7b; --subject-soft:#eef7f6;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 化学点缀层（无 JS，纯文本方程式） ===== */
+/* 语义卡片（例题=紫 / 易错=琥珀 / 概念=蓝 / 提示=科目色 / 结构=中性墨） */
+.card { border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 18px; margin: 14px 0; page-break-inside: avoid; }
+.card .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
+.card.concept { background: var(--c-concept-bg); } .card.concept .tag { background: var(--c-concept); color: #fff; }
+.card.example { background: var(--c-example-bg); } .card.example .tag { background: var(--c-example); color: #fff; }
+.card.trap { background: var(--c-trap-bg); } .card.trap .tag { background: var(--c-trap); color: #fff; }
+.card.note { background: var(--subject-soft); } .card.note .tag { background: var(--subject); color: #fff; }
+.card.violet { background: var(--canvas); } .card.violet .tag { background: var(--ink); color: #fff; }
+/* 方程式容器（统一灰底盒 + 科目色左边条） */
+.eq { display: block; background: var(--formula-bg); border: 1px solid var(--line); border-left: 4px solid var(--subject); border-radius: 8px; padding: var(--formula-pad); margin: 10px 0; font-size: 16px; text-align: center; letter-spacing: .3px; page-break-inside: avoid; }
+.eq-arrow { position: relative; display: inline-block; margin: 0 6px; font-weight: 600; }
+.eq-arrow::before { content: attr(data-cond); position: absolute; left: 50%; transform: translateX(-50%); top: -1.05em; font-size: 10.5px; font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
+.state { font-size: .72em; font-style: italic; color: var(--ink-soft); }
+sub, sup { font-size: .72em; line-height: 0; }
+.formula { font-size: 1.05em; }
+.kbd { background: #f0f2f5; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 13px; }
+/* 三栏对比 */
+.triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; page-break-inside: avoid; }
+.triple .cell { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: 14px; }
+.triple .cell h4 { margin: 0 0 8px; font-size: 13.5px; text-align: center; padding: 4px 0; border-radius: 6px; color: #fff; }
+.triple .cell:nth-child(1) h4 { background: var(--c-trap); }
+.triple .cell:nth-child(2) h4 { background: var(--c-example); }
+.triple .cell:nth-child(3) h4 { background: var(--subject); }
+/* 步骤与答案 */
+.step { display: flex; gap: 10px; margin: 8px 0; }
+.step .no { flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--c-method); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.ans { background: #fff; border: 1px dashed var(--c-method); border-radius: 8px; padding: 8px 14px; margin: 8px 0; }
+.chap-foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-soft); text-align: center; }
+@media (max-width: 640px) { .triple { grid-template-columns: 1fr; } }
+@media print {
+  .card { border: 1px solid #999; background: #fff !important; }
+  .card .tag { border: 1px solid #333; background: #fff !important; color: #000; }
+  .eq { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .chap-foot { border-top: none; }
+}
+</style>
+</head>
+<body>
+<nav class="chap-nav">高考备考 · 化学 · 深度学习材料 ｜ 有机化学基础 ｜ 3.20 有机合成与推断</nav>
+<header class="chap-head">
+  <h1>3.20 有机合成与推断</h1>
+  <p class="chap-meta">高中化学 · 深度学习材料 · 面向 2029 届云南高考</p>
+  <p class="chap-intro">有机合成与推断是有机化学的"压轴大戏"，也是前面所有官能团知识的总检阅。
+它考的不是死记硬背，而是一套侦探式思维：<strong>找突破口 → 顺推逆推结合 → 代入验证</strong>。
+本章把常用突破口整理成"工具箱"，配合一道完整大题的分步拆解，帮你把零散的官能团知识升级成解题战斗力。</p>
+</header>
+<main>
+
+<section>
+<h2>一、知识全景</h2>
+<table>
+<tr><th>知识点</th><th>核心内容</th><th>高考要求</th></tr>
+<tr><td>官能团引入</td><td>引入卤素、羟基、醛基、羧基、酯基、碳碳双键的常见反应</td><td>看到目标官能团能想到 2 种以上引入路径</td></tr>
+<tr><td>官能团转化</td><td>烯→卤代烃→醇→醛→羧酸→酯的经典转化链</td><td>熟练默写转化网络中每一条反应及条件</td></tr>
+<tr><td>合成路线设计</td><td>正向合成法、逆向合成法；
+步骤少、产率高、原料易得三原则</td><td>能完成 2~4 步的简单路线设计并写出各步条件</td></tr>
+<tr><td>推断突破口</td><td>反应条件、特征现象、特征数据、分子式信息</td><td>建立"条件→反应类型→官能团"的条件反射</td></tr>
+<tr><td>综合推断题</td><td>框图推断、分子式与结构推导、同分异构判断</td><td>会完整拆解高考难度的有机推断大题</td></tr>
+</table>
+</section>
+
+<section>
+<h2>二、核心概念精讲</h2>
+
+<h3>2.1 官能团引入方法速查</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>引入碳碳双键（C=C）</strong>：
+①醇的消去（浓 H<sub>2</sub>SO<sub>4</sub>、170 ℃）；
+②卤代烃消去（NaOH 醇溶液、△）。</p>
+<p><strong>引入卤素原子（—X）</strong>：①烯烃与 X<sub>2</sub>/HX 加成；
+②烷烃光照卤代（取代，副反应多，合成中少用）；③醇与 HX 取代。
+</p>
+<p><strong>引入羟基（—OH）</strong>：①烯烃与水加成（催化剂）；②卤代烃水解（NaOH 水溶液、△）；
+③醛/酮加氢还原（Ni、△）；④酯水解。</p>
+<p><strong>引入醛基（—CHO）</strong>：伯醇催化氧化（Cu、△）。</p>
+<p><strong>引入羧基（—COOH）</strong>：①醛氧化（银氨/Cu(OH)<sub>2</sub>/强氧化剂）；
+②酯酸性水解；
+③苯的同系物侧链被 KMnO<sub>4</sub> 氧化（与苯环相连的碳上有氢时，不论侧链多长，都氧化成 —COOH）。</p>
+<p><strong>引入酯基（—COO—）</strong>：
+羧酸与醇酯化（浓 H<sub>2</sub>SO<sub>4</sub>、△）。</p>
+</div>
+
+<div class="card note">
+<span class="tag">速查表</span>
+<p><strong>官能团引入速查（与 2.1 互参）</strong>：</p>
+<table>
+<tr><th>目标官能团</th><th>首选路线</th><th>备选路线</th></tr>
+<tr><td>C=C 双键</td><td>醇消去 / 卤代烃消去</td><td>炔烃部分加氢</td></tr>
+<tr><td>—X</td><td>烯烃 + X<sub>2</sub>/HX 加成</td><td>醇 + HX 取代</td></tr>
+<tr><td>—OH</td><td>卤代烃水解 / 烯烃水合</td><td>醛酮加氢还原 / 酯水解</td></tr>
+<tr><td>—CHO</td><td>伯醇催化氧化</td><td>烯烃氧化断键（信息反应）</td></tr>
+<tr><td>—COOH</td><td>醛氧化 / 酯酸性水解</td><td>苯同系物侧链氧化</td></tr>
+<tr><td>—COO—</td><td>羧酸 + 醇酯化</td><td>—</td></tr>
+</table>
+<p>选路线的优先级：<strong>步骤少 &gt; 产率高 &gt; 原料便宜</strong>。同一官能团多条路时，优先走主干道。</p>
+</div>
+
+<h3>2.2 经典转化链：一切合成的"主干道"</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p>高中有机合成 90% 的路线都沿着这条主干道展开：</p>
+<span class="eq">烯烃 <span class="eq-arrow" data-cond="+HX 加成">→</span> 卤代烃 <span class="eq-arrow" data-cond="NaOH水溶液、△">→</span> 醇 <span class="eq-arrow" data-cond="Cu/O2、△">→</span> 醛 <span class="eq-arrow" data-cond="氧化">→</span> 羧酸 <span class="eq-arrow" data-cond="+醇、浓H2SO4">→</span> 酯</span>
+<p>反向回补的路线也要熟：酯水解 → 羧酸+醇；醇消去 → 烯烃；烯烃加水 → 醇。
+注意转化方向与条件的配套，每一个箭头都要能立即说出试剂和条件。</p>
+<p><strong>增长碳链</strong>的常用手段（题目信息常给出）：①醛与 HCN 加成后再水解（增一个碳的羧酸路线）；
+②卤代烃与 NaCN 取代后水解；
+③题目给定的信息反应（如羟醛缩合）。<strong>缩短碳链</strong>：
+烯烃被酸性 KMnO<sub>4</sub> 氧化断键、苯的同系物侧链氧化。</p>
+</div>
+
+<div class="card note">
+<span class="tag">补充拓展</span>
+<p><strong>碳链的"长"与"短"</strong>：合成中碳架不总能一步到位，需要增链或减链。</p>
+<ul>
+<li><strong>增长碳链</strong>：①醛与 HCN 加成生成羟基腈，水解后得比原来多一个碳的羟基酸；②卤代烃与 NaCN 取代（R—X + NaCN → R—CN + NaX），腈水解得羧酸（增一个碳）；③题目给出的信息反应（如羟醛缩合：两分子醛在稀碱下生成 β-羟基醛，碳链翻倍）。</li>
+<li><strong>缩短碳链</strong>：①烯烃被酸性 KMnO<sub>4</sub> 氧化，双键断裂，含氢的双键碳变羧酸、无氢的变酮；②苯的同系物侧链氧化（如乙苯 → 苯甲酸）。</li>
+</ul>
+<p><strong>官能团保护（了解）</strong>：当分子中有多个活泼基团而只想反应其中一个时，需先把要保留的基团"伪装"起来，反应后再复原。高考通常以信息形式给出，理解思路即可。</p>
+</div>
+
+<h3>2.3 合成路线设计三原则</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>① 步骤最少</strong>：能用一步完成的不用两步，每多一步都损失产率。</p>
+<p><strong>② 产率最高</strong>：优先选择反应彻底、副反应少的路径（如合成醚优先选卤代烃与醇钠反应，不用醇分子间脱水）。
+</p>
+<p><strong>③ 原料易得、条件温和</strong>：能用常见试剂就不用昂贵试剂，能加热就不高压。</p>
+<p><strong>两种设计思路</strong>：正向合成法——从原料出发，看每一步能变成什么，逐步逼近目标；
+逆向合成法——从目标产物倒推"上一步是什么"，层层回退到给定原料。
+高考中<strong>逆向思维更常用</strong>：盯着目标分子的官能团，问"它一般从什么变来"。</p>
+</div>
+
+<h3>2.4 推断突破口工具箱（核心中的核心）</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>① 从反应条件突破（最高频）</h4>
+<table>
+<tr><th>反应条件</th><th>反应类型</th><th>推知官能团/物质</th></tr>
+<tr><td>NaOH 水溶液、△</td><td>水解（取代）</td><td>卤代烃或酯</td></tr>
+<tr><td>NaOH 醇溶液、△</td><td>消去</td><td>卤代烃（产物含 C=C）</td></tr>
+<tr><td>浓 H<sub>2</sub>SO<sub>4</sub>、170 ℃</td><td>消去</td><td>醇（产物含 C=C）</td></tr>
+<tr><td>浓 H<sub>2</sub>SO<sub>4</sub>、△（与羧酸/醇）</td><td>酯化</td><td>羧酸 + 醇 → 酯</td></tr>
+<tr><td>稀 H<sub>2</sub>SO<sub>4</sub>、△</td><td>水解</td><td>酯（生成羧酸和醇）</td></tr>
+<tr><td>Cu（或 Ag）、O<sub>2</sub>、△</td><td>催化氧化</td><td>伯醇→醛，仲醇→酮</td></tr>
+<tr><td>银氨溶液、水浴加热</td><td>氧化</td><td>含 —CHO（醛/甲酸/甲酸酯/葡萄糖）</td></tr>
+<tr><td>新制 Cu(OH)<sub>2</sub>、△</td><td>氧化</td><td>含 —CHO</td></tr>
+<tr><td>光照 + Cl<sub>2</sub>/Br<sub>2</sub></td><td>取代</td><td>烷烃或苯环侧链上的 H</td></tr>
+<tr><td>液溴 + FeBr<sub>3</sub></td><td>取代</td><td>苯环上的 H</td></tr>
+<tr><td>H<sub>2</sub>、Ni、△</td><td>加成（还原）</td><td>C=C、C≡C、—CHO、酮羰基、苯环</td></tr>
+</table>
+<h4>② 从特征现象突破</h4>
+<ul>
+<li>使<strong>溴水褪色</strong>：C=C、C≡C（加成褪色），或醛（氧化褪色），或苯酚（白色沉淀+褪色）；</li>
+<li>使<strong>酸性 KMnO<sub>4</sub> 褪色</strong>：
+C=C、C≡C、醇、醛、苯的同系物（侧链有 α-H）；</li>
+<li>与 Na 放出 H<sub>2</sub>：—OH（醇/酚/羧酸均可）；</li>
+<li>与 Na<sub>2</sub>CO<sub>3</sub>/NaHCO<sub>3</sub> 放出 CO<sub>2</sub>：
+—COOH（酚不与 NaHCO<sub>3</sub> 反应，可借此区分）；
+</li>
+<li>遇 FeCl<sub>3</sub> 显紫色：酚羟基；遇浓溴水出白色沉淀：苯酚；</li>
+<li>银镜 / 砖红色沉淀：—CHO；遇 I<sub>2</sub> 变蓝：淀粉。</li>
+</ul>
+<h4>③ 从特征数据突破</h4>
+<ul>
+<li>1 mol —CHO ~ 2 mol Ag（HCHO ~ 4 mol Ag）；
+1 mol —CHO ~ 1 mol Cu<sub>2</sub>O（HCHO ~ 2 mol）；</li>
+<li>2 —OH ~ H<sub>2</sub>（与 Na）；
+—COOH ~ CO<sub>2</sub>（与 NaHCO<sub>3</sub>，1:1）；</li>
+<li>酯化中 M(酯) = M(酸) + M(醇) − 18；</li>
+<li>相对分子质量每增加 14 即多一个 —CH<sub>2</sub>—（同系物差）。</li>
+</ul>
+<h4>④ 从分子式突破</h4>
+<ul>
+<li>计算不饱和度 Ω = (2C + 2 + N − H − X) / 2：Ω=1 可能是一个双键或一个环；Ω=4 常提示苯环；
+</li>
+<li>符合 C<sub>n</sub>H<sub>2n</sub>O：烯醇/醛/酮；
+符合 C<sub>n</sub>H<sub>2n</sub>O<sub>2</sub>：羧酸/酯/羟基醛。</li>
+</ul>
+</div>
+
+<h3>2.5 高考常见信息反应速览</h3>
+<p>高考有机大题常给出教材外的"信息反应"，要求现学现用。最常见的三类：</p>
+<table>
+<tr><th>信息反应</th><th>通式示意</th><th>用途</th></tr>
+<tr><td>醛与 HCN 加成</td><td>R—CHO + HCN → R—CH(OH)CN</td><td>增碳链；水解得羟基酸</td></tr>
+<tr><td>羟醛缩合</td><td>2RCH<sub>2</sub>CHO → RCH<sub>2</sub>CH(OH)CHRCHO</td><td>成倍增长碳链</td></tr>
+<tr><td>烯烃氧化断键</td><td>RCH=CHR′ → RCHO + R′CHO（或羧酸、酮）</td><td>由产物反推双键位置</td></tr>
+</table>
+<p>处理信息反应的方法：<strong>先找断键与成键的位置</strong>，把信息反应"翻译"成结构变化规则，再套用到题目分子上——不必背诵反应名称。</p>
+
+<h3>2.6 合成路线的评价要点</h3>
+<p>评价或比较两条合成路线时，从四个角度打分：①步骤多少（少者优）；②每步产率与副反应（副反应少者优）；③原料价格与易得性；④条件温和性与环保性。高考若要求"选择更优路线并说明理由"，按此四条组织语言即可。</p>
+
+<div class="card violet">
+<span class="tag">常识库</span>
+<p><strong>推断题里的"熟人"物质</strong>：粮食发酵→乙醇；食醋→乙酸；水果香→酯；75% 消毒→乙醇；福尔马林→甲醛；电木→酚醛树脂；天然气→甲烷；甘油→丙三醇；石炭酸→苯酚。题干出现这些字眼，直接写出对应物质，破题快人一步。</p>
+</div>
+
+<div class="card violet">
+<span class="tag">记忆口诀</span>
+<p>条件口诀：水水解、醇消去；浓硫一七零，醇变烯；浓硫加酸醇，酯化成；银氨水浴醛基现；铜氧加热醇变醛酮。</p>
+<p>现象口诀：溴水褪色三类因，加成氧化与取代；钠放氢气羟羧酸；碳酸氢钠只认羧；氯化铁紫酚羟基；碘遇淀粉蓝分明。</p>
+</div>
+<div class="card note">
+<span class="tag">方法补充</span>
+<p><strong>限定条件同分异构体的三类常见限定</strong>：①性质限定（能银镜 ⇒ 含 —CHO；能与 NaHCO<sub>3</sub> 放气 ⇒ 含 —COOH；遇 FeCl<sub>3</sub> 显色 ⇒ 含酚羟基）；②结构限定（甲基数、苯环上取代基数目与位置、是否对称）；③谱学限定（核磁共振氢谱有几组峰 ⇒ 有几种化学环境的氢，峰面积比 = 氢原子个数比）。先把限定翻译成结构碎片，再拼搭组合，最后逐条验证。</p>
+</div>
+
+<div class="card note">
+<span class="tag">方法补充</span>
+<p><strong>推断中的常用定量关系</strong>：①每摩尔 —OH（醇/酚/羧酸）与足量 Na 生成 0.5 mol H<sub>2</sub>；②每摩尔 —COOH 与 NaHCO<sub>3</sub> 生成 1 mol CO<sub>2</sub>；③每摩尔普通醛基生成 2 mol Ag 或 1 mol Cu<sub>2</sub>O（甲醛翻倍）；④酯化中 M(酯) = M(酸) + M(醇) − 18；⑤同系物之间相差若干个 CH<sub>2</sub>（M 差 14 的整数倍）。给出"气体的量、沉淀的量、质量差"时，优先调用这些关系。</p>
+</div>
+</section>
+
+<section>
+<h2>三、三重表征贯通</h2>
+
+<h3>第 1 组："NaOH 醇溶液、△"这一条件背后的反应</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>溴乙烷与 NaOH 醇溶液共热，产生的气体能使<strong>酸性 KMnO<sub>4</sub> 溶液紫色褪去</strong>，也能使<strong>溴的 CCl<sub>4</sub> 溶液橙红色褪去</strong>（生成乙烯）。
+注意：
+气体中混有挥发出的乙醇蒸气，也能使 KMnO<sub>4</sub> 褪色，故检验前最好<strong>先通过水</strong>除去乙醇，避免干扰。
+</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>OH<sup>−</sup> 在醇溶剂中碱性更强，夺取 β-碳（—Br 邻位碳）上的氢，该氢的电子对移向 C—C 之间形成 π 键，同时 Br<sup>−</sup> 离去——同一个碳架上"脱下一分子 HBr"，C—C 单键变成 C=C 双键。
+</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<p class="formula">CH<sub>3</sub>CH<sub>2</sub>Br + NaOH <span class="eq-arrow" data-cond="醇、△">→</span> CH<sub>2</sub>=CH<sub>2</sub>↑ + NaBr + H<sub>2</sub>O</p>
+<p>推断价值：框图中出现"NaOH 醇溶液"⇒ 该物质是卤代烃，产物必含 C=C。</p>
+</div>
+</div>
+
+<h3>第 2 组："银氨溶液、水浴加热"锁定醛基</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>向某有机物溶液中加入新配制的银氨溶液，水浴加热数分钟，试管内壁出现<strong>光亮的银白色镜面</strong>。
+该有机物可能带有苦杏仁气味（如苯甲醛）或刺激性气味（如乙醛）。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>分子中必含 —CHO（醛基）结构：
+醛基碳（+1 价）被氧化为羧基碳（+3 价），Ag(NH<sub>3</sub>)<sub>2</sub><sup>+</sup> 中的 Ag(+1) 被还原为 Ag(0) 单质附着于管壁。
+甲酸、甲酸酯、葡萄糖虽非醛类，因含醛基结构同样能给出银镜。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<p class="formula">R—CHO + 2[Ag(NH<sub>3</sub>)<sub>2</sub>]OH <span class="eq-arrow" data-cond="水浴">→</span> R—COONH<sub>4</sub> + 2Ag↓ + 3NH<sub>3</sub> + H<sub>2</sub>O</p>
+<p>推断价值：能银镜 ⇒ 含 —CHO 结构；不能银镜但能使溴水褪色 ⇒ 可能只含 C=C。</p>
+</div>
+</div>
+
+<h3>第 3 组：酯化转化中的质量关系（特征数据）</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>酯化实验中，反应物（酸+醇）逐渐减少，生成的酯浮在饱和 Na<sub>2</sub>CO<sub>3</sub> 液面上：
+<strong>无色透明油状液体、有芳香气味、分层</strong>。
+称量发现生成的酯的质量小于酸与醇质量之和（差值为生成水的质量）。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>羧酸的 —OH 与醇的 —H 结合成水脱离，剩余部分通过酯键（—COO—）连接。
+每形成 1 mol 酯键必脱去 1 mol H<sub>2</sub>O（18 g）。
+原子守恒：M(酯) + 18 = M(酸) + M(醇)。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<p class="formula">CH<sub>3</sub>COOH + C<sub>2</sub>H<sub>5</sub>OH <span class="eq-arrow" data-cond="浓H2SO4、△">⇌</span> CH<sub>3</sub>COOC<sub>2</sub>H<sub>5</sub> + H<sub>2</sub>O</p>
+<p>推断价值：已知 M(酯) 与 M(醇)，可求 M(酸) = M(酯) + 18 − M(醇)，进而锁定酸的结构。</p>
+</div>
+</div>
+
+<h3>第 4 组："浓 H<sub>2</sub>SO<sub>4</sub>、170 ℃"条件背后的反应</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>乙醇与浓硫酸混合液迅速升温至 170 ℃，产生无色气体；该气体能使<strong>溴的四氯化碳溶液褪色</strong>。注意气体中混有的 SO<sub>2</sub> 也能使溴水、酸性 KMnO<sub>4</sub> 褪色，检验前需先通过 NaOH 溶液排除干扰。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>浓硫酸作用下，乙醇分子的 C—O 键与邻位碳上的 C—H 键同时断裂，脱下的 —OH 与 —H 结合成水，两碳之间形成 C=C 双键。温度若停在 140 ℃，则两分子乙醇分子间脱水生成乙醚——<strong>温度决定路径</strong>。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<p class="formula">CH<sub>3</sub>CH<sub>2</sub>OH <span class="eq-arrow" data-cond="浓H2SO4、170℃">→</span> CH<sub>2</sub>=CH<sub>2</sub>↑ + H<sub>2</sub>O（消去）</p>
+<p class="formula">2CH<sub>3</sub>CH<sub>2</sub>OH <span class="eq-arrow" data-cond="浓H2SO4、140℃">→</span> CH<sub>3</sub>CH<sub>2</sub>OCH<sub>2</sub>CH<sub>3</sub> + H<sub>2</sub>O（取代）</p>
+<p>推断价值：见"浓 H<sub>2</sub>SO<sub>4</sub>、170 ℃"⇒ 醇消去成烯；见"浓 H<sub>2</sub>SO<sub>4</sub>、△（酸+醇）"⇒ 酯化。</p>
+</div>
+</div>
+
+<h3>第 5 组："Cu/O<sub>2</sub>、△"条件背后的反应</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>铜丝灼烧<strong>变黑</strong>，趁热伸入醇中又<strong>变红</strong>，反复数次后液体出现<strong>刺激性气味</strong>（醛）或特殊气味（酮），铜丝质量不变。伯醇、仲醇有此现象，叔醇无变化。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>Cu 先与 O<sub>2</sub> 生成 CuO，CuO 再把氧转移给醇：醇的 α-C—H 键与 O—H 键断裂，脱下的 2 个 H 与 O 结合成水，α-C 与 O 之间形成 C=O。α-碳上 2 个 H → 醛；1 个 H → 酮；无 H → 不反应。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<p class="formula">2R—CH<sub>2</sub>OH + O<sub>2</sub> <span class="eq-arrow" data-cond="Cu、△">→</span> 2R—CHO + 2H<sub>2</sub>O（伯醇→醛）</p>
+<p class="formula">2R<sub>2</sub>CHOH + O<sub>2</sub> <span class="eq-arrow" data-cond="Cu、△">→</span> 2R<sub>2</sub>C=O + 2H<sub>2</sub>O（仲醇→酮）</p>
+<p>推断价值：见"Cu/O<sub>2</sub>、△"⇒ 醇的催化氧化，产物类别反推醇的种类。</p>
+</div>
+</div>
+
+<div class="card note">
+<span class="tag">解题流程</span>
+<p><strong>有机推断五步法</strong>（每道大题默读一遍）：</p>
+<ul>
+<li>第 1 步：扫读全题，圈出所有反应条件、现象、数据、分子式。</li>
+<li>第 2 步：把每条信息"翻译"成官能团或反应类型（调用 2.4 工具箱）。</li>
+<li>第 3 步：从最确定的物质破题（熟悉的生活物质或数据唯一的物质）。</li>
+<li>第 4 步：顺推与逆推结合，补全整个转化框图。</li>
+<li>第 5 步：代回验证——每个结构都要同时满足全部已知信息，全部吻合才写答案。</li>
+</ul>
+</div>
+</section>
+
+<section>
+<h2>四、典型例题分步拆解</h2>
+
+<div class="card example">
+<span class="tag">例1 · 条件推断（填空型）</span>
+<p><strong>题目</strong>：某合成路线片段如下：
+A（C<sub>3</sub>H<sub>7</sub>Br）<span class="eq-arrow" data-cond="NaOH醇溶液、△">→</span> B <span class="eq-arrow" data-cond="+H2O、催化剂">→</span> C <span class="eq-arrow" data-cond="Cu/O2、△">→</span> D，D 不能发生银镜反应。
+推断 A、B、C、D 的结构简式。</p>
+<p><strong>【思路点拨】</strong>逐条解读条件："NaOH 醇溶液"⇒ A 消去成烯；"加水"⇒ 烯水合成醇；
+"Cu/O<sub>2</sub>"⇒ 醇催化氧化；
+D 不银镜 ⇒ D 是酮而不是醛 ⇒ C 是仲醇 ⇒ 羟基在 2 号碳。</p>
+<div class="step"><div class="no">1</div><p>A 为 C<sub>3</sub>H<sub>7</sub>Br（1-溴丙烷或 2-溴丙烷）。
+NaOH 醇溶液加热 ⇒ 消去反应，B 为丙烯 CH<sub>2</sub>=CHCH<sub>3</sub>（无论 A 是哪种，消去都得到丙烯）。
+</p></div>
+<div class="step"><div class="no">2</div><p>B 与水加成得醇 C。丙烯加水有两种可能：
+1-丙醇或 2-丙醇。</p></div>
+<div class="step"><div class="no">3</div><p>C 经 Cu/O<sub>2</sub> 催化氧化得 D，D 不能发生银镜反应 ⇒ D 是酮，故 D 为丙酮 CH<sub>3</sub>COCH<sub>3</sub>，C 为仲醇 2-丙醇 CH<sub>3</sub>CH(OH)CH<sub>3</sub>。
+</p></div>
+<div class="step"><div class="no">4</div><p>回看 A：
+B 是丙烯，A 可以是 1-溴丙烷或 2-溴丙烷（题目若无更多限制，两者均合理，常见取 CH<sub>3</sub>CHBrCH<sub>3</sub> 与合成方向一致）。
+</p></div>
+<p><strong>【答案】</strong>A：
+CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>Br 或 CH<sub>3</sub>CHBrCH<sub>3</sub>；
+B：CH<sub>2</sub>=CHCH<sub>3</sub>（丙烯）；C：
+CH<sub>3</sub>CH(OH)CH<sub>3</sub>（2-丙醇）；
+D：CH<sub>3</sub>COCH<sub>3</sub>（丙酮）。</p>
+<p class="ans"><strong>【方法总结】</strong>"不银镜"这个否定信息价值千金——它把"醇的氧化"限定为仲醇 → 酮。
+做条件推断时，<strong>每一个条件都要翻译成一句化学语言</strong>，翻译完答案基本就出来了。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例2 · 合成路线设计</span>
+<p><strong>题目</strong>：
+以乙烯（CH<sub>2</sub>=CH<sub>2</sub>）为唯一有机原料，无机试剂任选，设计合成乙酸乙酯（CH<sub>3</sub>COOCH<sub>2</sub>CH<sub>3</sub>）的路线，写出各步反应方程式并注明条件。
+</p>
+<p><strong>【思路点拨】</strong>逆向合成：目标物是酯 ⇐ 需要乙酸 + 乙醇；乙醇可由乙烯水合得到；
+乙酸由乙醇 → 乙醛 → 乙酸氧化而来。
+一个原料分两条支线使用。</p>
+<div class="step"><div class="no">1</div><p>乙烯水合制乙醇：
+CH<sub>2</sub>=CH<sub>2</sub> + H<sub>2</sub>O <span class="eq-arrow" data-cond="催化剂、加热加压">→</span> CH<sub>3</sub>CH<sub>2</sub>OH。
+</p></div>
+<div class="step"><div class="no">2</div><p>部分乙醇催化氧化制乙醛：
+2CH<sub>3</sub>CH<sub>2</sub>OH + O<sub>2</sub> <span class="eq-arrow" data-cond="Cu、△">→</span> 2CH<sub>3</sub>CHO + 2H<sub>2</sub>O。
+</p></div>
+<div class="step"><div class="no">3</div><p>乙醛氧化制乙酸：
+2CH<sub>3</sub>CHO + O<sub>2</sub> <span class="eq-arrow" data-cond="催化剂、△">→</span> 2CH<sub>3</sub>COOH。
+</p></div>
+<div class="step"><div class="no">4</div><p>乙酸与剩余的乙醇酯化：
+CH<sub>3</sub>COOH + CH<sub>3</sub>CH<sub>2</sub>OH <span class="eq-arrow" data-cond="浓H2SO4、△">⇌</span> CH<sub>3</sub>COOCH<sub>2</sub>CH<sub>3</sub> + H<sub>2</sub>O。
+</p></div>
+<p><strong>【答案】</strong>路线：
+CH<sub>2</sub>=CH<sub>2</sub> →（水合）→ CH<sub>3</sub>CH<sub>2</sub>OH →（催化氧化）→ CH<sub>3</sub>CHO →（氧化）→ CH<sub>3</sub>COOH；
+CH<sub>3</sub>COOH + CH<sub>3</sub>CH<sub>2</sub>OH →（酯化）→ CH<sub>3</sub>COOCH<sub>2</sub>CH<sub>3</sub>。
+共四步，方程式如上。</p>
+<p class="ans"><strong>【方法总结】</strong>"单一原料合成双组分产物"的经典套路：
+先把原料变成两分支的公共前体（这里是乙醇），再让一部分前体沿氧化链升级（醇→醛→酸），最后两分支汇合（酯化）。
+逆向拆解时先问"目标分子由哪两类物质拼成"。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例3 · 特征数据定量推断</span>
+<p><strong>题目</strong>：某饱和一元有机物 A 的蒸气对氢气的相对密度为 30。
+取 6.0 g A 与足量银氨溶液反应，析出 21.6 g Ag。
+推断 A 的分子式和结构简式。（相对原子质量：H 1，C 12，O 16，Ag 108）</p>
+<p><strong>【思路点拨】</strong>相对密度求摩尔质量 → 能银镜说明含 —CHO → 由 Ag 的物质的量与 A 的物质的量之比判断是几个醛基（警惕甲醛的特殊比例）。
+</p>
+<div class="step"><div class="no">1</div><p>M(A) = 30 × 2 = 60 g/mol（相对密度 × 氢气摩尔质量）。
+</p></div>
+<div class="step"><div class="no">2</div><p>n(A) = 6.0 ÷ 60 = 0.1 mol；
+n(Ag) = 21.6 ÷ 108 = 0.2 mol。
+n(Ag) : n(A) = 2 : 1，符合"1 mol 普通醛基生成 2 mol Ag"，故 A 含<strong>1 个醛基</strong>（若是甲醛应生成 4 mol Ag，且 M=30 不符）。
+</p></div>
+<div class="step"><div class="no">3</div><p>设 A 为饱和一元醛 C<sub>n</sub>H<sub>2n</sub>O：
+14n + 16 = 60，解得 n = 22/7 ≈ 3.14，不是整数，饱和一元醛不成立。
+重新考虑：
+A 含 1 个 —CHO，M=60，则烃基部分 M = 60 − 29（CHO）= 31，即 —CH<sub>2</sub>OH（12+2+16=30）不行……换思路：
+A 可能不是醛而是<strong>甲酸酯</strong>（HCOOR 也含 —CHO 结构能银镜）：
+HCOOR，M = 45 + R = 60 ⇒ R = 15，即 —CH<sub>3</sub>。
+故 A 为甲酸甲酯 HCOOCH<sub>3</sub>（M = 60 ✓）。</p></div>
+<div class="step"><div class="no">4</div><p>验证：
+HCOOCH<sub>3</sub>，C<sub>2</sub>H<sub>4</sub>O<sub>2</sub>，M = 24+4+32 = 60 ✓；
+含 HCOO— 结构，1 mol 生成 2 mol Ag ✓（0.1 mol A 生成 0.2 mol Ag ✓）。
+注意本题若按"醛"求解无整数解，正是命题人考查"能银镜的不一定是醛"。</p></div>
+<p><strong>【答案】</strong>A 的分子式为 C<sub>2</sub>H<sub>4</sub>O<sub>2</sub>，结构简式为 HCOOCH<sub>3</sub>（甲酸甲酯）。
+</p>
+<p class="ans"><strong>【方法总结】</strong>定量银镜题三步：
+算 M → 算 n(Ag):n(有机物) 定醛基个数（2:1 一个醛基、4:1 可能是甲醛或两个醛基）→ 用通式试探，解不出整数就换类别（甲酸、甲酸酯、葡萄糖都含 —CHO 结构）。
+</p>
+</div>
+
+<div class="card example">
+<span class="tag">例4 · 完整有机推断大题拆解</span>
+<p><strong>题目</strong>：下图转化关系中（文字描述），A 是粮食发酵的产物，可用来消毒（体积分数 75% 的溶液）；
+A 经反应①（Cu、O<sub>2</sub>、△）生成 B；B 经反应②（银氨溶液氧化后酸化）生成 C；
+C 与 A 在浓硫酸作用下生成有香味的液体 D（C<sub>4</sub>H<sub>8</sub>O<sub>2</sub>）。
+另知 C 与 Na<sub>2</sub>CO<sub>3</sub> 反应放出气体。
+请推断 A~D 的结构简式，写出反应①④的方程式，并指出反应④的类型。
+（反应④即 C 与 A 生成 D 的反应）</p>
+<p><strong>【思路点拨】</strong>突破口选择：①"粮食发酵 + 75% 消毒"直指乙醇；②"有香味液体"是酯的标志；
+③C 与 Na<sub>2</sub>CO<sub>3</sub> 放气 ⇒ C 是羧酸。三条线索互相印证。</p>
+<div class="step"><div class="no">1</div><p>锁定 A：
+粮食发酵产物、75% 溶液用于消毒 ⇒ A 为乙醇 CH<sub>3</sub>CH<sub>2</sub>OH。
+</p></div>
+<div class="step"><div class="no">2</div><p>反应① Cu/O<sub>2</sub>、△ ⇒ 醇催化氧化，A 是伯醇 ⇒ B 为乙醛 CH<sub>3</sub>CHO。
+</p></div>
+<div class="step"><div class="no">3</div><p>反应② 银氨氧化后酸化 ⇒ 醛氧化为羧酸 ⇒ C 为乙酸 CH<sub>3</sub>COOH；
+与 Na<sub>2</sub>CO<sub>3</sub> 放出 CO<sub>2</sub> ✓（验证通过）。</p></div>
+<div class="step"><div class="no">4</div><p>C 与 A 在浓硫酸、加热下生成有香味的酯 D：
+CH<sub>3</sub>COOCH<sub>2</sub>CH<sub>3</sub>（乙酸乙酯），分子式 C<sub>4</sub>H<sub>8</sub>O<sub>2</sub> ✓（验证通过）。
+</p></div>
+<div class="step"><div class="no">5</div><p>书写：
+反应① 2CH<sub>3</sub>CH<sub>2</sub>OH + O<sub>2</sub> <span class="eq-arrow" data-cond="Cu、△">→</span> 2CH<sub>3</sub>CHO + 2H<sub>2</sub>O；
+反应④ CH<sub>3</sub>COOH + CH<sub>3</sub>CH<sub>2</sub>OH <span class="eq-arrow" data-cond="浓H2SO4、△">⇌</span> CH<sub>3</sub>COOCH<sub>2</sub>CH<sub>3</sub> + H<sub>2</sub>O，属取代反应（酯化反应）。
+</p></div>
+<p><strong>【答案】</strong>A：CH<sub>3</sub>CH<sub>2</sub>OH；B：
+CH<sub>3</sub>CHO；
+C：CH<sub>3</sub>COOH；D：CH<sub>3</sub>COOCH<sub>2</sub>CH<sub>3</sub>。
+反应①④方程式如上；
+反应④为酯化反应（取代反应）。</p>
+<p class="ans"><strong>【方法总结】</strong>完整推断的标准流程：
+扫读全题圈出"生活常识类暗示"（消毒、香味、粮食、清洁能源等）与"条件类暗示"→ 从最确定的点破题 → 顺推逆推结合补全链条 → 把推断结果<strong>代回每一条信息和数据验证</strong>，全部吻合才落笔写答案。
+验证环节是高分与满分的分水岭。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例5 · 限定条件的同分异构体书写</span>
+<p><strong>题目</strong>：写出同时满足下列条件的 C<sub>4</sub>H<sub>8</sub>O<sub>2</sub> 的同分异构体：①能与 NaHCO<sub>3</sub> 反应放出气体；②分子中只有一个甲基。并说明判断过程。</p>
+<p><strong>【思路点拨】</strong>条件①锁定 —COOH（只有羧酸能与 NaHCO<sub>3</sub> 放 CO<sub>2</sub>）；条件②限定碳骨架形态。</p>
+<div class="step"><div class="no">1</div><p>由①，该物质是羧酸：C<sub>4</sub>H<sub>8</sub>O<sub>2</sub> = C<sub>3</sub>H<sub>7</sub>—COOH，剩余烃基为丙基。</p></div>
+<div class="step"><div class="no">2</div><p>丙基有两种：正丙基与异丙基，对应 CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>COOH（丁酸）和 (CH<sub>3</sub>)<sub>2</sub>CHCOOH（2-甲基丙酸）。</p></div>
+<div class="step"><div class="no">3</div><p>用条件②筛选：丁酸含 1 个甲基 ✓；2-甲基丙酸含 2 个甲基 ✗。</p></div>
+<div class="step"><div class="no">4</div><p>验证：CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>COOH，分子式 C<sub>4</sub>H<sub>8</sub>O<sub>2</sub> ✓，含 —COOH 能与 NaHCO<sub>3</sub> 放气 ✓，甲基数 1 ✓。</p></div>
+<p><strong>【答案】</strong>CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>COOH（正丁酸）。</p>
+<p class="ans"><strong>【方法总结】</strong>限定条件同分异构体通法：每条条件"翻译"成结构碎片 → 列出候选 → 逐条筛选 → 验证。常见限定还有：能银镜（含 —CHO）、核磁氢谱峰数（氢的化学环境种数）。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例6 · 反应类型快速判断</span>
+<p><strong>题目</strong>：判断下列反应的类型：①CH<sub>4</sub> 与 Cl<sub>2</sub> 光照生成 CH<sub>3</sub>Cl；②乙烯使溴水褪色；③乙醇在浓硫酸、170 ℃下生成乙烯；④乙醛与 H<sub>2</sub> 在 Ni 催化下生成乙醇。</p>
+<p><strong>【思路点拨】</strong>套用特征判断：换=取代、加=加成、成双键=消去、加氢去氧=还原。</p>
+<div class="step"><div class="no">1</div><p>①甲烷中的 H 被 Cl 替换，"有上有下"——取代反应。</p></div>
+<div class="step"><div class="no">2</div><p>②乙烯 C=C 打开，两个 Br 加到两个碳上，"只上不下"——加成反应。</p></div>
+<div class="step"><div class="no">3</div><p>③乙醇脱去一分子水形成 C=C，"只下不上"——消去反应。</p></div>
+<div class="step"><div class="no">4</div><p>④乙醛加 H<sub>2</sub> 得氢——加成反应，同时也是还原反应（有机中得氢即还原，两种说法都对）。</p></div>
+<p><strong>【答案】</strong>①取代；②加成；③消去；④加成（还原）。</p>
+<p class="ans"><strong>【方法总结】</strong>氧化还原与加成/取代不是互斥标签：加氢的反应既是加成又是还原，按题目设问角度作答，拿不准时两个角度都写更稳妥。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例7 · 带数据的综合推断</span>
+<p><strong>题目</strong>：有机物 X（C<sub>2</sub>H<sub>4</sub>O<sub>2</sub>）能与 NaHCO<sub>3</sub> 反应放出气体；X 与乙醇在浓硫酸作用下生成 Y（C<sub>4</sub>H<sub>8</sub>O<sub>2</sub>），Y 有香味；Y 在 NaOH 溶液中水解生成 Z 的钠盐和乙醇。推断 X、Y、Z，并写出 Y 碱性水解的方程式。</p>
+<p><strong>【思路点拨】</strong>"与 NaHCO<sub>3</sub> 放气"锁定 —COOH；"有香味"锁定酯；"NaOH 水解"产物是羧酸盐 + 醇。</p>
+<div class="step"><div class="no">1</div><p>C<sub>2</sub>H<sub>4</sub>O<sub>2</sub> 的羧酸只有乙酸：X 为 CH<sub>3</sub>COOH。</p></div>
+<div class="step"><div class="no">2</div><p>X 与乙醇酯化生成 Y：CH<sub>3</sub>COOCH<sub>2</sub>CH<sub>3</sub>（乙酸乙酯），分子式 C<sub>4</sub>H<sub>8</sub>O<sub>2</sub> ✓，有香味 ✓。</p></div>
+<div class="step"><div class="no">3</div><p>Y 碱性水解：CH<sub>3</sub>COOCH<sub>2</sub>CH<sub>3</sub> + NaOH <span class="eq-arrow" data-cond="△">→</span> CH<sub>3</sub>COONa + CH<sub>3</sub>CH<sub>2</sub>OH，故 Z 为乙酸 CH<sub>3</sub>COOH（其钠盐为乙酸钠）。</p></div>
+<div class="step"><div class="no">4</div><p>代回验证：X 含 —COOH 与 NaHCO<sub>3</sub> 放 CO<sub>2</sub> ✓；Y 有芳香气味 ✓；水解产物为乙酸钠 + 乙醇 ✓。</p></div>
+<p><strong>【答案】</strong>X：CH<sub>3</sub>COOH；Y：CH<sub>3</sub>COOCH<sub>2</sub>CH<sub>3</sub>；Z：CH<sub>3</sub>COOH；Y 碱性水解方程式如上。</p>
+<p class="ans"><strong>【方法总结】</strong>小分子推断题中"分子式 + 一条性质"往往即可唯一锁定物质；所有推断都要走完"代回验证"闭环。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例8 · 合成路线设计（增长碳链）</span>
+<p><strong>题目</strong>：以乙醛为原料（无机试剂任选），设计合成 CH<sub>3</sub>CH(OH)COOH（2-羟基丙酸，乳酸）的路线。已知：R—CHO + HCN → R—CH(OH)CN；腈在酸性条件下水解生成羧酸。</p>
+<p><strong>【思路点拨】</strong>乳酸比乙醛多一个碳，必须增碳链——题目给的 HCN 加成正是增一碳的手段，腈基水解后变羧基。</p>
+<div class="step"><div class="no">1</div><p>第 1 步：CH<sub>3</sub>CHO + HCN → CH<sub>3</sub>CH(OH)CN（醛基加 HCN，得羟基腈）。</p></div>
+<div class="step"><div class="no">2</div><p>第 2 步：CH<sub>3</sub>CH(OH)CN + 2H<sub>2</sub>O <span class="eq-arrow" data-cond="H+、△">→</span> CH<sub>3</sub>CH(OH)COOH + NH<sub>3</sub>（腈基酸性水解为羧基）。</p></div>
+<div class="step"><div class="no">3</div><p>验证：产物含 3 个碳，既有 —OH 又有 —COOH，与乳酸结构一致 ✓。</p></div>
+<p><strong>【答案】</strong>乙醛 →（+HCN）→ 羟基丙腈 →（酸性水解）→ 乳酸，共两步，方程式如上。</p>
+<p class="ans"><strong>【方法总结】</strong>信息反应题的钥匙是"找断键成键位置"：HCN 中 H 加在 O 上、CN 加在醛基碳上。用信息反应增碳链是高考合成题的常见套路。</p>
+</div>
+</section>
+
+<section>
+<h2>五、易错点与成因</h2>
+
+<div class="card trap">
+<span class="tag">易错点 1</span>
+<p><strong>易错表现</strong>：看到"NaOH、△"就判断为卤代烃水解，忽略溶剂信息；或把 NaOH 醇溶液当成水解条件。
+</p>
+<p><strong>错误成因</strong>：
+只记住了试剂 NaOH，没记住溶剂决定反应路径——同一试剂在水/醇两种溶剂中给出截然不同的产物（醇 vs 烯）。</p>
+<p><strong>正确理解</strong>：条件必须"试剂+溶剂+温度"三位一体记忆：NaOH 水溶液△=水解；
+NaOH 醇溶液△=消去。
+题目中溶剂字样往往印在小字里，读题时圈出来。</p>
+<p><strong>一句话避坑</strong>：条件读全——水溶液水解成醇，醇溶液消去成烯。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 2</span>
+<p><strong>易错表现</strong>：推断出"能发生银镜反应"就把该物质直接写成醛，导致类别判断错误。</p>
+<p><strong>错误成因</strong>：混淆了"含醛基结构"与"属于醛类"。
+甲酸（HCOOH）、甲酸酯（HCOOR）、葡萄糖、麦芽糖都含 —CHO 结构，均能银镜。
+</p>
+<p><strong>正确理解</strong>：银镜只能说明分子中含 —CHO 片段。
+结合其他信息二次定位：若又能与 Na<sub>2</sub>CO<sub>3</sub> 放气 ⇒ 甲酸；
+若能水解且水解产物之一能银镜 ⇒ 甲酸酯。</p>
+<p><strong>一句话避坑</strong>：银镜认"基"不认"类"，先定片段再定类别。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 3</span>
+<p><strong>易错表现</strong>：推断完成后不做验证，或只验证分子式不验证每一条性质信息，结果一个环节错了整题崩盘。</p>
+<p><strong>错误成因</strong>：时间压力下急于写答案，把"验证"当成可有可无的环节。</p>
+<p><strong>正确理解</strong>：推断题的正确率靠验证兜底。
+把推出的每个结构代回题干：分子式对不对？每个反应条件匹不匹配？每个数据（M、产气量、银镜量）符不符合？全部吻合才算完成。</p>
+<p><strong>一句话避坑</strong>：推完必验，逐条对账。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 4</span>
+<p><strong>易错表现</strong>：
+设计合成路线时绕远路，或写出高中没有的反应（如"醇直接变成羧酸一步完成"却不写中间醛的过程），被扣过程分。</p>
+<p><strong>错误成因</strong>：官能团转化网络不熟，不知道标准转化链必须"醇→醛→酸"逐级氧化；
+也不了解高考评分按"步骤合理 + 条件正确"给分。</p>
+<p><strong>正确理解</strong>：严格沿主干道走：烯→卤代烃→醇→醛→羧酸→酯。
+醇到羧酸可一步用强氧化剂，但写"醇 → 醛 → 酸"更稳妥、更符合教材逻辑。
+每步注明试剂与条件，可逆反应用 ⇌。</p>
+<p><strong>一句话避坑</strong>：沿主干道逐级转化，条件一个不落。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 5</span>
+<p><strong>易错表现</strong>：由"使溴水褪色"直接认定含 C=C，漏判其他可能；
+或在苯酚存在时把"褪色+白色沉淀"归因为加成。</p>
+<p><strong>错误成因</strong>：
+褪色原因有三类——加成（C=C/C≡C）、氧化（醛基、SO<sub>2</sub> 等还原性物质）、取代（苯酚生成白色三溴苯酚沉淀），只记住了第一类。
+</p>
+<p><strong>正确理解</strong>：结合其他信息区分：若同时生成白色沉淀 ⇒ 苯酚的取代；若还能银镜 ⇒ 醛的氧化褪色；
+若只褪色无沉淀且能加氢 ⇒ C=C/C≡C 的加成。</p>
+<p><strong>一句话避坑</strong>：褪色三原因——加成、氧化、取代，沉淀和银镜帮你分流。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 6</span>
+<p><strong>易错表现</strong>：由分子式 C<sub>2</sub>H<sub>6</sub>O 推断物质时只写乙醇，漏掉甲醚 CH<sub>3</sub>OCH<sub>3</sub>。</p>
+<p><strong>错误成因</strong>：思维定式——按反应链先想到醇，忘记同分子式还可能跨类别异构（醇与醚、羧酸与酯、醛与酮等）。</p>
+<p><strong>正确理解</strong>：分子式只给组成、不给类别。推断时先算不饱和度，列出<strong>所有可能的官能团类别</strong>，再用题目给的性质信息逐一排除。如 C<sub>2</sub>H<sub>6</sub>O 若能与 Na 反应放 H<sub>2</sub>，才是乙醇；不反应则为甲醚。</p>
+<p><strong>一句话避坑</strong>：分子式先列全类别，再用性质逐个排除。</p>
+</div>
+
+<div class="card note">
+<span class="tag">书写规范</span>
+<p><strong>有机大题书写失分点提醒</strong>：①官能团要"露脸"——醛基写 —CHO 不要写 —COH；②方程式注明条件，可逆反应用 ⇌；③酯化、水解别漏写 H<sub>2</sub>O；④结构简式中双键、苯环位置写准确；⑤不写错别字（"酯"不是"脂"，"羧基"不是"酸基"）。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 7</span>
+<p><strong>易错表现</strong>：写银镜反应或与新制 Cu(OH)<sub>2</sub> 反应的方程式时，把产物写成羧酸而不是羧酸盐。</p>
+<p><strong>错误成因</strong>：忽略反应在<strong>碱性环境</strong>中进行——生成的羧酸立即被碱中和，实际产物是羧酸铵（银镜体系）或羧酸钠（Cu(OH)<sub>2</sub> 体系）。</p>
+<p><strong>正确理解</strong>：银镜反应产物是 R—COONH<sub>4</sub>；与新制 Cu(OH)<sub>2</sub>（NaOH 过量）反应产物是 R—COONa。推断题中"氧化后酸化"的表述，才把羧酸盐变回羧酸。</p>
+<p><strong>一句话避坑</strong>：碱性氧化出盐，酸化之后才出酸。</p>
+</div>
+
+<div class="card violet">
+<span class="tag">读图技巧</span>
+<p><strong>框图中的隐含信息</strong>：①没写条件的"空白箭头"，优先联想该物质最特征的一步教材反应；②同一物质出现在多个箭头交汇处，多半是"公共原料"；③分子式给全时先算不饱和度再动手；④"A 到 B 需两步"这类提示是在暗示中间体的存在。</p>
+</div>
+
+<div class="card note">
+<span class="tag">方法对比</span>
+<p><strong>有机推断与无机推断的异同</strong>：两者的思维流程一致——找突破口、顺逆结合、代入验证；不同的是突破口的来源：无机推断多依赖颜色、气体、沉淀等宏观现象，有机推断更依赖<strong>反应条件与分子式数据</strong>。把无机推断中练就的"现象→物质"直觉，迁移为有机的"条件→官能团"直觉，就掌握了有机推断的灵魂。</p>
+</div>
+</section>
+
+<section>
+<h2>六、与前后章节的联系</h2>
+<p>本章是 3.16~3.19 所有有机知识的"总装车间"，也是把"背下来的性质"升级为"用得上的方法"的关键一章。：3.16 的官能团与同分异构是推断的语言，3.17 的烃提供碳架，3.18 的六类衍生物提供全部反应素材，3.19 的生命物质与高分子常作为推断题的载体（如以葡萄糖、油脂、聚酯为背景）。复习本章的最佳方式是回到前面各章，把每一条性质改写成"如果题目给出这个条件，我能推出什么"。</p>
+</section>
+
+<section>
+<h2>七、高考怎么考</h2>
+<p>有机合成与推断通常以<strong>有机化学基础选考大题</strong>（全国卷约 15 分）的形式出现：
+给出框图和信息反应，要求推断物质结构、写方程式、判断反应类型、写限定条件的同分异构体、设计某一步合成路线。
+它综合性强、区分度高，是有机部分拉开差距的主战场。备考策略：
+把本章"突破口工具箱"背到条件反射级别，再精练 10 道高考真题大题，重点训练"翻译条件 + 代回验证"两个动作。
+</p>
+</section>
+
+<section>
+<h2>八、章末自检清单</h2>
+<ul class="checklist">
+<li>我能说出引入 —X、—OH、—CHO、—COOH、—COO—、C=C 各至少两种方法及对应条件。</li>
+<li>我能默写"烯→卤代烃→醇→醛→羧酸→酯"主干道中每个箭头的试剂与条件。</li>
+<li>我看到"NaOH 醇溶液△"立即反应出"卤代烃消去"，看到"NaOH 水溶液△"反应出"水解"。</li>
+<li>我看到"银氨溶液水浴/新制 Cu(OH)<sub>2</sub>△"立即锁定 —CHO 结构，并记得甲酸、甲酸酯也能银镜。</li>
+<li>我看到"浓 H<sub>2</sub>SO<sub>4</sub>、△"能区分是酯化还是消去（看反应物是醇单独还是酸+醇）。
+</li>
+<li>我能用"遇 FeCl<sub>3</sub> 显紫""与 NaHCO<sub>3</sub> 放气""使溴水褪色"等现象给官能团定位。
+</li>
+<li>我能运用 M(酯)=M(酸)+M(醇)−18、1 mol —CHO ~ 2 mol Ag 等特征数据做定量推断。</li>
+<li>我能说出合成设计三原则（步骤少、产率高、原料易得）并会用逆向合成法拆解目标分子。</li>
+<li>我做推断题时有"代回验证"的习惯，逐条核对条件与数据后才落笔。</li>
+<li>我能独立完成一道含 4~5 个物质的框图推断，并规范书写所有方程式（配平、条件、状态）。</li>
+<li>我能按"性质限定、结构限定、谱学限定"三类整理限定条件，完成限定条件同分异构体的书写。</li>
+<li>我能说出有机推断五步法，并在做题时坚持"代回验证"环节。</li>
+<li>我能记住推断题中常见的"熟人"物质（粮食发酵→乙醇、福尔马林→甲醛、石炭酸→苯酚等）。</li>
+<li>我能用"步骤少、产率高、原料易得、条件温和"四条标准评价两条合成路线的优劣。</li>
+<li>我能在醛基检验类方程式中正确写出羧酸盐（而不是羧酸）作为产物。</li>
+</ul>
+</section>
+
+</main>
+<footer class="chap-foot">高考备考 · 化学 · 深度学习材料 · 2026</footer>
+</body>
+</html>

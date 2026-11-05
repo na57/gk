@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>物理光学 - 深度学习材料</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<nav class="chap-nav">高考备考 · 物理 · 深度学习材料 ｜ 3.13 物理光学</nav>
+<header class="chap-head">
+  <h1>物理光学</h1>
+  <p class="chap-meta"></p>
+</header>
+  <div class="subtitle">深度学习材料 · 概念 · 推导 · 模型 · 方法</div>
+  <div class="meta">
+    <span>高中物理 · 光学模块 · 高考选择题常客（约4~6分）</span><br>
+    <span>依据：《高考物理95+分备考指南》3.13节要求</span><br>
+    <span>适用：高一同步学习 &amp; 高考一轮复习</span><br>
+    <span>学生：小兵</span>
+  </div>
+</div>
+
+<p class="hint">
+  💡 提示：所有公式由 MathJax 渲染；带推导的公式请合上书独立推一遍
+</p>
+
+<!-- 目录 -->
+<div class="toc">
+  <strong>目录</strong>
+  <ol>
+    <li><a href="#s1">一、本章总览</a></li>
+    <li><a href="#s2">二、核心概念与物理量</a></li>
+    <li><a href="#s3">三、公式与推导（含适用条件）</a></li>
+    <li><a href="#s4">四、典型例题</a></li>
+    <li><a href="#s5">五、易错点与成因分析</a></li>
+    <li><a href="#s6">六、章末自检清单</a></li>
+  </ol>
+</div>
+
+<h2 id="s1">一、本章总览</h2>
+
+<p>小兵你好，这一章是<strong>物理光学</strong>——研究光作为"波"的那一面。如果说几何光学（3.12）把光当成一条条直线来追，这一章就要回答一个更根本的问题：<strong>光到底是什么？</strong>答案分两层：本章告诉你"光是电磁波（横波）"，下一章（波粒二象性）再告诉你"光也是粒子"。</p>
+
+<h3>本章在高考中的位置</h3>
+<p>云南高考物理满分 100 分，光学模块合计约 10 分。这 10 分的典型分工是：<strong>计算题第 13 题考几何光学</strong>（画光路、折射、全反射），而<strong>物理光学通常以 1 道选择题</strong>（单选 4 分或多选 6 分）出现，偶尔并入实验题考"双缝干涉测波长"。这类题的特点是：</p>
+<ul>
+  <li><strong>定性为主、定量为辅</strong>：概念辨析多（干涉与衍射图样、偏振说明什么），计算基本只考 $\Delta x=\dfrac{L}{d}\lambda$；</li>
+  <li><strong>陷阱密集</strong>：白光中央条纹颜色、增透膜厚度、半波损失、电磁波谱排序，都是命题人反复用的老坑；</li>
+  <li><strong>性价比极高</strong>：知识点总量少、套路固定，背准 + 理解一遍就能稳定拿分，目标是<strong>满分</strong>。</li>
+</ul>
+
+<h3>本章知识体系</h3>
+<div class="map">
+  <div class="row"><div class="node root">物理光学（3.13）</div></div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node">光的干涉</div>
+    <div class="node">光的衍射</div>
+    <div class="node">光的偏振</div>
+    <div class="node">电磁波</div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node leaf">双缝干涉 $\Delta x=\frac{L}{d}\lambda$</div>
+    <div class="node leaf">薄膜干涉 · 增透膜 $d=\frac{\lambda}{4n}$</div>
+    <div class="node leaf">明显衍射条件：缝宽与 $\lambda$ 相当</div>
+    <div class="node leaf">单缝衍射 · 泊松亮斑</div>
+    <div class="node leaf">偏振 ⇒ 光是横波</div>
+    <div class="node leaf">电磁波谱排序与 $c=\lambda f$</div>
+  </div>
+</div>
+
+<h3>与已学知识的衔接</h3>
+<p>你在机械波（3.6）里已经学过波的<strong>叠加、干涉、衍射</strong>：两列频率相同的水波相遇出现加强区和减弱区，波绕过障碍物拐弯。本章做的就是把这些结论"平移"到光身上——</p>
+<ul>
+  <li>水波的干涉图样 → 双缝后面的明暗相间条纹；</li>
+  <li>水波绕桩 → 光通过窄缝后的衍射图样；</li>
+  <li>绳波的横波特性 → 光的偏振（纵波没有偏振）。</li>
+</ul>
+<p>所以本章真正的"新东西"只有三个：<strong>条纹间距公式</strong>、<strong>半波损失</strong>、<strong>电磁波谱</strong>。其余都是老朋友换了身衣服。</p>
+
+<h3>学习建议（给高一的你）</h3>
+<blockquote>
+  <p><strong>三个抓手：</strong></p>
+  <ul>
+    <li><strong>一个公式</strong>——$\Delta x=\dfrac{L}{d}\lambda$ 是本章唯一的高考计算核心，连同推导一起拿下；</li>
+    <li><strong>两幅图</strong>——双缝干涉图样（等宽等距）与单缝衍射图样（中央宽、两边窄），能默画能区分；</li>
+    <li><strong>一条链</strong>——电磁波谱按波长从长到短：无线电波 → 红外线 → 可见光（红到紫）→ 紫外线 → X 射线 → γ 射线，频率则一路升高。</li>
+  </ul>
+</blockquote>
+
+<h2 id="s2">二、核心概念与物理量</h2>
+
+<h3>1. 光的干涉与相干条件</h3>
+<p>两列光波相遇区域里，某些位置振动<strong>始终加强</strong>（亮）、某些位置<strong>始终减弱</strong>（暗），形成稳定的明暗相间图样，这种现象叫光的干涉。能产生干涉的两列光叫相干光，相干条件是：</p>
+<ul>
+  <li><strong>频率相同</strong>（不同频率的光相位差不稳定，图样瞬间糊掉）；</li>
+  <li><strong>相位差恒定</strong>；</li>
+  <li><strong>振动方向相同</strong>（有平行分量）。</li>
+</ul>
+<p>普通光源（灯泡、太阳）发出的光来自大量原子各自独立、随机的发光，任意两束光之间没有固定相位差，所以<strong>两盏灯照不出干涉条纹</strong>。双缝干涉的聪明之处：用<strong>同一光源</strong>照亮两条缝，把一列波"劈"成两列，它们天然同源、频率相同、相位差恒定——人为造出相干光。激光的相干性极好，现代实验常用激光直接照双缝。</p>
+
+<h3>2. 双缝干涉的核心物理量</h3>
+<table>
+  <tr><th style="width:16%;">物理量</th><th style="width:14%;">符号</th><th style="width:20%;">常用单位</th><th>说明</th></tr>
+  <tr><td>光的波长</td><td>$\lambda$</td><td>m、nm（$1\ \mathrm{nm}=10^{-9}\ \mathrm{m}$）</td><td class="l">可见光约 400~760 nm，红长紫短；指真空中波长</td></tr>
+  <tr><td>双缝间距</td><td>$d$</td><td>mm</td><td class="l">两条缝中心之间的距离，实验中约 0.1~0.3 mm</td></tr>
+  <tr><td>缝到屏的距离</td><td>$L$</td><td>m</td><td class="l">$L\gg d$，是推导条纹公式的小角近似前提</td></tr>
+  <tr><td>条纹间距</td><td>$\Delta x$</td><td>mm</td><td class="l">相邻两条亮纹（或暗纹）中心之间的距离</td></tr>
+  <tr><td>光程差</td><td>$\delta$</td><td>m</td><td class="l">两束光到达屏上某点所走的路程之差（介质中要乘 $n$）</td></tr>
+  <tr><td>干涉级次</td><td>$k$</td><td>无（整数）</td><td class="l">$k=0,1,2,\dots$，中央亮纹是 0 级</td></tr>
+</table>
+
+<svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg" style="max-width:440px;display:block;margin:14px auto;background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;">
+  <defs>
+    <marker id="arrp1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#2b6cb0"/>
+    </marker>
+  </defs>
+  <text x="12" y="24" font-size="13" fill="#718096">单色光源</text>
+  <line x1="60" y1="60" x2="60" y2="170" stroke="#2d3748" stroke-width="3"/>
+  <text x="48" y="186" font-size="12" fill="#718096">单缝</text>
+  <line x1="150" y1="60" x2="150" y2="170" stroke="#2d3748" stroke-width="3"/>
+  <line x1="144" y1="103" x2="156" y2="103" stroke="#f7fafc" stroke-width="3"/>
+  <line x1="144" y1="127" x2="156" y2="127" stroke="#f7fafc" stroke-width="3"/>
+  <text x="138" y="186" font-size="12" fill="#718096">双缝 S₁S₂</text>
+  <text x="152" y="98" font-size="11" fill="#2b6cb0">S₁</text>
+  <text x="152" y="143" font-size="11" fill="#2b6cb0">S₂</text>
+  <text x="120" y="80" font-size="12" fill="#dd6b20">d</text>
+  <line x1="150" y1="103" x2="150" y2="127" stroke="#dd6b20" stroke-width="1.6"/>
+  <line x1="150" y1="103" x2="360" y2="115" stroke="#2b6cb0" stroke-width="1.6" stroke-dasharray="5,4" marker-end="url(#arrp1)"/>
+  <line x1="150" y1="127" x2="360" y2="115" stroke="#38a169" stroke-width="1.6" stroke-dasharray="5,4" marker-end="url(#arrp1)"/>
+  <text x="238" y="100" font-size="11" fill="#2b6cb0">r₁</text>
+  <text x="238" y="140" font-size="11" fill="#38a169">r₂</text>
+  <text x="230" y="186" font-size="12" fill="#718096">光程差 δ = r₂ − r₁ ≈ d·sinθ</text>
+  <line x1="360" y1="40" x2="360" y2="200" stroke="#2d3748" stroke-width="3"/>
+  <text x="368" y="36" font-size="12" fill="#718096">屏（距双缝 L）</text>
+  <rect x="356" y="55" width="8" height="10" fill="#1a365d"/>
+  <rect x="356" y="72" width="8" height="6" fill="#bee3f8"/>
+  <rect x="356" y="85" width="8" height="10" fill="#1a365d"/>
+  <rect x="356" y="102" width="8" height="6" fill="#bee3f8"/>
+  <rect x="356" y="115" width="8" height="10" fill="#1a365d"/>
+  <rect x="356" y="132" width="8" height="6" fill="#bee3f8"/>
+  <rect x="356" y="145" width="8" height="10" fill="#1a365d"/>
+  <text x="370" y="122" font-size="11" fill="#718096">明暗相间</text>
+  <text x="290" y="60" font-size="12" fill="#dd6b20">θ</text>
+  <path d="M 300 75 A 60 60 0 0 0 305 68" fill="none" stroke="#dd6b20" stroke-width="1.2"/>
+</svg>
+
+<h3>3. 薄膜干涉与半波损失</h3>
+<p>阳光下的肥皂泡、水面油膜呈现彩色条纹，是<strong>薄膜上、下两个表面各自反射的光</strong>相遇叠加的结果：膜前表面反射一束，光进入膜内再从后表面反射出来又一束，两束同源相干，光程差主要来自"在膜里多走的一个来回" $2d$（$d$ 为膜厚，近垂直入射时；计入折射率后光程差为 $2nd$）。膜厚不同的地方相长/相消情况不同，于是出现一条条彩色条纹。</p>
+<div class="key-point">
+  <strong>⚠️ 半波损失（本章特有难点）：</strong>光从<strong>光疏介质射向光密介质</strong>时，界面上的<strong>反射光</strong>会额外损失半个波长的光程（相当于相位突变 180°）；从光密射向光疏时的反射<strong>没有</strong>半波损失。分析薄膜干涉时，必须逐个表面检查反射光有没有这一项 $\lambda/2$。
+</div>
+
+<h3>4. 光的衍射</h3>
+<p>光绕过障碍物、偏离直线传播进入几何阴影区的现象。任何情况下衍射都会发生，但<strong>明显</strong>衍射有条件：</p>
+<ul>
+  <li>障碍物或孔、缝的线度<strong>与波长相当，或比波长更小</strong>。可见光波长约 $10^{-7}\ \mathrm{m}$ 量级，所以日常生活中的缝（毫米级）看不到光的明显衍射，而声波波长约米级，"闻其声不见其人"天天上演。</li>
+</ul>
+<table>
+  <tr><th>衍射类型</th><th>图样特点</th></tr>
+  <tr><td>单缝衍射</td><td class="l">明暗相间条纹；<strong>中央亮纹最宽最亮</strong>，两侧条纹窄、暗得快，不等间距</td></tr>
+  <tr><td>圆孔衍射</td><td class="l">中央大亮斑（艾里斑）+ 明暗相间同心圆环</td></tr>
+  <tr><td>圆板衍射（泊松亮斑）</td><td class="l">不透光小圆板的阴影<strong>中心出现一个亮斑</strong>——光的波动性的著名铁证</td></tr>
+</table>
+<p>泊松亮斑有个好玩的来历：泊松用波动理论算出"影子中心应该是亮的"，本想以此<strong>反驳</strong>波动说，结果实验真在影子中心找到了亮点——科学史上经典的"弄假成真"。</p>
+
+<h3>5. 光的偏振</h3>
+<p>自然光（太阳、灯光）在垂直于传播方向的平面内，<strong>各个方向的振动都有</strong>且强度均匀。让自然光通过一片偏振片，只有沿某一特定方向振动的光能通过，得到的光叫偏振光。再拿第二片偏振片旋转，透射光强跟着变化——当两片"透振方向"垂直时，光完全透不过去（消光）。</p>
+<div class="deep">
+  <strong>偏振证明了什么？</strong>纵波（如声波）的振动方向沿着传播方向，绕传播轴旋转对称，不可能出现"某个方向通不过"的情况。只有<strong>横波</strong>才有偏振现象。所以：<strong>光的偏振现象证明光是横波</strong>。这句话本身就是高频选择题选项。
+</div>
+<p>应用：偏振太阳镜（挡住水面/路面反射的强偏振眩光）、3D 电影眼镜（左右眼两片透振方向互相垂直）、液晶显示器（液晶控制偏振态明暗）、拍摄橱窗时消除反光。</p>
+
+<h3>6. 电磁波谱</h3>
+<p>麦克斯韦预言、赫兹用实验证实：<strong>光是电磁波</strong>。电磁波在真空中的速度都是 $c=3.0\times10^{8}\ \mathrm{m/s}$，满足</p>
+$$c=\lambda f$$
+<p>按<strong>波长从长到短（频率从低到高）</strong>排列：</p>
+
+<svg viewBox="0 0 430 150" xmlns="http://www.w3.org/2000/svg" style="max-width:460px;display:block;margin:14px auto;background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;">
+  <defs>
+    <marker id="arrp2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#1a365d"/>
+    </marker>
+  </defs>
+  <rect x="20" y="55" width="65" height="30" fill="#bee3f8" stroke="#2b6cb0"/>
+  <rect x="85" y="55" width="55" height="30" fill="#9fd6f5" stroke="#2b6cb0"/>
+  <rect x="140" y="55" width="40" height="30" fill="#fbd38d" stroke="#dd6b20"/>
+  <rect x="180" y="55" width="55" height="30" fill="#b794f4" stroke="#6b46c1"/>
+  <rect x="235" y="55" width="55" height="30" fill="#90cdf4" stroke="#2b6cb0"/>
+  <rect x="290" y="55" width="60" height="30" fill="#63b3ed" stroke="#2b6cb0"/>
+  <text x="34" y="75" font-size="11" fill="#1a365d">无线电波</text>
+  <text x="97" y="75" font-size="11" fill="#1a365d">红外线</text>
+  <text x="147" y="75" font-size="11" fill="#9c4221">可见光</text>
+  <text x="192" y="75" font-size="11" fill="#44337a">紫外线</text>
+  <text x="247" y="75" font-size="11" fill="#1a365d">X射线</text>
+  <text x="303" y="75" font-size="11" fill="#1a365d">γ射线</text>
+  <line x1="20" y1="115" x2="350" y2="115" stroke="#1a365d" stroke-width="1.8" marker-end="url(#arrp2)"/>
+  <text x="20" y="134" font-size="12" fill="#718096">波长 λ 变短 →</text>
+  <text x="240" y="134" font-size="12" fill="#718096">→ 频率 f 变高（光子能量越大）</text>
+  <text x="145" y="48" font-size="10" fill="#9c4221">红→紫，约400~760 nm</text>
+</svg>
+
+<table>
+  <tr><th>波段</th><th>波长量级</th><th>产生/特点</th><th>典型应用</th></tr>
+  <tr><td>无线电波</td><td class="l">＞1 mm</td><td class="l">振荡电路产生，易发生干涉衍射</td><td class="l">广播、通信、雷达</td></tr>
+  <tr><td>红外线</td><td class="l">760 nm ~ 1 mm</td><td class="l">一切物体都辐射，<strong>热效应</strong>显著</td><td class="l">遥控、夜视、测温、遥感</td></tr>
+  <tr><td>可见光</td><td class="l">400~760 nm</td><td class="l">能引起视觉，红到紫频率升高</td><td class="l">照明、成像</td></tr>
+  <tr><td>紫外线</td><td class="l">10~400 nm</td><td class="l">化学作用强，<strong>荧光效应</strong></td><td class="l">杀菌消毒、验钞</td></tr>
+  <tr><td>X 射线</td><td class="l">0.01~10 nm</td><td class="l">穿透力强</td><td class="l">医学透视、安检</td></tr>
+  <tr><td>γ 射线</td><td class="l">＜0.01 nm</td><td class="l">穿透力最强，能量最高，来自原子核</td><td class="l">放疗、探伤</td></tr>
+</table>
+
+<blockquote>
+  <p><strong>深度思考：为什么干涉、衍射能"证明"光是波？</strong></p>
+  <p>加强和减弱的前提是"两列波在同一点振动的叠加"——粒子相遇只会碰撞，绝不会"两个加起来反而变暗"。干涉图样中暗纹处两束光同时到达却相消，这是波动独有的签名。衍射同理：绕过障碍拐弯也是波的特征。所以<strong>干涉、衍射证明光具有波动性，偏振进一步证明这列波是横波</strong>——这是光学里一条完整的证据链，选择题经常考"哪个现象说明光是横波"（答案：偏振，且只有偏振）。</p>
+</blockquote>
+
+<h2 id="s3">三、公式与推导（含适用条件）</h2>
+
+<h3>公式 1：双缝干涉条纹间距 $\Delta x=\dfrac{L}{d}\lambda$（本章核心）</h3>
+<p><strong>推导（近轴小角近似）：</strong></p>
+<ol>
+  <li>设双缝 $S_1$、$S_2$ 间距为 $d$，屏到双缝距离为 $L$（$L\gg d$）。屏上某点 $P$ 到中央亮纹 $O$ 的距离为 $x$。</li>
+  <li>$P$ 到两缝的路程差（光程差）为 $\delta=r_2-r_1$。因为 $L\gg d$，两条光线几乎平行，从 $S_1$ 向 $S_2P$ 作垂线，可得 $\delta\approx d\sin\theta$（$\theta$ 为光线相对中心轴的偏角）。</li>
+  <li>亮纹条件：光程差等于波长的整数倍，$$d\sin\theta=k\lambda\quad(k=0,1,2,\dots)$$</li>
+  <li>小角近似 $\sin\theta\approx\tan\theta=\dfrac{x}{L}$，代入得第 $k$ 级亮纹位置：$$x_k=\frac{kL\lambda}{d}$$</li>
+  <li>相邻亮纹间距即 $x_{k+1}-x_k$：</li>
+</ol>
+$$\Delta x=\frac{L}{d}\lambda$$
+<div class="deep">
+  <strong>公式性格（定性判断全靠它）：</strong>$\Delta x$ 与 $L$、$\lambda$ 成正比，与 $d$ 成反比——缝越<strong>窄</strong>（$d$ 小）条纹越宽；光越<strong>红</strong>（$\lambda$ 长）条纹越宽；屏越<strong>远</strong>（$L$ 大）条纹越宽。实验题问"怎样让条纹变疏"，就从这三个量里找答案。
+</div>
+<div class="warn">
+  <strong>适用条件与边界：</strong>
+  <ul>
+    <li><strong>小角近似</strong>：$x\ll L$，即只适用于中央附近的若干级条纹；远处条纹实际间距会有偏差（高考不考这个偏差，但要知道近似在哪）；</li>
+    <li>$\lambda$ 指<strong>真空（空气）中的波长</strong>；若整个装置浸在折射率为 $n$ 的介质中，波长变为 $\lambda_n=\lambda_0/n$，条纹间距变为 $\Delta x'=\Delta x/n$，即条纹变密——这是经典变式；</li>
+    <li>公式算的是<strong>相邻条纹</strong>间距。题目给"第 2 级到第 7 级亮纹距离 $a$"，间隔数是 $7-2=5$，$\Delta x=a/5$，别数错；</li>
+    <li>白光入射时，各色光 $\Delta x$ 不同：同一级亮纹中<strong>紫光离中央最近、红光最远</strong>，中央（$k=0$）处各色光光程差都为零，全部加强，叠加成<strong>白色亮纹</strong>。</li>
+  </ul>
+</div>
+
+<h3>公式 2：双缝干涉明暗纹条件</h3>
+$$\text{亮纹：}\ \delta=r_2-r_1=k\lambda\quad(k=0,1,2,\dots)$$
+$$\text{暗纹：}\ \delta=r_2-r_1=(2k+1)\frac{\lambda}{2}\quad(k=0,1,2,\dots)$$
+<p><strong>推导思路：</strong>两列同频率、同相出发的波到达 $P$ 点，光程差为整波长时，波峰对波峰，振动始终加强（亮）；光程差为半波长奇数倍时，波峰对波谷，振动始终抵消（暗）。中央 $O$ 点 $\delta=0$，必为亮纹（0 级）。</p>
+<div class="deep">
+  <strong>暗纹位置速算：</strong>由 $x_k=\dfrac{kL\lambda}{d}$（亮），暗纹在 $\delta=(2k+1)\lambda/2$ 处，即 $x=\dfrac{(2k+1)L\lambda}{2d}$——恰好在相邻亮纹<strong>正中间</strong>，明暗等距相间，条纹间距对明纹、暗纹都是 $\Delta x=\dfrac{L}{d}\lambda$。
+</div>
+
+<h3>公式 3：薄膜干涉与增透膜厚度 $d=\dfrac{\lambda}{4n}$</h3>
+<p><strong>推导（以相机镜头增透膜为例）：</strong>空气（$n\approx1$）→ 膜（$n_2$，如 1.40）→ 玻璃（$n_3\approx1.5$）。</p>
+<ol>
+  <li><strong>查半波损失</strong>：前表面（空气→膜，疏→密）反射光<strong>有</strong>半波损失；后表面（膜→玻璃，疏→密）反射光<strong>也有</strong>半波损失。两个半波损失相互抵消，净附加光程差为 0。</li>
+  <li><strong>光程差</strong>：近垂直入射时，后表面那束光在膜中多走一个来回，光程差 $\delta=2n_2d$。</li>
+  <li><strong>要增透，须让反射光相消</strong>（反射弱了，透射自然强——能量守恒）：$$\delta=2n_2d=(2k+1)\frac{\lambda}{2}$$</li>
+  <li>取最薄（$k=0$）：$2n_2d=\dfrac{\lambda}{2}$，得</li>
+</ol>
+$$d_{\min}=\frac{\lambda}{4n_2}$$
+<p>即膜厚是<strong>膜中波长</strong>的四分之一（$\lambda/n_2$ 就是膜中波长），所以口诀叫"<strong>四分之一膜</strong>"。</p>
+<div class="warn">
+  <strong>适用条件与边界：</strong>
+  <ul>
+    <li>$\lambda$ 是<strong>真空中波长</strong>，公式里的 $4n_2$ 千万别漏了 $n_2$——除以 $n$ 是最高频的计算错误；</li>
+    <li>上面"两半波损失抵消 ⇒ 相消条件为 $\delta=$ 半波奇数倍"只在 $n_2&lt;n_3$（膜比玻璃疏）时成立。若膜的折射率比玻璃<strong>大</strong>，后表面反射没有半波损失，只剩前表面那一个，相消条件变成 $\delta=k\lambda$——分析问题时要逐面查，不能死背；</li>
+    <li>增透膜只针对某一波长（通常取绿光，人眼最敏感）设计，所以镜头在反射光中常呈淡紫色：红光和紫光反射相消不完全，相对显出来；</li>
+    <li>"增透"不是把反射光的能量变没了，而是通过相消干涉把能量<strong>转移</strong>到透射光中去。</li>
+  </ul>
+</div>
+
+<h3>公式 4：明显衍射的条件（定性）</h3>
+<p>缝、孔或障碍物的线度 $a$ 与波长 $\lambda$ <strong>相当或更小</strong>时，衍射现象明显：</p>
+$$a\lesssim\lambda\ \text{（或与 } \lambda \text{ 同量级）}$$
+<div class="deep">
+  <strong>边界意识：</strong>这不是"能否"衍射的条件——任何缝都有衍射，只是 $a\gg\lambda$ 时衍射角极小、条纹挤在几何像附近，仪器分辨不出来，看起来就像直线传播。选择题若说"只有 $a$ 与 $\lambda$ 相当时才发生衍射"，是<strong>错误</strong>的（少了"明显"二字）。另外记住：缝越窄，中央亮纹越宽、条纹越疏——与双缝干涉"$d$ 小 $\Delta x$ 大"方向一致，可以串起来记。
+</div>
+
+<h3>公式 5：电磁波的基本关系 $c=\lambda f$</h3>
+<p>真空中一切电磁波（含光）速度相同，$c=3.0\times10^{8}\ \mathrm{m/s}$。由 $c=\lambda f$ 知：$\lambda$ 长则 $f$ 低，$\lambda$ 短则 $f$ 高。进入介质后频率 $f$ 不变、速度 $v=c/n$、波长 $\lambda_n=\lambda_0/n$（与几何光学部分一致）。</p>
+<div class="warn">
+  <strong>边界：</strong>$c=\lambda f$ 中的 $c$ 只对真空成立；介质中应写 $v=\lambda_n f$。不同色光在同种介质中 $n$ 略有不同（色散），所以红光在玻璃中比紫光跑得快。
+</div>
+
+<h2 id="s4">四、典型例题</h2>
+
+<p>下面 4 道题覆盖本章高考四大高频考法：双缝计算、干涉实验、薄膜增透、概念辨析。请<strong>先自己做一遍</strong>再对照解析，所有数值均已核算。</p>
+
+<h3>例 1　双缝干涉条纹间距与位置 ★★☆</h3>
+<p>双缝实验中，双缝间距 $d=0.20\ \mathrm{mm}$，双缝到屏的距离 $L=1.0\ \mathrm{m}$，用波长 $\lambda=600\ \mathrm{nm}$ 的红光照射。求：(1) 相邻亮纹间距 $\Delta x$；(2) 第 3 级亮纹到中央亮纹的距离 $x_3$；(3) 第 1 级暗纹到中央亮纹的距离；(4) 若改用 $\lambda'=400\ \mathrm{nm}$ 的紫光，条纹间距变为多少？</p>
+<h4>【分步解析】</h4>
+<ol>
+  <li><strong>统一单位</strong>：$d=0.20\ \mathrm{mm}=2.0\times10^{-4}\ \mathrm{m}$，$\lambda=600\ \mathrm{nm}=6.0\times10^{-7}\ \mathrm{m}$。</li>
+  <li><strong>条纹间距</strong>：$$\Delta x=\frac{L}{d}\lambda=\frac{1.0\times6.0\times10^{-7}}{2.0\times10^{-4}}=3.0\times10^{-3}\ \mathrm{m}=3.0\ \mathrm{mm}$$</li>
+  <li><strong>第 3 级亮纹</strong>：$x_3=3\Delta x=9.0\ \mathrm{mm}$。</li>
+  <li><strong>第 1 级暗纹</strong>：暗纹在相邻亮纹正中间，$x=\dfrac{\Delta x}{2}=1.5\ \mathrm{mm}$。</li>
+  <li><strong>换紫光</strong>：$\Delta x'=\dfrac{L}{d}\lambda'=\dfrac{1.0\times4.0\times10^{-7}}{2.0\times10^{-4}}=2.0\times10^{-3}\ \mathrm{m}=2.0\ \mathrm{mm}$。条纹变密，$\Delta x:\Delta x'=600:400=3:2$。</li>
+</ol>
+<div class="deep">
+  <strong>模型沉淀：</strong>三步走——换单位、套 $\Delta x=\dfrac{L}{d}\lambda$、按级次乘倍数。暗纹位置用"半间距"处理。换光时只需按比例缩放，$\Delta x\propto\lambda$。
+</div>
+<p><strong>追问：</strong>若把整个装置浸入水中（$n=\frac{4}{3}$），红光条纹间距变成多少？水中波长 $\lambda_n=\lambda/n$，故 $\Delta x''=\dfrac{\Delta x}{n}=3.0\times\dfrac34=2.25\ \mathrm{mm}$，条纹变密。</p>
+
+<h3>例 2　双缝干涉测波长（实验题）★★★</h3>
+<p>在"用双缝干涉测光的波长"实验中，已知双缝间距 $d=0.20\ \mathrm{mm}$，双缝到屏的距离 $L=0.70\ \mathrm{m}$。用测量头测得<strong>第 2 级亮纹中心与第 7 级亮纹中心的距离</strong>为 $a=10.50\ \mathrm{mm}$。求该单色光的波长。</p>
+<h4>【分步解析】</h4>
+<ol>
+  <li><strong>数间隔（本题唯一陷阱）</strong>：第 2 级到第 7 级之间有 $7-2=5$ 个条纹间距，所以 $$\Delta x=\frac{a}{5}=\frac{10.50}{5}=2.10\ \mathrm{mm}$$</li>
+  <li><strong>反解波长</strong>：由 $\Delta x=\dfrac{L}{d}\lambda$ 得 $$\lambda=\frac{d\,\Delta x}{L}=\frac{2.0\times10^{-4}\times2.10\times10^{-3}}{0.70}=6.0\times10^{-7}\ \mathrm{m}=600\ \mathrm{nm}$$</li>
+  <li><strong>合理性检查</strong>：600 nm 落在可见光范围（400~760 nm）内，是红光 ✓。</li>
+</ol>
+<div class="deep">
+  <strong>模型沉淀：</strong>实验测波长 = 测多个间距取平均（减小误差）→ 数清间隔数 → 反代公式。为什么测 $n$ 个间距而不测一个？因为条纹只有毫米量级，测一条的相对误差太大；测 5~10 个间隔总长度再除，误差被均摊。这与"累积法测一张纸厚度"是同一个思想。
+</div>
+<p><strong>变式：</strong>若把 $L$ 从 0.70 m 换成 1.40 m，其他不变，同样第 2 到第 7 级的距离变成多少？$\Delta x$ 翻倍为 4.20 mm，$a'=5\times4.20=21.00\ \mathrm{mm}$。</p>
+
+<h3>例 3　增透膜的厚度 ★★★</h3>
+<p>相机镜头玻璃折射率 $n_3=1.50$，在其表面镀一层折射率 $n_2=1.40$ 的氟化镁薄膜。为使波长 $\lambda=560\ \mathrm{nm}$ 的绿光（人眼最敏感）在<strong>垂直入射</strong>时反射最弱，求膜的最小厚度。</p>
+<h4>【分步解析】</h4>
+<ol>
+  <li><strong>查半波损失</strong>：前表面空气（1）→膜（1.40），疏→密，反射光有半波损失；后表面膜（1.40）→玻璃（1.50），仍是疏→密，反射光也有半波损失。两者抵消，不计附加光程差。</li>
+  <li><strong>列相消条件</strong>：两束反射光的光程差 $\delta=2n_2d$（一个来回，乘折射率），相消要求 $$2n_2d=(2k+1)\frac{\lambda}{2}$$</li>
+  <li><strong>取最小厚度</strong>（$k=0$）：$$d_{\min}=\frac{\lambda}{4n_2}=\frac{560\ \mathrm{nm}}{4\times1.40}=\frac{560}{5.60}\ \mathrm{nm}=100\ \mathrm{nm}=1.0\times10^{-7}\ \mathrm{m}$$</li>
+  <li><strong>一致性自检</strong>：膜中波长 $\lambda_n=\lambda/n_2=560/1.40=400\ \mathrm{nm}$，$d_{\min}=\lambda_n/4=100\ \mathrm{nm}$ ✓，两种算法一致。</li>
+</ol>
+<div class="deep">
+  <strong>模型沉淀：</strong>增透膜 = 四分之一膜，$d=\dfrac{\lambda}{4n}$，$\lambda$ 用真空波长、别忘除 $n$。答题时先交代两半波损失的关系，再写相消条件，逻辑分就稳了。
+</div>
+<p><strong>追问（反射光颜色）：</strong>镀了增透膜的镜头，反射光看起来为什么偏淡紫色？绿光被"增透"（反射最弱），光谱两端的红光、紫光反射相消得不彻底，反射光中红紫成分相对突出，混合呈淡紫色。</p>
+
+<h3>例 4　干涉、衍射与偏振的概念辨析（多选）★★★</h3>
+<p>关于光的下列说法，正确的有（　　）</p>
+<p>A．双缝干涉图样的条纹等间距，而单缝衍射图样的中央亮纹比两侧亮纹宽得多<br>
+B．用白光做双缝干涉实验，屏上中央亮纹是白色的<br>
+C．只有当障碍物的尺寸与光的波长相当时，光才会发生衍射<br>
+D．光的偏振现象说明光是一种横波</p>
+<h4>【逐项分析】</h4>
+<ol>
+  <li><strong>A 正确</strong>：双缝干涉由 $\Delta x=\dfrac{L}{d}\lambda$ 知各条纹等宽等距、亮度接近；单缝衍射能量集中在中央，中央亮纹宽度约为两侧亮纹的两倍，且亮度向两侧迅速衰减。——这是两幅图样的核心区别。</li>
+  <li><strong>B 正确</strong>：中央位置光程差为 0，对任何颜色的光都是加强条件，各色光的 0 级亮纹重叠，合成白色亮纹；两侧各级亮纹因 $\Delta x\propto\lambda$ 不同而错开成彩色（同级中紫内红外）。</li>
+  <li><strong>C 错误</strong>：衍射<strong>随时都在发生</strong>，"尺寸与波长相当或更小"只是衍射<strong>明显</strong>的条件。少了"明显"二字就是错的——这是命题人最爱偷换的概念。</li>
+  <li><strong>D 正确</strong>：只有横波才有偏振现象（纵波振动沿传播方向，旋转对称无法偏振），故偏振证明光是横波。注意干涉和衍射只能证明波动，不能证明横波。</li>
+</ol>
+<p><strong>答案：ABD</strong></p>
+<div class="deep">
+  <strong>模型沉淀：</strong>物理光学选择题的"四问"模板——干涉与衍射图样谁等宽？白光中央什么颜色？衍射要不要条件（明显才要）？什么现象证明横波（只有偏振）？四问都过了，这类题就稳了。
+</div>
+
+<h2 id="s5">五、易错点与成因分析</h2>
+
+<div class="warn">
+  <strong>易错 1：干涉图样与衍射图样分不清。</strong>
+  <p><strong>典型表现</strong>：看到"中央亮纹最宽"当成双缝干涉的特征；或认为衍射条纹也等间距。</p>
+  <p><strong>成因</strong>：只记了"都有明暗相间条纹"的共性，没抓图样差异。</p>
+  <p><strong>纠正</strong>：双缝干涉条纹<strong>等宽、等距、亮度相近</strong>；单缝衍射<strong>中央亮纹最宽最亮</strong>（约为旁侧亮纹两倍宽），两侧迅速变窄变暗。口诀："<strong>干涉均匀，衍射中央胖</strong>"。</p>
+</div>
+
+<div class="warn">
+  <strong>易错 2：白光干涉时，以为中央亮纹是彩色或暗的。</strong>
+  <p><strong>典型表现</strong>：认为白光入射时中央也是彩色条纹，或者认为同级亮纹中红光在内侧。</p>
+  <p><strong>成因</strong>：没从"光程差为零 ⇒ 一切波长都加强"这个起点推；把色散的直觉（紫偏折大）错误搬过来。</p>
+  <p><strong>纠正</strong>：中央 $\delta=0$，各色光全部加强 ⇒ <strong>中央是白色亮纹</strong>；两侧由 $\Delta x\propto\lambda$，同级亮纹紫光离中央最近、红光最远，即"<strong>内紫外红</strong>"（注意与棱镜色散里"紫光偏得最狠"不矛盾：那里比偏折角，这里比条纹位置，都源于紫光 $\lambda$ 短/$n$ 大）。</p>
+</div>
+
+<div class="warn">
+  <strong>易错 3：增透膜厚度写成 $d=\lambda/4$，漏除折射率。</strong>
+  <p><strong>典型表现</strong>：$\lambda=560\ \mathrm{nm}$ 直接除以 4 得 140 nm。</p>
+  <p><strong>成因</strong>：背了"四分之一波长"的口诀，忘了"四分之一"指的是<strong>膜中波长</strong>；推导光程差时没乘 $n$。</p>
+  <p><strong>纠正</strong>：光程差永远是<strong>几何路程 × 折射率</strong>：$\delta=2nd$。正确结果 $d=\dfrac{\lambda}{4n}$，对 $n=1.40$ 的膜是 100 nm。写答案前问自己：这个 $\lambda$ 是在哪种介质里的？</p>
+</div>
+
+<div class="warn">
+  <strong>易错 4：半波损失乱判——要么两个面都不查，要么都加。</strong>
+  <p><strong>典型表现</strong>：不管膜与两侧介质折射率大小关系，一律给光程差加 $\lambda/2$；或完全不知道要检查。</p>
+  <p><strong>成因</strong>：把半波损失当成"反射必有"的固定项。</p>
+  <p><strong>纠正</strong>：规则只有一条——<strong>光疏→光密的反射</strong>有半波损失，<strong>光密→光疏</strong>没有。逐面判断后再看<strong>两束光的差</strong>：两束都有（或都没有）则抵消，净附加为 0；只有一个有，则附加 $\lambda/2$，明暗条件整体对调。增透膜（$n_2&lt;n_3$）属于前者，相消条件是 $\delta=$ 半波奇数倍。</p>
+</div>
+
+<div class="warn">
+  <strong>易错 5：认为"满足条件才能发生衍射"。</strong>
+  <p><strong>典型表现</strong>：选择题里"只有缝宽与波长相当，光才发生衍射"被判成正确。</p>
+  <p><strong>成因</strong>：把"明显衍射的条件"记成了"衍射的条件"，丢了"明显"二字。</p>
+  <p><strong>纠正</strong>：衍射是波的本性，<strong>无条件发生</strong>；"缝宽与波长相当或更小"只是让衍射<strong>容易被观察到</strong>。同样地，"双缝干涉条纹间距与单缝宽度无关"也是常见正确项——$\Delta x$ 只由 $L$、$d$、$\lambda$ 决定。</p>
+</div>
+
+<div class="warn">
+  <strong>易错 6：把"证明波动性"和"证明横波"混为一谈。</strong>
+  <p><strong>典型表现</strong>：认为干涉或衍射能说明光是横波。</p>
+  <p><strong>成因</strong>：没意识到纵波同样能干涉、衍射（声波就有）。</p>
+  <p><strong>纠正</strong>：干涉、衍射 ⇒ 光是<strong>波</strong>（纵波横波都行）；偏振 ⇒ 光是<strong>横波</strong>（偏振是横波专属）。题干问"横波"，答案只能是偏振。</p>
+</div>
+
+<div class="warn">
+  <strong>易错 7：电磁波谱顺序或频率关系记反。</strong>
+  <p><strong>典型表现</strong>：以为紫外线波长比红外线长；认为 γ 射线频率最低；看到"热效应"答成紫外线。</p>
+  <p><strong>成因</strong>：只背了名字没挂住顺序；把"能量高"错配给"波长长"。</p>
+  <p><strong>纠正</strong>：波长由长到短：无线电波→红外→可见（红→紫）→紫外→X→γ；由 $c=\lambda f$，频率（能量）恰好相反，一路升高。特征记忆：红外=热效应，紫外=荧光/杀菌，X=透视，γ=穿透最强。</p>
+</div>
+
+<div class="warn">
+  <strong>易错 8：数条纹间隔数出错、单位不换算。</strong>
+  <p><strong>典型表现</strong>："第 2 级到第 7 级"按 6 个间隔除；mm、nm 不换统一就代入，$\Delta x$ 算错三个数量级。</p>
+  <p><strong>成因</strong>：审题跳读；对 $1\ \mathrm{nm}=10^{-9}\ \mathrm{m}$ 不敏感。</p>
+  <p><strong>纠正</strong>：间隔数 = 高级次 − 低级次；代入前把 $d$、$L$、$\lambda$、$\Delta x$ 全部化成米，算完再换算回题目要的单位，并用"可见光波长在 400~760 nm"做合理性检查。</p>
+</div>
+
+<h2 id="s6">六、章末自检清单</h2>
+
+<p>合上书本，逐条自查。任何一条答不上来，回到对应小节再过一遍。</p>
+
+<h4>概念关</h4>
+<ul style="list-style:none;margin-left:4px;">
+  <li>☐ 能说出相干光的三个条件，并解释为什么双缝要用同一光源照明</li>
+  <li>☐ 能说清双缝干涉条纹"等宽等距"而单缝衍射"中央宽两边窄"的图样区别</li>
+  <li>☐ 能解释明显衍射的条件，并指出"发生衍射"与"明显衍射"的区别</li>
+  <li>☐ 能说明偏振现象为什么证明光是横波，并举出偏振的两个应用</li>
+  <li>☐ 能按波长排序默写电磁波谱六段，说出红外/紫外/X/γ 各自的特点与应用</li>
+  <li>☐ 能解释干涉衍射证明波动性、只有偏振证明横波这条证据链</li>
+</ul>
+
+<h4>公式关</h4>
+<ul style="list-style:none;margin-left:4px;">
+  <li>☐ 默写 $\Delta x=\dfrac{L}{d}\lambda$，并能从 $\delta=d\sin\theta$ + 小角近似独立推导</li>
+  <li>☐ 默写亮纹条件 $\delta=k\lambda$ 与暗纹条件 $\delta=(2k+1)\dfrac{\lambda}{2}$，知道暗纹在亮纹正中</li>
+  <li>☐ 能定性说出 $\Delta x$ 随 $L$、$d$、$\lambda$、介质 $n$ 的变化方向</li>
+  <li>☐ 默写增透膜最小厚度 $d=\dfrac{\lambda}{4n}$，并能从半波损失分析推出</li>
+  <li>☐ 默写 $c=\lambda f$，知道真空中一切电磁波同速，进介质后频率不变、波长除以 $n$</li>
+</ul>
+
+<h4>模型关</h4>
+<ul style="list-style:none;margin-left:4px;">
+  <li>☐ 双缝计算：换单位 → 套公式 → 按级次倍乘，暗纹用半间距</li>
+  <li>☐ 测波长实验：多个间隔取平均，间隔数 = 级次差，反代 $\lambda=\dfrac{d\,\Delta x}{L}$</li>
+  <li>☐ 白光干涉：中央白色亮纹，两侧彩色，同级"内紫外红"</li>
+  <li>☐ 增透膜：逐面查半波损失 → 写相消条件 → 最小厚度 $\dfrac{\lambda}{4n}$；反射光呈淡紫色的原因</li>
+  <li>☐ 装置浸入介质：波长变 $\lambda/n$，条纹变密</li>
+</ul>
+
+<h4>易错关</h4>
+<ul style="list-style:none;margin-left:4px;">
+  <li>☐ 我确认增透膜厚度公式里除了 $n$，不会再写成 $\lambda/4$</li>
+  <li>☐ 我确认半波损失只在"疏→密"的反射中发生，会逐面判断</li>
+  <li>☐ 我确认衍射无条件发生，"与波长相当"只是明显的条件</li>
+  <li>☐ 我确认白光中央亮纹是白色，同级亮纹紫光在内侧</li>
+  <li>☐ 我确认"证明横波"的答案只能是偏振</li>
+  <li>☐ 我确认电磁波谱顺序、频率单调性与各波段应用不再记反</li>
+  <li>☐ 计算前把所有长度换成米，算完用"可见光 400~760 nm"做合理性检查</li>
+</ul>
+
+<hr>
+<p style="color: var(--muted); text-align: center; font-size: 0.92em;">
+  小兵，物理光学是典型的"小章节、稳拿分"——知识点一页纸能写完，但陷阱个个经典。学完建议找 2~3 道近年高考光学选择题实战，重点体会命题人怎么在"明显衍射""半波损失""中央条纹颜色"上设坑。
+</p>
+
+</body>
+</html>

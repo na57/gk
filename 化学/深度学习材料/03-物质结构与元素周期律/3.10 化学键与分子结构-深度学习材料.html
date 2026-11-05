@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.10 化学键与分子结构-深度学习材料</title>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#0e7c7b; --subject-soft:#eef7f6;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 化学点缀层（无 JS，纯文本方程式） ===== */
+/* 语义卡片（例题=紫 / 易错=琥珀 / 概念=蓝 / 提示=科目色 / 结构=中性墨） */
+.card { border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 18px; margin: 14px 0; page-break-inside: avoid; }
+.card .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
+.card.concept { background: var(--c-concept-bg); } .card.concept .tag { background: var(--c-concept); color: #fff; }
+.card.example { background: var(--c-example-bg); } .card.example .tag { background: var(--c-example); color: #fff; }
+.card.trap { background: var(--c-trap-bg); } .card.trap .tag { background: var(--c-trap); color: #fff; }
+.card.note { background: var(--subject-soft); } .card.note .tag { background: var(--subject); color: #fff; }
+.card.violet { background: var(--canvas); } .card.violet .tag { background: var(--ink); color: #fff; }
+/* 方程式容器（统一灰底盒 + 科目色左边条） */
+.eq { display: block; background: var(--formula-bg); border: 1px solid var(--line); border-left: 4px solid var(--subject); border-radius: 8px; padding: var(--formula-pad); margin: 10px 0; font-size: 16px; text-align: center; letter-spacing: .3px; page-break-inside: avoid; }
+.eq-arrow { position: relative; display: inline-block; margin: 0 6px; font-weight: 600; }
+.eq-arrow::before { content: attr(data-cond); position: absolute; left: 50%; transform: translateX(-50%); top: -1.05em; font-size: 10.5px; font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
+.state { font-size: .72em; font-style: italic; color: var(--ink-soft); }
+sub, sup { font-size: .72em; line-height: 0; }
+.formula { font-size: 1.05em; }
+.kbd { background: #f0f2f5; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 13px; }
+/* 三栏对比 */
+.triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; page-break-inside: avoid; }
+.triple .cell { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: 14px; }
+.triple .cell h4 { margin: 0 0 8px; font-size: 13.5px; text-align: center; padding: 4px 0; border-radius: 6px; color: #fff; }
+.triple .cell:nth-child(1) h4 { background: var(--c-trap); }
+.triple .cell:nth-child(2) h4 { background: var(--c-example); }
+.triple .cell:nth-child(3) h4 { background: var(--subject); }
+/* 步骤与答案 */
+.step { display: flex; gap: 10px; margin: 8px 0; }
+.step .no { flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--c-method); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.ans { background: #fff; border: 1px dashed var(--c-method); border-radius: 8px; padding: 8px 14px; margin: 8px 0; }
+.chap-foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-soft); text-align: center; }
+@media (max-width: 640px) { .triple { grid-template-columns: 1fr; } }
+@media print {
+  .card { border: 1px solid #999; background: #fff !important; }
+  .card .tag { border: 1px solid #333; background: #fff !important; color: #000; }
+  .eq { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .chap-foot { border-top: none; }
+}
+</style>
+</head>
+<body>
+<nav class="chap-nav">高考备考 · 化学 · 深度学习材料 ｜ 物质结构与元素周期律 ｜ 3.10 化学键与分子结构</nav>
+<header class="chap-head">
+  <h1>3.10 化学键与分子结构</h1>
+  <p class="chap-meta">高中化学 · 深度学习材料 · 面向 2029 届云南高考</p>
+  <p class="chap-intro">
+    化学键是把原子"粘"成分子的那只看不见的手，分子结构则决定了物质性质的走向。
+    本章把「键 → 电子式 → 杂化 → 构型 → 极性 → 分子间作用力」这条逻辑链彻底打通。
+    其中杂化类型与空间构型判断是高考必考点，务必练到 100% 正确；学习时请在脑中始终保留一幅"微观粒子图"，不要只背结论。
+  </p>
+</header>
+<main>
+
+<section>
+<h2>一、本章知识全景</h2>
+<p>本章知识地图如下，先看清全貌，再逐个击破：</p>
+<table>
+<tr>
+<th>知识点</th>
+<th>核心内容</th>
+<th>高考要求</th>
+</tr>
+<tr>
+<td>化学键的概念</td>
+<td>相邻原子（或离子）之间强烈的相互作用；分为离子键、共价键、金属键</td>
+<td>理解"强烈相互作用"的含义，能区分化学键与分子间作用力</td>
+</tr>
+<tr>
+<td>离子键</td>
+<td>阴、阳离子之间的静电作用；存在于离子化合物中</td>
+<td>准确判断离子键，知道离子键无方向性、无饱和性</td>
+</tr>
+<tr>
+<td>共价键</td>
+<td>原子间通过共用电子对形成；分极性键与非极性键；分 σ 键与 π 键</td>
+<td>准确判断键的极性，理解共用电子对偏移的原因（电负性差）</td>
+</tr>
+<tr>
+<td>金属键</td>
+<td>金属阳离子与自由电子之间的强烈作用（电子气理论）</td>
+<td>能解释金属的导电、导热、延展性与金属光泽</td>
+</tr>
+<tr>
+<td>电子式</td>
+<td>用"·"或"×"表示最外层电子；离子化合物与共价化合物写法不同</td>
+<td>书写规范，注意孤电子对、电荷、括号的表示</td>
+</tr>
+<tr>
+<td>键参数</td>
+<td>键能、键长、键角；键能越大键越牢固，键长越短键越牢</td>
+<td>能用键参数解释分子的稳定性与构型</td>
+</tr>
+<tr>
+<td>分子间作用力</td>
+<td>范德华力（取向力、诱导力、色散力），比化学键弱得多</td>
+<td>理解其对分子晶体熔沸点的影响规律</td>
+</tr>
+<tr>
+<td>氢键</td>
+<td>X—H…Y（X、Y 为 N、O、F），强度介于范德华力与化学键之间</td>
+<td>掌握形成条件，能解释 H<sub>2</sub>O、NH<sub>3</sub>、HF 沸点反常与溶解度现象</td>
+</tr>
+<tr>
+<td>杂化轨道理论</td>
+<td>sp、sp<sup>2</sup>、sp<sup>3</sup> 杂化；杂化轨道数 = 价层电子对数</td>
+<td>能根据价层电子对数判断杂化类型（必考）</td>
+</tr>
+<tr>
+<td>VSEPR 理论</td>
+<td>价层电子对数 = σ 键电子对数 + 孤电子对数；电子对互斥决定构型</td>
+<td>熟练计算，准确判断分子的空间构型（必考）</td>
+</tr>
+<tr>
+<td>分子的极性</td>
+<td>由键的极性与空间构型对称性共同决定</td>
+<td>掌握判断方法：构型对称、正负电荷中心重合者为非极性分子</td>
+</tr>
+</table>
+<p><strong>本章主线</strong>：</p>
+<p>化学键（原子如何结合）→ 电子式（结合的符号表达）→ 杂化与 VSEPR（分子长成什么样）→ 分子极性（构型带来什么性质）→ 分子间作用力与氢键（分子与分子如何相处）。</p>
+<p>环环相扣，缺一不可。每一环都要能独立成题，也能串成综合推断。</p>
+</section>
+
+<section>
+<h2>二、核心概念精讲</h2>
+
+<h3>2.1 化学键：一切讨论的起点</h3>
+<div class="card concept">
+<span class="tag">概念 1 · 化学键</span>
+<p><strong>是什么</strong>：</p>
+<p>使离子相结合或原子相结合的作用力通称化学键。关键词是"相结合"和"强烈"——键能一般在 150~800 kJ/mol 量级，远大于分子间作用力（几到几十 kJ/mol）。</p>
+<p><strong>为什么（微观解释）</strong>：</p>
+<p>原子结合成分子时，体系的能量比孤立原子低，更稳定。化学键的本质都是<strong>电性作用</strong>：离子键是阴、阳离子间的静电吸引（含核间、电子间排斥达到平衡），共价键是共用电子对与两核之间的吸引。</p>
+<p><strong>适用边界</strong>：</p>
+<p>化学键只存在于"直接相邻"的粒子之间；稀有气体是单原子分子，分子内<strong>没有化学键</strong>，只有分子间作用力。</p>
+<p><strong>常见混淆</strong>：</p>
+<ul>
+<li>化学键 ≠ 分子间作用力：前者强、在分子内或晶体内相邻粒子间；后者弱、在分子之间。</li>
+<li>"有化学键断裂"不等于"发生化学变化"——NaCl 熔化时离子键被破坏，但属于物理变化；判断化学变化要看<strong>旧键断裂与新键形成是否同时发生</strong>。</li>
+</ul>
+</div>
+
+<h3>2.2 离子键：电子的"彻底转让"</h3>
+<div class="card concept">
+<span class="tag">概念 2 · 离子键</span>
+<p><strong>是什么</strong>：</p>
+<p>带相反电荷的离子之间的相互作用（静电作用），由离子键形成的化合物叫离子化合物。</p>
+<p><strong>为什么</strong>：</p>
+<p>活泼金属原子（如 Na，电负性小）易失电子形成阳离子，活泼非金属原子（如 Cl，电负性大）易得电子形成阴离子；阴、阳离子相互吸引接近，当吸引与核间排斥达到平衡时形成稳定的离子键，双方均达到 8 电子（或 2 电子）稳定结构。</p>
+<p><strong>适用边界</strong>：</p>
+<p>一般存在于<strong>活泼金属（ⅠA、ⅡA）与活泼非金属（ⅥA、ⅦA）</strong>之间；但有两个重要反例必须记住——</p>
+<ul>
+<li>AlCl<sub>3</sub> 是共价化合物（无离子键），尽管它含金属元素；</li>
+<li>NH<sub>4</sub>Cl 等铵盐全部由非金属元素组成，却含离子键（NH<sub>4</sub><sup>+</sup> 与 Cl<sup>−</sup> 之间）。</li>
+</ul>
+<p><strong>特点</strong>：</p>
+<p>离子键<strong>没有方向性、没有饱和性</strong>——一个离子周围能吸引多少个异号离子，只取决于空间大小（这正是下一章"配位数"概念的来源）。</p>
+<p><strong>常见混淆</strong>：</p>
+<ul>
+<li>含离子键的化合物一定是离子化合物（对）；</li>
+<li>离子化合物中可以含共价键（对，如 NaOH 中的 O—H、Na<sub>2</sub>O<sub>2</sub> 中的 O—O、NH<sub>4</sub>Cl 中的 N—H）；</li>
+<li>"金属 + 非金属 = 离子键"不绝对（AlCl<sub>3</sub> 就是反例）。</li>
+</ul>
+</div>
+
+<h3>2.3 共价键：电子的"合伙共用"</h3>
+<div class="card concept">
+<span class="tag">概念 3 · 共价键（极性 / 非极性）</span>
+<p><strong>是什么</strong>：</p>
+<p>原子之间通过共用电子对所形成的相互作用。</p>
+<p><strong>为什么</strong>：</p>
+<p>两个非金属原子都想得电子、谁都不肯放手，于是各提供一个电子形成共用电子对，使双方都"看起来"达到稳定结构；共用电子对同时被两核吸引，把两个原子拴在一起。</p>
+<p><strong>极性之分（关键在电负性差）</strong>：</p>
+<ul>
+<li><strong>非极性共价键</strong>：同种原子之间（A—A 型，如 H—H、Cl—Cl、O=O、N≡N、金刚石中的 C—C），双方吸引电子能力相同，共用电子对不偏移；</li>
+<li><strong>极性共价键</strong>：不同种原子之间（A—B 型，如 H—Cl、H—O、C=O），电负性大的一方把电子对拉向自己，带部分负电（δ<sup>−</sup>），另一方带部分正电（δ<sup>+</sup>）。</li>
+</ul>
+<p><strong>电负性差与键型的关系（经验判断）</strong>：</p>
+<p>成键两元素电负性差越大，键的极性越强；差值大到一定程度（约 &gt; 1.7）就过渡为离子键。所以"离子键与共价键之间没有绝对界限"，NaCl 中的键也不是 100% 的离子键。</p>
+<p><strong>常见混淆</strong>：</p>
+<ul>
+<li>键的极性 ≠ 分子的极性（见概念 9，CO<sub>2</sub> 中 C=O 是极性键，但 CO<sub>2</sub> 是非极性分子）；</li>
+<li>共价化合物中一定不含离子键（对），但离子化合物中可以含共价键；</li>
+<li>共价键有方向性和饱和性（由轨道重叠方向与未成对电子数决定），这是它与离子键的本质区别之一。</li>
+</ul>
+</div>
+
+<div class="card concept">
+<span class="tag">概念 4 · σ 键与 π 键（共价键的另一种分类）</span>
+<p><strong>是什么</strong>：</p>
+<p>按原子轨道的重叠方式分："头碰头"重叠形成 <strong>σ 键</strong>（轴对称、重叠程度大、较牢固）；"肩并肩"重叠形成 <strong>π 键</strong>（镜面对称、重叠程度小、较活泼、不能自由旋转）。</p>
+<p><strong>速记规律</strong>：</p>
+<ul>
+<li>单键 = 1 个 σ 键（如 CH<sub>4</sub> 中 4 个 C—H 全是 σ 键）；</li>
+<li>双键 = 1 个 σ 键 + 1 个 π 键（如 CH<sub>2</sub>=CH<sub>2</sub> 中的 C=C）；</li>
+<li>三键 = 1 个 σ 键 + 2 个 π 键（如 N≡N、CH≡CH 中的 C≡C）。</li>
+</ul>
+<p><strong>为什么重要</strong>：</p>
+<p>π 键比 σ 键弱，所以乙烯、乙炔容易断 π 键发生加成反应——这为高二有机化学埋下伏笔；判断杂化类型时，π 键<strong>不占杂化轨道、不计入价层电子对</strong>，这是 VSEPR 计算的前提。</p>
+</div>
+
+<h3>2.4 金属键：自由电子的"海洋"</h3>
+<div class="card concept">
+<span class="tag">概念 5 · 金属键</span>
+<p><strong>是什么</strong>：</p>
+<p>金属阳离子和自由电子之间存在的强烈相互作用，存在于金属单质和合金中。</p>
+<p><strong>为什么（电子气理论）</strong>：</p>
+<p>金属原子的价电子容易脱离原子，在整个晶体中自由运动，形成"电子气"；脱落电子后的金属阳离子沉浸在电子气中，靠静电作用维系在一起。</p>
+<p><strong>能解释什么</strong>：</p>
+<ul>
+<li><strong>导电性</strong>——自由电子定向移动形成电流；</li>
+<li><strong>导热性</strong>——自由电子碰撞传递能量；</li>
+<li><strong>延展性</strong>——金属键无方向性，受外力时各层阳离子可以相对滑动而不断裂；</li>
+<li><strong>金属光泽</strong>——自由电子吸收并重新发射各种波长的可见光。</li>
+</ul>
+<p><strong>强弱比较</strong>：</p>
+<p>金属阳离子半径越小、所带电荷越多，金属键越强，金属熔点越高（如熔点：Na &lt; Mg &lt; Al；同主族 Li &gt; Na &gt; K）。</p>
+</div>
+
+<h3>2.5 电子式：化学键的"符号画像"</h3>
+<div class="card note">
+<span class="tag">书写规则 · 必须逐条过关</span>
+<p><strong>1. 原子的电子式</strong>：</p>
+<p>在元素符号周围用"·"或"×"标出最外层电子，一般不超过 4 个方位（上下左右），每方位最多 2 个电子。如 ·Na、·Mg·、·Ö·（O 周围 6 点）、·Cl̈·（Cl 周围 7 点）。</p>
+<p><strong>2. 离子化合物的电子式</strong>：</p>
+<p>阳离子写电荷（简单阳离子的电子式就是其离子符号本身，如 Na<sup>+</sup>、Mg<sup>2+</sup>）；阴离子必须用 [ ] 括起来并标出电荷，[ ] 内画出其最外层 8 电子；相同离子不能合并。</p>
+<ul>
+<li>NaCl：Na<sup>+</sup>[×Cl̈]<sup>−</sup>（Cl 周围 8 点）</li>
+<li>MgCl<sub>2</sub>：[×Cl̈]<sup>−</sup>Mg<sup>2+</sup>[×Cl̈]<sup>−</sup>（两个 Cl<sup>−</sup> 分居两侧，<strong>不能</strong>写成 Mg<sup>2+</sup>[×Cl̈]<sub>2</sub><sup>2−</sup>）</li>
+<li>Na<sub>2</sub>O：Na<sup>+</sup>[×Ö×]<sup>2−</sup>Na<sup>+</sup></li>
+<li>NaOH：Na<sup>+</sup>[×Ö̈×H]<sup>−</sup>（注意 O—H 之间是共价键，O 与 H 共用一对电子）</li>
+<li>Na<sub>2</sub>O<sub>2</sub>：Na<sup>+</sup>[×Ö—Ö×]<sup>2−</sup>Na<sup>+</sup>（过氧根内 O—O 是非极性共价键）</li>
+<li>NH<sub>4</sub>Cl：[H×N̈(×H)(×H)×H]<sup>+</sup>[×Cl̈]<sup>−</sup>（NH<sub>4</sub><sup>+</sup> 是复杂阳离子，也要加 [ ]）</li>
+</ul>
+<p><strong>3. 共价化合物的电子式</strong>：</p>
+<p>共用电子对画在两原子之间，<strong>不写 [ ]、不标电荷</strong>，各原子（除 H）满足 8 电子稳定结构。</p>
+<ul>
+<li>HCl：H×Cl̈·（H 与 Cl 共用 1 对电子，Cl 上还有 3 对孤电子对）</li>
+<li>H<sub>2</sub>O：H×Ö̈×H（O 上 2 对孤电子对——这正是 V 形的电子根源）</li>
+<li>NH<sub>3</sub>：H×N̈(×H)(×H)（N 上 1 对孤电子对——VSEPR 判断的关键）</li>
+<li>CO<sub>2</sub>：Ö̈× ×C× ×Ö̈（C 与每个 O 共用 2 对电子，即 C=O 双键）</li>
+<li>N<sub>2</sub>：×N⋮⋮⋮N×（N≡N 三键，3 对共用电子，每个 N 上各 1 对孤电子对）</li>
+<li>HClO：H×Ö̈×Cl̈·（注意连接顺序是 H—O—Cl，H 永远连在 O 上）</li>
+</ul>
+<p><strong>4. 用电子式表示形成过程</strong>：</p>
+<p>如 NaCl 的形成：Na· ＋ ·Cl̈· → Na<sup>+</sup>[×Cl̈]<sup>−</sup>。箭头左边写原子电子式，右边写化合物电子式；离子化合物要体现电子的转移（可用弯箭头表示 Na 的电子转给 Cl），共价化合物只画共用电子对的形成，不画电子转移。</p>
+<p><strong>写完自检三条</strong>：① 每个原子（除 H）是否 8 电子、H 是否 2 电子；② 离子是否该加括号和电荷；③ 孤电子对是否补齐。</p>
+</div>
+
+<h3>2.6 键参数：键能、键长、键角</h3>
+<div class="card concept">
+<span class="tag">概念 6 · 键参数</span>
+<p><strong>三个参数</strong>：</p>
+<ul>
+<li><strong>键能</strong>：气态基态原子形成 1 mol 化学键释放的最低能量（kJ/mol）。键能越大，键越牢固，分子越稳定。如 H—F 键能最大，故 HX 中 HF 最稳定。</li>
+<li><strong>键长</strong>：成键两原子的核间距。一般键长越短，键能越大（如键长 C—C &gt; C=C &gt; C≡C，键能反之递增）。</li>
+<li><strong>键角</strong>：分子中相邻两键之间的夹角，决定分子的空间形状（如 CH<sub>4</sub> 109°28′、NH<sub>3</sub> 107°、H<sub>2</sub>O 105°、CO<sub>2</sub> 180°）。</li>
+</ul>
+<p><strong>怎么用</strong>：</p>
+<p>比较分子稳定性用键能（键能大 → 稳定）；比较分子形状用键角（键角直接反映构型）。注意"稳定"指化学性质不活泼，与熔沸点无关——N<sub>2</sub> 因 N≡N 键能很大（946 kJ/mol）而化学性质稳定，但沸点很低（分子晶体，范德华力小）。</p>
+</div>
+
+<h3>2.7 分子间作用力与氢键</h3>
+<div class="card concept">
+<span class="tag">概念 7 · 分子间作用力（范德华力）</span>
+<p><strong>是什么</strong>：</p>
+<p>分子与分子之间普遍存在的一种较弱的相互作用（包括取向力、诱导力、色散力），强度一般只有几到二十几 kJ/mol，比化学键弱 1~2 个数量级。</p>
+<p><strong>为什么存在</strong>：</p>
+<p>分子中电荷分布的瞬间涨落与永久偶极，使分子之间产生静电吸引。</p>
+<p><strong>递变规律（高考常考）</strong>：</p>
+<p>对<strong>组成和结构相似</strong>的分子（同系物、同族氢化物等），<strong>相对分子质量越大，范德华力越强，熔沸点越高</strong>。</p>
+<ul>
+<li>卤素单质：F<sub>2</sub> &lt; Cl<sub>2</sub> &lt; Br<sub>2</sub> &lt; I<sub>2</sub>（常温下依次为气、气、液、固）；</li>
+<li>卤化氢（除 HF）：HCl &lt; HBr &lt; HI；</li>
+<li>烷烃同系物：CH<sub>4</sub> &lt; C<sub>2</sub>H<sub>6</sub> &lt; C<sub>3</sub>H<sub>8</sub> &lt; ……</li>
+</ul>
+<p><strong>适用边界</strong>：</p>
+<p>范德华力只影响<strong>物理性质</strong>（熔沸点、溶解性），与化学性质无关；它只存在于分子之间，故对离子晶体、原子晶体、金属晶体不适用。</p>
+</div>
+
+<div class="card concept">
+<span class="tag">概念 8 · 氢键</span>
+<p><strong>是什么</strong>：</p>
+<p>已经与电负性很大的原子（<strong>N、O、F</strong>）形成共价键的 H 原子，与另一个电负性很大的原子（N、O、F）之间产生的一种较强的分子间（或分子内）作用力，表示为 X—H…Y。</p>
+<p>强度约 10~40 kJ/mol，<strong>比范德华力强、比化学键弱，不属于化学键</strong>。</p>
+<p><strong>为什么（形成条件，两条缺一不可）</strong>：</p>
+<ul>
+<li>必须有与 N/O/F 直接相连的 H——N/O/F 电负性大，把共用电子对强烈拉向自己，使 H 几乎"裸核"、带明显正电；</li>
+<li>必须有另一个含孤电子对的 N/O/F 原子来接受这个 H。</li>
+</ul>
+<p>所以 CH<sub>4</sub>、CCl<sub>4</sub>、CO<sub>2</sub> 分子间<strong>不存在氢键</strong>；HCHO（甲醛）分子间也没有氢键（C—H 中的 H 不够"正"）；HCl 分子间同样没有氢键（Cl 电负性虽大，但不在 N/O/F 之列）。</p>
+<p><strong>对性质的影响（三大考点）</strong>：</p>
+<ul>
+<li><strong>熔沸点反常升高</strong>：H<sub>2</sub>O（100 ℃）、HF（19.5 ℃）、NH<sub>3</sub>（−33.5 ℃）远高于同族其他氢化物（H<sub>2</sub>S −60 ℃、HCl −85 ℃、PH<sub>3</sub> −87 ℃）。第ⅣA 族氢化物 CH<sub>4</sub>~SnH<sub>4</sub> 无氢键，沸点随相对分子质量正常递增，可作对照组记忆。</li>
+<li><strong>溶解度增大</strong>：NH<sub>3</sub> 极易溶于水（1 体积水约溶解 700 体积 NH<sub>3</sub>），原因之一是 NH<sub>3</sub> 与 H<sub>2</sub>O 分子间形成氢键；低级醇、羧酸易溶于水同理（C<sub>2</sub>H<sub>5</sub>OH 与水任意比互溶，而其同分异构体二甲醚 CH<sub>3</sub>OCH<sub>3</sub> 溶解度小得多——前者能与水形成氢键）。</li>
+<li><strong>密度反常</strong>：冰中每个 H<sub>2</sub>O 与周围 4 个 H<sub>2</sub>O 通过氢键搭成规则的四面体网络，结构"空旷"，所以冰的密度比液态水小，冰浮在水面上。</li>
+</ul>
+<p><strong>常见混淆</strong>：</p>
+<p>氢键不是化学键！使水分解需要破坏 H—O 共价键（吸收大量能量，需通电等条件），而水蒸发只破坏氢键和范德华力。这就是"水的沸点高（氢键）但热稳定性由 O—H 键能决定"的区别。</p>
+</div>
+
+<h3>2.8 杂化轨道理论与 VSEPR：本章双核心</h3>
+<div class="card concept">
+<span class="tag">概念 9 · 杂化轨道理论</span>
+<p><strong>是什么</strong>：</p>
+<p>成键时，中心原子中能量相近的原子轨道（如 1 个 s 轨道与 3 个 p 轨道）会重新"混合搅拌"，组合成一组能量相同、方向不同的新轨道，称为杂化轨道。</p>
+<p><strong>三种常见类型</strong>：</p>
+<table>
+<tr>
+<th>杂化类型</th>
+<th>参与轨道</th>
+<th>杂化轨道数</th>
+<th>轨道夹角</th>
+<th>空间取向</th>
+<th>典型实例</th>
+</tr>
+<tr>
+<td>sp</td>
+<td>1 个 s + 1 个 p</td>
+<td>2</td>
+<td>180°</td>
+<td>直线形</td>
+<td>BeCl<sub>2</sub>、CO<sub>2</sub>、C<sub>2</sub>H<sub>2</sub> 中的 C</td>
+</tr>
+<tr>
+<td>sp<sup>2</sup></td>
+<td>1 个 s + 2 个 p</td>
+<td>3</td>
+<td>120°</td>
+<td>平面三角形</td>
+<td>BF<sub>3</sub>、CH<sub>2</sub>=CH<sub>2</sub> 中的 C、苯中的 C</td>
+</tr>
+<tr>
+<td>sp<sup>3</sup></td>
+<td>1 个 s + 3 个 p</td>
+<td>4</td>
+<td>109°28′</td>
+<td>正四面体形</td>
+<td>CH<sub>4</sub>、NH<sub>3</sub>、H<sub>2</sub>O 中的中心原子</td>
+</tr>
+</table>
+<p><strong>为什么要杂化</strong>：</p>
+<p>杂化后轨道一头大一头小，成键时用"大头"重叠，重叠程度更大、键更牢固；且杂化轨道在空间互相远离，排斥最小，体系能量最低、最稳定。</p>
+<p><strong>判断方法（最重要的一句话）</strong>：</p>
+<p><strong>中心原子的杂化轨道数 = 价层电子对数</strong>。</p>
+<p>价层电子对数为 2 → sp；为 3 → sp<sup>2</sup>；为 4 → sp<sup>3</sup>。</p>
+<p>所以判断杂化不必死记每个分子，只要会算价层电子对数（见概念 10）。</p>
+<p><strong>常见混淆</strong>：</p>
+<ul>
+<li>杂化轨道既容纳 σ 键电子对，也容纳孤电子对（NH<sub>3</sub> 中 N 的 4 个 sp<sup>3</sup> 轨道：3 个装 σ 键电子对，1 个装孤电子对）；</li>
+<li>π 键<strong>不</strong>由杂化轨道形成——C<sub>2</sub>H<sub>4</sub> 中每个 C 是 sp<sup>2</sup> 杂化，双键里 1 个是 σ 键（sp<sup>2</sup>–sp<sup>2</sup> 重叠），另 1 个 π 键由未参与杂化的 p 轨道"肩并肩"形成；</li>
+<li>"杂化类型由分子形状决定"是因果倒置——先有杂化（电子对排斥）才有形状。</li>
+</ul>
+</div>
+
+<div class="card concept">
+<span class="tag">概念 10 · 价层电子对互斥理论（VSEPR）</span>
+<p><strong>是什么</strong>：</p>
+<p>分子中中心原子周围的价层电子对（σ 键电子对与孤电子对）因互相排斥，会尽量远离，从而决定分子的空间构型。</p>
+<p><strong>核心计算公式（必须滚瓜烂熟）</strong>：</p>
+<span class="eq">价层电子对数 = σ 键电子对数 + 孤电子对数</span>
+<ul>
+<li><strong>σ 键电子对数</strong> = 与中心原子结合的原子数。注意：双键、三键只算 1 对 σ 电子对！如 CO<sub>2</sub>（O=C=O）中 C 的 σ 键电子对数 = 2，而不是 4。</li>
+<li><strong>孤电子对数</strong> = ½(a − xb)：a 为中心原子价电子数（阳离子减去电荷数，阴离子加上电荷数），x 为配位原子数，b 为配位原子达稳定结构还需要的电子数（H 为 1，卤素为 1，O、S 为 2）。</li>
+</ul>
+<p><strong>从电子对构型到分子构型（"剥橘子法"）</strong>：</p>
+<p>先按价层电子对数确定电子对的空间排布，再"剥掉"孤电子对（孤电子对只有一端连着核，没有形状贡献），剩下的 σ 键骨架就是分子的真实形状：</p>
+<table>
+<tr>
+<th>价层电子对数</th>
+<th>σ 键数</th>
+<th>孤电子对数</th>
+<th>电子对构型</th>
+<th>分子空间构型</th>
+<th>键角</th>
+<th>实例</th>
+</tr>
+<tr>
+<td>2</td>
+<td>2</td>
+<td>0</td>
+<td>直线形</td>
+<td>直线形</td>
+<td>180°</td>
+<td>CO<sub>2</sub>、BeCl<sub>2</sub>、CS<sub>2</sub></td>
+</tr>
+<tr>
+<td>3</td>
+<td>3</td>
+<td>0</td>
+<td>平面三角形</td>
+<td>平面三角形</td>
+<td>120°</td>
+<td>BF<sub>3</sub>、SO<sub>3</sub>、NO<sub>3</sub><sup>−</sup>、CO<sub>3</sub><sup>2−</sup></td>
+</tr>
+<tr>
+<td>3</td>
+<td>2</td>
+<td>1</td>
+<td>平面三角形</td>
+<td>V 形（角形）</td>
+<td>&lt;120°</td>
+<td>SO<sub>2</sub>、NO<sub>2</sub><sup>−</sup>、O<sub>3</sub></td>
+</tr>
+<tr>
+<td>4</td>
+<td>4</td>
+<td>0</td>
+<td>正四面体形</td>
+<td>正四面体形</td>
+<td>109°28′</td>
+<td>CH<sub>4</sub>、CCl<sub>4</sub>、NH<sub>4</sub><sup>+</sup>、SO<sub>4</sub><sup>2−</sup>、PO<sub>4</sub><sup>3−</sup></td>
+</tr>
+<tr>
+<td>4</td>
+<td>3</td>
+<td>1</td>
+<td>四面体形</td>
+<td>三角锥形</td>
+<td>107°</td>
+<td>NH<sub>3</sub>、PH<sub>3</sub>、H<sub>3</sub>O<sup>+</sup>、SO<sub>3</sub><sup>2−</sup></td>
+</tr>
+<tr>
+<td>4</td>
+<td>2</td>
+<td>2</td>
+<td>四面体形</td>
+<td>V 形（角形）</td>
+<td>105°</td>
+<td>H<sub>2</sub>O、H<sub>2</sub>S、NH<sub>2</sub><sup>−</sup></td>
+</tr>
+</table>
+<p><strong>为什么键角会缩小</strong>：</p>
+<p>排斥力大小顺序为<strong>孤电子对—孤电子对 &gt; 孤电子对—成键电子对 &gt; 成键电子对—成键电子对</strong>。</p>
+<p>孤电子对只受一个核吸引，"体积"更大、挤压更强，所以 CH<sub>4</sub>（109°28′）→ NH<sub>3</sub>（107°）→ H<sub>2</sub>O（105°）键角依次减小。</p>
+</div>
+
+<h3>2.9 分子的极性</h3>
+<div class="card concept">
+<span class="tag">概念 11 · 分子的极性</span>
+<p><strong>是什么</strong>：</p>
+<p>分子中正、负电荷中心是否重合。重合 → 非极性分子；不重合 → 极性分子（相当于一个"小磁铁"）。</p>
+<p><strong>判断三步法</strong>：</p>
+<ol>
+<li>看每个键是否有极性；</li>
+<li>用 VSEPR 确定分子空间构型；</li>
+<li>看各键极性的"矢量"是否因对称而抵消。</li>
+</ol>
+<p><strong>分类速判</strong>：</p>
+<ul>
+<li><strong>双原子分子</strong>：键无极性则分子无极性（H<sub>2</sub>、O<sub>2</sub>、Cl<sub>2</sub>、N<sub>2</sub>）；键有极性则分子必有极性（HCl、CO）。</li>
+<li><strong>AB<sub>n</sub> 型多原子分子</strong>：中心原子周围各键完全相同且构型高度对称（直线形 CO<sub>2</sub>、平面正三角形 BF<sub>3</sub>、正四面体 CH<sub>4</sub>/CCl<sub>4</sub>）→ 极性抵消，<strong>非极性分子</strong>；构型不对称（V 形 H<sub>2</sub>O、三角锥形 NH<sub>3</sub>）或各键不同（CH<sub>3</sub>Cl、CH<sub>2</sub>Cl<sub>2</sub>）→ <strong>极性分子</strong>。</li>
+<li><strong>一条快捷结论</strong>：AB<sub>n</sub> 型分子中，中心原子 A 化合价的绝对值 = 其价电子数（即最外层电子全部成键、无孤电子对）时，分子为非极性分子。如 CO<sub>2</sub> 中 C 为 +4 = 价电子数 4；BF<sub>3</sub> 中 B 为 +3 = 3；CH<sub>4</sub> 中 C 为 −4，绝对值 4。而 NH<sub>3</sub> 中 N 为 −3 ≠ 5 → 极性分子；H<sub>2</sub>O 中 O 为 −2 ≠ 6 → 极性分子。</li>
+</ul>
+<p><strong>有什么用</strong>：</p>
+<p>相似相溶——极性分子易溶于极性溶剂（HCl、NH<sub>3</sub> 易溶于水），非极性分子易溶于非极性溶剂（I<sub>2</sub> 易溶于 CCl<sub>4</sub>、Br<sub>2</sub> 易溶于苯）。这是萃取分液的理论基础。</p>
+</div>
+</section>
+
+<section>
+<h2>三、三重表征贯通</h2>
+<p>本章的微观一栏是灵魂——化学键与分子间作用力全都"看不见"，必须在脑中建立粒子图景，再与宏观现象、符号表达互相印证。以下四组，请逐组做到"看到一栏、补出另两栏"。</p>
+
+<h3>表征组 1：NaCl 的形成与"熔融导电"</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>金属钠在氯气中剧烈燃烧，发出黄色火焰，产生大量白烟，瓶壁上附着白色固体（NaCl）。</p>
+<p>固态 NaCl 不导电，但熔融的 NaCl 或 NaCl 溶液能导电，闭合回路中小灯泡发光。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>Na 原子（电子层 2,8,1）把最外层 1 个电子转移给 Cl 原子（2,8,7），生成 Na<sup>+</sup> 与 Cl<sup>−</sup>，二者通过离子键（静电作用）结合。</p>
+<p>固态时离子被"锁"在晶格结点上不能自由移动，故不导电；熔融或溶于水后离子脱离束缚自由移动，定向迁移形成电流。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<span class="eq">2Na<span class="state">(s)</span> + Cl<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="点燃">→</span> 2NaCl<span class="state">(s)</span></span>
+<p>电子式形成过程：Na· + ·Cl̈· → Na<sup>+</sup>[×Cl̈]<sup>−</sup></p>
+<p>熔融电离：NaCl<span class="state">(l)</span> → Na<sup>+</sup> + Cl<sup>−</sup></p>
+</div>
+</div>
+
+<h3>表征组 2：HCl 气体溶于水——共价键在水中断裂</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>HCl 是无色、有刺激性气味的气体，在空气中形成白雾（与空气中水蒸气结合成盐酸小液滴）。</p>
+<p>喷泉实验中，水被压入烧瓶形成红色喷泉（水中含紫色石蕊），说明 HCl 极易溶于水且水溶液显酸性。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>HCl 分子内是极性共价键（H—Cl）；分子间只有范德华力（<strong>无氢键</strong>，因为 H 连在 Cl 上而非 N/O/F）。</p>
+<p>溶于水时，在极性水分子的作用下 H—Cl 键断裂，电离出自由移动的 H<sup>+</sup>（实际以 H<sub>3</sub>O<sup>+</sup> 形式存在）和 Cl<sup>−</sup>——共价化合物也能电离。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<span class="eq">HCl<span class="state">(g)</span> <span class="eq-arrow" data-cond="溶于水">→</span> H<sup>+</sup><span class="state">(aq)</span> + Cl<sup>−</sup><span class="state">(aq)</span></span>
+<p>电子式：H×Cl̈·（共价化合物：无括号、无电荷）</p>
+<p>水合氢离子：H<sup>+</sup> + H<sub>2</sub>O → H<sub>3</sub>O<sup>+</sup>（H<sub>3</sub>O<sup>+</sup> 为三角锥形，O 为 sp<sup>3</sup> 杂化）</p>
+</div>
+</div>
+
+<h3>表征组 3：水的反常——氢键撑起的高沸点与"冰浮于水"</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>水的沸点 100 ℃，远高于相对分子质量更大的 H<sub>2</sub>S（−60 ℃）。</p>
+<p>冰的密度比水小，冰浮在水面上；寒冬湖面结冰而水下生物得以存活。</p>
+<p>NH<sub>3</sub> 极易溶于水，可做喷泉实验。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>H<sub>2</sub>O 分子中 O 电负性大，O—H 键极性强，H 几乎"裸核"；一个 H<sub>2</sub>O 的 H 与另一个 H<sub>2</sub>O 中 O 上的孤电子对形成 O—H…O 氢键。</p>
+<p>冰中每个 H<sub>2</sub>O 形成 4 条氢键，搭成空旷的四面体骨架，故密度变小；水沸腾时需额外能量打断大量氢键，故沸点反常高。</p>
+<p>H<sub>2</sub>S 中 S 电负性小，不能形成氢键，分子间只有范德华力。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<p>氢键表示：O—H…O（实线为共价键，虚线为氢键）</p>
+<p>VSEPR：H<sub>2</sub>O 中 O 的价层电子对数 = 2 + ½×(6 − 2×1) = 4，sp<sup>3</sup> 杂化，孤电子对 2 对 → V 形，键角约 105°。</p>
+<p>对比记忆：H<sub>2</sub>O、HF、NH<sub>3</sub> 分子间有氢键；CH<sub>4</sub>、H<sub>2</sub>S、HCl、PH<sub>3</sub> 分子间无氢键。</p>
+</div>
+</div>
+
+<h3>表征组 4：NH<sub>3</sub> 喷泉实验——分子极性、氢键与孤电子对的合奏</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>干燥的圆底烧瓶充满 NH<sub>3</sub>，挤压胶头滴管使少量水进入后，烧杯中的水（含酚酞）被迅速倒吸入烧瓶，形成红色喷泉。</p>
+<p>说明：NH<sub>3</sub> 极易溶于水（气压骤降），且氨水显碱性。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>NH<sub>3</sub> 中 N 有一对孤电子对（价层电子对数 = 3 + ½×(5 − 3) = 4，sp<sup>3</sup>，三角锥形），分子是极性分子，与极性的 H<sub>2</sub>O"相似相溶"。</p>
+<p>同时 NH<sub>3</sub> 的 H（连在 N 上）与 H<sub>2</sub>O 的 O、以及 NH<sub>3</sub> 的 N 与 H<sub>2</sub>O 的 H 之间都能形成氢键，溶解度剧增；孤电子对还能结合水电离的 H<sup>+</sup>，使溶液显碱性。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<span class="eq">NH<sub>3</sub> + H<sub>2</sub>O ⇌ NH<sub>3</sub>·H<sub>2</sub>O ⇌ NH<sub>4</sub><sup>+</sup> + OH<sup>−</sup></span>
+<p>氢键表示：N—H…O 或 O—H…N</p>
+<p>VSEPR：NH<sub>3</sub> 的 N：σ 键 3 + 孤电子对 1 = 4 → sp<sup>3</sup> → 三角锥形，键角约 107°。</p>
+</div>
+</div>
+</section>
+
+<section>
+<h2>四、典型例题分步拆解</h2>
+
+<div class="card example">
+<span class="tag">例 1 · 化学键类型与电子式</span>
+<p><strong>题目</strong>：下列化合物中，既含离子键又含共价键的是（　　）</p>
+<p>① CaCl<sub>2</sub>　② NaOH　③ Na<sub>2</sub>O<sub>2</sub>　④ NH<sub>4</sub>Cl　⑤ H<sub>2</sub>SO<sub>4</sub>　⑥ K<sub>2</sub>O</p>
+<p>A．①②③　　B．②③④　　C．②④⑤　　D．①④⑥</p>
+<p><strong>【思路点拨】</strong></p>
+<p>先找离子键（含活泼金属阳离子或 NH<sub>4</sub><sup>+</sup> 的化合物一般是离子化合物），再看其阴、阳离子内部是否含共价键——复杂离子（OH<sup>−</sup>、O<sub>2</sub><sup>2−</sup>、NH<sub>4</sub><sup>+</sup>、SO<sub>4</sub><sup>2−</sup> 等）内部必有共价键。</p>
+<div class="step"><div class="no">1</div>
+<p>逐个筛离子键：① CaCl<sub>2</sub> 含 Ca<sup>2+</sup> 与 Cl<sup>−</sup> → 离子键；② NaOH 含 Na<sup>+</sup> 与 OH<sup>−</sup> → 离子键；③ Na<sub>2</sub>O<sub>2</sub> 含 Na<sup>+</sup> 与 O<sub>2</sub><sup>2−</sup> → 离子键；④ NH<sub>4</sub>Cl 含 NH<sub>4</sub><sup>+</sup> 与 Cl<sup>−</sup> → 离子键；⑤ H<sub>2</sub>SO<sub>4</sub> 全部由非金属元素组成且无 NH<sub>4</sub><sup>+</sup>，是共价化合物 → 无离子键；⑥ K<sub>2</sub>O → 离子键。</p>
+</div>
+<div class="step"><div class="no">2</div>
+<p>再查复杂离子内部共价键：① 中 Cl<sup>−</sup> 是简单离子，无共价键；② 中 OH<sup>−</sup> 内 O—H 是共价键 ✔；③ 中 O<sub>2</sub><sup>2−</sup> 内 O—O 是共价键（且为非极性键）✔；④ 中 NH<sub>4</sub><sup>+</sup> 内 N—H 是共价键 ✔；⑥ 中 O<sup>2−</sup> 是简单离子，无共价键。</p>
+</div>
+<div class="step"><div class="no">3</div>
+<p>同时满足"离子键 + 共价键"的是 ②③④。</p>
+</div>
+<div class="ans">
+<strong>【答案】</strong>B（②③④）。
+补充：Na<sub>2</sub>O<sub>2</sub> 的电子式为 Na<sup>+</sup>[×Ö—Ö×]<sup>2−</sup>Na<sup>+</sup>，过氧根中 O—O 是非极性共价键——这是高考常设的小陷阱。
+</div>
+<p><strong>【方法总结】</strong></p>
+<p>判离子键看"阳离子来头"（活泼金属或 NH<sub>4</sub><sup>+</sup>），判共价键看"离子内部是否复杂"。记住三句话：离子化合物中可能有共价键；共价化合物中一定没有离子键；只含非金属元素的化合物也可能是离子化合物（铵盐）。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 2 · 杂化类型与空间构型判断（必考模型）</span>
+<p><strong>题目</strong>：判断下列分子（或离子）中心原子的杂化类型与粒子的空间构型：</p>
+<p>① NH<sub>3</sub>　② BF<sub>3</sub>　③ CO<sub>2</sub>　④ H<sub>2</sub>O　⑤ NH<sub>4</sub><sup>+</sup>　⑥ SO<sub>2</sub></p>
+<p><strong>【思路点拨】</strong></p>
+<p>固定套路：算 σ 键电子对数 → 算孤电子对数 ½(a − xb) → 相加得价层电子对数 → 定杂化类型 → 剥掉孤电子对得空间构型。注意双键只算 1 个 σ 键，离子要修正电荷。</p>
+<div class="step"><div class="no">1</div>
+<p>① NH<sub>3</sub>：σ 键数 = 3；孤电子对数 = ½×(5 − 3×1) = 1；价层电子对数 = 4 → <strong>sp<sup>3</sup> 杂化</strong>；剥去 1 对孤电子对 → <strong>三角锥形</strong>（键角约 107°）。</p>
+</div>
+<div class="step"><div class="no">2</div>
+<p>② BF<sub>3</sub>：σ 键数 = 3；孤电子对数 = ½×(3 − 3×1) = 0；价层电子对数 = 3 → <strong>sp<sup>2</sup> 杂化</strong> → <strong>平面三角形</strong>（120°）。</p>
+</div>
+<div class="step"><div class="no">3</div>
+<p>③ CO<sub>2</sub>：结构为 O=C=O，双键各只算 1 个 σ 键，σ 键数 = 2；孤电子对数 = ½×(4 − 2×2) = 0；价层电子对数 = 2 → <strong>sp 杂化</strong> → <strong>直线形</strong>（180°）。</p>
+</div>
+<div class="step"><div class="no">4</div>
+<p>④ H<sub>2</sub>O：σ 键数 = 2；孤电子对数 = ½×(6 − 2×1) = 2；价层电子对数 = 4 → <strong>sp<sup>3</sup> 杂化</strong> → 剥去 2 对孤电子对 → <strong>V 形</strong>（约 105°）。</p>
+</div>
+<div class="step"><div class="no">5</div>
+<p>⑤ NH<sub>4</sub><sup>+</sup>：阳离子要在 a 中减去电荷数，a = 5 − 1 = 4；σ 键数 = 4；孤电子对数 = ½×(4 − 4×1) = 0；价层电子对数 = 4 → <strong>sp<sup>3</sup> 杂化</strong> → <strong>正四面体形</strong>（109°28′）。</p>
+</div>
+<div class="step"><div class="no">6</div>
+<p>⑥ SO<sub>2</sub>：σ 键数 = 2；孤电子对数 = ½×(6 − 2×2) = 1；价层电子对数 = 3 → <strong>sp<sup>2</sup> 杂化</strong> → 剥去 1 对孤电子对 → <strong>V 形</strong>（&lt;120°）。</p>
+</div>
+<div class="ans">
+<strong>【答案】</strong>① sp<sup>3</sup>、三角锥形；② sp<sup>2</sup>、平面三角形；③ sp、直线形；④ sp<sup>3</sup>、V 形；⑤ sp<sup>3</sup>、正四面体形；⑥ sp<sup>2</sup>、V 形。
+</div>
+<p><strong>【方法总结】</strong></p>
+<p>"价层电子对数定杂化，孤电子对数定变形"：对数 2/3/4 对应 sp/sp<sup>2</sup>/sp<sup>3</sup>；构型名称只看 σ 键骨架，剥掉孤电子对。</p>
+<p>离子计算时记得：阳离子 a 减电荷，阴离子 a 加电荷。如 SO<sub>4</sub><sup>2−</sup> 中 S 的孤电子对数 = ½×(6 + 2 − 4×2) = 0，价层电子对数 = 4 → sp<sup>3</sup>、正四面体形。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 3 · 氢键与熔沸点比较</span>
+<p><strong>题目</strong>：下列氢化物的沸点由高到低的顺序排列正确的是（　　）</p>
+<p>A．H<sub>2</sub>O &gt; H<sub>2</sub>S &gt; H<sub>2</sub>Se &gt; H<sub>2</sub>Te　　B．H<sub>2</sub>O &gt; H<sub>2</sub>Te &gt; H<sub>2</sub>Se &gt; H<sub>2</sub>S</p>
+<p>C．H<sub>2</sub>Te &gt; H<sub>2</sub>Se &gt; H<sub>2</sub>S &gt; H<sub>2</sub>O　　D．H<sub>2</sub>O &gt; H<sub>2</sub>Se &gt; H<sub>2</sub>Te &gt; H<sub>2</sub>S</p>
+<p><strong>【思路点拨】</strong></p>
+<p>沸点比较两步走：① 先看能否形成分子间氢键（能形成的那个反常地"蹿"到最前）；② 其余的组成结构相似，按相对分子质量排序（越大范德华力越强、沸点越高）。</p>
+<div class="step"><div class="no">1</div>
+<p>查氢键：只有 H<sub>2</sub>O 中 H 与 O 相连、且 O 有孤电子对，分子间可形成氢键 → H<sub>2</sub>O 沸点反常最高（100 ℃），排第一。</p>
+</div>
+<div class="step"><div class="no">2</div>
+<p>其余 H<sub>2</sub>S（相对分子质量 34）、H<sub>2</sub>Se（81）、H<sub>2</sub>Te（130）均无氢键，结构相似，相对分子质量越大沸点越高：H<sub>2</sub>Te &gt; H<sub>2</sub>Se &gt; H<sub>2</sub>S。</p>
+</div>
+<div class="step"><div class="no">3</div>
+<p>合并：H<sub>2</sub>O &gt; H<sub>2</sub>Te &gt; H<sub>2</sub>Se &gt; H<sub>2</sub>S。</p>
+</div>
+<div class="ans">
+<strong>【答案】</strong>B。实际数据佐证：H<sub>2</sub>O 100 ℃、H<sub>2</sub>Te 约 −2 ℃、H<sub>2</sub>Se 约 −41 ℃、H<sub>2</sub>S 约 −60 ℃。
+</div>
+<p><strong>【方法总结】</strong></p>
+<p>凡遇氢化物熔沸点排序，先问三个分子在不在场：H<sub>2</sub>O、HF、NH<sub>3</sub>（沸点分别反常高于同族同类）。三者之间再比较时：H<sub>2</sub>O &gt; HF &gt; NH<sub>3</sub>（水常温下是液态，其余为气态）。第ⅣA 族 CH<sub>4</sub> &lt; SiH<sub>4</sub> &lt; GeH<sub>4</sub> &lt; SnH<sub>4</sub> 无氢键干扰，是"正常递增"的标准对照组。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 4 · 分子极性判断</span>
+<p><strong>题目</strong>：下列各组分子中，都属于含极性键的非极性分子的是（　　）</p>
+<p>A．CO<sub>2</sub>、H<sub>2</sub>S　　B．C<sub>2</sub>H<sub>4</sub>、CH<sub>4</sub>　　C．Cl<sub>2</sub>、C<sub>2</sub>H<sub>2</sub>　　D．NH<sub>3</sub>、HCl</p>
+<p><strong>【思路点拨】</strong></p>
+<p>两个条件同时满足：① 键必须是极性键（不同种原子之间）——直接排除只含 A—A 键的选项；② 分子整体必须非极性——用 VSEPR 确认构型对称。</p>
+<div class="step"><div class="no">1</div>
+<p>A 项：CO<sub>2</sub> 直线形、对称，C=O 极性键相互抵消 → 非极性分子 ✔；但 H<sub>2</sub>S 是 V 形（S 为 sp<sup>3</sup> 杂化，2 对孤电子对），构型不对称 → 极性分子 ✘。排除 A。</p>
+</div>
+<div class="step"><div class="no">2</div>
+<p>B 项：C<sub>2</sub>H<sub>4</sub>（乙烯）为平面结构，C—H 极性键对称分布、C=C 为非极性键，整体非极性 ✔；CH<sub>4</sub> 为正四面体，4 个 C—H 极性键对称抵消 → 非极性分子 ✔。B 符合全部条件。</p>
+</div>
+<div class="step"><div class="no">3</div>
+<p>C 项：Cl<sub>2</sub> 中 Cl—Cl 是非极性键，不满足"含极性键"的前提 ✘；D 项：NH<sub>3</sub> 为三角锥形、HCl 为双原子异核分子，二者均为极性分子 ✘。</p>
+</div>
+<div class="ans">
+<strong>【答案】</strong>B。
+</div>
+<p><strong>【方法总结】</strong></p>
+<p>判分子极性的"两句话"：键的极性看原子是否相同；分子的极性看构型是否对称。</p>
+<p>熟记"对称非极性"代表：CO<sub>2</sub>、CS<sub>2</sub>（直线形），BF<sub>3</sub>、SO<sub>3</sub>（平面三角形），CH<sub>4</sub>、CCl<sub>4</sub>（正四面体形）；"不对称极性"代表：H<sub>2</sub>O、H<sub>2</sub>S、SO<sub>2</sub>（V 形），NH<sub>3</sub>、PH<sub>3</sub>（三角锥形），HCl、CO（双原子异核）。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例 5 · 电子式书写与 σ/π 键判断</span>
+<p><strong>题目</strong>：回答下列问题：</p>
+<p>（1）写出 NaOH 与 CO<sub>2</sub> 的电子式；</p>
+<p>（2）1 mol CH<sub>2</sub>=CH<sub>2</sub>（乙烯）分子中含 σ 键、π 键各多少摩尔？</p>
+<p><strong>【思路点拨】</strong></p>
+<p>（1）NaOH 是离子化合物，OH<sup>−</sup> 内部是共价键——括号、电荷、孤电子对一个不能少；CO<sub>2</sub> 是共价化合物——无括号无电荷，C 与每个 O 共用 2 对电子。（2）数法：单键全是 σ；双键 = 1σ + 1π。乙烯中有 4 个 C—H 单键和 1 个 C=C 双键。</p>
+<div class="step"><div class="no">1</div>
+<p>NaOH：Na<sup>+</sup>[×Ö̈×H]<sup>−</sup>。检查：O 周围 8 电子（2 对孤电子对 + 与 H 共用的 1 对 + 从 Na 得到的 1 个电子）✔；括号与电荷齐全 ✔。</p>
+</div>
+<div class="step"><div class="no">2</div>
+<p>CO<sub>2</sub>：Ö̈× ×C× ×Ö̈（O=C=O，C 与每个 O 共用 2 对电子）。检查：每个原子都满足 8 电子 ✔；无括号无电荷 ✔。</p>
+</div>
+<div class="step"><div class="no">3</div>
+<p>乙烯 σ 键：4 个 C—H + C=C 中的 1 个 σ = <strong>5 mol</strong>；π 键：C=C 中的 1 个 π = <strong>1 mol</strong>。</p>
+</div>
+<div class="ans">
+<strong>【答案】</strong>（1）NaOH：Na<sup>+</sup>[×Ö̈×H]<sup>−</sup>；CO<sub>2</sub>：Ö̈× ×C× ×Ö̈。（2）σ 键 5 mol，π 键 1 mol。
+</div>
+<p><strong>【方法总结】</strong></p>
+<p>电子式自检三问：8 电子齐不齐？括号电荷该不该有？孤电子对补没补？σ/π 计数口诀："单键一 σ，双键一 σ 一 π，三键一 σ 两 π"，别漏掉 C—H 等"沉默"的单键。</p>
+</div>
+</section>
+
+<section>
+<h2>五、易错点与成因</h2>
+
+<div class="card trap">
+<span class="tag">易错 1 · 认为"含金属元素就一定是离子化合物"</span>
+<p><strong>易错表现</strong>：把 AlCl<sub>3</sub>、AlBr<sub>3</sub> 当作离子化合物，认为其熔融态能导电。</p>
+<p><strong>错误成因</strong>：把"活泼金属 + 活泼非金属"的经验规律绝对化，忽视了电负性差才是本质——Al 与 Cl 的电负性差较小（约 1.5），共用电子对并未被完全夺走。</p>
+<p><strong>正确理解</strong>：AlCl<sub>3</sub> 是共价化合物，熔融时不电离、不导电，加热到约 180 ℃ 即升华（分子晶体的特征）。工业电解铝用 Al<sub>2</sub>O<sub>3</sub> 而不用 AlCl<sub>3</sub>，正是因为熔融 AlCl<sub>3</sub> 不导电。</p>
+<p><strong>一句话避坑口诀</strong>：金属非金属相遇，先想 AlCl<sub>3</sub> 这个反例。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错 2 · 把"键的极性"与"分子的极性"画等号</span>
+<p><strong>易错表现</strong>：认为 CO<sub>2</sub>、BF<sub>3</sub>、CH<sub>4</sub> 含极性键所以是极性分子；或认为含非极性键的分子（H<sub>2</sub>O<sub>2</sub> 含 O—O 键）一定是非极性分子。</p>
+<p><strong>错误成因</strong>：只盯着单个键，没有把分子当作"矢量合成"的整体——各键的极性在空间对称时会互相抵消。</p>
+<p><strong>正确理解</strong>：分子极性 = 键的极性 + 空间构型共同决定。CO<sub>2</sub> 直线对称，两个 C=O 键极性抵消，为非极性分子；H<sub>2</sub>O<sub>2</sub> 是"半开的书本"形结构，不对称，是极性分子（双氧水能与水任意比互溶正是佐证）。</p>
+<p><strong>一句话避坑口诀</strong>：键看原子，分子看对称。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错 3 · 把氢键当成化学键，或认为 H 与任何原子相连都能成氢键</span>
+<p><strong>易错表现</strong>：① 说"水分子内 H 与 O 之间的氢键使水稳定"；② 认为 CH<sub>4</sub>、HCHO 中的 C—H 都能形成氢键；③ 用氢键解释水的热稳定性。</p>
+<p><strong>错误成因</strong>：混淆了作用力层级——氢键强度（10~40 kJ/mol）远小于共价键键能（O—H 约 463 kJ/mol）；也忽视了氢键对 H 所连原子的苛刻要求（必须是 N、O、F）。</p>
+<p><strong>正确理解</strong>：氢键只存在于分子之间（或分子内相邻基团间），影响熔沸点、溶解度、密度等<strong>物理性质</strong>；水的热稳定性（2000 ℃ 以上才分解）由 O—H 共价键键能决定，与氢键无关。乙醇 C<sub>2</sub>H<sub>5</sub>OH 中只有 O—H 上的那个 H 参与氢键，C—H 上的 H 不参与。</p>
+<p><strong>一句话避坑口诀</strong>：氢键三要素——N、O、F 连 H，再找 N、O、F；氢键管物理性质，化学性质看共价键。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错 4 · 计算价层电子对数时把双键/三键当 2、3 对，或漏算离子电荷</span>
+<p><strong>易错表现</strong>：把 CO<sub>2</sub> 中 C 的 σ 键电子对数算成 4（误判为 sp<sup>3</sup>）；计算 SO<sub>4</sub><sup>2−</sup>、NH<sub>4</sub><sup>+</sup> 时忘记在中心原子价电子数上加减电荷。</p>
+<p><strong>错误成因</strong>：不理解 σ/π 的构成——一个双键 = 1 个 σ 键 + 1 个 π 键，π 键由未杂化的 p 轨道形成，<strong>不占杂化轨道、不计入价层电子对</strong>；对离子的电荷归属没有纳入公式。</p>
+<p><strong>正确理解</strong>：σ 键电子对数 = 配位原子个数，与单双键无关（CO<sub>2</sub> 中为 2）；孤电子对数 = ½(a − xb)，a 对阳离子要减电荷、阴离子要加电荷。验证：CO<sub>2</sub>：2 + ½×(4 − 4) = 2 → sp、直线形；SO<sub>4</sub><sup>2−</sup>：4 + ½×(6 + 2 − 8) = 4 → sp<sup>3</sup>、正四面体形。</p>
+<p><strong>一句话避坑口诀</strong>：双键三键只算一（σ），离子电荷别忘记。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错 5 · 电子式书写不规范</span>
+<p><strong>易错表现</strong>：① 把 MgCl<sub>2</sub> 写成 Mg<sup>2+</sup>[×Cl̈]<sub>2</sub><sup>−</sup>（合并阴离子）；② 给共价化合物加括号标电荷，如 [H×Cl̈·]；③ 漏画孤电子对，如 NH<sub>3</sub> 的 N 上少画一对点；④ 把 HClO 写成 H×Cl̈×Ö×（连接顺序错误）。</p>
+<p><strong>错误成因</strong>：没有理解电子式的"写实"本质——离子化合物要写清阴、阳离子的独立存在（不能合并），共价化合物要满足每个原子（除 H）8 电子且共用电子对归属正确。</p>
+<p><strong>正确理解</strong>：① 相同离子分居两侧；② 共价化合物无括号无电荷；③ 写完检查每个原子是否 8 电子（H 为 2），孤电子对必须补齐；④ 含氧酸中 H 总是连在 O 上，HClO 的正确写法是 H×Ö̈×Cl̈·（结构为 H—O—Cl）。</p>
+<p><strong>一句话避坑口诀</strong>：离子合并要不得，共价括号使不得，孤电子对少不得，含氧酸里 H 连 O。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错 6 · 混淆"电子对构型"与"分子空间构型"</span>
+<p><strong>易错表现</strong>：把 NH<sub>3</sub> 的空间构型答成"四面体形"，把 H<sub>2</sub>O 答成"四面体形"。</p>
+<p><strong>错误成因</strong>：没有区分两个层级——电子对构型包含孤电子对的位置（NH<sub>3</sub>、H<sub>2</sub>O 的电子对构型确实是四面体形）；而分子空间构型只描述原子核的位置，孤电子对"看不见"，必须剥掉。</p>
+<p><strong>正确理解</strong>：题目问"空间构型"时只报 σ 键骨架的形状：NH<sub>3</sub> 是三角锥形、H<sub>2</sub>O 是 V 形；只有孤电子对数为 0 时（CH<sub>4</sub>、BF<sub>3</sub>、CO<sub>2</sub>），电子对构型与分子构型才同名。</p>
+<p><strong>一句话避坑口诀</strong>：电子对构型算孤对，分子构型剥孤对。</p>
+</div>
+</section>
+
+<section>
+<h2>六、章末自检清单</h2>
+<p>合上书本，逐条自测；任何一条犹豫，就回到对应小节重读。</p>
+<ul class="checklist">
+<li>我能说清化学键的本质是电性作用，并区分化学键与分子间作用力的强弱量级。</li>
+<li>我能判断常见化合物中含离子键还是共价键，并能举出 AlCl<sub>3</sub>（共价）、NH<sub>4</sub>Cl（离子）两个反例。</li>
+<li>我能区分极性键与非极性键，用电负性差解释共用电子对的偏移方向，并数出单键、双键、三键中 σ 键与 π 键的数目（1σ / 1σ1π / 1σ2π）。</li>
+<li>我能规范书写 NaCl、MgCl<sub>2</sub>、NaOH、Na<sub>2</sub>O<sub>2</sub>、NH<sub>4</sub>Cl、HCl、H<sub>2</sub>O、NH<sub>3</sub>、CO<sub>2</sub>、N<sub>2</sub>、HClO 的电子式，不合并离子、不漏孤电子对。</li>
+<li>我能用金属键（电子气理论）解释金属的导电、导热、延展性，并比较 Na、Mg、Al 的金属键强弱。</li>
+<li>我能说出氢键的形成条件（X—H…Y，X、Y 为 N、O、F），并判断哪些分子间存在氢键。</li>
+<li>我能用氢键解释 H<sub>2</sub>O、HF、NH<sub>3</sub> 沸点反常升高、NH<sub>3</sub> 与乙醇易溶于水、冰的密度小于水。</li>
+<li>我能用"组成结构相似的分子，相对分子质量越大范德华力越强"排列无氢键物质的沸点。</li>
+<li>我能用 ½(a − xb) 熟练计算任何分子或离子中心原子的孤电子对数（含离子电荷修正）。</li>
+<li>我能根据价层电子对数判断 sp/sp<sup>2</sup>/sp<sup>3</sup> 杂化，并剥去孤电子对得出直线形、V 形、三角锥形、平面三角形、四面体形等空间构型。</li>
+<li>我能解释 CH<sub>4</sub>（109°28′）→ NH<sub>3</sub>（107°）→ H<sub>2</sub>O（105°）键角递减的原因，并区分电子对构型与分子空间构型。</li>
+<li>我能按"键的极性 + 构型对称性"两步判断分子极性，并用相似相溶解释溶解性现象。</li>
+</ul>
+</section>
+
+<section>
+<h2>七、与前后章节的联系 · 高考怎么考</h2>
+<p><strong>承上</strong>：本章建立在 3.8（核外电子排布、电负性）与 3.9（元素周期律）之上——电负性差决定键型，价电子数决定孤电子对的计算。</p>
+<p><strong>启下</strong>：本章是 3.11（晶体结构与性质）的直接基础——离子键强弱（晶格能）决定离子晶体熔点，分子间作用力与氢键决定分子晶体熔沸点；也是后续"物质结构与性质"选考题的核心得分区。</p>
+<p><strong>高考怎么考</strong>：全国卷及新高考中，本章内容常以两种形式出现：</p>
+<ul>
+<li>选择题中的概念辨析（化学键类型判断、氢键与沸点排序、电子式正误），约 2~6 分；</li>
+<li>"物质结构与性质"选考大题中的前 2~3 问（电子式、价层电子对数计算、杂化类型与空间构型、分子极性），约 4~6 分。</li>
+</ul>
+<p>杂化与构型判断属于"必拿分"，云南考生务必练到不假思索、提笔即对。</p>
+</section>
+
+</main>
+<footer class="chap-foot">高考备考 · 化学 · 深度学习材料 · 2026</footer>
+</body>
+</html>

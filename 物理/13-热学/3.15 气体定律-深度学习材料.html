@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>气体定律 - 深度学习材料</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover：替换 {{章节名}} {{模块定位与分值}} {{章节号}} -->
+<nav class="chap-nav">高考备考 · 物理 · 深度学习材料 ｜ 3.15 气体定律</nav>
+<header class="chap-head">
+  <h1>气体定律</h1>
+  <p class="chap-meta"></p>
+</header>
+  <div class="subtitle">深度学习材料 · 概念 · 推导 · 模型 · 方法</div>
+  <div class="meta">
+    <span>高中物理 · 热学模块 · 高考约6分</span><br>
+    <span>依据：《高考物理95+分备考指南》3.15节要求</span><br>
+    <span>适用：高一同步学习 &amp; 高考一轮复习</span><br>
+    <span>学生：小兵</span>
+  </div>
+</div>
+
+<p class="hint">
+  💡 提示：所有公式由 MathJax 渲染；带推导的公式请合上书独立推一遍
+</p>
+
+<!-- 目录：与正文 h2 的 id 对应 -->
+<div class="toc">
+  <strong>目录</strong>
+  <ol>
+    <li><a href="#s1">一、本章总览</a></li>
+    <li><a href="#s2">二、核心概念与物理量</a></li>
+    <li><a href="#s3">三、公式与推导（含适用条件）</a></li>
+    <li><a href="#s4">四、典型例题</a></li>
+    <li><a href="#s5">五、易错点与成因分析</a></li>
+    <li><a href="#s6">六、章末自检清单</a></li>
+  </ol>
+</div>
+
+<h2 id="s1">一、本章总览</h2>
+
+<p>小兵，从这一章开始，你的研究对象从「看得见摸得着」的小球、滑块，换成了「看不见却到处都在」的气体。好消息是：气体定律是高中物理里<strong>公式最少、套路最固定</strong>的章节之一——核心公式只有一个 $\dfrac{pV}{T}=C$，所有的考题都是它的变形与应用。坏消息是：这一章的坑不在公式本身，而在<strong>压强分析、温度单位、符号约定</strong>这三处细节。把细节钉死，这 6 分就是白送的。</p>
+
+<h3>1.1 高考定位</h3>
+<p>云南高考物理满分 100 分，热学模块（3.14 分子动理论 + 3.15 气体定律）合计约 <strong>6 分</strong>。本章的常见考法有两种：</p>
+<ul>
+  <li><strong>选择题（与 3.14 合考）</strong>：分子动理论、内能、气体实验定律的图象识别、热力学第一定律的符号判断，常以一道选择题的形式出现；</li>
+  <li><strong>计算小题</strong>：液柱封闭气体、气缸活塞类问题，用玻意耳定律或理想气体状态方程列式求解，步骤不多但压强分析是胜负手。</li>
+</ul>
+<p>此外，图象问题（$p\text{-}V$、$p\text{-}T$、$V\text{-}T$ 图）几乎每隔一两年就要露一次面，要求「图象转换自如」——给一种图能画出另外两种。</p>
+
+<h3>1.2 知识体系图</h3>
+<div class="map">
+  <div class="row"><div class="node root">气体定律</div></div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node">状态参量</div>
+    <div class="node">实验定律</div>
+    <div class="node">状态方程</div>
+    <div class="node">热力学定律</div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node leaf">压强 $p$（微观：分子撞击器壁）</div>
+    <div class="node leaf">体积 $V$</div>
+    <div class="node leaf">热力学温度 $T=t+273\,\text{K}$</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">玻意耳定律 $pV=C$（等温）</div>
+    <div class="node leaf">查理定律 $\dfrac{p}{T}=C$（等容）</div>
+    <div class="node leaf">盖-吕萨克定律 $\dfrac{V}{T}=C$（等压）</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">理想气体状态方程 $\dfrac{pV}{T}=C$</div>
+    <div class="node leaf">前提：一定质量理想气体</div>
+    <div class="node leaf">$p\text{-}V$、$p\text{-}T$、$V\text{-}T$ 图象</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">热力学第一定律 $\Delta U=W+Q$</div>
+    <div class="node leaf">符号约定：压缩为正、吸热为正</div>
+    <div class="node leaf">热力学第二定律（方向性）</div>
+  </div>
+</div>
+
+<h3>1.3 学法建议</h3>
+<div class="deep">
+<strong>给高一的你三条建议：</strong>
+<ul>
+  <li><strong>先攻压强分析</strong>：本章一半的错误发生在列式之前的压强计算。见到液柱、活塞，一律先画受力图做受力平衡，绝不口算。</li>
+  <li><strong>温度先换算再代入</strong>：凡是代入气体定律的温度，先在心里喊一遍「开尔文！」，把 $t\;°\text{C}$ 换成 $(t+273)\,\text{K}$ 再动笔。</li>
+  <li><strong>把三个图象画成肌肉记忆</strong>：$p\text{-}V$、$p\text{-}T$、$V\text{-}T$ 三种图上的等温线、等容线、等压线各长什么样，每周默画一遍，直到不假思索。</li>
+</ul>
+</div>
+
+<h2 id="s2">二、核心概念与物理量</h2>
+
+<h3>2.1 状态参量：描述一团气体只要三个数</h3>
+<p>对于<strong>一定质量</strong>的气体，处于<strong>平衡态</strong>（各部分温度、压强处处相同且不随时间变化）时，它的状态由三个参量完全确定：</p>
+<table>
+  <tr><th>物理量</th><th>符号</th><th>意义</th><th>国际单位</th><th>常用单位与换算</th><th>标/矢性</th></tr>
+  <tr><td>压强</td><td>$p$</td><td class="l">气体对器壁单位面积的压力</td><td>帕斯卡（$\text{Pa}$）</td><td class="l">$1\,\text{atm}=76\,\text{cmHg}=1.01\times10^5\,\text{Pa}$</td><td>标量</td></tr>
+  <tr><td>体积</td><td>$V$</td><td class="l">气体分子所能到达的空间（= 容器容积）</td><td>立方米（$\text{m}^3$）</td><td class="l">$1\,\text{L}=10^{-3}\,\text{m}^3$，$1\,\text{mL}=1\,\text{cm}^3$</td><td>标量</td></tr>
+  <tr><td>热力学温度</td><td>$T$</td><td class="l">分子平均动能的标志</td><td>开尔文（$\text{K}$）</td><td class="l">$T=t+273\,\text{K}$（$t$ 为摄氏温度）</td><td>标量</td></tr>
+</table>
+
+<div class="key-point">
+<strong>温度换算（每题必用）：</strong>$T=t+273\,\text{K}$（精确值是 $273.15$，高中计算取 $273$）。例如 $27\,°\text{C}\to 300\,\text{K}$，$-23\,°\text{C}\to 250\,\text{K}$。温度<strong>变化量</strong>上两种温标相等：$\Delta T=\Delta t$；但代入气体定律的必须是 $T$，不能是 $t$。
+</div>
+
+<h3>2.2 压强的微观解释</h3>
+<p>气体压强不是某个分子的「推力」，而是<strong>大量分子无规则运动、频繁撞击器壁</strong>产生的持续、平均的作用力。单个分子的碰撞是断续的、随机的；$10^{23}$ 量级的分子每秒撞击器壁无数次，平均效果就是一个稳定的压强。</p>
+<p>微观上，压强大小取决于两个因素：</p>
+<ul>
+  <li><strong>分子的数密度</strong>（单位体积内的分子数）：分子越密集，单位时间撞到器壁的分子越多，压强越大；</li>
+  <li><strong>分子的平均动能（即温度）</strong>：分子运动越剧烈，每次撞击越「狠」，压强越大。</li>
+</ul>
+<blockquote>
+<p><strong>深度思考</strong>：用微观解释反推宏观定律——温度不变时把气体压缩到一半体积，数密度翻倍，单位时间撞墙次数翻倍，所以压强翻倍：这正是玻意耳定律 $pV=C$。微观图像建立起来，宏观公式就不再是死记硬背。</p>
+</blockquote>
+
+<h3>2.3 理想气体模型</h3>
+<p>理想气体是理想化模型，三条假设：</p>
+<ul>
+  <li>分子本身的大小忽略不计（视为质点）；</li>
+  <li>除碰撞瞬间外，分子间无相互作用力（<strong>没有分子势能</strong>）；</li>
+  <li>分子与器壁、分子与分子间的碰撞是弹性碰撞。</li>
+</ul>
+<p>真实气体在<strong>温度不太低、压强不太大</strong>时都可当作理想气体。由第二条假设直接得出一个重要结论：</p>
+<div class="key-point">
+<strong>一定质量的理想气体，内能只由温度决定。</strong>温度升高，内能一定增加；温度不变，内能一定不变——与体积、压强无关。这是用 $\Delta U=W+Q$ 解题时判断 $\Delta U$ 正负的唯一依据。
+</div>
+
+<h3>2.4 气体压强的确定：受力平衡分析</h3>
+<p>考题中的气体常被液柱或活塞封闭，其压强 rarely 直接等于大气压，必须对「封闭物」（液柱或活塞）做受力平衡：</p>
+<ul>
+  <li><strong>液柱封闭</strong>：液柱静止，沿管方向受力平衡。竖直管内高 $h$ 的水银柱封闭气体，开口向上时 $p=p_0+h$（以 cmHg 为单位）；开口向下时 $p+h=p_0$，即 $p=p_0-h$；水平放置时 $p=p_0$。</li>
+  <li><strong>活塞封闭</strong>：对活塞列 $\sum F=0$。竖直气缸内质量为 $m$、面积为 $S$ 的活塞下方封闭气体：$pS=p_0S+mg$，即 $p=p_0+\dfrac{mg}{S}$；若气缸开口向下悬挂，则 $p=p_0-\dfrac{mg}{S}$。</li>
+</ul>
+<div class="warn">
+<strong>口诀</strong>：「开口向上加，开口向下减，水平不变」。但口诀只是检查手段，考场上必须会独立做受力平衡——因为题目会给你斜放的管子、两个活塞、弹簧连着活塞等变式，那时只有受力分析靠得住。
+</div>
+
+<h2 id="s3">三、公式与推导（含适用条件）</h2>
+
+<h3>3.1 三个实验定律</h3>
+<p>三个定律都是「一定质量的理想气体，保持某一参量不变」时的实验规律：</p>
+<table>
+  <tr><th>定律</th><th>条件</th><th>表达式</th><th>内容</th><th>图象（$p\text{-}V$ 图）</th></tr>
+  <tr><td>玻意耳定律</td><td>$T$ 不变（等温）</td><td>$pV=C$ 或 $p_1V_1=p_2V_2$</td><td class="l">压强与体积成反比</td><td class="l">双曲线的一支</td></tr>
+  <tr><td>查理定律</td><td>$V$ 不变（等容）</td><td>$\dfrac{p}{T}=C$ 或 $\dfrac{p_1}{T_1}=\dfrac{p_2}{T_2}$</td><td class="l">压强与热力学温度成正比</td><td class="l">$p\text{-}T$ 图中过原点的直线</td></tr>
+  <tr><td>盖-吕萨克定律</td><td>$p$ 不变（等压）</td><td>$\dfrac{V}{T}=C$ 或 $\dfrac{V_1}{T_1}=\dfrac{V_2}{T_2}$</td><td class="l">体积与热力学温度成正比</td><td class="l">$V\text{-}T$ 图中过原点的直线</td></tr>
+</table>
+
+<h3>3.2 理想气体状态方程的推导</h3>
+<p><strong>推导思路（请合上书独立推一遍）</strong>：一定质量的理想气体从状态 1（$p_1,V_1,T_1$）变到状态 2（$p_2,V_2,T_2$）。虚构一个中间状态 $A$（$p_2,V_A,T_1$），分两步走：</p>
+<ul>
+  <li><strong>第一步（等温）</strong>：状态 1 → 状态 $A$，由玻意耳定律：$p_1V_1=p_2V_A$，得 $V_A=\dfrac{p_1V_1}{p_2}$；</li>
+  <li><strong>第二步（等压）</strong>：状态 $A$ → 状态 2，由盖-吕萨克定律：$\dfrac{V_A}{T_1}=\dfrac{V_2}{T_2}$，得 $V_A=\dfrac{V_2T_1}{T_2}$。</li>
+</ul>
+<p>两式联立消去 $V_A$：</p>
+$$\frac{p_1V_1}{p_2}=\frac{V_2T_1}{T_2}\ \Rightarrow\ \frac{p_1V_1}{T_1}=\frac{p_2V_2}{T_2}$$
+<p>即：</p>
+$$\frac{pV}{T}=C\quad(\text{一定质量的理想气体})$$
+<p>常量 $C$ 由气体的质量和种类决定（$C=\dfrac{m}{M}R$）。气体分装、混合等问题中，总物质的量守恒时可用 $\sum\dfrac{p_iV_i}{T_i}=\text{常量}$。</p>
+
+<div class="warn">
+<strong>适用条件与边界（本章最容易塌的地方）：</strong>
+<ul>
+  <li><strong>一定质量</strong>：漏气、充气、用掉一部分气体的题目，研究对象的质量变了，$\dfrac{pV}{T}=C$ 不能直接对「剩下的气体」列初末两态。处理办法：把「变化前全部气体」与「变化后全部气体（含漏出部分）」作为研究对象，用分态方程相加。</li>
+  <li><strong>理想气体</strong>：高压、低温下真实气体偏离明显，但高考范围内一律按理想气体处理。</li>
+  <li><strong>温度必须用热力学温标</strong>：推导中每一步的比例关系都以 $T$（开尔文）为变量，代入摄氏温度直接全错。</li>
+  <li><strong>$p$ 是气体的总压强</strong>：必须先做液柱/活塞的受力平衡分析，不能想当然写 $p_0$。</li>
+</ul>
+</div>
+
+<h3>3.3 三种图象：一眼认出等温、等容、等压</h3>
+<table>
+  <tr><th>图象</th><th>等温线</th><th>等容线</th><th>等压线</th></tr>
+  <tr><td>$p\text{-}V$ 图</td><td class="l">双曲线 $p=\dfrac{C}{V}$，离原点越远温度越高</td><td class="l">竖直线</td><td class="l">水平线</td></tr>
+  <tr><td>$p\text{-}T$ 图</td><td class="l">竖直线</td><td class="l">过原点的直线 $p=\dfrac{C}{V}T$，斜率越大体积越小</td><td class="l">水平线</td></tr>
+  <tr><td>$V\text{-}T$ 图</td><td class="l">竖直线</td><td class="l">水平线</td><td class="l">过原点的直线 $V=\dfrac{C}{p}T$，斜率越大压强越小</td></tr>
+</table>
+<div class="key-point">
+<strong>面积即功</strong>：$p\text{-}V$ 图上，过程曲线与 $V$ 轴围成的面积等于气体做功的大小。体积增大（过程向右），气体对外界做功；体积减小（过程向左），外界对气体做功。循环过程围成的封闭面积 = 一个循环中气体对外做的净功。
+</div>
+
+<h3>3.4 热力学第一定律：符号约定是命门</h3>
+<p>热力学第一定律是能量守恒定律在热学中的表达：</p>
+$$\Delta U=W+Q$$
+<p>三个量的符号约定（教材通用约定，必须死记）：</p>
+<table>
+  <tr><th>符号</th><th>意义</th><th>取正（$+$）</th><th>取负（$-$）</th></tr>
+  <tr><td>$\Delta U$</td><td class="l">气体内能的变化量（末 − 初）</td><td class="l">内能增加（理想气体：升温）</td><td class="l">内能减少（理想气体：降温）</td></tr>
+  <tr><td>$W$</td><td class="l"><strong>外界对气体</strong>做的功</td><td class="l">气体被压缩（体积减小）</td><td class="l">气体膨胀对外界做功</td></tr>
+  <tr><td>$Q$</td><td class="l">气体从外界吸收的热量</td><td class="l">吸热</td><td class="l">放热</td></tr>
+</table>
+<div class="key-point">
+<strong>解题程序（三步走）</strong>：① 由温度变化定 $\Delta U$ 的正负（理想气体：升温为正、降温为负、等温为零）；② 由体积变化定 $W$ 的正负（缩小为正、增大为负、等容为零）；③ 代入 $\Delta U=W+Q$ 求 $Q$，正为吸热、负为放热。口诀：<strong>「压缩为正、吸热为正」</strong>。
+</div>
+<p>两个特殊过程：</p>
+<ul>
+  <li><strong>绝热过程</strong>（$Q=0$，如迅速压缩/膨胀、绝热材料包裹）：$\Delta U=W$，外界对气体做多少功，内能就增加多少；</li>
+  <li><strong>等温过程</strong>（理想气体 $\Delta U=0$）：$Q=-W$，气体膨胀对外做的功全部靠吸热补回来。</li>
+</ul>
+
+<h3>3.5 热力学第二定律：过程有方向</h3>
+<p>第二定律回答「哪些过程能自发发生」。两种经典表述：</p>
+<ul>
+  <li><strong>克劳修斯表述</strong>：热量不能自发地从低温物体传到高温物体（「自发」= 不引起其他变化。冰箱能把热量从低温搬到高温，但消耗了电能，不算自发）；</li>
+  <li><strong>开尔文表述</strong>：不可能从单一热源吸收热量，使之全部变成功而不产生其他影响——即<strong>第二类永动机不可能制成</strong>。</li>
+</ul>
+<p>微观意义：一切自发过程总是朝着分子热运动<strong>无序程度增大</strong>（熵增）的方向进行。气体向真空的自由膨胀是自发的，反方向的「自动收缩回去」永远不会自发发生。考试只要求用两种表述判断过程方向、识别第二类永动机，不做计算。</p>
+
+<h2 id="s4">四、典型例题</h2>
+
+<h3>例1　液柱封闭气体的压强分析（基础，必会）</h3>
+<p>一端封闭的玻璃管长且粗细均匀，管内用 $h=4\,\text{cm}$ 的水银柱封闭一段空气柱，大气压 $p_0=76\,\text{cmHg}$。</p>
+<p>（1）分别求管口竖直向上、水平放置、管口竖直向下三种情况下封闭气体的压强（以 cmHg 为单位）；<br>
+（2）管口竖直向上时空气柱长 $L_1=18\,\text{cm}$。现将管缓慢转到管口竖直向下，温度不变，求此时空气柱长度 $L_2$。</p>
+<p><strong>过程分析</strong>：</p>
+<p>第（1）问，对水银柱做受力平衡（沿管方向）：</p>
+<ul>
+  <li>管口向上：气体压强向上顶液柱，大气压与液柱重力向下压，$p_1=p_0+h=76+4=80\,\text{cmHg}$；</li>
+  <li>水平放置：液柱重力垂直于管，不影响气体压强，$p_2=p_0=76\,\text{cmHg}$；</li>
+  <li>管口向下：气体压强向上顶液柱并支持其重力，$p_3+h=p_0$，故 $p_3=76-4=72\,\text{cmHg}$。</li>
+</ul>
+<p>第（2）问，气体质量一定、温度不变，用玻意耳定律（设管横截面积为 $S$，$V=LS$）：</p>
+$$p_1L_1S=p_3L_2S\ \Rightarrow\ L_2=\frac{p_1L_1}{p_3}=\frac{80\times18}{72}=\frac{1440}{72}=20\,\text{cm}$$
+<p><strong>答案</strong>：（1）$80\,\text{cmHg}$、$76\,\text{cmHg}$、$72\,\text{cmHg}$；（2）$L_2=20\,\text{cm}$。</p>
+<div class="deep"><strong>验算习惯</strong>：转到管口向下后气体压强变小（$80\to72$），体积应变大（$18\to20\,\text{cm}$），方向合理 ✓。若算出长度变短，立刻回头查压强符号。另外检查物理合理性：$p_3=72\,\text{cmHg}&gt;0$，水银柱不会掉出，假设成立。</div>
+
+<p style="text-align:center; color:var(--muted); font-size:0.9em;">图1　液柱封闭气体的三种放置（箭头为压强作用方向）</p>
+<div style="display:flex; justify-content:center; gap:26px; flex-wrap:wrap; margin:10px 0 6px;">
+<svg width="120" height="200" viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg">
+  <text x="60" y="16" text-anchor="middle" font-size="12" fill="#1a365d" font-weight="bold">管口向上</text>
+  <line x1="45" y1="30" x2="45" y2="180" stroke="#2d3748" stroke-width="2"/>
+  <line x1="75" y1="30" x2="75" y2="180" stroke="#2d3748" stroke-width="2"/>
+  <line x1="45" y1="180" x2="75" y2="180" stroke="#2d3748" stroke-width="2"/>
+  <rect x="46" y="150" width="28" height="29" fill="#a0aec0" opacity="0.75"/>
+  <rect x="46" y="60" width="28" height="89" fill="#ebf8ff" opacity="0.9"/>
+  <text x="60" y="110" text-anchor="middle" font-size="11" fill="#2b6cb0">气体</text>
+  <text x="60" y="168" text-anchor="middle" font-size="9" fill="#2d3748">汞柱h</text>
+  <text x="60" y="195" text-anchor="middle" font-size="11" fill="#2d3748">p = p₀ + h</text>
+</svg>
+<svg width="220" height="200" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg">
+  <text x="110" y="16" text-anchor="middle" font-size="12" fill="#1a365d" font-weight="bold">水平放置</text>
+  <line x1="20" y1="80" x2="200" y2="80" stroke="#2d3748" stroke-width="2"/>
+  <line x1="20" y1="110" x2="200" y2="110" stroke="#2d3748" stroke-width="2"/>
+  <line x1="20" y1="80" x2="20" y2="110" stroke="#2d3748" stroke-width="2"/>
+  <rect x="21" y="81" width="80" height="28" fill="#ebf8ff" opacity="0.9"/>
+  <rect x="102" y="81" width="30" height="28" fill="#a0aec0" opacity="0.75"/>
+  <text x="60" y="99" text-anchor="middle" font-size="11" fill="#2b6cb0">气体</text>
+  <text x="117" y="99" text-anchor="middle" font-size="9" fill="#2d3748">汞柱</text>
+  <text x="110" y="140" text-anchor="middle" font-size="11" fill="#2d3748">p = p₀</text>
+</svg>
+<svg width="120" height="200" viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg">
+  <text x="60" y="16" text-anchor="middle" font-size="12" fill="#1a365d" font-weight="bold">管口向下</text>
+  <line x1="45" y1="30" x2="45" y2="180" stroke="#2d3748" stroke-width="2"/>
+  <line x1="75" y1="30" x2="75" y2="180" stroke="#2d3748" stroke-width="2"/>
+  <line x1="45" y1="30" x2="75" y2="30" stroke="#2d3748" stroke-width="2"/>
+  <rect x="46" y="31" width="28" height="104" fill="#ebf8ff" opacity="0.9"/>
+  <rect x="46" y="136" width="28" height="30" fill="#a0aec0" opacity="0.75"/>
+  <text x="60" y="90" text-anchor="middle" font-size="11" fill="#2b6cb0">气体</text>
+  <text x="60" y="154" text-anchor="middle" font-size="9" fill="#2d3748">汞柱h</text>
+  <text x="60" y="195" text-anchor="middle" font-size="11" fill="#2d3748">p = p₀ − h</text>
+</svg>
+</div>
+
+<h3>例2　理想气体状态方程分步计算（中档）</h3>
+<p>一定质量的理想气体，初状态 $A$：压强 $p_1=2.0\times10^5\,\text{Pa}$，体积 $V_1=1.0\,\text{L}$，温度 $t_1=27\,°\text{C}$。经以下两个过程到达状态 $C$：</p>
+<p>（1）先保持压强不变，缓慢加热到 $T_2=450\,\text{K}$（状态 $B$），求体积 $V_2$；<br>
+（2）再保持温度不变，压缩到 $V_3=0.75\,\text{L}$（状态 $C$），求压强 $p_3$；<br>
+（3）直接用状态方程验证 $\dfrac{p_1V_1}{T_1}=\dfrac{p_3V_3}{T_3}$。</p>
+<p><strong>过程分析</strong>：</p>
+<p>先把摄氏温度换算成热力学温度：</p>
+$$T_1=t_1+273=27+273=300\,\text{K}$$
+<p>第（1）问，$A\to B$ 等压，用盖-吕萨克定律：</p>
+$$\frac{V_1}{T_1}=\frac{V_2}{T_2}\ \Rightarrow\ V_2=\frac{V_1T_2}{T_1}=\frac{1.0\times450}{300}=1.5\,\text{L}$$
+<p>第（2）问，$B\to C$ 等温（$T_3=T_2=450\,\text{K}$），用玻意耳定律：</p>
+$$p_1V_2=p_3V_3\ \Rightarrow\ p_3=\frac{p_1V_2}{V_3}=\frac{2.0\times10^5\times1.5}{0.75}=4.0\times10^5\,\text{Pa}$$
+<p>第（3）问，验证：</p>
+$$\frac{p_1V_1}{T_1}=\frac{2.0\times10^5\times1.0}{300}\approx6.7\times10^2\,\text{J/K}$$
+$$\frac{p_3V_3}{T_3}=\frac{4.0\times10^5\times0.75}{450}=\frac{3.0\times10^5}{450}\approx6.7\times10^2\,\text{J/K}\ ✓$$
+<p><strong>答案</strong>：（1）$V_2=1.5\,\text{L}$；（2）$p_3=4.0\times10^5\,\text{Pa}$；（3）两者相等，状态方程成立。</p>
+<div class="deep"><strong>本题的坑</strong>：若第一步把 $t_1=27\,°\text{C}$ 直接代入，会得 $V_2=\dfrac{1.0\times450}{27}\approx16.7\,\text{L}$——体积暴涨 16 倍，明显荒谬。比值类公式中 $°\text{C}$ 与 $\text{K}$ <strong>不成比例</strong>（差了一个 273 的平移），必须先换算。</div>
+
+<h3>例3　$ p\text{-}V $ 图象 + 热力学第一定律综合（中高档）</h3>
+<p>一定质量的理想气体经历 $A\to B\to C$ 两个过程，在 $p\text{-}V$ 图上：$A(p_1=2.0\times10^5\,\text{Pa},\ V_1=1.0\,\text{L})$，$A\to B$ 为<strong>等压膨胀</strong>至 $V_2=3.0\,\text{L}$，$B\to C$ 为<strong>等容降压</strong>至 $p_3=1.0\times10^5\,\text{Pa}$。</p>
+<p>（1）比较 $A$、$B$、$C$ 三态的温度高低；<br>
+（2）$A\to B$ 过程中气体对外界做多少功？气体吸热还是放热？<br>
+（3）$B\to C$ 过程中气体吸热还是放热？</p>
+<p><strong>过程分析</strong>：</p>
+<p>第（1）问，由 $\dfrac{pV}{T}=C$，温度与乘积 $pV$ 成正比：</p>
+$$p_AV_A=2.0\times10^5\times1.0\times10^{-3}=200\ (\text{J})$$
+$$p_BV_B=2.0\times10^5\times3.0\times10^{-3}=600\ (\text{J})$$
+$$p_CV_C=1.0\times10^5\times3.0\times10^{-3}=300\ (\text{J})$$
+<p>故 $T_A:T_B:T_C=200:600:300=2:6:3$，即 $T_B=3T_A$，$T_C=1.5\,T_A$，$B$ 最热，$A$ 最冷。</p>
+<p>第（2）问，$A\to B$ 等压膨胀，气体对外界做功：</p>
+$$W'=p_1(V_2-V_1)=2.0\times10^5\times(3.0-1.0)\times10^{-3}=2.0\times10^5\times2.0\times10^{-3}=400\,\text{J}$$
+<p>按符号约定，气体对外做功，$W=-400\,\text{J}$；体积增大且压强不变，由 $\dfrac{V}{T}=C$ 知温度升高，$\Delta U&gt;0$。由 $\Delta U=W+Q$：</p>
+$$Q=\Delta U-W=\Delta U+400\,\text{J}&gt;0$$
+<p>故气体<strong>吸热</strong>（既要增加内能又要对外做功，必须从外界吸热）。</p>
+<p>第（3）问，$B\to C$ 等容，$W=0$；压强降低而体积不变，由 $\dfrac{p}{T}=C$ 知温度降低，$\Delta U&lt;0$。于是 $Q=\Delta U-W=\Delta U&lt;0$，气体<strong>放热</strong>。</p>
+<p><strong>答案</strong>：（1）$T_B&gt;T_C&gt;T_A$（$T_B=3T_A$，$T_C=1.5T_A$）；（2）对外做功 $400\,\text{J}$，吸热；（3）放热。</p>
+<div class="deep"><strong>图象读法</strong>：$p\text{-}V$ 图上看温度，不用算——离原点越远的等温线（双曲线）温度越高，比较各点 $pV$ 乘积即可。$A\to B$ 过程与 $V$ 轴围成的矩形面积就是 $400\,\text{J}$ 的功，「面积即功」让你多一条验算通道。</div>
+
+<h3>例4　热力学第一定律的符号判断（基础，选择题型）</h3>
+<p>一定质量的理想气体经历下列过程，分别判断 $W$、$Q$、$\Delta U$ 的正负并求未知量：</p>
+<p>（1）气体对外界做功 $300\,\text{J}$，同时内能增加了 $100\,\text{J}$，气体吸热还是放热？热量多少？<br>
+（2）绝热条件下外界对气体做功 $200\,\text{J}$，内能如何变化？<br>
+（3）气体等温膨胀，从外界吸热 $500\,\text{J}$，气体对外界做功多少？</p>
+<p><strong>过程分析</strong>：</p>
+<p>第（1）问：气体对外做功 → $W=-300\,\text{J}$；内能增加 → $\Delta U=+100\,\text{J}$。代入：</p>
+$$\Delta U=W+Q\ \Rightarrow\ Q=\Delta U-W=100-(-300)=400\,\text{J}&gt;0$$
+<p>气体<strong>吸热 $400\,\text{J}$</strong>。</p>
+<p>第（2）问：绝热 $Q=0$；外界对气体做功 $W=+200\,\text{J}$，故</p>
+$$\Delta U=W+Q=200+0=+200\,\text{J}$$
+<p>内能<strong>增加 $200\,\text{J}$</strong>，温度升高（打气筒打气时筒壁发热就是这个道理）。</p>
+<p>第（3）问：理想气体等温 → $\Delta U=0$；吸热 $Q=+500\,\text{J}$，故</p>
+$$0=W+500\ \Rightarrow\ W=-500\,\text{J}$$
+<p>即气体对外界做功 $500\,\text{J}$——吸多少热就对外做多少功，内能不变。</p>
+<p><strong>答案</strong>：（1）吸热 $400\,\text{J}$；（2）内能增加 $200\,\text{J}$；（3）对外做功 $500\,\text{J}$。</p>
+<div class="key-point"><strong>口诀再强调</strong>：压缩为正（$W&gt;0$）、吸热为正（$Q&gt;0$）、升温为正（$\Delta U&gt;0$）。三个判断各自独立：看体积定 $W$、看温度定 $\Delta U$、算出来的是 $Q$。</div>
+
+<p style="text-align:center; color:var(--muted); font-size:0.9em;">图2　三种图象上的等值线（虚线为辅助等值线）</p>
+<div style="display:flex; justify-content:center; gap:26px; flex-wrap:wrap; margin:10px 0 6px;">
+<svg width="200" height="190" viewBox="0 0 200 190" xmlns="http://www.w3.org/2000/svg">
+  <text x="100" y="16" text-anchor="middle" font-size="12" fill="#1a365d" font-weight="bold">p-V 图</text>
+  <line x1="35" y1="160" x2="185" y2="160" stroke="#2d3748" stroke-width="1.5"/>
+  <line x1="35" y1="160" x2="35" y2="30" stroke="#2d3748" stroke-width="1.5"/>
+  <text x="185" y="175" text-anchor="middle" font-size="12" fill="#2d3748">V</text>
+  <text x="22" y="35" text-anchor="middle" font-size="12" fill="#2d3748">p</text>
+  <path d="M 55 45 Q 62 110 175 130" fill="none" stroke="#2b6cb0" stroke-width="2"/>
+  <path d="M 75 38 Q 85 95 175 108" fill="none" stroke="#d69e2e" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <text x="150" y="123" font-size="10" fill="#2b6cb0">等温T₁</text>
+  <text x="150" y="101" font-size="10" fill="#d69e2e">等温T₂&gt;T₁</text>
+  <line x1="95" y1="160" x2="95" y2="40" stroke="#e53e3e" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <text x="99" y="52" font-size="10" fill="#e53e3e">等容</text>
+  <line x1="35" y1="95" x2="180" y2="95" stroke="#38a169" stroke-width="1.5" stroke-dasharray="2,3"/>
+  <text x="42" y="90" font-size="10" fill="#38a169">等压</text>
+</svg>
+<svg width="200" height="190" viewBox="0 0 200 190" xmlns="http://www.w3.org/2000/svg">
+  <text x="100" y="16" text-anchor="middle" font-size="12" fill="#1a365d" font-weight="bold">p-T 图</text>
+  <line x1="35" y1="160" x2="185" y2="160" stroke="#2d3748" stroke-width="1.5"/>
+  <line x1="35" y1="160" x2="35" y2="30" stroke="#2d3748" stroke-width="1.5"/>
+  <text x="185" y="175" text-anchor="middle" font-size="12" fill="#2d3748">T</text>
+  <text x="22" y="35" text-anchor="middle" font-size="12" fill="#2d3748">p</text>
+  <line x1="35" y1="160" x2="150" y2="45" stroke="#e53e3e" stroke-width="2"/>
+  <line x1="35" y1="160" x2="170" y2="92" stroke="#d69e2e" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <text x="132" y="60" font-size="10" fill="#e53e3e">等容V₁</text>
+  <text x="140" y="106" font-size="10" fill="#d69e2e">等容V₂&gt;V₁</text>
+  <line x1="110" y1="160" x2="110" y2="40" stroke="#2b6cb0" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <text x="114" y="52" font-size="10" fill="#2b6cb0">等温</text>
+  <line x1="35" y1="120" x2="180" y2="120" stroke="#38a169" stroke-width="1.5" stroke-dasharray="2,3"/>
+  <text x="42" y="115" font-size="10" fill="#38a169">等压</text>
+</svg>
+<svg width="200" height="190" viewBox="0 0 200 190" xmlns="http://www.w3.org/2000/svg">
+  <text x="100" y="16" text-anchor="middle" font-size="12" fill="#1a365d" font-weight="bold">V-T 图</text>
+  <line x1="35" y1="160" x2="185" y2="160" stroke="#2d3748" stroke-width="1.5"/>
+  <line x1="35" y1="160" x2="35" y2="30" stroke="#2d3748" stroke-width="1.5"/>
+  <text x="185" y="175" text-anchor="middle" font-size="12" fill="#2d3748">T</text>
+  <text x="22" y="35" text-anchor="middle" font-size="12" fill="#2d3748">V</text>
+  <line x1="35" y1="160" x2="150" y2="45" stroke="#38a169" stroke-width="2"/>
+  <line x1="35" y1="160" x2="170" y2="92" stroke="#d69e2e" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <text x="130" y="60" font-size="10" fill="#38a169">等压p₁</text>
+  <text x="138" y="106" font-size="10" fill="#d69e2e">等压p₂&gt;p₁</text>
+  <line x1="110" y1="160" x2="110" y2="40" stroke="#2b6cb0" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <text x="114" y="52" font-size="10" fill="#2b6cb0">等温</text>
+  <line x1="35" y1="120" x2="180" y2="120" stroke="#e53e3e" stroke-width="1.5" stroke-dasharray="2,3"/>
+  <text x="42" y="115" font-size="10" fill="#e53e3e">等容</text>
+</svg>
+</div>
+
+<h2 id="s5">五、易错点与成因分析</h2>
+
+<h3>易错点1：把摄氏温度直接代入气体定律</h3>
+<p><strong>典型表现</strong>：「$27\,°\text{C}$ 的气体加热到 $54\,°\text{C}$，体积变为原来 2 倍」；或例2 中 $V_2=\dfrac{1.0\times450}{27}$。</p>
+<p><strong>成因分析</strong>：三个定律与状态方程都是<strong>正比、反比关系</strong>，比例关系对「零点的选取」敏感。摄氏温标的零点是冰点，不是「没有热运动」的点；热力学温标的零点（绝对零度）才是分子平均动能为零的点。只有以 $T$（开尔文）为变量，$p\propto T$、$V\propto T$ 才成立。$27\,°\text{C}\to54\,°\text{C}$ 对应 $300\,\text{K}\to327\,\text{K}$，温度只升高了 9%，远没有翻倍。<strong>铁律：代入前先写 $T=t+273$。</strong></p>
+
+<h3>易错点2：压强分析漏掉液柱重力或活塞重力</h3>
+<p><strong>典型表现</strong>：液柱封闭的题目直接写 $p=p_0$；竖直气缸活塞有质量，仍写 $p=p_0$；或把「加」「减」搞反。</p>
+<p><strong>成因分析</strong>：背结论而没有受力平衡的程序。正确程序只有一步：<strong>选定液柱（或活塞）为研究对象，沿管（或竖直）方向列 $\sum F=0$</strong>。压力 $=pS$，重力 $=mg$（液柱则等效为 $h$ cmHg），方向一一标明，解出 $p$。凡是题目出现「竖直」「活塞质量 $m$」「水银柱长 $h$」，就必须走这套程序，不能跳步。</p>
+
+<h3>易错点3：$W$ 与 $Q$ 的正负号混乱</h3>
+<p><strong>典型表现</strong>：气体膨胀对外做功，写成 $W=+300\,\text{J}$ 代入 $\Delta U=W+Q$；或把「气体对外做功」与「外界对气体做功」混为一谈。</p>
+<p><strong>成因分析</strong>：$\Delta U=W+Q$ 中的 $W$ 定义是「<strong>外界对气体</strong>做的功」，与直觉中「气体干了多少活」相反。记不住定义就用物理画面记：压缩气体时你要花力气推活塞，能量从你流向气体，$W&gt;0$——「<strong>压缩为正</strong>」。同理「<strong>吸热为正</strong>」。另外注意 $\Delta U$ 永远由温度变化方向决定（对理想气体），不看体积、不看压强。</p>
+
+<h3>易错点4：研究对象变了还在用 $\dfrac{pV}{T}=C$</h3>
+<p><strong>典型表现</strong>：轮胎漏气、给篮球打气、用掉半瓶氧气类题目，直接对「剩下的气体」列 $\dfrac{p_1V_1}{T_1}=\dfrac{p_2V_2}{T_2}$。</p>
+<p><strong>成因分析</strong>：状态方程的常数 $C=\dfrac{m}{M}R$ 与质量绑定，质量变了，前后两个 $C$ 不同，等式不成立。处理办法：把研究对象扩大为「<strong>变化前与变化后的全部气体</strong>」（包括漏出、打入的部分），用 $\dfrac{p_1V_1}{T_1}=\dfrac{p_2V_2}{T_2}+\dfrac{p'V'}{T'}$（分态求和）；打气类问题可把「原有气体 + 待打入气体」合起来作为初态。识别标志：题目出现「漏」「充」「用掉」「装入」字样，先问质量变没变。</p>
+
+<h3>易错点5：三种图象互相混淆，等温线当成直线</h3>
+<p><strong>典型表现</strong>：在 $p\text{-}V$ 图上把等温过程画成直线；在 $p\text{-}T$ 图上认为斜率大的等容线体积大；判断不出 $V\text{-}T$ 图上哪条等压线压强大。</p>
+<p><strong>成因分析</strong>：没有从方程本身看图象。方法只有一个：<strong>把图象的横、纵坐标用状态方程联系起来</strong>。$p\text{-}V$ 图：$p=\dfrac{CT}{V}$，$T$ 定时是双曲线；$p\text{-}T$ 图：$p=\dfrac{C}{V}T$，等容线过原点，斜率 $\propto\dfrac{1}{V}$，<strong>斜率大 → 体积小</strong>；$V\text{-}T$ 图：$V=\dfrac{C}{p}T$，等压线过原点，斜率 $\propto\dfrac{1}{p}$，<strong>斜率大 → 压强小</strong>。每次看图先默写对应函数式，图象问题就变成送分题。</p>
+
+<h3>易错点6：压强单位混用导致计算错误</h3>
+<p><strong>典型表现</strong>：同一道题里 $p_1$ 用 cmHg、$p_2$ 用 Pa 直接代入比例式；或把 $1\,\text{atm}=76\,\text{cmHg}$ 与 $1.01\times10^5\,\text{Pa}$ 的换算弄错。</p>
+<p><strong>成因分析</strong>：比例式 $\dfrac{p_1V_1}{T_1}=\dfrac{p_2V_2}{T_2}$ 中，只要两边的 $p$ <strong>单位相同</strong>即可（不必化成 Pa）——液柱题全程用 cmHg 反而最快。但单位混用或换算错误就全盘皆输。记牢换算链：$1\,\text{atm}=76\,\text{cmHg}=1.01\times10^5\,\text{Pa}$；由 cmHg 换 Pa 用比例：$p\,[\text{Pa}]=\dfrac{p\,[\text{cmHg}]}{76}\times1.01\times10^5$。体积同理，两边都用 L 即可，不必换 $\text{m}^3$——但求功 $W=p\Delta V$ 时必须换成 Pa 和 $\text{m}^3$。</p>
+
+<h3>易错点7：认为「温度高的气体内能一定大」「气体体积就是固液的体积」</h3>
+<p><strong>典型表现</strong>：判断「温度高的气体比温度低的气体内能大」；或把气体的体积理解成分子本身体积之和。</p>
+<p><strong>成因分析</strong>：内能 = 分子动能 + 分子势能，与质量（分子数）、温度、体积都有关。温度高只说明<strong>平均动能</strong>大，若分子数少得多，总内能未必大——只有「<strong>一定质量的理想气体</strong>」才能说「温度高则内能大」。气体体积指分子<strong>所能到达的空间</strong>（容器容积），不是分子自身体积；气体分子间距约为分子直径的 10 倍，分子本身体积可忽略，这正是理想气体模型的第一条假设。</p>
+
+<h2 id="s6">六、章末自检清单</h2>
+
+<h3>概念关</h3>
+<ul>
+  <li>☐ 能用分子撞击器壁的微观图像解释压强的产生，并说出决定压强的两个微观因素</li>
+  <li>☐ 知道理想气体的三条假设，理解「一定质量理想气体内能只由温度决定」</li>
+  <li>☐ 能默写单位换算：$1\,\text{atm}=76\,\text{cmHg}=1.01\times10^5\,\text{Pa}$，$T=t+273\,\text{K}$</li>
+  <li>☐ 理解气体体积 = 容器容积，不是分子体积之和</li>
+  <li>☐ 能复述热力学第二定律的两种表述，知道第二类永动机不可能制成</li>
+</ul>
+
+<h3>公式关</h3>
+<ul>
+  <li>☐ 能默写三个实验定律及其条件：$pV=C$（等温）、$\dfrac{p}{T}=C$（等容）、$\dfrac{V}{T}=C$（等压）</li>
+  <li>☐ 能用「等温 + 等压」两步虚构过程独立推导出 $\dfrac{pV}{T}=C$</li>
+  <li>☐ 能说出状态方程的适用条件：一定质量、理想气体、温度用开尔文、$p$ 为气体总压强</li>
+  <li>☐ 能默写 $\Delta U=W+Q$ 并逐项说清符号约定：压缩为正、吸热为正、升温为正</li>
+  <li>☐ 知道绝热（$Q=0$）、等温（$\Delta U=0$）、等容（$W=0$）三种特殊过程的简化结论</li>
+</ul>
+
+<h3>模型与图象关</h3>
+<ul>
+  <li>☐ 液柱封闭气体：会对液柱做受力平衡，管口向上 $p=p_0+h$、向下 $p=p_0-h$、水平 $p=p_0$</li>
+  <li>☐ 活塞封闭气体：会对活塞列 $\sum F=0$，正确处理活塞重力与大气压</li>
+  <li>☐ 能在 $p\text{-}V$、$p\text{-}T$、$V\text{-}T$ 三种图上画出等温、等容、等压线，并比较不同等值线对应的 $T$、$V$、$p$ 大小</li>
+  <li>☐ 知道 $p\text{-}V$ 图上面积 = 功，过程向右气体对外做功</li>
+  <li>☐ 遇到漏气/充气题，能识别质量变化并改用「分态求和」处理</li>
+</ul>
+
+<h3>易错点关</h3>
+<ul>
+  <li>☐ 代入气体定律前先把摄氏温度换成开尔文，形成条件反射</li>
+  <li>☐ 压强分析走受力平衡程序，不背结论、不跳步</li>
+  <li>☐ 热一律三步走：温度定 $\Delta U$、体积定 $W$、公式算 $Q$</li>
+  <li>☐ 同一比例式中压强、体积单位各自统一；求功时才换成 Pa 与 $\text{m}^3$</li>
+  <li>☐ 判断内能大小时先说「是否一定质量、是否理想气体」，再用温度下结论</li>
+</ul>
+
+<div class="key-point">
+<strong>写在最后</strong>：气体定律是典型的「规则少、细节定生死」的章节。把「先换算温度、先做受力平衡、先看质量变没变」三个动作练成习惯，这 6 分就能稳稳收进囊中。加油，小兵！💪
+</div>
+
+</body>
+</html>

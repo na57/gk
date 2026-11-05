@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>几何光学 - 深度学习材料</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<nav class="chap-nav">高考备考 · 物理 · 深度学习材料 ｜ 3.12 几何光学</nav>
+<header class="chap-head">
+  <h1>几何光学</h1>
+  <p class="chap-meta"></p>
+</header>
+  <div class="subtitle">深度学习材料 · 概念 · 推导 · 模型 · 方法</div>
+  <div class="meta">
+    <span>高中物理 · 光学模块 · 高考计算题第13题常客</span><br>
+    <span>依据：《高考物理95+分备考指南》3.12节要求</span><br>
+    <span>适用：高一同步学习 &amp; 高考一轮复习</span><br>
+    <span>学生：小兵</span>
+  </div>
+</div>
+
+<p class="hint">
+  💡 提示：所有公式由 MathJax 渲染；带推导的公式请合上书独立推一遍
+</p>
+
+<!-- 目录 -->
+<div class="toc">
+  <strong>目录</strong>
+  <ol>
+    <li><a href="#s1">一、本章总览</a></li>
+    <li><a href="#s2">二、核心概念与物理量</a></li>
+    <li><a href="#s3">三、公式与推导（含适用条件）</a></li>
+    <li><a href="#s4">四、典型例题</a></li>
+    <li><a href="#s5">五、易错点与成因分析</a></li>
+    <li><a href="#s6">六、章末自检清单</a></li>
+  </ol>
+</div>
+
+<h2 id="s1">一、本章总览</h2>
+
+<p>小兵你好，这一章是<strong>几何光学</strong>。它在教材里排在高二下学期，但内容独立、起点低，非常适合你现在就提前自学——它几乎不依赖力学和电磁学，只需要初中的光的反射知识和一点三角函数。</p>
+
+<h3>本章在高考中的位置</h3>
+<p>云南高考物理满分 100 分、75 分钟，光学（几何光学 + 物理光学）合计约 10 分。其中几何光学最常见的呈现方式是<strong>计算题第 13 题</strong>：给出一块玻璃砖、半圆柱或三棱镜，要求画光路、用折射定律和几何关系求角度、折射率或临界角。这类题的特点是：</p>
+<ul>
+  <li><strong>套路固定</strong>：找法线 → 定角度（对法线！）→ 写折射定律 → 用几何关系（内角和、对称、圆的性质）→ 判断是否全反射；</li>
+  <li><strong>计算量小</strong>：数字都是精心设计的（30°、45°、60°、$\sqrt{2}$、$\sqrt{3}$），答案干净；</li>
+  <li><strong>区分度在图上</strong>：图画错一步，后面全错。所以本章的核心功夫不是背公式，而是<strong>画图准确</strong>。</li>
+</ul>
+<p>目标很明确：这 10 分是高考物理里性价比最高的分数之一，我们的目标是<strong>满分</strong>。</p>
+
+<h3>本章知识体系</h3>
+<div class="map">
+  <div class="row"><div class="node root">几何光学（3.12）</div></div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node">光的折射</div>
+    <div class="node">全反射</div>
+    <div class="node">光的色散</div>
+    <div class="node view">几何光学计算</div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node leaf">折射定律 $\frac{\sin i}{\sin r}=n$</div>
+    <div class="node leaf">折射率 $n=\frac{c}{v}$</div>
+    <div class="node leaf">光路可逆</div>
+    <div class="node leaf">临界角 $\sin C=\frac{1}{n}$</div>
+    <div class="node leaf">条件：密→疏 且 $i&gt;C$</div>
+    <div class="node leaf">棱镜偏向角</div>
+    <div class="node leaf">七色光比较</div>
+    <div class="node leaf">光路图 + 几何关系</div>
+  </div>
+</div>
+
+<h3>与初中知识的衔接</h3>
+<p>你在初中已经学过：光的直线传播、反射定律（反射角等于入射角）、平面镜成像，还定性见过"筷子插入水中变弯"。本章只做三件"升级"：</p>
+<ul>
+  <li>把折射从<strong>定性现象</strong>升级为<strong>定量定律</strong>（$\sin$ 之比是常数）；</li>
+  <li>把"弯折程度"升级为一个介质参数——<strong>折射率</strong>，并由它统一解释折射、全反射、色散、视深四大现象；</li>
+  <li>把"光路图"从示意图升级为<strong>计算工具</strong>：角度要量准、法线必画、箭头必标。</li>
+</ul>
+<p>反射定律在本章仍然全程有效（任何界面都同时存在反射和折射，只是能量分配不同），全反射只是"折射通道被关闭后，反射独占全部能量"的特例。</p>
+
+<h3>学习建议（给高一的你）</h3>
+<blockquote>
+  <p><strong>三样东西随身带：</strong></p>
+  <ul>
+    <li><strong>量角器级的画图习惯</strong>——从这一章开始，所有光路题先画图再动笔，法线用虚线、光线用实线带箭头；</li>
+    <li><strong>特殊角三角函数表</strong>——$\sin 30^\circ=0.5$、$\sin 45^\circ=\frac{\sqrt2}{2}\approx0.707$、$\sin 60^\circ=\frac{\sqrt3}{2}\approx0.866$，以及反查（$\sin r=0.5\Rightarrow r=30^\circ$）；</li>
+    <li><strong>两个常见折射率</strong>——水 $n=\frac{4}{3}\approx1.33$，普通玻璃 $n\approx1.5$；题目爱用 $\sqrt2\approx1.414$ 和 $\sqrt3\approx1.732$，因为它们对应干净的临界角。</li>
+  </ul>
+</blockquote>
+
+<h2 id="s2">二、核心概念与物理量</h2>
+
+<h3>1. 光的折射现象</h3>
+<p>光从一种介质斜射入另一种介质时，传播方向发生偏折的现象叫光的折射。注意"斜射"二字：如果光<strong>垂直界面入射</strong>（沿法线方向），则方向不偏折，但速度仍然改变——这一点常被忽略，也是判断题的考点。</p>
+
+<h3>2. 三个核心角度：入射角、折射角、反射角</h3>
+<div class="key-point">
+  <strong>⚠️ 角度量取约定（本章第一铁律）：</strong>在光学中，入射角 $i$、折射角 $r$、反射角、临界角 $C$ <strong>一律是光线与「法线」的夹角，不是与界面的夹角！</strong>法线是过入射点、垂直于界面的假想直线（画图用虚线）。初中有些同学习惯看光线与镜面的夹角，到高中必须彻底改过来。题目若说"光线与界面成 30°"，入射角其实是 $90^\circ-30^\circ=60^\circ$。
+</div>
+
+<svg viewBox="0 0 340 215" xmlns="http://www.w3.org/2000/svg" style="max-width:360px;display:block;margin:14px auto;background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;">
+  <defs>
+    <marker id="arr1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#e53e3e"/>
+    </marker>
+    <marker id="arr1b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#2b6cb0"/>
+    </marker>
+  </defs>
+  <text x="18" y="28" font-size="13" fill="#718096">空气（$n_1$ 较小）</text>
+  <text x="18" y="200" font-size="13" fill="#718096">玻璃（$n_2$ 较大）</text>
+  <line x1="20" y1="105" x2="320" y2="105" stroke="#2d3748" stroke-width="2"/>
+  <line x1="170" y1="18" x2="170" y2="192" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="5,4"/>
+  <text x="177" y="26" font-size="12" fill="#a0aec0">法线</text>
+  <line x1="80" y1="37" x2="170" y2="105" stroke="#e53e3e" stroke-width="2.2" marker-end="url(#arr1)"/>
+  <line x1="170" y1="105" x2="207" y2="172" stroke="#2b6cb0" stroke-width="2.2" marker-end="url(#arr1b)"/>
+  <path d="M 170 72 A 33 33 0 0 0 144 83" fill="none" stroke="#e53e3e" stroke-width="1.2"/>
+  <text x="140" y="70" font-size="14" fill="#e53e3e" font-style="italic">i</text>
+  <path d="M 170 138 A 33 33 0 0 0 186 131" fill="none" stroke="#2b6cb0" stroke-width="1.2"/>
+  <text x="191" y="128" font-size="14" fill="#2b6cb0" font-style="italic">r</text>
+  <text x="88" y="55" font-size="12" fill="#e53e3e">入射光线</text>
+  <text x="213" y="172" font-size="12" fill="#2b6cb0">折射光线</text>
+</svg>
+
+<p>如上图：光从空气（光疏）进入玻璃（光密），折射光线<strong>偏向法线</strong>，$i&gt;r$；反过来从玻璃进入空气，折射光线<strong>偏离法线</strong>，$i&lt;r$。一句话口诀：<strong>"空气中的角大"</strong>（严格说是"光疏介质中的角大"）。</p>
+
+<h3>3. 折射率 $n$——本章的"主角"物理量</h3>
+<table>
+  <tr><th style="width:22%;">项目</th><th>内容</th></tr>
+  <tr><td>定义（绝对折射率）</td><td class="l">光从真空射入某种介质时，入射角正弦与折射角正弦之比：$n=\dfrac{\sin i}{\sin r}$</td></tr>
+  <tr><td>物理本质</td><td class="l">$n=\dfrac{c}{v}$，即真空中光速与介质中光速之比，反映介质对光的"阻碍"程度</td></tr>
+  <tr><td>符号 / 单位</td><td class="l">$n$，<strong>无单位</strong>（比值），是标量</td></tr>
+  <tr><td>取值范围</td><td class="l">任何介质 $n&gt;1$（因为 $v&lt;c$）；真空 $n=1$，空气 $n\approx1.0003$，计算中取 1</td></tr>
+  <tr><td>相对折射率</td><td class="l">光从介质1进入介质2：$n_{21}=\dfrac{\sin i_1}{\sin i_2}=\dfrac{v_1}{v_2}=\dfrac{n_2}{n_1}$</td></tr>
+  <tr><td>与频率的关系</td><td class="l">同一介质对不同频率的光折射率不同：频率越高（如紫光），$n$ 越大——这是色散的根源</td></tr>
+</table>
+
+<h3>4. 光疏介质与光密介质</h3>
+<p>这是一对<strong>相对概念</strong>：两种介质比较，折射率小的叫光疏介质，大的叫光密介质。注意"疏/密"说的是<strong>光学密度（折射率）</strong>，不是质量密度。水对空气是光密，对玻璃却是光疏。光线从光疏进入光密时偏向法线；从光密进入光疏时偏离法线——后一种情况是发生全反射的前提。</p>
+<table>
+  <tr><th>介质</th><th>折射率 $n$（约）</th><th>相对关系举例</th></tr>
+  <tr><td>真空 / 空气</td><td>1.00 / 1.0003</td><td class="l">对几乎一切透明介质都是光疏</td></tr>
+  <tr><td>水</td><td>1.33（$=\frac43$）</td><td class="l">对空气是光密，对玻璃是光疏</td></tr>
+  <tr><td>普通玻璃</td><td>1.5</td><td class="l">对水、空气是光密</td></tr>
+  <tr><td>水晶</td><td>1.55</td><td class="l">与普通玻璃接近</td></tr>
+  <tr><td>金刚石</td><td>2.42</td><td class="l">常见透明介质中 $n$ 最大之一，$C$ 仅约 $24.4^\circ$，极易全反射，故璀璨夺目</td></tr>
+</table>
+<p>命题人偏爱三个数：$n=\sqrt2$（对应 $C=45^\circ$）、$n=\frac{4}{3}$（水，$\sin C=0.75$）、$n=\sqrt3$（配合 30°/60° 出漂亮角度）。见到它们要立刻反应过来对应的特殊角。</p>
+
+<h3>5. 临界角 $C$</h3>
+<p>光从光密介质射向光疏介质时，使<strong>折射角恰好等于 90°</strong>（折射光线沿界面掠过）的入射角，叫临界角。入射角一旦超过它，折射光线消失，全部能量反射回去。</p>
+<table>
+  <tr><th>项目</th><th>内容</th></tr>
+  <tr><td>符号</td><td class="l">$C$（critical angle）</td></tr>
+  <tr><td>定义式</td><td class="l">$\sin C=\dfrac{1}{n}$（介质相对于真空/空气）</td></tr>
+  <tr><td>单位</td><td class="l">度（°），是角度，无量纲</td></tr>
+  <tr><td>典型值</td><td class="l">水（$n=\frac43$）：$C\approx48.6^\circ$；玻璃（$n=\sqrt2$）：$C=45^\circ$；金刚石（$n\approx2.42$）：$C\approx24.4^\circ$——所以钻石特别闪</td></tr>
+</table>
+
+<h3>6. 与光有关的几个量在不同介质中的变化</h3>
+<table>
+  <tr><th>物理量</th><th>从空气进入玻璃时</th><th>说明</th></tr>
+  <tr><td>频率 $f$</td><td><strong>不变</strong></td><td class="l">频率由光源决定，是光的"身份"，跨介质永远不变</td></tr>
+  <tr><td>光速 $v$</td><td>变小（$v=c/n$）</td><td class="l">介质越密（$n$ 越大），光跑得越慢</td></tr>
+  <tr><td>波长 $\lambda$</td><td>变短（$\lambda_n=\lambda_0/n$）</td><td class="l">由 $v=\lambda f$：$f$ 不变、$v$ 变小，故 $\lambda$ 等比例缩短</td></tr>
+  <tr><td>颜色</td><td>不变</td><td class="l">颜色由频率决定，不是由波长决定</td></tr>
+</table>
+
+<blockquote>
+  <p><strong>深度思考：为什么折射率会有两种定义，它们矛盾吗？</strong></p>
+  <p>$n=\sin i/\sin r$ 是<strong>实验定义</strong>（可以测量），$n=c/v$ 是<strong>本质定义</strong>（揭示原因）。两者相等不是巧合：用惠更斯原理作图，比较波前在两种介质中推进的速度，正好能推出 $\sin i/\sin r=v_1/v_2$（见第三部分推导）。所以折射的本质是<strong>光速在界面两侧不同</strong>，方向偏折只是结果。</p>
+</blockquote>
+
+<h3>7. 七种色光的比较（色散预备）</h3>
+<p>白光经棱镜后分成红、橙、黄、绿、蓝、靛、紫七色带，说明同一介质对不同颜色（频率）的光折射率不同。对同一种玻璃：</p>
+<table>
+  <tr><th>比较项</th><th>红光</th><th>→</th><th>紫光</th></tr>
+  <tr><td>频率 $f$</td><td>最低</td><td>递增</td><td>最高</td></tr>
+  <tr><td>折射率 $n$</td><td>最小</td><td>递增</td><td>最大</td></tr>
+  <tr><td>介质中速度 $v=c/n$</td><td>最大</td><td>递减</td><td>最小</td></tr>
+  <tr><td>介质中波长 $\lambda$</td><td>最长</td><td>递减</td><td>最短</td></tr>
+  <tr><td>临界角 $C$（$\sin C=1/n$）</td><td><strong>最大</strong></td><td>递减</td><td><strong>最小</strong></td></tr>
+  <tr><td>棱镜中偏折程度</td><td>最弱</td><td>递增</td><td>最强</td></tr>
+</table>
+<p>记忆抓手：<strong>"紫光最受欺负"</strong>——折射率最大、跑得最慢、偏得最狠、最容易被全反射（临界角最小）。红光是反着来的"幸运儿"。</p>
+
+<h2 id="s3">三、公式与推导（含适用条件）</h2>
+
+<h3>公式 1：折射定律（斯涅尔定律）</h3>
+$$\frac{\sin i}{\sin r}=n \quad\text{（光从真空/空气射入折射率为 } n \text{ 的介质）}$$
+<p>更对称、更好用的形式是：</p>
+$$n_1\sin i_1=n_2\sin i_2$$
+<p><strong>推导思路（惠更斯作图法）：</strong>把光看成一列平面波。波前 $AB$ 以速度 $v_1$ 斜着推进到界面，端点 $A$ 先接触界面，端点 $B$ 还在介质1中走。当 $B$ 走完路程 $v_1 t$ 到达界面时，$A$ 点已在介质2中以 $v_2$ 走出了半径为 $v_2 t$ 的半球面子波。新波前是界面上 $B$ 的落点向这个半球作的切线。对两个直角三角形分别写正弦：$\sin i_1=\dfrac{v_1 t}{L}$，$\sin i_2=\dfrac{v_2 t}{L}$（$L$ 为两落点间公共斜边），两式相除即得 $\dfrac{\sin i_1}{\sin i_2}=\dfrac{v_1}{v_2}$。代入 $v=c/n$，得 $\dfrac{\sin i_1}{\sin i_2}=\dfrac{n_2}{n_1}$，整理即 $n_1\sin i_1=n_2\sin i_2$。</p>
+<blockquote>
+  <p><strong>换个视角：费马原理。</strong>光在两点之间总沿<strong>传播时间最短</strong>的路径走。设光从介质1中的 $A$ 点到介质2中的 $B$ 点，界面上入射点 $P$ 可以滑动，总时间 $t=\dfrac{s_1}{v_1}+\dfrac{s_2}{v_2}$。对 $P$ 的位置求极小（数学上是求导取零），得到的条件恰好就是 $n_1\sin i_1=n_2\sin i_2$。所以折射定律不是"光在任性拐弯"，而是光在两种速度之间做的<strong>最优折中</strong>——和救生员在沙滩上跑得快、水里游得慢，救人时会选折线入水点一模一样。</p>
+</blockquote>
+<div class="warn">
+  <strong>适用条件与边界：</strong>
+  <ul>
+    <li>适用于两种<strong>均匀、各向同性</strong>介质的界面，且光斜射；垂直入射（$i=0$）时公式仍成立（$r=0$），只是不偏折；</li>
+    <li>$i$、$r$ 必须是<strong>与法线的夹角</strong>，代入前先检查角度的基准；</li>
+    <li>用 $n=\sin i/\sin r$ 时，$i$ 必须是<strong>真空/空气那一侧</strong>的角；方向反过来就要用 $n_1\sin i_1=n_2\sin i_2$，否则会算出 $n&lt;1$ 的荒唐结果——这是检查答案的第一个哨兵：任何介质折射率都大于 1；</li>
+    <li>折射率 $n$ 是<strong>介质（对某频率光）的固有常数</strong>，与入射角大小无关：入射角改变时 $r$ 跟着变，但比值 $\sin i/\sin r$ 不变。该定律是实验定律，对可见光、无线电波等各种电磁波都成立。</li>
+  </ul>
+</div>
+
+<h3>公式 2：折射率与光速 $n=\dfrac{c}{v}$</h3>
+<p><strong>推导思路：</strong>由上面的波动推导，真空（$n_0=1$，速度 $c$）对介质（$n$，速度 $v$）有 $\dfrac{\sin i_0}{\sin i}=\dfrac{c}{v}$；而折射率定义 $\dfrac{\sin i_0}{\sin i}=n$，故 $n=\dfrac{c}{v}$。</p>
+<div class="deep">
+  <strong>推论链条（要会连起来背）：</strong>$n=\dfrac{c}{v}$ → $v=\dfrac{c}{n}$；再由 $v=\lambda f$ 且频率不变，得介质中波长 $\lambda_n=\dfrac{v}{f}=\dfrac{c/n}{f}=\dfrac{\lambda_0}{n}$。真空中光速 $c=3.0\times10^{8}\ \mathrm{m/s}$，记住它。
+</div>
+<div class="warn">
+  <strong>边界：</strong>$n=c/v$ 里的 $v$ 是<strong>相速度</strong>（单色光波前的速度），高中范围内直接当光速用即可；$n&gt;1$ 恒成立，若某题算出 $n=0.8$，必是 $i$、$r$ 放反了位置。
+</div>
+
+<h3>公式 3：光路可逆原理</h3>
+<p>光路是可逆的：若光沿原折射光线反方向射入，它将沿原入射光线的反方向射出。这不是新定律，是折射定律 $n_1\sin i_1=n_2\sin i_2$ 关于两侧对称的直接推论。</p>
+<div class="deep">
+  <strong>什么时候用：</strong>① 求"从玻璃射向空气"的问题时，可想象光反向从空气射入，套用顺手的"空气角大"直觉；② 判断"人看水中鱼变浅、鱼看岸上人变高"这类互看问题时，光路可逆保证双方的像偏折方向一致（都偏向界面法线变化率大的方向）。
+</div>
+
+<h3>公式 4：临界角 $\sin C=\dfrac{1}{n}$</h3>
+<p><strong>推导思路：</strong>光从介质（$n_1=n$）射向空气（$n_2=1$）。由 $n_1\sin i_1=n_2\sin i_2$ 得 $\sin i_2=n\sin i_1$。让入射角逐渐增大，折射角也随之增大且始终 $i_2&gt;i_1$。当折射角到达它可能的最大值 $i_2=90^\circ$（沿界面）时，对应的入射角就叫临界角 $C$：</p>
+$$n\sin C=1\times\sin 90^\circ \quad\Rightarrow\quad \sin C=\frac{1}{n}$$
+<div class="warn">
+  <strong>适用前提（两条缺一不可）：</strong>
+  <ul>
+    <li><strong>方向对</strong>：必须是从<strong>光密介质射向光疏介质</strong>（$n_1&gt;n_2$）。反方向（疏→密）永远有折射光线，谈不上临界；</li>
+    <li><strong>角度超</strong>：$i_1&gt;C$ 才发生<strong>全反射</strong>；$i_1=C$ 时折射角恰为 90°，理论上折射光沿界面（实际极弱）；$i_1&lt;C$ 时折射、反射同时存在。</li>
+  </ul>
+  <strong>一般形式：</strong>若外侧不是空气而是介质 $n_2$，则 $\sin C=\dfrac{n_2}{n_1}$（要求 $n_1&gt;n_2$）。$\sin C=1/n$ 只是它在"对外是空气"时的特例。
+</div>
+
+<svg viewBox="0 0 360 210" xmlns="http://www.w3.org/2000/svg" style="max-width:380px;display:block;margin:14px auto;background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;">
+  <defs>
+    <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#e53e3e"/>
+    </marker>
+    <marker id="arr2b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#2b6cb0"/>
+    </marker>
+    <marker id="arr2c" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#38a169"/>
+    </marker>
+  </defs>
+  <text x="16" y="26" font-size="13" fill="#718096">空气（光疏）</text>
+  <text x="16" y="200" font-size="13" fill="#718096">玻璃（光密）· 点光源 S</text>
+  <line x1="15" y1="100" x2="345" y2="100" stroke="#2d3748" stroke-width="2"/>
+  <line x1="180" y1="15" x2="180" y2="195" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="5,4"/>
+  <circle cx="180" cy="170" r="4" fill="#1a365d"/>
+  <text x="188" y="185" font-size="12" fill="#1a365d">S</text>
+  <line x1="180" y1="170" x2="120" y2="100" stroke="#e53e3e" stroke-width="2" marker-end="url(#arr2)"/>
+  <line x1="120" y1="100" x2="88" y2="40" stroke="#2b6cb0" stroke-width="2" marker-end="url(#arr2b)"/>
+  <text x="46" y="35" font-size="12" fill="#2b6cb0">① 折射出去</text>
+  <line x1="180" y1="170" x2="180" y2="100" stroke="#e53e3e" stroke-width="2" marker-end="url(#arr2)"/>
+  <line x1="180" y1="100" x2="255" y2="100" stroke="#dd6b20" stroke-width="2.4" marker-end="url(#arr2)"/>
+  <text x="235" y="92" font-size="12" fill="#dd6b20">② 临界：沿界面（折射角 90°）</text>
+  <line x1="180" y1="170" x2="245" y2="100" stroke="#e53e3e" stroke-width="2" marker-end="url(#arr2)"/>
+  <line x1="245" y1="100" x2="300" y2="163" stroke="#38a169" stroke-width="2" marker-end="url(#arr2c)"/>
+  <text x="272" y="182" font-size="12" fill="#38a169">③ 全反射</text>
+</svg>
+
+<h3>公式 5：棱镜的角关系与偏向角</h3>
+<p>光线通过顶角为 $A$ 的三棱镜，在左侧面以入射角 $i_1$、折射角 $r_1$ 进入，在右侧面以入射角 $r_2$、折射角（出射角）$i_2$ 射出。几何约束：</p>
+$$r_1+r_2=A$$
+<p>总偏向角（出射方向相对入射方向转过的角度）：</p>
+$$\delta=i_1+i_2-A$$
+<p><strong>推导思路：</strong>对棱镜内由两条法线和内部光线围成的四边形（或三角形）用内角和：两条法线分别垂直于两个侧面，其夹角为 $180^\circ-A$；于是内部光线与两法线的夹角之和 $r_1+r_2=A$。偏向角是两段偏折的叠加：第一段折向底边偏了 $(i_1-r_1)$，第二段同向再偏 $(i_2-r_2)$，相加得 $\delta=(i_1-r_1)+(i_2-r_2)=(i_1+i_2)-(r_1+r_2)=i_1+i_2-A$。</p>
+<div class="deep">
+  <strong>最小偏向角：</strong>当光路对棱镜对称（$i_1=i_2$，$r_1=r_2=A/2$）时偏向角最小，且
+  $$n=\frac{\sin\dfrac{A+\delta_{\min}}{2}}{\sin\dfrac{A}{2}}$$
+  这是实验室测玻璃折射率的经典方法（分光计实验），高考常以信息题形式给出。
+</div>
+
+<h3>公式 6：视深（近轴近似）</h3>
+<p>从液面<strong>正上方附近</strong>俯视深度为 $h$ 的水底物体，看到的虚像深度（视深）：</p>
+$$h'=\frac{h}{n}$$
+<p><strong>推导思路：</strong>从物体发出两条靠得很近的光线，一条沿法线垂直出射（不偏折），一条以小角度 $i$ 入射、$r$ 折射。小角度下 $\sin\theta\approx\tan\theta$（近轴近似），由折射定律 $n\sin i=\sin r$ 得 $n\,\tan i\approx\tan r$。设入射点到法线垂足的横向距离为 $x$，则 $\tan i=x/h$，$\tan r=x/h'$，代入即 $h'=h/n$。</p>
+<div class="warn">
+  <strong>适用条件：</strong>只适用于<strong>近轴光线</strong>（俯视、视线接近竖直）。斜视时像的位置与方向有关，$h'=h/n$ 不再成立。高考中该公式多用于估算与定性，斜视图问题用折射定律老老实实算。
+</div>
+
+<h3>公式 7：全反射的两个经典应用结论</h3>
+<ul>
+  <li><strong>光导纤维传光条件</strong>：光在纤芯（$n_1$）与包层（$n_2$，$n_1&gt;n_2$）界面上发生全反射，要求界面处入射角大于临界角，$\sin C=n_2/n_1$。光纤弯而不漏光，靠的就是每一次反射都是全反射、零透射损耗（理想情况）。</li>
+  <li><strong>水面下的"天窗"（鱼眼视窗）</strong>：水下深度 $h$ 处的点光源，只有顶角为 $2C$ 的圆锥内的光能射出水面，水面亮圆半径 $r=h\tan C$；圆锥外的光全被全反射挡回。潜水员抬头看，整个水上天景被压缩进一个亮圆里。</li>
+</ul>
+<div class="deep">
+  <strong>光纤端面入射角的限制（数值孔径，高考信息题常客）：</strong>光从空气（$n_0=1$）以入射角 $i_0$ 射入光纤端面（纤芯 $n_1$），折射角为 $r$，则折射光射到芯-包界面的入射角为 $90^\circ-r$。要全反射需 $90^\circ-r&gt;C$，即 $r&lt;90^\circ-C$，于是 $\sin i_0=n_1\sin r&lt;n_1\cos C$。由 $\sin C=n_2/n_1$ 得 $\cos C=\sqrt{1-(n_2/n_1)^2}$，故
+  $$\sin i_0&lt;\sqrt{n_1^2-n_2^2}$$
+  即端面入射角不能太大，否则光进入纤芯后射向侧壁的角度不够陡，会从包层漏掉。$\sqrt{n_1^2-n_2^2}$ 叫光纤的数值孔径。
+</div>
+<div class="deep">
+  <strong>海市蜃楼与全反射：</strong>夏日沙漠路面（或柏油马路）上方，贴近地面的空气被晒得很热，折射率比上方冷空气<strong>小</strong>。远处景物射来的光从"较密的上层"弯向"较疏的下层"，越往下偏折越厉害，当某层处入射角超过该处的临界角时发生全反射，光线折回向上进入人眼——人眼逆着光线看过去，就觉得路面远处有一汪"水面"映着倒影。海上蜃楼原理相同，只是温度层结相反（下冷上暖），像出现在空中。<strong>关键词都是：折射率渐变 + 光密到光疏 + 全反射。</strong>
+</div>
+
+<h2 id="s4">四、典型例题</h2>
+
+<p>下面 4 道题覆盖云南高考第 13 题的四大高频模型。每题请<strong>先自己画图做一遍</strong>，再对照分步解析。所有数值都经过核算，你可以放心验证。</p>
+
+<h3>例 1　平行玻璃砖的侧移 ★★☆</h3>
+<p>一束光从空气以入射角 $i=60^\circ$ 射入厚度 $d=10.0\ \mathrm{cm}$、折射率 $n=\sqrt3$ 的平行玻璃砖，求：(1) 玻璃中的折射角 $r$；(2) 出射光线相对入射光线延长线的侧移距离 $x$；（$\sin30^\circ=0.5$，$\sin60^\circ=\dfrac{\sqrt3}{2}\approx0.866$，$\cos30^\circ\approx0.866$）</p>
+<h4>【分步解析】</h4>
+<ol>
+  <li><strong>画图</strong>：画两条平行界面、入射点处竖直法线（虚线）、入射光线与法线成 60°。</li>
+  <li><strong>第一界面折射</strong>：$\sin r=\dfrac{\sin i}{n}=\dfrac{\sin60^\circ}{\sqrt3}=\dfrac{\sqrt3/2}{\sqrt3}=\dfrac12$，故 $r=30^\circ$。</li>
+  <li><strong>第二界面</strong>：由几何（内错角），光在下表面的入射角也是 $30^\circ$；由光路可逆（或再写一次折射定律），出射角回到 $60^\circ$。<strong>结论：出射光线与入射光线平行</strong>，只是平移了一段。</li>
+  <li><strong>侧移量</strong>：设玻璃内光路长 $L=\dfrac{d}{\cos r}$。侧移 $x=L\sin(i-r)=\dfrac{d\sin(i-r)}{\cos r}$。代入：$$x=\frac{10.0\times\sin30^\circ}{\cos30^\circ}=\frac{10.0\times0.5}{0.866}\approx5.77\ \mathrm{cm}$$</li>
+</ol>
+<div class="deep">
+  <strong>结论与模型沉淀：</strong>① 平行玻璃砖只让光<strong>侧移、不转向</strong>；② $i$ 越大、$d$ 越厚、$n$ 越大，侧移越大；③ 透过玻璃砖看东西位置有偏移，但方向不变——这是"隔着玻璃看字，字的位置会挪一点"的定量解释。
+</div>
+<p><strong>追问（检验是否真懂）：</strong>若光<strong>垂直入射</strong>（$i=0$）射入同一玻璃砖，侧移是多少？由折射定律 $\sin r=\sin 0^\circ/n=0$ 得 $r=0$，代入侧移公式 $x=d\sin(0-0)/\cos 0=0$。<strong>方向不变、侧移为零</strong>——但请记住第二部分的话：光速和波长仍然变了。"不偏折"≠"无折射"。</p>
+
+<h3>例 2　半圆形玻璃砖中的临界与全反射 ★★★</h3>
+<p>半径为 $R$ 的半圆形玻璃砖，折射率 $n=\sqrt2$。一束光沿半径方向从圆弧面垂直射入（即过圆心 $O$ 方向），到达平面直径面上某点 $O$。改变光的入射位置，使光在 $O$ 点（平面侧）的入射角为 $\alpha$。问：(1) 临界角 $C$ 多大？(2) 当 $\alpha=30^\circ$ 时，光能否射出？若能，折射角多大？(3) 当 $\alpha=60^\circ$ 时呢？（$\sin45^\circ=\dfrac{\sqrt2}{2}\approx0.707$）</p>
+<h4>【分步解析】</h4>
+<ol>
+  <li><strong>圆弧面入射为什么不偏折？</strong>光沿半径方向射向圆心，恰沿该处圆弧面的法线（半径即法线），$i=0$，方向不变地进入玻璃，直射 $O$ 点。——这是半圆砖模型的"题眼"。</li>
+  <li><strong>临界角</strong>：$\sin C=\dfrac{1}{n}=\dfrac{1}{\sqrt2}=\dfrac{\sqrt2}{2}\approx0.707$，故 $C=45^\circ$。</li>
+  <li><strong>$\alpha=30^\circ&lt;C$</strong>：能折射出。由 $n\sin\alpha=1\cdot\sin r'$，$\sin r'=\sqrt2\times\sin30^\circ=\sqrt2\times0.5=\dfrac{\sqrt2}{2}\approx0.707$，$r'=45^\circ$。折射光偏离法线射入空气。</li>
+  <li><strong>$\alpha=60^\circ&gt;C$</strong>：发生全反射，平面侧无折射光线，光按反射定律（反射角 $60^\circ$）返回玻璃内部，再沿半径方向从圆弧面垂直射出。</li>
+</ol>
+<div class="deep">
+  <strong>模型沉淀：</strong>半圆砖 + 沿半径入射 = 圆弧面永不偏折，所有戏都在平面侧的$O$点。做题流程固化：算 $C$ → 比 $\alpha$ 与 $C$ → 小于则折射、等于则掠射、大于则全反射。
+</div>
+<p><strong>变式训练：</strong>若把玻璃换成 $n=2$ 的材料，入射角 $\alpha=45^\circ$，情况如何？两种判法互相印证——</p>
+<ul>
+  <li><strong>判法一（临界角）</strong>：$\sin C=\dfrac12=0.5$，$C=30^\circ$；$\alpha=45^\circ&gt;30^\circ$，全反射。</li>
+  <li><strong>判法二（折射角无解）</strong>：强行写 $\sin r'=n\sin\alpha=2\times\sin45^\circ=2\times0.707\approx1.41&gt;1$。正弦值不可能超过 1，方程<strong>无解</strong>——这正是全反射在数学上的样子：折射角不存在了。</li>
+</ul>
+<p>以后算折射角时，只要发现 $\sin r&gt;1$，不用慌，恭喜你"算出了全反射"。</p>
+
+<h3>例 3　三棱镜的偏向角 ★★★</h3>
+<p>顶角 $A=60^\circ$ 的三棱镜，材料折射率 $n=\sqrt2$。光从左侧面对称入射（即出射角与入射角相等），入射角 $i_1=45^\circ$。求：(1) 两个界面处的折射角 $r_1$、$r_2$；(2) 出射角 $i_2$；(3) 偏向角 $\delta$。</p>
+
+<svg viewBox="0 0 360 205" xmlns="http://www.w3.org/2000/svg" style="max-width:380px;display:block;margin:14px auto;background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;">
+  <defs>
+    <marker id="arr3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#e53e3e"/>
+    </marker>
+    <marker id="arr3b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#2b6cb0"/>
+    </marker>
+    <marker id="arr3c" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#38a169"/>
+    </marker>
+  </defs>
+  <polygon points="150,22 55,168 245,168" fill="#ebf8ff" stroke="#2d3748" stroke-width="2"/>
+  <text x="140" y="18" font-size="12" fill="#2d3748">A=60°</text>
+  <line x1="25" y1="133" x2="98" y2="104" stroke="#e53e3e" stroke-width="2.2" marker-end="url(#arr3)"/>
+  <line x1="98" y1="104" x2="202" y2="104" stroke="#2b6cb0" stroke-width="2.2" marker-end="url(#arr3b)"/>
+  <line x1="202" y1="104" x2="278" y2="133" stroke="#38a169" stroke-width="2.2" marker-end="url(#arr3c)"/>
+  <line x1="98" y1="104" x2="150" y2="79" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="5,4"/>
+  <line x1="202" y1="104" x2="150" y2="79" stroke="#a0aec0" stroke-width="1.2" stroke-dasharray="5,4"/>
+  <path d="M 140 84 A 14 14 0 0 1 160 84" fill="none" stroke="#dd6b20" stroke-width="1.4"/>
+  <text x="144" y="100" font-size="12" fill="#dd6b20">δ</text>
+  <text x="20" y="120" font-size="12" fill="#e53e3e">入射光 i₁=45°</text>
+  <text x="140" y="122" font-size="12" fill="#2b6cb0">镜内光路（∥ 底边）</text>
+  <text x="238" y="152" font-size="12" fill="#38a169">出射光 i₂=45°</text>
+  <text x="60" y="188" font-size="12" fill="#718096">对称光路 ⇒ δ 为最小偏向角</text>
+</svg>
+
+<h4>【分步解析】</h4>
+<ol>
+  <li><strong>第一界面</strong>：$\sin r_1=\dfrac{\sin i_1}{n}=\dfrac{\sin45^\circ}{\sqrt2}=\dfrac{\sqrt2/2}{\sqrt2}=\dfrac12$，$r_1=30^\circ$。</li>
+  <li><strong>几何约束</strong>：$r_2=A-r_1=60^\circ-30^\circ=30^\circ$。</li>
+  <li><strong>第二界面</strong>（玻璃→空气）：$\sin i_2=n\sin r_2=\sqrt2\times\dfrac12=\dfrac{\sqrt2}{2}\approx0.707$，$i_2=45^\circ$。</li>
+  <li><strong>偏向角</strong>：$\delta=i_1+i_2-A=45^\circ+45^\circ-60^\circ=30^\circ$。</li>
+  <li><strong>自洽检验</strong>：本题为对称光路，用最小偏向角公式验证 $n=\dfrac{\sin\frac{A+\delta_{\min}}{2}}{\sin\frac{A}{2}}=\dfrac{\sin45^\circ}{\sin30^\circ}=\dfrac{0.707}{0.5}\approx1.414=\sqrt2$ ✓。能对上，说明前面每一步都对。</li>
+</ol>
+<div class="deep">
+  <strong>模型沉淀：</strong>棱镜题三段论——界面①折射 → 用 $r_1+r_2=A$ 过桥 → 界面②折射。"过桥"这一步是纯几何，也是最容易被跳错的一步。另外记住：<strong>棱镜使光向底边方向偏折</strong>，虚像偏向顶角方向。
+</div>
+
+<h3>例 4　视深与水下"天窗" ★★★</h3>
+<p>水的折射率 $n=\dfrac43$。一水池实际水深 $h_1=1.5\ \mathrm{m}$。(1) 小明从水面正上方附近俯视池底的石子，看到的石子深度（视深）是多少？(2) 池底有一盏点光源，深度 $h_2=2.0\ \mathrm{m}$，求水面上透光亮圆的半径 $r$。</p>
+<h4>【分步解析】</h4>
+<ol>
+  <li><strong>视深</strong>：$h'=\dfrac{h_1}{n}=\dfrac{1.5}{4/3}=1.5\times\dfrac34=1.125\ \mathrm{m}\approx1.13\ \mathrm{m}$。即石子看起来比实际位置<strong>浅</strong>了约 $0.375\ \mathrm{m}$——这就是"水清见底、实则更深"的定量原因，野泳误判水深极危险，正好给小兵提个醒。</li>
+  <li><strong>临界角</strong>：$\sin C=\dfrac{1}{n}=\dfrac34=0.75$，$\cos C=\sqrt{1-0.75^2}=\sqrt{0.4375}=\dfrac{\sqrt7}{4}\approx0.661$，$\tan C=\dfrac{\sin C}{\cos C}=\dfrac{3}{\sqrt7}\approx1.13$。</li>
+  <li><strong>亮圆半径</strong>：只有入射角小于 $C$ 的光能射出，透光区是半径 $r=h_2\tan C=2.0\times1.13\approx2.3\ \mathrm{m}$ 的圆。</li>
+</ol>
+<div class="deep">
+  <strong>模型沉淀：</strong>同一池水，两个方向两种现象——从上往下看是<strong>视深变浅</strong>（折射），从下往上看是<strong>天窗收缩</strong>（全反射）。命题人爱把两者打包进一道题，识别标志是"俯视/看鱼变浅"与"水下看/亮圆/光纤"。
+</div>
+<p><strong>再追问（色散与全反射的综合）：</strong>若池底点光源发白光，水面亮圆是纯白的吗？不是。水对紫光的折射率比红光略大，由 $\sin C=1/n$ 知<strong>紫光的临界角更小</strong>、亮圆半径 $r=h\tan C$ 更小，所以圆心附近七色俱全呈白色，而<strong>亮圆边缘泛红</strong>（红光窗口最大，紫光早已"出局"）。这一类"亮圆边缘什么颜色"的选择题，答案方向就是：边缘剩下临界角最大的光——红光。</p>
+
+<h2 id="s5">五、易错点与成因分析</h2>
+
+<div class="warn">
+  <strong>易错 1：把"与界面的夹角"当成入射角/折射角。</strong>
+  <p><strong>典型表现</strong>：题目说"光线与玻璃表面成 30°"，直接拿 30° 代入 $\sin i$，算出折射角 19.5° 之类的错误结果。</p>
+  <p><strong>成因</strong>：初中部分题目习惯用镜面夹角表述，形成了惯性；画图时没画法线，缺少"角度基准"的视觉锚点。</p>
+  <p><strong>纠正</strong>：入射角、折射角、临界角<strong>一律对法线量取</strong>。遇到与界面的夹角 $\theta$，先换成 $i=90^\circ-\theta$ 再代入。本题正确入射角是 $60^\circ$。</p>
+</div>
+
+<div class="warn">
+  <strong>易错 2：折射定律中角的位置写反，算出 $n&lt;1$。</strong>
+  <p><strong>典型表现</strong>：写成 $n=\sin r/\sin i$，或在玻璃→空气的情形仍用 $n=\sin i/\sin r$（$i$ 是玻璃内的角），得到 $n=0.7$ 之类。</p>
+  <p><strong>成因</strong>：死记"大角比小角"却忘了哪个角在哪个介质；没有使用对称式 $n_1\sin i_1=n_2\sin i_2$。</p>
+  <p><strong>纠正</strong>：一律用 $n_1\sin i_1=n_2\sin i_2$，$n$ 与角<strong>交叉配对</strong>（角大的介质，$n$ 小）。写完答案自查：介质折射率必须 $n&gt;1$；空气中角度必须更大。</p>
+</div>
+
+<div class="warn">
+  <strong>易错 3：全反射条件记反或漏记。</strong>
+  <p><strong>典型表现</strong>：① 以为"入射角够大"就能全反射，不管光是从空气射向玻璃还是玻璃射向空气；② 认为 $i=C$ 时"已经发生全反射"。</p>
+  <p><strong>成因</strong>：只背了"大于临界角"，丢了前提"从光密到光疏"；对 $i=C$ 的临界状态理解含糊——此时折射角恰为 90°，折射光线沿界面且强度趋近于零，通常表述为"恰好发生全反射的临界状态"，不算正常折射。</p>
+  <p><strong>纠正</strong>：默念口诀"<strong>密到疏，超临界</strong>"，两个条件缺一不可。光从空气射入玻璃，无论入射角多大（哪怕 89.9°）都不可能全反射。</p>
+</div>
+
+<div class="warn">
+  <strong>易错 4：认为光进入玻璃后"频率变小"或"颜色变了"。</strong>
+  <p><strong>典型表现</strong>：把 $v=c/n$ 错记成 $f$ 也变；或者以为红光照进水里会变成橙光。</p>
+  <p><strong>成因</strong>：把"波长变短"和"频率变化"混淆；不知道颜色由频率（光子能量 $E=hf$）决定。</p>
+  <p><strong>纠正</strong>：频率由<strong>光源</strong>决定，跨介质不变；变的是速度 $v$ 和波长 $\lambda$（都除以 $n$）。颜色跟频率走，所以红光照进任何介质还是红光。</p>
+</div>
+
+<div class="warn">
+  <strong>易错 5：七色光比较中临界角方向记反。</strong>
+  <p><strong>典型表现</strong>：认为紫光折射率大所以临界角也大；做"水面下紫光和红光谁更容易射出"的题时答反。</p>
+  <p><strong>成因</strong>：没有从 $\sin C=1/n$ 推关系，而是凭"$n$ 大什么都大"的错觉。</p>
+  <p><strong>纠正</strong>：$n$ 大 ⇒ $\sin C$ 小 ⇒ $C$ 小 ⇒ <strong>更容易</strong>全反射。紫光 $C$ 最小，水下紫光最难逃出、最先被全反射；红光 $C$ 最大，透光窗口最大。</p>
+</div>
+
+<div class="warn">
+  <strong>易错 6：视深公式 $h'=h/n$ 到处套用。</strong>
+  <p><strong>典型表现</strong>：斜视水底的题也直接用 $h'=h/n$ 算像点位置。</p>
+  <p><strong>成因</strong>：忽略推导中的近轴近似 $\sin\theta\approx\tan\theta$，把小角近似当成了普遍结论。</p>
+  <p><strong>纠正</strong>：$h'=h/n$ 仅限<strong>正上方俯视（近轴光线）</strong>。斜视时必须画两条光线、用折射定律逐条算。判断标志：题目出现"俯视/正上方看/看池底变浅"用视深；出现具体入射角的斜视，用折射定律。</p>
+</div>
+
+<div class="warn">
+  <strong>易错 7：垂直入射时认为"什么都没变"。</strong>
+  <p><strong>典型表现</strong>：认为光垂直射入玻璃时"没有发生折射"，所以光速、波长也都不变。</p>
+  <p><strong>成因</strong>：把"方向不偏折"（$i=r=0$，折射定律的平凡解）误当成"折射没有发生"。</p>
+  <p><strong>纠正</strong>：只要换了介质，$v=c/n$、$\lambda_n=\lambda_0/n$ 立即生效，与入射角无关。垂直入射时方向不变、速度变慢、波长变短、频率不变，且界面处仍有微弱的反射（所以隔着玻璃能看到自己的影子）。</p>
+</div>
+
+<div class="warn">
+  <strong>易错 8：算出 $\sin r&gt;1$ 时不知所措，或强行取 $r=90^\circ$。</strong>
+  <p><strong>典型表现</strong>：光从玻璃射向空气，算出 $\sin r=1.2$，有的同学习惯性地写"$r$ 不存在，本题出错"，有的硬写 $r=90^\circ$ 继续往下算。</p>
+  <p><strong>成因</strong>：没有把"方程无解"和物理现象对应起来。$\sin r&gt;1$ 恰恰是全反射的数学表达：折射定律已经给不出合法的折射角，因为折射光线消失了。</p>
+  <p><strong>纠正</strong>：先检查方向是不是"密→疏"，若是，则比较入射角与临界角确认全反射，光路改走反射定律；$\sin r&gt;1$ 不是事故，是信号。</p>
+</div>
+
+<div class="warn">
+  <strong>易错 9：光路图不规范导致整题崩盘。</strong>
+  <p><strong>典型表现</strong>：不画法线就量角；光线不画箭头，反射/折射方向标反；把折射光线画成"穿过界面后继续直走"；角度随手一画与实际计算矛盾。</p>
+  <p><strong>成因</strong>：把图当"示意"而非"计算工具"。几何光学计算题的几何关系（内错角、圆的性质、对称性）全靠图来发现。</p>
+  <p><strong>纠正</strong>：画图五件套——① 界面实线；② 法线虚线；③ 光线实线<strong>带箭头</strong>；④ 角度弧线标注并写数值；⑤ 已知量（$n$、$d$、$R$）标在图旁。第 13 题阅卷时，光路图本身常常占 2~3 分。</p>
+</div>
+
+<h2 id="s6">六、章末自检清单</h2>
+
+<p>合上书本，逐条自查。任何一条答不上来，回到对应小节再过一遍。</p>
+
+<h4>概念关</h4>
+<ul style="list-style:none;margin-left:4px;">
+  <li>☐ 能说出折射定律中 $i$、$r$ 是相对<strong>法线</strong>的夹角，并能在"与界面成 θ"的表述下正确换算 $i=90^\circ-\theta$</li>
+  <li>☐ 能说清折射率的两个定义（$\sin i/\sin r$ 与 $c/v$）及二者联系</li>
+  <li>☐ 能解释"光疏/光密"是相对折射率而言，并判断任意两种介质的疏密关系</li>
+  <li>☐ 能说出光跨介质时：频率不变、速度变、波长变、颜色不变</li>
+  <li>☐ 能背出七色光从红到紫：频率、$n$、$v$、$\lambda$、临界角、偏折程度各自的排序</li>
+  <li>☐ 能解释"垂直入射不偏折，但光速和波长已改变，界面仍有反射"</li>
+</ul>
+
+<h4>公式关</h4>
+<ul style="list-style:none;margin-left:4px;">
+  <li>☐ 默写 $n_1\sin i_1=n_2\sin i_2$，并说明交叉配对的含义</li>
+  <li>☐ 默写 $n=c/v$、$\lambda_n=\lambda_0/n$，并能从折射定律推导它们</li>
+  <li>☐ 默写 $\sin C=1/n$，并能从折射定律令折射角 $=90^\circ$ 独立推出</li>
+  <li>☐ 默写棱镜关系 $r_1+r_2=A$、$\delta=i_1+i_2-A$，知道对称光路即最小偏向角</li>
+  <li>☐ 默写视深 $h'=h/n$ 并说出近轴近似这个前提</li>
+  <li>☐ 默写水下亮圆半径 $r=h\tan C$</li>
+</ul>
+
+<h4>模型关</h4>
+<ul style="list-style:none;margin-left:4px;">
+  <li>☐ 平行玻璃砖：出射光与入射光<strong>平行</strong>，会算侧移 $x=\dfrac{d\sin(i-r)}{\cos r}$</li>
+  <li>☐ 半圆砖：沿半径入射圆弧面不偏折；会比较入射角与临界角并判定全反射</li>
+  <li>☐ 三棱镜：两段折射 + $r_1+r_2=A$ 过桥，光向底边偏</li>
+  <li>☐ 视深/天窗：俯视变浅用 $h/n$；水下看水面亮圆用 $h\tan C$</li>
+  <li>☐ 光纤/海市蜃楼能用"光密到光疏 + 入射角超临界"一句话解释</li>
+  <li>☐ 知道光纤端面入射角需满足 $\sin i_0&lt;\sqrt{n_1^2-n_2^2}$（数值孔径）的来历</li>
+</ul>
+
+<h4>易错关</h4>
+<ul style="list-style:none;margin-left:4px;">
+  <li>☐ 我确认角度永远对法线量，不会用与界面的夹角代入</li>
+  <li>☐ 我确认全反射必须"密→疏 且 $i&gt;C$"两条件齐备</li>
+  <li>☐ 我确认任何介质 $n&gt;1$，算出小于 1 的折射率必回头检查</li>
+  <li>☐ 我确认紫光临界角最小、红光最大，不再记反</li>
+  <li>☐ 我确认算出 $\sin r&gt;1$ 时，知道这是全反射的信号而非计算事故</li>
+  <li>☐ 我画图必有：法线虚线、光线箭头、角度弧线、已知量标注</li>
+  <li>☐ 数值计算保留题目要求的有效数字，单位规范书写（如 $5.77\ \mathrm{cm}$）</li>
+</ul>
+
+<hr>
+<p style="color: var(--muted); text-align: center; font-size: 0.92em;">
+  小兵，几何光学是高考里少见的"背熟模型 + 画对图 = 满分"的章节。本章学完后，建议找 3 道近年真题第 13 题限时各 8 分钟实战一次，检验画图—列式—计算这条流水线是否顺畅。
+</p>
+
+</body>
+</html>

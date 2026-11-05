@@ -5,191 +5,351 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>高考备考材料库</title>
 <style>
-  :root{ --bg:#f7f8fa; --card:#fff; --accent:#2563eb; --pink:#fb7299; --text:#1f2937; --muted:#6b7280; }
+  :root{
+    --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb; --canvas:#f7f8fa; --card:#fff;
+    --math:#1d4ed8; --phys:#2b6cb0; --chem:#0e7c7b;
+    --pink:#fb7299; --green:#047857;
+    --radius:10px; --pill:999px;
+  }
   *{ box-sizing:border-box; }
-  body{ margin:0; font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
-  header{ background:linear-gradient(135deg,#1e3a8a,#2563eb); color:#fff; padding:48px 20px; text-align:center; }
-  header h1{ margin:0 0 8px; font-size:30px; }
-  header p{ margin:0; opacity:.9; font-size:16px; }
-  main{ max-width:900px; margin:0 auto; padding:28px 18px 60px; }
-  .intro{ background:var(--card); border-radius:12px; padding:20px 22px; margin-bottom:26px; box-shadow:0 1px 4px rgba(0,0,0,.06); }
-  .intro h2{ font-size:18px; margin:0 0 10px; color:var(--accent); }
-  .intro p{ margin:6px 0; color:var(--muted); font-size:15px; }
-  .subject{ margin-bottom:24px; }
-  .subject h3{ font-size:20px; border-left:4px solid var(--accent); padding-left:10px; margin:0 0 12px; }
-  .item{ background:var(--card); border:1px solid #e5e7eb; border-radius:10px; padding:16px 18px; margin-bottom:12px; box-shadow:0 1px 3px rgba(0,0,0,.05); transition:.15s; }
-  .item:hover{ border-color:var(--accent); box-shadow:0 4px 12px rgba(37,99,235,.12); }
-  .item .t{ font-size:17px; font-weight:600; color:var(--text); }
-  .item .d{ font-size:14px; color:var(--muted); margin:6px 0 14px; }
+  body{ margin:0; font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; background:var(--canvas); color:var(--ink); line-height:1.8; font-size:16px; }
+  header{ background:var(--card); border-bottom:1px solid var(--line); padding:34px 20px 26px; text-align:center; }
+  header h1{ margin:0 0 6px; font-size:26px; }
+  header p{ margin:0; color:var(--ink-soft); font-size:15px; }
+  main{ max-width:860px; margin:0 auto; padding:24px 18px 60px; }
+  .notice{ background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; border-radius:var(--radius); padding:10px 16px; font-size:14px; margin-bottom:24px; }
+  .intro{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:18px 22px; margin-bottom:28px; }
+  .intro h2{ font-size:18px; margin:0 0 8px; }
+  .intro p{ margin:6px 0; color:var(--ink-soft); font-size:15px; }
+  .subject{ margin-bottom:34px; }
+  .subject > h3{ font-size:22px; margin:0 0 14px; padding-left:12px; border-left:4px solid var(--accent,var(--ink)); }
+  .block-title{ font-size:15px; font-weight:600; color:var(--ink-soft); margin:18px 0 10px; letter-spacing:.5px; }
+  .module{ margin-bottom:14px; }
+  .module .m-name{ font-size:14px; font-weight:600; color:var(--ink-soft); margin-bottom:6px; }
+  .chapters{ display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:8px; }
+  .chap{ display:block; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:10px 14px; text-decoration:none; color:var(--ink); font-size:15px; transition:.15s; }
+  .chap:hover{ border-color:var(--accent); box-shadow:0 2px 8px rgba(0,0,0,.06); }
+  .chap .no{ color:var(--accent); font-weight:600; margin-right:6px; }
+  .item{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px; margin-bottom:12px; transition:.15s; }
+  .item:hover{ border-color:var(--accent); box-shadow:0 4px 12px rgba(0,0,0,.08); }
+  .item .t{ font-size:17px; font-weight:600; }
+  .item .d{ font-size:14px; color:var(--ink-soft); margin:6px 0 14px; }
   .actions{ display:flex; gap:12px; flex-wrap:wrap; }
-  .btn{ flex:1 1 200px; min-width:180px; text-align:center; padding:11px 14px; border-radius:8px; font-size:15px; font-weight:600; text-decoration:none; transition:.15s; }
+  .btn{ flex:1 1 180px; min-width:160px; text-align:center; padding:10px 14px; border-radius:8px; font-size:15px; font-weight:600; text-decoration:none; transition:.15s; }
   .btn .sub{ display:block; font-size:12px; font-weight:400; margin-top:2px; opacity:.9; }
   .btn-video{ background:var(--pink); color:#fff; }
-  .btn-video:hover{ filter:brightness(1.06); }
-  .btn-ppt{ background:var(--accent); color:#fff; }
-  .btn-ppt:hover{ filter:brightness(1.08); }
-  .btn-handout{ background:#16a34a; color:#fff; }
-  .btn-handout:hover{ filter:brightness(1.08); }
-  footer{ text-align:center; color:var(--muted); font-size:13px; padding:20px; }
-  footer a{ color:var(--accent); text-decoration:none; }
+  .btn-ppt{ background:var(--accent,#2563eb); color:#fff; }
+  .btn-handout{ background:var(--green); color:#fff; }
+  .btn:hover{ filter:brightness(1.07); }
+  footer{ text-align:center; color:var(--ink-soft); font-size:13px; padding:20px; }
+  footer a{ color:var(--ink-soft); }
+  @media (max-width:560px){
+    header h1{ font-size:22px; }
+    .chapters{ grid-template-columns:1fr; }
+    .btn{ flex:1 1 100%; }
+  }
 </style>
 </head>
 <body>
 <header>
   <h1>高考备考材料库</h1>
-  <p>按科目、专题组织的复习讲解材料 · 面向高中学生免费开放</p>
+  <p>深度学习材料 · 复习讲解视频与课件 · 面向高中学生免费开放</p>
 </header>
 <main>
+  <div class="notice">本仓库内容均由本地材料库同步发布，请勿在仓库中直接修改；勘误请提交 Issue。</div>
+
   <section class="intro">
     <h2>关于本库</h2>
-    <p>这里汇集高中阶段各科目的复习讲解材料，以「可自学、能深究」为目标。每个专题都提供两种学习方式，你可以任选：</p>
-    <p>• <b>讲解视频</b>——带配音与字幕，边听边看推导，多处设「暂停推导」互动，建议准备纸笔跟着算；<br>
+    <p>这里汇集高中阶段各科目的复习材料，以「可自学、能深究」为目标，提供三类形态：</p>
+    <p>• <b>深度学习材料</b>——按章节组织的图文深读讲义，零外链、可打印（A4 排版），适合系统过一遍知识网络；<br>
+       • <b>讲解视频</b>——带配音与字幕，边听边看推导，多处设「暂停推导」互动；<br>
        • <b>图文课件</b>——可翻页自学的网页版 PPT，适合反复回看与做笔记。</p>
-    <p>材料按 <b>科目 → 专题</b> 组织，持续更新。</p>
+    <p>材料按 <b>科目 → 模块 → 章节</b> 组织，持续更新。</p>
   </section>
 
-  <section class="subject">
-    <h3>语文</h3>
-    <div class="item">
-      <div class="t">病句修改系统讲解（语言文字运用）</div>
-      <div class="d">对接云南新高考 II 卷「语段改病句」主观题考法。从句子成分地基出发，讲清六大病句类型、标志词「十看」速查卡与四步解题流程，并给出「间隔重做 + 错题归类 + 朗读」的训练方法论。高一可消化，高三可回炉。约 8 分半讲解 + 19 页图文课件与一份图文讲义，三种方式可任选或搭配使用。</div>
-      <div class="actions">
-        <a class="btn btn-video" href="https://www.bilibili.com/video/BV19Gpi6JEGk?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">
-          观看讲解视频
-          <span class="sub">B 站 · 约 8 分半 · 含字幕</span>
-        </a>
-        <a class="btn btn-ppt" href="语文/病句修改系统讲解-课件.html">
-          查看图文课件
-          <span class="sub">网页版 PPT · 可翻页自学</span>
-        </a>
-        <a class="btn btn-handout" href="语文/病句修改系统讲解-讲义.html">
-          查看图文讲义
-          <span class="sub">网页版 · 可反复回看</span>
-        </a>
+  <section class="subject" style="--accent:var(--math)">
+    <h3>数学</h3>
+    <div class="block-title">深度学习材料（10 章）</div>
+    <div class="module">
+      <div class="m-name">集合与常用逻辑用语</div>
+      <div class="chapters">
+        <a class="chap" href="数学/01-集合/01 集合-深度学习材料.html"><span class="no">01</span>集合</a>
       </div>
     </div>
-  </section>
-
-  <section class="subject">
-    <h3>数学</h3>
+    <div class="module">
+      <div class="m-name">函数</div>
+      <div class="chapters">
+        <a class="chap" href="数学/02-函数/02 函数-深度学习材料.html"><span class="no">02</span>函数</a>
+        <a class="chap" href="数学/02-函数/02 函数与不等式(拓展)-深度学习材料.html"><span class="no">02+</span>函数与不等式（拓展）</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">不等式</div>
+      <div class="chapters">
+        <a class="chap" href="数学/03-不等式/03 不等式-深度学习材料.html"><span class="no">03</span>不等式</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">三角函数</div>
+      <div class="chapters">
+        <a class="chap" href="数学/04-三角函数/04 三角函数-深度学习材料.html"><span class="no">04</span>三角函数</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">数列与导数</div>
+      <div class="chapters">
+        <a class="chap" href="数学/05-数列与导数/05 数列与导数-深度学习材料.html"><span class="no">05</span>数列与导数</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">立体几何</div>
+      <div class="chapters">
+        <a class="chap" href="数学/06-立体几何/06 立体几何与解析几何初步-深度学习材料.html"><span class="no">06</span>立体几何与解析几何初步</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">解析几何</div>
+      <div class="chapters">
+        <a class="chap" href="数学/07-解析几何/07 解析几何-深度学习材料.html"><span class="no">07</span>解析几何</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">概率统计</div>
+      <div class="chapters">
+        <a class="chap" href="数学/08-概率统计/08 概率与统计-深度学习材料.html"><span class="no">08</span>概率与统计</a>
+        <a class="chap" href="数学/08-概率统计/08 概率统计拓展-深度学习材料.html"><span class="no">08+</span>概率统计拓展</a>
+      </div>
+    </div>
+    <div class="block-title">专题讲解（视频 + 课件 + 讲义）</div>
     <div class="item">
       <div class="t">高中数学集合复习讲解</div>
-      <div class="d">集合的概念与三种表示法、元素与集合关系、集合三性质（确定性/互异性/无序性）、数集包含关系、子集与真子集及子集个数、空集、交并补运算与德摩根定律、量词与充分必要条件、用数轴解集合不等式。约 12 分钟讲解，配套 22 页图文课件与一份图文讲义。三种方式可任选或搭配使用。</div>
+      <div class="d">集合的概念与三种表示法、元素与集合关系、集合三性质、数集包含关系、子集与真子集及子集个数、空集、交并补运算与德摩根定律、量词与充分必要条件、用数轴解集合不等式。约 12 分钟讲解，配套 22 页图文课件与一份图文讲义。</div>
       <div class="actions">
-        <a class="btn btn-video" href="https://www.bilibili.com/video/BV1CypM69ETp?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">
-          观看讲解视频
-          <span class="sub">B 站 · 约 12 分钟 · 含字幕</span>
-        </a>
-        <a class="btn btn-ppt" href="数学/集合复习讲解-课件.html">
-          查看图文课件
-          <span class="sub">网页版 PPT · 可翻页自学</span>
-        </a>
-        <a class="btn btn-handout" href="数学/集合复习讲解-讲义.html">
-          查看图文讲义
-          <span class="sub">网页版 · 可反复回看</span>
-        </a>
+        <a class="btn btn-video" href="https://www.bilibili.com/video/BV1CypM69ETp?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">观看讲解视频<span class="sub">B 站 · 约 12 分钟 · 含字幕</span></a>
+        <a class="btn btn-ppt" href="数学/集合复习讲解-课件.html">查看图文课件<span class="sub">网页版 PPT · 可翻页自学</span></a>
+        <a class="btn btn-handout" href="数学/集合复习讲解-讲义.html">查看图文讲义<span class="sub">网页版 · 可反复回看</span></a>
       </div>
     </div>
     <div class="item">
       <div class="t">不等式章节复习讲解</div>
-      <div class="d">从不等式的八大性质与作差比较法入手，串起「三个二次」关系与判别式解法、基本不等式的「一正二定三相等」与「1」的代换，并覆盖绝对值 / 分式 / 高次（穿针引线）/ 柯西等拓展专题。约 12 分钟讲解，配套 25 页图文课件（含 6 张手绘示意图）与一份图文讲义，其中两处设「动手算」留白。三种方式可任选或搭配使用。</div>
+      <div class="d">从不等式的八大性质与作差比较法入手，串起「三个二次」关系与判别式解法、基本不等式的「一正二定三相等」与「1」的代换，并覆盖绝对值 / 分式 / 高次（穿针引线）/ 柯西等拓展专题。约 12 分钟讲解，配套 25 页图文课件（含 6 张手绘示意图）与一份图文讲义，其中两处设「动手算」留白。</div>
       <div class="actions">
-        <a class="btn btn-video" href="https://www.bilibili.com/video/BV19Gpi6JEEh?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">
-          观看讲解视频
-          <span class="sub">B 站 · 约 12 分钟 · 含字幕</span>
-        </a>
-        <a class="btn btn-ppt" href="数学/不等式复习讲解-课件.html">
-          查看图文课件
-          <span class="sub">网页版 PPT · 25 页 · 可翻页自学</span>
-        </a>
-        <a class="btn btn-handout" href="数学/不等式复习讲解-讲义.html">
-          查看图文讲义
-          <span class="sub">网页版 · 可反复回看</span>
-        </a>
+        <a class="btn btn-video" href="https://www.bilibili.com/video/BV19Gpi6JEEh?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">观看讲解视频<span class="sub">B 站 · 约 12 分钟 · 含字幕</span></a>
+        <a class="btn btn-ppt" href="数学/不等式复习讲解-课件.html">查看图文课件<span class="sub">网页版 PPT · 25 页 · 可翻页自学</span></a>
+        <a class="btn btn-handout" href="数学/不等式复习讲解-讲义.html">查看图文讲义<span class="sub">网页版 · 可反复回看</span></a>
       </div>
     </div>
   </section>
 
-  <section class="subject">
+  <section class="subject" style="--accent:var(--phys)">
     <h3>物理</h3>
+    <div class="block-title">深度学习材料（17 章）</div>
+    <div class="module">
+      <div class="m-name">运动学</div>
+      <div class="chapters">
+        <a class="chap" href="物理/01-运动学/3.1 运动的描述与匀变速直线运动-深度学习材料-v2.html"><span class="no">3.1</span>运动的描述与匀变速直线运动</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">力学</div>
+      <div class="chapters">
+        <a class="chap" href="物理/02-力学/力学-深度学习材料-v2.html"><span class="no">3.2</span>相互作用与牛顿运动定律（力学总复习）</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">曲线运动与万有引力</div>
+      <div class="chapters">
+        <a class="chap" href="物理/03-曲线运动与万有引力/3.3 曲线运动与万有引力-深度学习材料.html"><span class="no">3.3</span>曲线运动与万有引力</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">机械能</div>
+      <div class="chapters">
+        <a class="chap" href="物理/04-机械能/3.4 机械能守恒定律-深度学习材料.html"><span class="no">3.4</span>机械能守恒定律</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">动量</div>
+      <div class="chapters">
+        <a class="chap" href="物理/05-动量/3.5 动量守恒定律-深度学习材料.html"><span class="no">3.5</span>动量守恒定律</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">机械振动与机械波</div>
+      <div class="chapters">
+        <a class="chap" href="物理/06-机械振动与机械波/3.6 机械振动与机械波-深度学习材料.html"><span class="no">3.6</span>机械振动与机械波</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">静电场</div>
+      <div class="chapters">
+        <a class="chap" href="物理/07-静电场/3.7 静电场-深度学习材料.html"><span class="no">3.7</span>静电场</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">恒定电流</div>
+      <div class="chapters">
+        <a class="chap" href="物理/08-恒定电流/3.8 恒定电流-深度学习材料.html"><span class="no">3.8</span>恒定电流</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">磁场</div>
+      <div class="chapters">
+        <a class="chap" href="物理/09-磁场/3.9 磁场-深度学习材料.html"><span class="no">3.9</span>磁场</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">电磁感应</div>
+      <div class="chapters">
+        <a class="chap" href="物理/10-电磁感应/3.10 电磁感应-深度学习材料.html"><span class="no">3.10</span>电磁感应</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">交变电流</div>
+      <div class="chapters">
+        <a class="chap" href="物理/11-交变电流/3.11 交变电流-深度学习材料.html"><span class="no">3.11</span>交变电流</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">光学</div>
+      <div class="chapters">
+        <a class="chap" href="物理/12-光学/3.12 几何光学-深度学习材料.html"><span class="no">3.12</span>几何光学</a>
+        <a class="chap" href="物理/12-光学/3.13 物理光学-深度学习材料.html"><span class="no">3.13</span>物理光学</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">热学</div>
+      <div class="chapters">
+        <a class="chap" href="物理/13-热学/3.14 分子动理论-深度学习材料.html"><span class="no">3.14</span>分子动理论</a>
+        <a class="chap" href="物理/13-热学/3.15 气体定律-深度学习材料.html"><span class="no">3.15</span>气体定律</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">原子物理</div>
+      <div class="chapters">
+        <a class="chap" href="物理/14-原子物理/3.16 原子结构与原子核-深度学习材料.html"><span class="no">3.16</span>原子结构与原子核</a>
+        <a class="chap" href="物理/14-原子物理/3.17 波粒二象性-深度学习材料.html"><span class="no">3.17</span>波粒二象性</a>
+      </div>
+    </div>
+    <div class="block-title">专题讲解（视频 + 课件 + 讲义）</div>
     <div class="item">
       <div class="t">3.1 运动学复习讲解（匀变速直线运动）</div>
-      <div class="d">核心概念、三个基本公式与三个推论的推导、x-t/v-t 图像、追及相遇、高频易错点。约 18 分钟讲解，配套 33 页图文课件与一份图文讲义。三种方式可任选或搭配使用。</div>
+      <div class="d">核心概念、三个基本公式与三个推论的推导、x-t/v-t 图像、追及相遇、高频易错点。约 18 分钟讲解，配套 33 页图文课件与一份图文讲义。</div>
       <div class="actions">
-        <a class="btn btn-video" href="https://www.bilibili.com/video/BV1ctHW6ZEHS?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">
-          观看讲解视频
-          <span class="sub">B 站 · 约 18 分钟 · 含字幕</span>
-        </a>
-        <a class="btn btn-ppt" href="物理/3.1 运动学复习讲解-课件.html">
-          查看图文课件
-          <span class="sub">网页版 PPT · 可翻页自学</span>
-        </a>
-        <a class="btn btn-handout" href="物理/3.1 运动学复习讲解-讲义.html">
-          查看图文讲义
-          <span class="sub">网页版 · 可反复回看</span>
-        </a>
+        <a class="btn btn-video" href="https://www.bilibili.com/video/BV1ctHW6ZEHS?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">观看讲解视频<span class="sub">B 站 · 约 18 分钟 · 含字幕</span></a>
+        <a class="btn btn-ppt" href="物理/3.1 运动学复习讲解-课件.html">查看图文课件<span class="sub">网页版 PPT · 可翻页自学</span></a>
+        <a class="btn btn-handout" href="物理/3.1 运动学复习讲解-讲义.html">查看图文讲义<span class="sub">网页版 · 可反复回看</span></a>
       </div>
     </div>
     <div class="item">
       <div class="t">力学总复习讲解（牛顿定律 · 能量 · 动量）</div>
-      <div class="d">力学占高考物理约四十分，也是电磁学的地基。用三大解题观点（力的观点、能量观点、动量观点）串起运动学、相互作用与牛顿定律、曲线运动与万有引力、机械能、动量、振动与波六大板块：十六个必推公式逐个过关，连接体、传送带、板块、绳杆、卫星、双星等经典模型形成条件反射，十大易错点逐一拆解。约 20 分钟讲解，配套 40 页图文课件与一份深度学习讲义，六处设「暂停推导」。</div>
+      <div class="d">力学占高考物理约四十分，也是电磁学的地基。用三大解题观点串起运动学、相互作用与牛顿定律、曲线运动与万有引力、机械能、动量、振动与波六大板块：十六个必推公式逐个过关，经典模型形成条件反射，十大易错点逐一拆解。约 20 分钟讲解，配套 40 页图文课件与一份深度学习讲义，六处设「暂停推导」。</div>
       <div class="actions">
-        <a class="btn btn-video" href="https://www.bilibili.com/video/BV1L5xs6cEhF?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">
-          观看讲解视频
-          <span class="sub">B 站 · 约 20 分钟 · 含字幕</span>
-        </a>
-        <a class="btn btn-ppt" href="物理/力学-复习讲解-课件.html">
-          查看图文课件
-          <span class="sub">网页版 PPT · 40 页 · 可翻页自学</span>
-        </a>
-        <a class="btn btn-handout" href="物理/力学-深度学习材料.html">
-          查看图文讲义
-          <span class="sub">网页版 · 可反复回看</span>
-        </a>
+        <a class="btn btn-video" href="https://www.bilibili.com/video/BV1L5xs6cEhF?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">观看讲解视频<span class="sub">B 站 · 约 20 分钟 · 含字幕</span></a>
+        <a class="btn btn-ppt" href="物理/力学-复习讲解-课件.html">查看图文课件<span class="sub">网页版 PPT · 40 页 · 可翻页自学</span></a>
+        <a class="btn btn-handout" href="物理/力学-深度学习材料.html">查看图文讲义<span class="sub">网页版 · 可反复回看</span></a>
       </div>
     </div>
   </section>
 
-  <section class="subject">
+  <section class="subject" style="--accent:var(--chem)">
     <h3>化学</h3>
+    <div class="block-title">深度学习材料（25 章）</div>
+    <div class="module">
+      <div class="m-name">化学基本概念</div>
+      <div class="chapters">
+        <a class="chap" href="化学/深度学习材料/01-化学基本概念/3.1 物质的量与化学计算-深度学习材料.html"><span class="no">3.1</span>物质的量与化学计算</a>
+        <a class="chap" href="化学/深度学习材料/01-化学基本概念/3.2 化学用语与化学基本概念-深度学习材料.html"><span class="no">3.2</span>化学用语与化学基本概念</a>
+        <a class="chap" href="化学/深度学习材料/01-化学基本概念/3.3 离子反应-深度学习材料.html"><span class="no">3.3</span>离子反应</a>
+        <a class="chap" href="化学/深度学习材料/01-化学基本概念/3.4 氧化还原反应-深度学习材料.html"><span class="no">3.4</span>氧化还原反应</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">元素化合物</div>
+      <div class="chapters">
+        <a class="chap" href="化学/深度学习材料/02-元素化合物/3.5 金属元素及其化合物-深度学习材料.html"><span class="no">3.5</span>金属元素及其化合物</a>
+        <a class="chap" href="化学/深度学习材料/02-元素化合物/3.6 非金属元素及其化合物-深度学习材料.html"><span class="no">3.6</span>非金属元素及其化合物</a>
+        <a class="chap" href="化学/深度学习材料/02-元素化合物/3.7 元素化合物综合推断-深度学习材料.html"><span class="no">3.7</span>元素化合物综合推断</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">物质结构与元素周期律</div>
+      <div class="chapters">
+        <a class="chap" href="化学/深度学习材料/03-物质结构与元素周期律/3.8 原子结构-深度学习材料.html"><span class="no">3.8</span>原子结构</a>
+        <a class="chap" href="化学/深度学习材料/03-物质结构与元素周期律/3.9 元素周期律与元素周期表-深度学习材料.html"><span class="no">3.9</span>元素周期律与元素周期表</a>
+        <a class="chap" href="化学/深度学习材料/03-物质结构与元素周期律/3.10 化学键与分子结构-深度学习材料.html"><span class="no">3.10</span>化学键与分子结构</a>
+        <a class="chap" href="化学/深度学习材料/03-物质结构与元素周期律/3.11 晶体结构与性质-深度学习材料.html"><span class="no">3.11</span>晶体结构与性质</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">化学反应原理</div>
+      <div class="chapters">
+        <a class="chap" href="化学/深度学习材料/04-化学反应原理/3.12 化学反应与能量-深度学习材料.html"><span class="no">3.12</span>化学反应与能量</a>
+        <a class="chap" href="化学/深度学习材料/04-化学反应原理/3.13 化学反应速率与化学平衡-深度学习材料.html"><span class="no">3.13</span>化学反应速率与化学平衡</a>
+        <a class="chap" href="化学/深度学习材料/04-化学反应原理/3.14 水溶液中的离子平衡-深度学习材料.html"><span class="no">3.14</span>水溶液中的离子平衡</a>
+        <a class="chap" href="化学/深度学习材料/04-化学反应原理/3.15 电化学基础-深度学习材料.html"><span class="no">3.15</span>电化学基础</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">有机化学基础</div>
+      <div class="chapters">
+        <a class="chap" href="化学/深度学习材料/05-有机化学基础/3.16 有机物分类与结构-深度学习材料.html"><span class="no">3.16</span>有机物分类与结构</a>
+        <a class="chap" href="化学/深度学习材料/05-有机化学基础/3.17 烃-深度学习材料.html"><span class="no">3.17</span>烃</a>
+        <a class="chap" href="化学/深度学习材料/05-有机化学基础/3.18 烃的衍生物-深度学习材料.html"><span class="no">3.18</span>烃的衍生物</a>
+        <a class="chap" href="化学/深度学习材料/05-有机化学基础/3.19 生命中的基础有机化学物质与合成高分子-深度学习材料.html"><span class="no">3.19</span>生命中的基础有机化学物质与合成高分子</a>
+        <a class="chap" href="化学/深度学习材料/05-有机化学基础/3.20 有机合成与推断-深度学习材料.html"><span class="no">3.20</span>有机合成与推断</a>
+      </div>
+    </div>
+    <div class="module">
+      <div class="m-name">化学实验</div>
+      <div class="chapters">
+        <a class="chap" href="化学/深度学习材料/06-化学实验/3.21 化学实验基本操作与仪器-深度学习材料.html"><span class="no">3.21</span>化学实验基本操作与仪器</a>
+        <a class="chap" href="化学/深度学习材料/06-化学实验/3.22 物质的检验、分离与提纯-深度学习材料.html"><span class="no">3.22</span>物质的检验、分离与提纯</a>
+        <a class="chap" href="化学/深度学习材料/06-化学实验/3.23 物质的制备实验-深度学习材料.html"><span class="no">3.23</span>物质的制备实验</a>
+        <a class="chap" href="化学/深度学习材料/06-化学实验/3.24 定量实验-深度学习材料.html"><span class="no">3.24</span>定量实验</a>
+        <a class="chap" href="化学/深度学习材料/06-化学实验/3.25 实验方案设计与评价-深度学习材料.html"><span class="no">3.25</span>实验方案设计与评价</a>
+      </div>
+    </div>
+    <div class="block-title">专题讲义</div>
+    <div class="module">
+      <div class="chapters">
+        <a class="chap" href="化学/化学三大基本观念专题讲义-v2.html"><span class="no">专题</span>化学三大基本观念专题讲义（v2）</a>
+      </div>
+    </div>
+    <div class="block-title">专题讲解（视频 + 课件 + 讲义）</div>
     <div class="item">
       <div class="t">化学三大基本观念（微粒观 · 守恒观 · 分类观）</div>
-      <div class="d">从「宏观现象 ↔ 微观本质」切入，串起微粒观、守恒观、分类观三大核心观念，破解「液态 HCl 为什么不导电」「离子方程式为什么不能部分约分」等高频易错点。约 8 分钟讲解，配套 18 页图文课件与一份图文讲义。三种方式可任选或搭配使用。</div>
+      <div class="d">从「宏观现象 ↔ 微观本质」切入，串起微粒观、守恒观、分类观三大核心观念，破解「液态 HCl 为什么不导电」「离子方程式为什么不能部分约分」等高频易错点。约 8 分钟讲解，配套 18 页图文课件与一份图文讲义。</div>
       <div class="actions">
-        <a class="btn btn-video" href="https://www.bilibili.com/video/BV1E6Hj6iE6D?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">
-          观看讲解视频
-          <span class="sub">B 站 · 约 8 分钟 · 含字幕</span>
-        </a>
-        <a class="btn btn-ppt" href="化学/化学三大基本观念-课件.html">
-          查看图文课件
-          <span class="sub">网页版 PPT · 可翻页自学</span>
-        </a>
-        <a class="btn btn-handout" href="化学/化学三大基本观念-讲义.html">
-          查看图文讲义
-          <span class="sub">网页版 · 可反复回看</span>
-        </a>
+        <a class="btn btn-video" href="https://www.bilibili.com/video/BV1E6Hj6iE6D?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">观看讲解视频<span class="sub">B 站 · 约 8 分钟 · 含字幕</span></a>
+        <a class="btn btn-ppt" href="化学/化学三大基本观念-课件.html">查看图文课件<span class="sub">网页版 PPT · 可翻页自学</span></a>
+        <a class="btn btn-handout" href="化学/化学三大基本观念-讲义.html">查看图文讲义<span class="sub">网页版 · 可反复回看</span></a>
       </div>
     </div>
   </section>
 
-  <section class="subject">
+  <section class="subject" style="--accent:#7c3aed">
+    <h3>语文</h3>
+    <div class="item">
+      <div class="t">病句修改系统讲解（语言文字运用）</div>
+      <div class="d">对接云南新高考 II 卷「语段改病句」主观题考法。从句子成分地基出发，讲清六大病句类型、标志词「十看」速查卡与四步解题流程，并给出「间隔重做 + 错题归类 + 朗读」的训练方法论。约 8 分半讲解 + 19 页图文课件与一份图文讲义。</div>
+      <div class="actions">
+        <a class="btn btn-video" href="https://www.bilibili.com/video/BV19Gpi6JEGk?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">观看讲解视频<span class="sub">B 站 · 约 8 分半 · 含字幕</span></a>
+        <a class="btn btn-ppt" href="语文/病句修改系统讲解-课件.html">查看图文课件<span class="sub">网页版 PPT · 可翻页自学</span></a>
+        <a class="btn btn-handout" href="语文/病句修改系统讲解-讲义.html">查看图文讲义<span class="sub">网页版 · 可反复回看</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="subject" style="--accent:#b45309">
     <h3>学科竞赛</h3>
     <div class="item">
       <div class="t">物理竞赛入门指南（CPhO）</div>
-      <div class="d">面向所有学生与家长的入门讲解：从报名到决赛的赛制全流程、奖项与升学（强基 / 保送）的关系、力学热学电磁光近代 + 实验的逐科考纲对照、数学工具与三个结构性区别、四阶段路线与书单（程稼夫 / 黑白皮 / 高妙 / 国培）。约 10 分钟讲解，配套 18 页图文课件与一份图文讲义。三种方式可任选或搭配使用。</div>
+      <div class="d">面向所有学生与家长的入门讲解：从报名到决赛的赛制全流程、奖项与升学（强基 / 保送）的关系、逐科考纲对照、数学工具与三个结构性区别、四阶段路线与书单。约 10 分钟讲解，配套 18 页图文课件与一份图文讲义。</div>
       <div class="actions">
-        <a class="btn btn-video" href="https://www.bilibili.com/video/BV18qxk6MEqc?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">
-          观看讲解视频
-          <span class="sub">B 站 · 约 10 分钟 · 含字幕</span>
-        </a>
-        <a class="btn btn-ppt" href="学科竞赛/物理竞赛入门指南（HTML版）.html">
-          查看图文课件
-          <span class="sub">网页版 PPT · 18 页 · 可翻页自学</span>
-        </a>
-        <a class="btn btn-handout" href="学科竞赛/物理竞赛入门指南-讲义.html">
-          查看图文讲义
-          <span class="sub">网页版 · 可反复回看</span>
-        </a>
+        <a class="btn btn-video" href="https://www.bilibili.com/video/BV18qxk6MEqc?vd_source=9627bcb8f6c60c10a3fe16123cca1997" target="_blank" rel="noopener">观看讲解视频<span class="sub">B 站 · 约 10 分钟 · 含字幕</span></a>
+        <a class="btn btn-ppt" href="学科竞赛/物理竞赛入门指南（HTML版）.html">查看图文课件<span class="sub">网页版 PPT · 18 页 · 可翻页自学</span></a>
+        <a class="btn btn-handout" href="学科竞赛/物理竞赛入门指南-讲义.html">查看图文讲义<span class="sub">网页版 · 可反复回看</span></a>
       </div>
     </div>
   </section>

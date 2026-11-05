@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.19 生命中的基础有机化学物质与合成高分子-深度学习材料</title>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#0e7c7b; --subject-soft:#eef7f6;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 化学点缀层（无 JS，纯文本方程式） ===== */
+/* 语义卡片（例题=紫 / 易错=琥珀 / 概念=蓝 / 提示=科目色 / 结构=中性墨） */
+.card { border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 18px; margin: 14px 0; page-break-inside: avoid; }
+.card .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
+.card.concept { background: var(--c-concept-bg); } .card.concept .tag { background: var(--c-concept); color: #fff; }
+.card.example { background: var(--c-example-bg); } .card.example .tag { background: var(--c-example); color: #fff; }
+.card.trap { background: var(--c-trap-bg); } .card.trap .tag { background: var(--c-trap); color: #fff; }
+.card.note { background: var(--subject-soft); } .card.note .tag { background: var(--subject); color: #fff; }
+.card.violet { background: var(--canvas); } .card.violet .tag { background: var(--ink); color: #fff; }
+/* 方程式容器（统一灰底盒 + 科目色左边条） */
+.eq { display: block; background: var(--formula-bg); border: 1px solid var(--line); border-left: 4px solid var(--subject); border-radius: 8px; padding: var(--formula-pad); margin: 10px 0; font-size: 16px; text-align: center; letter-spacing: .3px; page-break-inside: avoid; }
+.eq-arrow { position: relative; display: inline-block; margin: 0 6px; font-weight: 600; }
+.eq-arrow::before { content: attr(data-cond); position: absolute; left: 50%; transform: translateX(-50%); top: -1.05em; font-size: 10.5px; font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
+.state { font-size: .72em; font-style: italic; color: var(--ink-soft); }
+sub, sup { font-size: .72em; line-height: 0; }
+.formula { font-size: 1.05em; }
+.kbd { background: #f0f2f5; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 13px; }
+/* 三栏对比 */
+.triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; page-break-inside: avoid; }
+.triple .cell { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: 14px; }
+.triple .cell h4 { margin: 0 0 8px; font-size: 13.5px; text-align: center; padding: 4px 0; border-radius: 6px; color: #fff; }
+.triple .cell:nth-child(1) h4 { background: var(--c-trap); }
+.triple .cell:nth-child(2) h4 { background: var(--c-example); }
+.triple .cell:nth-child(3) h4 { background: var(--subject); }
+/* 步骤与答案 */
+.step { display: flex; gap: 10px; margin: 8px 0; }
+.step .no { flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--c-method); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.ans { background: #fff; border: 1px dashed var(--c-method); border-radius: 8px; padding: 8px 14px; margin: 8px 0; }
+.chap-foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-soft); text-align: center; }
+@media (max-width: 640px) { .triple { grid-template-columns: 1fr; } }
+@media print {
+  .card { border: 1px solid #999; background: #fff !important; }
+  .card .tag { border: 1px solid #333; background: #fff !important; color: #000; }
+  .eq { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .chap-foot { border-top: none; }
+}
+</style>
+</head>
+<body>
+<nav class="chap-nav">高考备考 · 化学 · 深度学习材料 ｜ 有机化学基础 ｜ 3.19 生命中的基础有机化学物质与合成高分子</nav>
+<header class="chap-head">
+  <h1>3.19 生命中的基础有机化学物质与合成高分子</h1>
+  <p class="chap-meta">高中化学 · 深度学习材料 · 面向 2029 届云南高考</p>
+  <p class="chap-intro">糖类、油脂、蛋白质、核酸是维持生命的四大类有机物，塑料、合成纤维、合成橡胶则是现代生活的三大合成材料。
+本章把"官能团性质"延伸到"生命与材料"，知识点细碎但规律清晰：
+抓住<strong>结构中的官能团 → 对应的特征反应 → 检验与用途</strong>这条链，就能把零散知识串成网。
+</p>
+</header>
+<main>
+
+<section>
+<h2>一、知识全景</h2>
+<table>
+<tr><th>知识点</th><th>核心内容</th><th>高考要求</th></tr>
+<tr><td>糖类</td><td>单糖（葡萄糖、果糖）、二糖（蔗糖、麦芽糖）、多糖（淀粉、纤维素）的组成、性质与水解</td><td>葡萄糖的结构与还原性、淀粉的碘水检验、各类糖的水解产物全掌握</td></tr>
+<tr><td>油脂</td><td>高级脂肪酸甘油酯；水解与皂化反应；
+油脂的氢化</td><td>明确油脂<strong>不是</strong>高分子化合物，皂化反应的概念与方程式</td></tr>
+<tr><td>蛋白质</td><td>氨基酸的两性；
+蛋白质的盐析、变性、颜色反应、灼烧</td><td>盐析与变性的区别、颜色反应（遇浓硝酸变黄）是高频考点</td></tr>
+<tr><td>核酸</td><td>核酸的组成与功能常识</td><td>了解 DNA、RNA 的基本概念即可</td></tr>
+<tr><td>合成高分子</td><td>加聚反应与缩聚反应；
+常见塑料、纤维、橡胶</td><td>能由单体写聚合物、由聚合物推单体，区分加聚与缩聚</td></tr>
+</table>
+</section>
+
+<section>
+<h2>二、核心概念精讲</h2>
+
+<h3>2.1 糖类：碳水化合物里的"还原性担当"</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：
+糖类一般符合通式 C<sub>n</sub>(H<sub>2</sub>O)<sub>m</sub>，俗称"碳水化合物"（注意：
+这是历史叫法，<strong>不是碳和水组成的</strong>；
+且有些糖不符合通式，如鼠李糖；
+有些符合通式的也不是糖，如乙酸 C<sub>2</sub>H<sub>4</sub>O<sub>2</sub>）。
+按能否水解及水解产物分为单糖、二糖、多糖。</p>
+<p><strong>葡萄糖（最重要的单糖）</strong>：
+分子式 C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>，结构简式常写作 CH<sub>2</sub>OH(CHOH)<sub>4</sub>CHO——一个分子中含 <strong>5 个羟基和 1 个醛基</strong>，所以既有醇的性质（能与羧酸酯化），又有醛的性质（还原性）：
+</p>
+<ul>
+<li>能与银氨溶液水浴加热析出<strong>光亮的银镜</strong>；</li>
+<li>能与新制 Cu(OH)<sub>2</sub> 悬浊液加热生成<strong>砖红色沉淀</strong>（医疗上据此检验尿糖）；
+</li>
+<li>在人体组织中缓慢氧化供能：
+C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> + 6O<sub>2</sub> → 6CO<sub>2</sub> + 6H<sub>2</sub>O（放热）。
+</li>
+</ul>
+<p><strong>果糖</strong>：
+与葡萄糖互为同分异构体（同为 C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>），属酮糖，分子中含酮基，<strong>不具还原性</strong>（不能发生银镜反应）。
+</p>
+<p><strong>二糖</strong>：
+蔗糖（非还原性糖，分子中无醛基）与麦芽糖（还原性糖，含醛基）互为同分异构体（同为 C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>）。
+1 mol 蔗糖水解生成 1 mol 葡萄糖 + 1 mol 果糖；1 mol 麦芽糖水解生成 2 mol 葡萄糖。</p>
+<span class="eq">C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>（蔗糖）+ H<sub>2</sub>O <span class="eq-arrow" data-cond="稀H2SO4、△">→</span> C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>（葡萄糖）+ C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>（果糖）</span>
+<span class="eq">C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>（麦芽糖）+ H<sub>2</sub>O <span class="eq-arrow" data-cond="稀H2SO4、△">→</span> 2C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>（葡萄糖）</span>
+<p><strong>多糖</strong>：
+淀粉和纤维素的组成都可用 (C<sub>6</sub>H<sub>10</sub>O<sub>5</sub>)<sub>n</sub> 表示，但 n 值不同、结构不同，<strong>二者不互为同分异构体</strong>。
+它们都是天然高分子化合物，本身无还原性，在稀酸或酶催化下逐步水解，最终产物都是葡萄糖：</p>
+<span class="eq">(C<sub>6</sub>H<sub>10</sub>O<sub>5</sub>)<sub>n</sub> + nH<sub>2</sub>O <span class="eq-arrow" data-cond="稀H2SO4、△">→</span> nC<sub>6</sub>H<sub>12</sub>O<sub>6</sub>（葡萄糖）</span>
+<p><strong>淀粉的特征检验</strong>：
+淀粉遇碘（I<sub>2</sub>）溶液<strong>变蓝色</strong>，现象灵敏且专属性强。
+用此性质检验淀粉是否水解完全：取水解液滴加碘水，若<strong>不变蓝说明淀粉已水解完全</strong>；
+再取水解液（<strong>先加 NaOH 中和硫酸</strong>，否则碱性的银氨/Cu(OH)<sub>2</sub> 体系会被酸破坏）做银镜或新制 Cu(OH)<sub>2</sub> 实验，若出现银镜或砖红色沉淀，说明已生成了葡萄糖。
+</p>
+<p><strong>常见混淆</strong>：①纤维素在人体内不能消化（人没有纤维素酶），但食草动物可以；
+②"糖"不一定甜（淀粉、纤维素不甜），甜的也不一定是糖（甘油、糖精）。
+</p>
+</div>
+
+<div class="card note">
+<span class="tag">归纳对比</span>
+<p><strong>糖类还原性梯队</strong>：含醛基（或潜在醛基）的糖才有还原性——</p>
+<table>
+<tr><th>糖</th><th>类别</th><th>有无还原性</th><th>水解产物</th></tr>
+<tr><td>葡萄糖</td><td>单糖</td><td>有（含 —CHO）</td><td>不水解</td></tr>
+<tr><td>果糖</td><td>单糖</td><td>无（酮糖）</td><td>不水解</td></tr>
+<tr><td>蔗糖</td><td>二糖</td><td>无</td><td>葡萄糖 + 果糖</td></tr>
+<tr><td>麦芽糖</td><td>二糖</td><td>有</td><td>2 分子葡萄糖</td></tr>
+<tr><td>淀粉</td><td>多糖</td><td>无</td><td>最终为葡萄糖</td></tr>
+<tr><td>纤维素</td><td>多糖</td><td>无</td><td>最终为葡萄糖</td></tr>
+</table>
+<p>注意：蔗糖水解产物中的葡萄糖有还原性，所以"蔗糖水解液（先中和）能发生银镜反应"是对的，但"蔗糖能发生银镜反应"是错的。</p>
+</div>
+
+<div class="card note">
+<span class="tag">实验流程</span>
+<p><strong>淀粉水解及产物检验标准流程</strong>（实验探究题直接套用）：</p>
+<ul>
+<li>第 1 步：淀粉溶液 + 稀硫酸，水浴加热 5 分钟（催化水解）。</li>
+<li>第 2 步：取少量水解液，直接滴加碘水——变蓝：淀粉未水解完；不变蓝：已水解完全。</li>
+<li>第 3 步：另取一份水解液，加 NaOH 溶液调至碱性（中和催化剂硫酸）。</li>
+<li>第 4 步：加入新制 Cu(OH)<sub>2</sub> 悬浊液加热（或银氨溶液水浴）——砖红色沉淀/银镜：证明水解生成了葡萄糖。</li>
+</ul>
+<p>两个实验必须<strong>分取两份</strong>水解液分别进行；不能"先加碱再滴碘"（I<sub>2</sub> 会与 NaOH 反应而失效）。</p>
+</div>
+
+<div class="card note">
+<span class="tag">常识补充</span>
+<p><strong>糖类的用途</strong>：葡萄糖用于医药输液与食品工业；蔗糖是常见甜味剂；淀粉是主食主要成分，也用于制葡萄糖与酒精；纤维素用于纺织（棉麻）、造纸，纤维素硝酸酯曾用于胶片与无烟火药。</p>
+</div>
+
+<h3>2.2 油脂：皂化反应与"不是高分子"</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：
+油脂是<strong>高级脂肪酸</strong>（如硬脂酸 C<sub>17</sub>H<sub>35</sub>COOH、软脂酸 C<sub>15</sub>H<sub>31</sub>COOH、油酸 C<sub>17</sub>H<sub>33</sub>COOH）<strong>与甘油</strong>（丙三醇）形成的酯，属于酯类。
+油（液态，含较多不饱和碳碳双键）与脂肪（固态，饱和程度高）统称油脂。</p>
+<p><strong>皂化反应</strong>：
+油脂在<strong>碱性</strong>（NaOH）条件下加热水解，生成<strong>高级脂肪酸钠（肥皂的主要成分）和甘油</strong>，这个碱性水解反应专称为皂化反应。
+皂化后加食盐细粒可使肥皂析出（盐析），上层为肥皂、下层为甘油和食盐水。</p>
+<span class="eq">(C<sub>17</sub>H<sub>35</sub>COO)<sub>3</sub>C<sub>3</sub>H<sub>5</sub>（硬脂酸甘油酯）+ 3NaOH <span class="eq-arrow" data-cond="△">→</span> 3C<sub>17</sub>H<sub>35</sub>COONa（硬脂酸钠）+ C<sub>3</sub>H<sub>5</sub>(OH)<sub>3</sub>（甘油）</span>
+<p><strong>油脂的氢化（硬化）</strong>：
+液态油中的碳碳双键与 H<sub>2</sub> 在 Ni 催化、加热下加成，转化为饱和程度高的固态脂肪，便于储存运输（人造奶油、起酥油）。
+</p>
+<p><strong>适用边界（高频判断点）</strong>：
+油脂的相对分子质量只有八九百左右，<strong>不属于高分子化合物</strong>（高分子的相对分子质量一般在一万以上）。
+这是选择题判断"下列物质属于天然高分子的是"时的经典干扰项。天然高分子包括：淀粉、纤维素、蛋白质、核酸、天然橡胶；
+油脂、蔗糖、麦芽糖都不是高分子。</p>
+<p><strong>常见混淆</strong>：矿物油（石油分馏产物，烃类）不是油脂，不能发生皂化反应；
+"植物油"和"汽油"名字都带"油"，成分完全不同。</p>
+</div>
+
+<div class="card note">
+<span class="tag">归纳对比</span>
+<p><strong>油脂与矿物油对比</strong>（名字像，本质完全不同）：</p>
+<table>
+<tr><th></th><th>油脂（如花生油）</th><th>矿物油（如汽油、润滑油）</th></tr>
+<tr><td>类别</td><td>酯类（含 C、H、O）</td><td>烃类（只含 C、H）</td></tr>
+<tr><td>来源</td><td>动植物体内</td><td>石油分馏</td></tr>
+<tr><td>能否水解</td><td>能（皂化反应）</td><td>不能</td></tr>
+<tr><td>滴加含酚酞的 NaOH 溶液加热</td><td>红色逐渐变浅</td><td>无变化</td></tr>
+</table>
+<p>利用最后一行的实验可以鉴别油脂与矿物油，也可判断皂化反应是否进行完全（反应完全后油层消失、取上层液加水不再分层）。</p>
+</div>
+
+<h3>2.3 蛋白质：两性、盐析、变性三件事</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：
+蛋白质是由 α-氨基酸通过肽键（—CO—NH—）连接成的<strong>天然高分子化合物</strong>。
+构成蛋白质的基石是 α-氨基酸，通式 R—CH(NH<sub>2</sub>)—COOH，即氨基和羧基连在<strong>同一个碳</strong>上，如甘氨酸 H<sub>2</sub>N—CH<sub>2</sub>—COOH。
+</p>
+<p><strong>氨基酸的两性</strong>：
+分子中 —NH<sub>2</sub> 能与酸反应、—COOH 能与碱反应，所以氨基酸既能与盐酸生成盐，又能与 NaOH 生成盐：</p>
+<span class="eq">H<sub>2</sub>NCH<sub>2</sub>COOH + HCl <span class="eq-arrow" data-cond="">→</span> HOOCCH<sub>2</sub>NH<sub>3</sub>Cl（即 [H<sub>3</sub>NCH<sub>2</sub>COOH]<sup>+</sup>Cl<sup>−</sup>）</span>
+<span class="eq">H<sub>2</sub>NCH<sub>2</sub>COOH + NaOH <span class="eq-arrow" data-cond="">→</span> H<sub>2</sub>NCH<sub>2</sub>COONa + H<sub>2</sub>O</span>
+<p><strong>盐析 vs 变性（核心辨析）</strong>：</p>
+<table>
+<tr><th></th><th>盐析</th><th>变性</th></tr>
+<tr><td>条件</td><td>加浓的<strong>轻金属盐</strong>溶液，如 (NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub>、Na<sub>2</sub>SO<sub>4</sub></td><td>加热、强酸、强碱、<strong>重金属盐</strong>（Cu<sup>2+</sup>、Pb<sup>2+</sup>、Hg<sup>2+</sup>）、紫外线、酒精、甲醛等</td></tr>
+<tr><td>本质</td><td>溶解度降低而析出，<strong>物理变化</strong></td><td>空间结构被破坏，<strong>化学变化</strong></td></tr>
+<tr><td>可逆性</td><td><strong>可逆</strong>，加水可再溶解</td><td><strong>不可逆</strong>，活性丧失</td></tr>
+<tr><td>用途</td><td>分离提纯蛋白质；制肥皂时的"盐析"</td><td>杀菌消毒、疫苗保存；
+误食重金属盐时喝牛奶/蛋清急救</td></tr>
+</table>
+<p><strong>颜色反应</strong>：
+含苯环结构的蛋白质遇<strong>浓硝酸</strong>加热变<strong>黄色</strong>，可用于检验蛋白质（如皮肤、指甲遇浓硝酸变黄）。
+</p>
+<p><strong>灼烧检验</strong>：
+蛋白质灼烧时有<strong>烧焦羽毛的气味</strong>，用于鉴别羊毛（蛋白质）与棉线（纤维素）、化纤。</p>
+<p><strong>水解产物</strong>：蛋白质在酸、碱或酶催化下逐步水解为多肽，最终产物是 α-氨基酸。</p>
+</div>
+
+<div class="card note">
+<span class="tag">补充拓展</span>
+<p><strong>成肽反应</strong>：两个氨基酸分子之间，一个的 —COOH 与另一个的 —NH<sub>2</sub> 脱去一分子水，形成肽键（—CO—NH—），生成二肽。多个氨基酸如此连接成多肽，多肽链盘曲折叠就是蛋白质。成肽反应本质上是缩合（缩聚）反应。</p>
+<span class="eq">H<sub>2</sub>NCH<sub>2</sub>COOH + H<sub>2</sub>NCH<sub>2</sub>COOH <span class="eq-arrow" data-cond="">→</span> H<sub>2</sub>NCH<sub>2</sub>CO—NHCH<sub>2</sub>COOH + H<sub>2</sub>O</span>
+<p>两个<strong>不同</strong>的氨基酸脱水，最多可形成 4 种二肽（A—B、B—A 及 A—A、B—B）。</p>
+<p><strong>酶的常识</strong>：酶是活细胞产生的、具有催化作用的蛋白质（少数为 RNA）。酶催化有高效性、专一性，且需要温和条件——高温、强酸、强碱都会使酶变性失活。加酶洗衣粉不宜用开水冲泡，道理就在这里。</p>
+</div>
+
+<h3>2.4 核酸：常识性了解</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：核酸是细胞中携带遗传信息的生物大分子，分为脱氧核糖核酸（DNA）和核糖核酸（RNA）两类。
+核酸由核苷酸聚合而成，核苷酸又由磷酸、五碳糖（核糖或脱氧核糖）和含氮碱基组成。DNA 主要存在于细胞核中，是遗传信息的载体；
+RNA 参与蛋白质的合成。
+高考层面只需了解这些基本概念，能判断"核酸属于天然高分子化合物"即可。</p>
+</div>
+
+<div class="card note">
+<span class="tag">常识补充</span>
+<p>核酸与蛋白质一样属于天然高分子；DNA 呈双螺旋结构，两条核苷酸链通过碱基配对（A—T、G—C）维系；核酸检测、基因工程都以核酸为研究对象。高考层面知道"核酸是遗传信息的载体、属于生物大分子"即可。</p>
+</div>
+
+<h3>2.5 加聚与缩聚：高分子的两种"长法"</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>加聚反应</strong>：
+含碳碳双键（或三键）的不饱和单体，通过加成聚合首尾相连成高分子，<strong>没有小分子生成</strong>，链节的元素组成与单体相同。
+如乙烯聚合成聚乙烯：</p>
+<span class="eq">nCH<sub>2</sub>=CH<sub>2</sub> <span class="eq-arrow" data-cond="催化剂">→</span> —[—CH<sub>2</sub>—CH<sub>2</sub>—]<sub>n</sub>—（聚乙烯）</span>
+<p><strong>缩聚反应</strong>：
+含两个（或以上）可反应官能团的单体，互相反应连成高分子的同时<strong>脱去小分子</strong>（水、醇、氨等）。
+如乙二醇与对苯二甲酸缩聚成涤纶（PET）：</p>
+<span class="eq">nHOOC—C<sub>6</sub>H<sub>4</sub>—COOH + nHOCH<sub>2</sub>CH<sub>2</sub>OH <span class="eq-arrow" data-cond="催化剂">→</span> 聚酯 + 2nH<sub>2</sub>O（脱去水）</span>
+<p><strong>由聚合物推单体的方法</strong>：</p>
+<ul>
+<li>链节主链<strong>全是碳原子</strong> → 加聚产物。
+每 2 个碳"切一段"，把链节中的单键还原回双键即得单体（如 —[—CH<sub>2</sub>—CHCl—]<sub>n</sub>— 的单体是 CH<sub>2</sub>=CHCl）。
+</li>
+<li>链节主链<strong>含 —COO—（酯基）或 —CONH—（肽键）</strong> → 缩聚产物。
+在酯基/肽键处"断开"，羰基侧补 —OH、氧/氮侧补 —H，即得两种单体（或一种含双官能团的单体）。</li>
+</ul>
+<p><strong>常见三大合成材料</strong>：
+塑料（聚乙烯 PE、聚氯乙烯 PVC、酚醛树脂等）、合成纤维（涤纶、锦纶/尼龙、腈纶等"六大纶"）、合成橡胶（顺丁橡胶等）。
+注意：<strong>PVC 不能用于食品包装</strong>（受热释放含氯有害物质），食品包装用 PE。</p>
+</div>
+
+<h3>2.6 常见合成高分子材料一览</h3>
+<table>
+<tr><th>材料</th><th>类别</th><th>单体</th><th>聚合类型</th><th>用途提示</th></tr>
+<tr><td>聚乙烯（PE）</td><td>塑料</td><td>CH<sub>2</sub>=CH<sub>2</sub></td><td>加聚</td><td>食品包装袋、保鲜膜</td></tr>
+<tr><td>聚氯乙烯（PVC）</td><td>塑料</td><td>CH<sub>2</sub>=CHCl</td><td>加聚</td><td>水管、电线外皮（不可包食品）</td></tr>
+<tr><td>聚苯乙烯（PS）</td><td>塑料</td><td>CH<sub>2</sub>=CHC<sub>6</sub>H<sub>5</sub></td><td>加聚</td><td>泡沫塑料</td></tr>
+<tr><td>聚丙烯（PP）</td><td>塑料</td><td>CH<sub>2</sub>=CHCH<sub>3</sub></td><td>加聚</td><td>微波餐盒、编织袋</td></tr>
+<tr><td>有机玻璃（PMMA）</td><td>塑料</td><td>甲基丙烯酸甲酯</td><td>加聚</td><td>透明材料</td></tr>
+<tr><td>酚醛树脂（电木）</td><td>塑料</td><td>苯酚 + 甲醛</td><td>缩聚</td><td>电器开关、炊具手柄</td></tr>
+<tr><td>涤纶（聚酯纤维）</td><td>合成纤维</td><td>对苯二甲酸 + 乙二醇</td><td>缩聚</td><td>衣物面料（的确良）</td></tr>
+<tr><td>尼龙-6（锦纶）</td><td>合成纤维</td><td>己内酰胺</td><td>缩聚</td><td>绳索、丝袜</td></tr>
+<tr><td>顺丁橡胶</td><td>合成橡胶</td><td>CH<sub>2</sub>=CH—CH=CH<sub>2</sub></td><td>加聚</td><td>轮胎</td></tr>
+</table>
+<p>记忆抓手：<strong>塑料看"聚某烯"多为加聚；名称带"酯、酰胺"的多为缩聚</strong>。由链节推单体的方法见 2.5。</p>
+<div class="card note">
+<span class="tag">生活中的化学</span>
+<p><strong>食品中的有机物常识</strong>（选择题素材库）：酿酒是淀粉先糖化、再酒化（葡萄糖在酒化酶作用下生成乙醇和 CO<sub>2</sub>）；酿醋是乙醇进一步氧化成乙酸；酸奶中的乳酸是 2-羟基丙酸；味精的主要成分是谷氨酸钠；做馒头用小苏打中和发酵产生的酸并生成 CO<sub>2</sub> 使面团疏松。</p>
+</div>
+
+<div class="card note">
+<span class="tag">常识补充</span>
+<p><strong>油脂的物理性质</strong>：油脂比水轻、不溶于水、易溶于有机溶剂；花生油、芝麻油等植物油常温为液态（含较多不饱和双键），猪油、牛油等动物脂肪常温为固态（饱和程度高）。利用"相似相溶"，衣服上的油渍可用汽油或洗洁精（乳化作用）洗去——前者是溶解，后者是乳化，原理不同。</p>
+</div>
+<div class="card violet">
+<span class="tag">常识补充</span>
+<p><strong>天然橡胶</strong>：异戊二烯（2-甲基-1,3-丁二烯）的加聚物，链节中仍保留 C=C 双键，所以能被空气中的 O<sub>2</sub> 缓慢氧化而老化。通过"硫化"（加硫形成硫桥）可提高橡胶的强度、弹性与耐氧化性。轮胎、胶管等都以硫化橡胶为原料。</p>
+</div>
+
+<div class="card violet">
+<span class="tag">常识补充</span>
+<p><strong>蛋白质的分离提纯</strong>：利用盐析（加浓 (NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub> 溶液）使蛋白质析出、过滤后再溶于水，反复多次即可提纯；利用蛋白质不能透过半透膜而小分子能透过的性质，可用<strong>渗析</strong>法除去蛋白质溶液中的无机盐杂质。</p>
+</div>
+</section>
+
+<section>
+<h2>三、三重表征贯通</h2>
+
+<h3>第 1 组：葡萄糖与新制 Cu(OH)<sub>2</sub> 悬浊液的反应</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>NaOH 溶液中滴加少量 CuSO<sub>4</sub> 溶液，得<strong>蓝色絮状悬浊液</strong>；
+加入葡萄糖溶液振荡无变化，<strong>加热至沸腾</strong>后，溶液中逐渐生成<strong>砖红色沉淀</strong>（Cu<sub>2</sub>O）。
+医院检验尿糖即依据此现象。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>葡萄糖分子末端的醛基（—CHO）具有还原性，在碱性加热条件下把 Cu(OH)<sub>2</sub> 中 +2 价的铜还原为 +1 价的 Cu<sub>2</sub>O（砖红色固体），醛基本身被氧化为羧基（—COOH，碱性中以羧酸盐形式存在），葡萄糖变成葡萄糖酸盐。
+</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<p class="formula">CH<sub>2</sub>OH(CHOH)<sub>4</sub>CHO + 2Cu(OH)<sub>2</sub> + NaOH <span class="eq-arrow" data-cond="△">→</span> CH<sub>2</sub>OH(CHOH)<sub>4</sub>COONa + Cu<sub>2</sub>O↓（砖红色）+ 3H<sub>2</sub>O</p>
+</div>
+</div>
+
+<h3>第 2 组：淀粉的检验与淀粉水解程度的判断</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>向淀粉溶液中滴入碘水，溶液立即变为<strong>深蓝色</strong>；
+淀粉加稀硫酸加热水解一段时间后：取一份水解液滴碘水——若<strong>仍变蓝</strong>说明还有淀粉未水解；
+另取一份先加 NaOH 中和再加新制 Cu(OH)<sub>2</sub> 加热——若出现<strong>砖红色沉淀</strong>说明已生成葡萄糖。
+</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>淀粉的长链螺旋结构能"套住"碘分子（I<sub>2</sub>），形成蓝色的包合物；
+水解时，(C<sub>6</sub>H<sub>10</sub>O<sub>5</sub>)<sub>n</sub> 长链在 H<sup>+</sup> 催化下逐段断开糖苷键，链变短（糊精）直至生成葡萄糖分子，螺旋结构消失、遇碘不再变蓝，而生成的葡萄糖含醛基、显还原性。
+</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<p class="formula">(C<sub>6</sub>H<sub>10</sub>O<sub>5</sub>)<sub>n</sub> + nH<sub>2</sub>O <span class="eq-arrow" data-cond="稀H2SO4、△">→</span> nC<sub>6</sub>H<sub>12</sub>O<sub>6</sub></p>
+<p>检验：淀粉 + I<sub>2</sub> → 蓝色（特征反应，非化学方程式表示）。</p>
+</div>
+</div>
+
+<h3>第 3 组：蛋白质的变性（遇重金属盐）</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>向鸡蛋清溶液中加入饱和 (NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub> 溶液，出现<strong>白色絮状沉淀</strong>，加水后沉淀<strong>重新溶解</strong>（盐析）；
+若改加 CuSO<sub>4</sub> 溶液（重金属盐），出现<strong>白色沉淀</strong>，加水后沉淀<strong>不再溶解</strong>（变性）。
+</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>盐析时，大量盐离子夺取蛋白质胶粒表面的水化膜，使其聚集沉降，但蛋白质分子的空间结构未被破坏，所以可复原；
+Cu<sup>2+</sup> 等重金属离子则与蛋白质分子中的 —COO<sup>−</sup>、—S— 等部位强烈结合，破坏了维持空间构象的作用力，结构坍塌、生理活性丧失，且不可复原。
+</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<p>两者均无固定化学方程式，用概念表达：</p>
+<p>蛋白质 + 轻金属盐（浓）⇌ 析出（物理变化，可逆）</p>
+<p>蛋白质 + 重金属盐 → 变性沉淀（化学变化，不可逆）</p>
+</div>
+</div>
+
+<h3>第 4 组：油脂的皂化反应</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>油脂与 NaOH 溶液共热，原本<strong>分层的油层逐渐消失</strong>、液体变稠；加入食盐细粒（或饱和食盐水），上层析出<strong>白色固体</strong>（高级脂肪酸钠，即肥皂），下层为甘油和食盐水。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>油脂分子中的三个酯键在碱性条件下断裂，羰基碳接 —O<sup>−</sup> 成为高级脂肪酸根（与 Na<sup>+</sup> 结合成肥皂），甘油骨架接上 —OH 成为丙三醇。碱中和了水解产生的酸，使水解彻底进行。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<p class="formula">(C<sub>17</sub>H<sub>35</sub>COO)<sub>3</sub>C<sub>3</sub>H<sub>5</sub> + 3NaOH <span class="eq-arrow" data-cond="△">→</span> 3C<sub>17</sub>H<sub>35</sub>COONa + C<sub>3</sub>H<sub>5</sub>(OH)<sub>3</sub></p>
+<p>皂化 = 油脂的碱性水解，不可逆。</p>
+</div>
+</div>
+
+<h3>第 5 组：蛋白质的颜色反应与灼烧检验</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观现象</h4>
+<p>向鸡蛋清溶液中加入几滴<strong>浓硝酸</strong>并微热，蛋白变为<strong>黄色</strong>；取羊毛线点燃，卷缩成黑色小球，闻到<strong>烧焦羽毛的气味</strong>，灰烬一捻即碎。棉线燃烧则是烧纸的气味。</p>
+</div>
+<div class="cell">
+<h4>微观粒子</h4>
+<p>黄色反应：浓硝酸使蛋白质分子中含苯环的氨基酸残基的苯环发生硝化，生成黄色的硝基化合物。灼烧时蛋白质中的 N、S 元素转化为有刺激性气味的含氮、含硫小分子。</p>
+</div>
+<div class="cell">
+<h4>符号表达</h4>
+<p>两者均难以单一化学方程式表示，用特征描述：</p>
+<p>蛋白质（含苯环）+ 浓 HNO<sub>3</sub> <span class="eq-arrow" data-cond="△">→</span> 黄色物质（硝化产物）</p>
+<p>蛋白质 <span class="eq-arrow" data-cond="灼烧">→</span> 烧焦羽毛气味（鉴别羊毛/蚕丝）</p>
+</div>
+</div>
+</section>
+
+<section>
+<h2>四、典型例题分步拆解</h2>
+
+<div class="card example">
+<span class="tag">例1 · 淀粉水解程度的实验探究</span>
+<p><strong>题目</strong>：某学生用淀粉水解实验探究水解程度：取淀粉溶液加入稀硫酸，加热一段时间后，分成两份。
+甲同学取一份直接加入新制 Cu(OH)<sub>2</sub> 悬浊液加热，未见砖红色沉淀，于是得出"淀粉没有水解"的结论；
+乙同学取另一份加入碘水，溶液变蓝。
+请评价甲、乙两位同学的操作与结论。</p>
+<p><strong>【思路点拨】</strong>检验醛基的 Cu(OH)<sub>2</sub> 体系和银氨体系都必须在<strong>碱性环境</strong>下使用；
+水解液中的催化剂稀硫酸若不先中和，会直接溶解 Cu(OH)<sub>2</sub>，造成"假阴性"。</p>
+<div class="step"><div class="no">1</div><p>分析甲：
+水解液中含催化剂 H<sub>2</sub>SO<sub>4</sub>，直接加 Cu(OH)<sub>2</sub> 时，酸先与 Cu(OH)<sub>2</sub> 中和（悬浊液被溶解），即使溶液中有葡萄糖，也无法生成 Cu<sub>2</sub>O 砖红色沉淀。
+所以"未见砖红色"不能说明没有水解。</p></div>
+<div class="step"><div class="no">2</div><p>正确操作：
+先向水解液中加入 NaOH 溶液<strong>中和硫酸并使溶液呈碱性</strong>，再加新制 Cu(OH)<sub>2</sub> 加热。
+若出现砖红色沉淀，证明已生成葡萄糖（淀粉已水解）。</p></div>
+<div class="step"><div class="no">3</div><p>分析乙：
+碘水变蓝，说明溶液中<strong>仍含淀粉</strong>，即淀粉尚未水解完全。
+乙的操作和结论都正确。</p></div>
+<div class="step"><div class="no">4</div><p>综合两人结果可判断"部分水解"：
+碘水变蓝（有淀粉）+ 中和后 Cu(OH)<sub>2</sub> 实验出砖红色（有葡萄糖）⇒ 淀粉部分水解。
+</p></div>
+<p><strong>【答案】</strong>甲的操作错误、结论不可靠——必须先加 NaOH 中和稀硫酸至碱性再检验；
+乙的操作与结论正确，说明淀粉尚有剩余（未水解完全）。
+判断"部分水解"需要两个实验相互印证。</p>
+<p class="ans"><strong>【方法总结】</strong>淀粉水解探究的标准"三问"：
+有没有水解？→ 检验葡萄糖（先中和再加新制 Cu(OH)<sub>2</sub>/银氨）；
+有没有水解完？→ 检验淀粉（碘水，注意碘水实验<strong>不能</strong>在碱性溶液中做，所以两份样品要分开取）。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例2 · 加聚与缩聚的辨析、由聚合物推单体</span>
+<p><strong>题目</strong>：
+某高分子的链节为 —CH<sub>2</sub>—CH(CH<sub>3</sub>)—，另有一种高分子由链节 —OOC—C<sub>6</sub>H<sub>4</sub>—COOCH<sub>2</sub>CH<sub>2</sub>— 重复构成。
+分别写出两种高分子对应单体的结构简式，并指出各属于加聚还是缩聚产物。</p>
+<p><strong>【思路点拨】</strong>主链全是碳 → 加聚，"单键还原成双键"找单体；
+主链含酯基 → 缩聚，在酯基处断开，羰基补 —OH、氧补 —H。</p>
+<div class="step"><div class="no">1</div><p>第一种：
+链节 —CH<sub>2</sub>—CH(CH<sub>3</sub>)— 主链只有 2 个碳，属加聚产物。
+把链节两端的半键合并、单键还原为双键，得单体 CH<sub>2</sub>=CHCH<sub>3</sub>（丙烯）。</p></div>
+<div class="step"><div class="no">2</div><p>第二种：链节主链含 —COO— 酯基，属缩聚产物。
+在酯基 C—O 处断开：
+—CO— 一侧补 —OH 得 HOOC—C<sub>6</sub>H<sub>4</sub>—COOH（对苯二甲酸）；
+—O—CH<sub>2</sub>CH<sub>2</sub>—O— 一侧补 —H 得 HOCH<sub>2</sub>CH<sub>2</sub>OH（乙二醇）。
+</p></div>
+<div class="step"><div class="no">3</div><p>验证：
+对苯二甲酸 + 乙二醇缩聚时脱去水生成该聚酯，与题给链节一致。</p></div>
+<p><strong>【答案】</strong>第一种单体为 CH<sub>2</sub>=CHCH<sub>3</sub>（丙烯），加聚产物；
+第二种单体为 HOOC—C<sub>6</sub>H<sub>4</sub>—COOH（对苯二甲酸）和 HOCH<sub>2</sub>CH<sub>2</sub>OH（乙二醇），缩聚产物。
+</p>
+<p class="ans"><strong>【方法总结】</strong>推单体两步走：一看主链成分定聚合类型；
+二按类型"还双键"或"断酯补水"。
+加聚产物链节碳数必为偶数个连续碳（双键两端各一），缩聚产物链节里一定能找到 —COO— 或 —CONH—。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例3 · 天然高分子的判断</span>
+<p><strong>题目</strong>：
+下列物质中，属于天然高分子化合物的是哪一组？A. 淀粉、纤维素、油脂　B. 蛋白质、核酸、天然橡胶　C. 蔗糖、淀粉、聚乙烯　D. 纤维素、油脂、PVC</p>
+<p><strong>【思路点拨】</strong>两个筛选条件缺一不可：①相对分子质量上万（高分子）；②自然界中已存在（天然）。
+逐一排查各选项成员。</p>
+<div class="step"><div class="no">1</div><p>A 组：
+油脂相对分子质量不足一千，不是高分子 → 排除 A。</p></div>
+<div class="step"><div class="no">2</div><p>B 组：
+蛋白质（上万）、核酸（可达百万以上）、天然橡胶（聚异戊二烯，上万）都是自然界存在的高分子 → 全部符合。
+</p></div>
+<div class="step"><div class="no">3</div><p>C 组：蔗糖是小分子（M=342）；
+聚乙烯是合成高分子而非天然 → 排除 C。
+</p></div>
+<div class="step"><div class="no">4</div><p>D 组：油脂不是高分子；
+PVC（聚氯乙烯）是合成高分子 → 排除 D。</p></div>
+<p><strong>【答案】</strong>B。</p>
+<p class="ans"><strong>【方法总结】</strong>记住"天然高分子四大金刚"：
+淀粉、纤维素、蛋白质、核酸（外加天然橡胶）。
+油脂、蔗糖、麦芽糖、葡萄糖都是"冒牌货"；聚乙烯、PVC、涤纶、尼龙等是"合成系"，不是天然系。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例4 · 蛋白质性质综合</span>
+<p><strong>题目</strong>：
+下列关于蛋白质的说法中，正确的是哪一项？A. 向鸡蛋清溶液中加入饱和硫酸铵溶液，蛋白质变性析出　B. 误服重金属盐可立即服用大量牛奶解毒，其原理是重金属使牛奶中的蛋白质变性　C. 所有蛋白质遇浓硝酸都变黄　D. 棉线和羊毛线灼烧时都有烧焦羽毛的气味，无法鉴别</p>
+<p><strong>【思路点拨】</strong>A 考盐析与变性的区分；B 考变性的实际应用；C 考颜色反应的适用范围；
+D 考灼烧检验时两种纤维气味的差异。</p>
+<div class="step"><div class="no">1</div><p>A 错：
+(NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub> 是轻金属盐，使蛋白质发生的是<strong>盐析</strong>（可逆），不是变性。
+</p></div>
+<div class="step"><div class="no">2</div><p>B 对：
+牛奶富含蛋白质，重金属盐先与牛奶中的蛋白质结合使其变性，从而减少对人体自身蛋白质的破坏，是标准急救措施。
+</p></div>
+<div class="step"><div class="no">3</div><p>C 错：
+只有分子中<strong>含苯环结构</strong>的蛋白质遇浓硝酸才会变黄，并非所有蛋白质都有此颜色反应。
+</p></div>
+<div class="step"><div class="no">4</div><p>D 错：
+羊毛主要成分是蛋白质，灼烧有<strong>烧焦羽毛的特殊气味</strong>；
+棉线成分是纤维素，灼烧是烧纸的气味、灰烬细腻，二者气味不同，<strong>可以</strong>用灼烧法鉴别。</p></div>
+<p><strong>【答案】</strong>B。</p>
+<p class="ans"><strong>【方法总结】</strong>蛋白质性质"四件套"——盐析（可逆）、变性（不可逆）、颜色反应（浓硝酸→黄，需含苯环）、灼烧（烧焦羽毛味）。
+题目最爱在"盐析说成变性""所有蛋白质都变黄"两处设陷阱。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例5 · 油脂皂化的计算</span>
+<p><strong>题目</strong>：硬脂酸甘油酯 (C<sub>17</sub>H<sub>35</sub>COO)<sub>3</sub>C<sub>3</sub>H<sub>5</sub>（M=890）与足量 NaOH 反应，取 890 g 该油脂完全皂化，理论上可制得硬脂酸钠（M=306）多少克？同时生成甘油多少克？</p>
+<p><strong>【思路点拨】</strong>皂化反应计量关系：1 mol 油脂 ~ 3 mol NaOH ~ 1 mol 甘油 ~ 3 mol 高级脂肪酸钠。</p>
+<div class="step"><div class="no">1</div><p>n（油脂）= 890 g ÷ 890 g/mol = 1 mol。</p></div>
+<div class="step"><div class="no">2</div><p>由方程式，1 mol 油脂生成 3 mol 硬脂酸钠和 1 mol 甘油。</p></div>
+<div class="step"><div class="no">3</div><p>m（硬脂酸钠）= 3 mol × 306 g/mol = 918 g；m（甘油）= 1 mol × 92 g/mol = 92 g。</p></div>
+<p><strong>【答案】</strong>可制得硬脂酸钠 918 g，甘油 92 g。</p>
+<p class="ans"><strong>【方法总结】</strong>油脂皂化计算的固定比例"1 油 : 3 碱 : 1 甘油 : 3 皂"，抓住物质的量守恒就不会错。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例6 · 葡萄糖的定量计算</span>
+<p><strong>题目</strong>：医用葡萄糖注射液中葡萄糖（C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>，M=180）的质量分数为 5%。若输入 500 g 该注射液，这些葡萄糖完全氧化生成多少物质的量的 CO<sub>2</sub>？生成多少克水？</p>
+<p><strong>【思路点拨】</strong>先算葡萄糖的物质的量，再按 C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> + 6O<sub>2</sub> → 6CO<sub>2</sub> + 6H<sub>2</sub>O 的计量比换算。</p>
+<div class="step"><div class="no">1</div><p>m（葡萄糖）= 500 g × 5% = 25 g；n = 25 ÷ 180 ≈ 0.139 mol。</p></div>
+<div class="step"><div class="no">2</div><p>由方程式，1 mol 葡萄糖生成 6 mol CO<sub>2</sub> 和 6 mol H<sub>2</sub>O。</p></div>
+<div class="step"><div class="no">3</div><p>n(CO<sub>2</sub>) = 6 × 0.139 ≈ 0.83 mol；m(H<sub>2</sub>O) = 6 × 0.139 × 18 = 15 g。</p></div>
+<p><strong>【答案】</strong>生成 CO<sub>2</sub> 约 0.83 mol，生成水 15 g（可用 25 × 108/180 = 15 快速验证）。</p>
+<p class="ans"><strong>【方法总结】</strong>有机物氧化计算的本质仍是"以物质的量为中心"：先写对方程式、再找计量比，与无机计算一脉相承。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例7 · 氨基酸两性的方程式书写</span>
+<p><strong>题目</strong>：写出甘氨酸（H<sub>2</sub>N—CH<sub>2</sub>—COOH）分别与盐酸、NaOH 溶液反应的化学方程式。</p>
+<p><strong>【思路点拨】</strong>两性物质"遇酸显碱性、遇碱显酸性"：与酸反应时 —NH<sub>2</sub> 结合 H<sup>+</sup> 生成 —NH<sub>3</sub><sup>+</sup>；与碱反应时 —COOH 给出 H<sup>+</sup> 生成 —COO<sup>−</sup>。</p>
+<div class="step"><div class="no">1</div><p>与盐酸：H<sub>2</sub>NCH<sub>2</sub>COOH + HCl → [H<sub>3</sub>NCH<sub>2</sub>COOH]Cl（盐酸甘氨酸，氨基以 —NH<sub>3</sub><sup>+</sup> 形式存在）。</p></div>
+<div class="step"><div class="no">2</div><p>与 NaOH：H<sub>2</sub>NCH<sub>2</sub>COOH + NaOH → H<sub>2</sub>NCH<sub>2</sub>COONa + H<sub>2</sub>O（甘氨酸钠）。</p></div>
+<div class="step"><div class="no">3</div><p>自检：与酸反应只动 —NH<sub>2</sub>、不生成水；与碱反应只动 —COOH、生成水——看清哪个基团变了。</p></div>
+<p><strong>【答案】</strong>如上两步方程式。</p>
+<p class="ans"><strong>【方法总结】</strong>氨基酸两性方程式记忆法："酸找氨基、碱找羧基"。同样思路适用于任何含 —NH<sub>2</sub> 与 —COOH 的有机物。</p>
+</div>
+</section>
+
+<section>
+<h2>五、易错点与成因</h2>
+
+<div class="card trap">
+<span class="tag">易错点 1</span>
+<p><strong>易错表现</strong>：
+认为"糖都符合通式 C<sub>n</sub>(H<sub>2</sub>O)<sub>m</sub>"，或"符合该通式的都是糖"，把乙酸 C<sub>2</sub>H<sub>4</sub>O<sub>2</sub> 当成糖。
+</p>
+<p><strong>错误成因</strong>：把历史俗称"碳水化合物"当成了严格的组成定义。</p>
+<p><strong>正确理解</strong>：
+通式只是经验规律，存在例外双向不成立——鼠李糖等糖不符合通式，乙酸、甲醛等符合通式却不是糖。
+判断是不是糖看结构（多羟基醛或多羟基酮及其缩聚物），不看通式。</p>
+<p><strong>一句话避坑</strong>：碳水通式只是绰号，结构才是身份证。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 2</span>
+<p><strong>易错表现</strong>：
+认为淀粉和纤维素分子式都是 (C<sub>6</sub>H<sub>10</sub>O<sub>5</sub>)<sub>n</sub>，所以互为同分异构体；
+或认为它们有还原性、能发生银镜反应。</p>
+<p><strong>错误成因</strong>：忽略了聚合度 n 对二者是不同的数值，且链结构不同（直链/支链、葡萄糖单元连接方式不同）；
+同时它们分子中没有游离醛基，属非还原性糖。</p>
+<p><strong>正确理解</strong>：n 值不同 + 结构不同 ⇒ 不是同分异构体；
+淀粉、纤维素均无还原性，检验葡萄糖只能在它们<strong>水解之后</strong>进行。</p>
+<p><strong>一句话避坑</strong>：
+同是 (C<sub>6</sub>H<sub>10</sub>O<sub>5</sub>)<sub>n</sub>，n 不同构不同，银镜只认水解后的葡萄糖。
+</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 3</span>
+<p><strong>易错表现</strong>：
+检验淀粉水解产物时，直接向酸性水解液中加新制 Cu(OH)<sub>2</sub> 或银氨溶液，没看到现象就断定"没有水解"。
+</p>
+<p><strong>错误成因</strong>：
+忘记了醛基检验体系必须呈碱性——水解液中的催化剂稀硫酸会把 Cu(OH)<sub>2</sub> 溶解、把银氨配离子破坏，造成假阴性。
+</p>
+<p><strong>正确理解</strong>：标准操作是"水解液 → 先加 NaOH 中和至碱性 → 再加检验试剂"。
+同时注意：
+检验淀粉是否剩余用碘水时要<strong>直接取水解液</strong>（不能在碱性条件下，I<sub>2</sub> 会被碱消耗）。
+</p>
+<p><strong>一句话避坑</strong>：验糖先中和，验淀粉直接滴碘。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 4</span>
+<p><strong>易错表现</strong>：
+把"盐析"和"变性"混为一谈，认为加 (NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub> 析出蛋白质是变性，或认为变性的蛋白质加水还能溶解。
+</p>
+<p><strong>错误成因</strong>：
+只看到"都析出沉淀"这一表象，没区分析出机理——盐析是溶解度降低（物理变化，结构未破坏），变性是空间结构破坏（化学变化）。</p>
+<p><strong>正确理解</strong>：轻金属盐浓溶液 → 盐析，加水复原；
+重金属盐、热、强酸强碱、甲醛、紫外线 → 变性，不可复原。
+制豆腐（盐卤点浆）、分离蛋白质用盐析；消毒杀菌、卤水点豆腐后加热定型涉及变性。</p>
+<p><strong>一句话避坑</strong>：轻盐析、重变性；盐析可逆、变性不回。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 5</span>
+<p><strong>易错表现</strong>：
+由加聚产物推单体时，把链节 —CH<sub>2</sub>—CH<sub>2</sub>—CH<sub>2</sub>—CH<sub>2</sub>—（4 个碳）的单体写成 CH<sub>2</sub>=CH<sub>2</sub> 一种。
+</p>
+<p><strong>错误成因</strong>：不会"两碳一切"的规则——加聚链节应每 2 个碳为一段还原双键。
+4 个连续碳的链节可能是两种单体共聚（如乙烯与丙烯交替），也可能是 1,3-丁二烯加聚（双键移位）。</p>
+<p><strong>正确理解</strong>：主链 2 碳一段 → 一种烯单体；
+主链 4 碳且中间曾是双键移位 → 二烯烃单体（如 CH<sub>2</sub>=CH—CH=CH<sub>2</sub> 加聚生成 —[—CH<sub>2</sub>—CH=CH—CH<sub>2</sub>—]<sub>n</sub>—）；
+遇到交替结构再考虑两种烯共聚。</p>
+<p><strong>一句话避坑</strong>：两碳一段找双键；四碳一段想二烯或共聚。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 6</span>
+<p><strong>易错表现</strong>：认为"加聚产物一定能与溴水发生加成反应"，如认为聚乙烯能使溴水褪色。</p>
+<p><strong>错误成因</strong>：把"单体含双键"误迁移到聚合物上。加聚时双键已打开形成单键链，聚乙烯分子中<strong>没有碳碳双键</strong>，不能与溴水加成。</p>
+<p><strong>正确理解</strong>：聚合物是否含双键看链节——聚乙烯、PVC 等单烯加聚物不含双键、不能使溴水褪色；而 1,3-丁二烯的加聚物（顺丁橡胶）链节中仍保留一个 C=C，能与溴加成（这也是橡胶易老化的原因之一）。</p>
+<p><strong>一句话避坑</strong>：双键在单体里，不在聚乙烯里；二烯聚合物才留双键。</p>
+</div>
+
+<div class="card note">
+<span class="tag">常识补充</span>
+<p><strong>棉、麻、丝、毛的成分辨析</strong>：棉、麻的主要成分是纤维素（多糖），丝、毛的主要成分是蛋白质。鉴别两类织物最简便的方法就是灼烧：丝、毛有烧焦羽毛气味，棉、麻是烧纸的气味。这一对比同时复习了多糖与蛋白质两大类物质。</p>
+</div>
+</section>
+
+<section>
+<h2>六、与前后章节的联系</h2>
+<p>本章是 3.18 官能团性质的"生命与材料版"，内容看似细碎，实则每条性质都能挂靠到具体的官能团上。：葡萄糖的醛基、油脂的酯基、蛋白质的氨基与羧基、高分子的加聚缩聚，全都来自前面建立的官能团体系；"由聚合物推单体""皂化比例计算"又为 3.20 的推断与定量题提供素材。建议把本章每个特征反应回贴到 3.18 的官能团总表上，形成"官能团—物质—材料"完整网络。</p>
+</section>
+
+<section>
+<h2>七、高考怎么考</h2>
+<p>本章在高考中多以<strong>选择题</strong>形式出现（"下列说法正确的是"），也常作为有机选考大题的素材背景：
+淀粉水解实验、油脂皂化、蛋白质盐析变性是实验选择题的常客；
+"由聚合物结构推单体"几乎年年在有机题中占 2~4 分。复习时把"糖类的还原性梯队（葡萄糖、麦芽糖有；
+蔗糖、淀粉、纤维素无）""天然高分子名单""盐析/变性对比表"三张卡片背熟即可覆盖绝大部分考法。</p>
+</section>
+
+<section>
+<h2>八、章末自检清单</h2>
+<ul class="checklist">
+<li>我能写出葡萄糖的结构简式 CH<sub>2</sub>OH(CHOH)<sub>4</sub>CHO，并说出它既有羟基性质又有醛基性质。
+</li>
+<li>我能列举还原性糖（葡萄糖、麦芽糖）与非还原性糖（蔗糖、淀粉、纤维素），并说明原因。</li>
+<li>我能写出蔗糖、麦芽糖、淀粉水解的方程式及各自最终产物。</li>
+<li>我能规范描述"检验淀粉是否水解/是否水解完全"的两步实验及先后顺序的原因。</li>
+<li>我能写出硬脂酸甘油酯皂化反应的方程式，说出"皂化"特指碱性水解。</li>
+<li>我能判断油脂不是高分子化合物，并列出淀粉、纤维素、蛋白质、核酸等天然高分子。</li>
+<li>我能写出氨基酸与盐酸、与 NaOH 反应的方程式，解释其两性。</li>
+<li>我能从条件、本质、可逆性三方面区分盐析与变性，并各举两个应用实例。</li>
+<li>我能说出蛋白质颜色反应（浓硝酸→黄）与灼烧检验（烧焦羽毛味）的现象及适用条件。</li>
+<li>我能区分加聚与缩聚，并由链节结构反推单体（两碳一段、酯基处断开补水）。</li>
+<li>我能说出 PE、PVC、涤纶、顺丁橡胶的单体与聚合类型，并解释 PVC 不可用于食品包装的原因。</li>
+<li>我能用油脂皂化的固定比例（1 油 : 3 碱 : 1 甘油 : 3 皂）完成相关计算。</li>
+</ul>
+</section>
+
+</main>
+<footer class="chap-foot">高考备考 · 化学 · 深度学习材料 · 2026</footer>
+</body>
+</html>

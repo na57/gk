@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>分子动理论 - 深度学习材料</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<nav class="chap-nav">高考备考 · 物理 · 深度学习材料 ｜ 3.14 分子动理论</nav>
+<header class="chap-head">
+  <h1>分子动理论</h1>
+  <p class="chap-meta"></p>
+</header>
+  <div class="subtitle">深度学习材料 · 概念 · 推导 · 模型 · 方法</div>
+  <div class="meta">
+    <span>高中物理 · 热学模块（高考约6分，通常1道选择题）</span><br>
+    <span>依据：《高考物理95+分备考指南》3.14节要求</span><br>
+    <span>适用：高一同步学习 &amp; 高考一轮复习</span><br>
+    <span>学生：小兵</span>
+  </div>
+</div>
+
+<p class="hint">
+  💡 提示：所有公式由 MathJax 渲染；带推导的公式请合上书独立推一遍
+</p>
+
+<!-- 目录 -->
+<div class="toc">
+  <strong>目录</strong>
+  <ol>
+    <li><a href="#s1">一、本章总览</a></li>
+    <li><a href="#s2">二、核心概念与物理量</a></li>
+    <li><a href="#s3">三、公式与推导（含适用条件）</a></li>
+    <li><a href="#s4">四、典型例题</a></li>
+    <li><a href="#s5">五、易错点与成因分析</a></li>
+    <li><a href="#s6">六、章末自检清单</a></li>
+  </ol>
+</div>
+
+<h2 id="s1">一、本章总览</h2>
+
+<p>小兵，欢迎来到热学世界。前面力学、电磁学研究的都是「看得见摸得着」的宏观物体，而本章要带你往<strong>微观</strong>走一步——用分子、原子的眼光解释温度、热量、扩散这些日常现象。本章公式不多，但<strong>概念辨析</strong>非常多，是高考选择题的常客，也是「听起来简单、一做就错」的典型章节。</p>
+
+<h3>1.1 考情定位</h3>
+
+<table>
+  <tr><th>项目</th><th>内容</th></tr>
+  <tr><td class="l"><strong>模块</strong></td><td class="l">热学（3.14 分子动理论 + 3.15 气体定律）</td></tr>
+  <tr><td class="l"><strong>分值</strong></td><td class="l">热学整体约 6 分，多为 1 道选择题（概念辨析或微观量估算）</td></tr>
+  <tr><td class="l"><strong>常考题型</strong></td><td class="l">① 分子动理论基本观点辨析；② 布朗运动；③ 温度与内能的关系；④ 用油膜法/阿伏伽德罗常数做微观量估算</td></tr>
+  <tr><td class="l"><strong>难度</strong></td><td class="l">以识记+理解为主，计算只到数量级估算，属于「必须拿满」的分</td></tr>
+</table>
+
+<div class="key-point">
+  <strong>备考策略：</strong>本章不拼计算，拼「概念边界是否清晰」。把每个概念的定义、条件、反例都吃透，这 6 分就是白送的。
+</div>
+
+<h3>1.2 知识地图</h3>
+
+<div class="map">
+  <div class="row"><div class="node root">分子动理论</div></div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node">物质由分子组成</div>
+    <div class="node">分子在永不停息地热运动</div>
+    <div class="node">分子间存在相互作用力</div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node leaf">分子直径 ~10⁻¹⁰ m</div>
+    <div class="node leaf">油膜法测直径 d = V/S</div>
+    <div class="node leaf">阿伏伽德罗常数 N_A</div>
+    <div class="node leaf">扩散现象</div>
+    <div class="node leaf">布朗运动</div>
+    <div class="node leaf">引力与斥力共存</div>
+    <div class="node leaf">平衡距离 r₀</div>
+    <div class="node leaf">分子势能曲线</div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node view">温度 = 分子平均动能的标志</div>
+    <div class="node view">内能 = 分子动能 + 分子势能</div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node leaf">固体：晶体 vs 非晶体</div>
+    <div class="node leaf">液体：表面张力</div>
+  </div>
+</div>
+
+<h2 id="s2">二、核心概念与物理量</h2>
+
+<h3>2.1 分子动理论的三条基本观点</h3>
+
+<ol>
+  <li><strong>物质是由大量分子组成的。</strong>分子直径的数量级为 $10^{-10}\ \mathrm{m}$，分子质量的数量级约 $10^{-26}\ \mathrm{kg}$。1 mol 任何物质都含有 $N_A = 6.02\times 10^{23}$ 个微粒（阿伏伽德罗常数）。</li>
+  <li><strong>分子在永不停息地做无规则运动（热运动）。</strong>实验证据：扩散现象和布朗运动。温度越高，热运动越剧烈。</li>
+  <li><strong>分子之间同时存在引力和斥力。</strong>引力和斥力都随距离增大而减小，但斥力变化更快；实际表现的「分子力」是二者的合力。</li>
+</ol>
+
+<h3>2.2 阿伏伽德罗常数：宏观与微观之间的桥梁</h3>
+
+<p>$N_A$ 是全章最重要的常数，它把<strong>宏观量</strong>（摩尔质量 $M$、摩尔体积 $V_{\mathrm{m}}$）和<strong>微观量</strong>（分子质量 $m_0$、分子体积 $V_0$）联系起来：</p>
+
+$$m_0 = \frac{M}{N_A}, \qquad V_0 = \frac{V_{\mathrm{m}}}{N_A}$$
+
+<blockquote>
+  <p><strong>深度理解：</strong>注意 $V_0 = V_{\mathrm{m}}/N_A$ 对固体、液体是「一个分子实际占的体积」，对气体只是「一个分子<strong>平均占据的空间</strong>」——气体分子本身远小于这个空间，分子之间大部分是空的。这是高考最爱挖的坑之一。</p>
+</blockquote>
+
+<h3>2.3 分子力与平衡距离 r₀</h3>
+
+<ul>
+  <li>当 $r = r_0$（约 $10^{-10}\ \mathrm{m}$）时，引力 = 斥力，<strong>分子力为零</strong>，分子势能<strong>最小</strong>。</li>
+  <li>当 $r < r_0$ 时，斥力大于引力，分子力表现为<strong>斥力</strong>；$r$ 减小时斥力急剧增大——这就是固体、液体很难被压缩的原因。</li>
+  <li>当 $r > r_0$ 时，引力大于斥力，分子力表现为<strong>引力</strong>；当 $r > 10r_0$ 时分子力可忽略（理想气体模型的依据）。</li>
+</ul>
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" width="640" style="max-width:100%;margin:16px 0;display:block;">
+  <!-- 坐标轴 -->
+  <line x1="80" y1="120" x2="600" y2="120" stroke="#2d3748" stroke-width="1.5"/>
+  <line x1="80" y1="30" x2="80" y2="270" stroke="#2d3748" stroke-width="1.5"/>
+  <text x="605" y="124" font-size="13" fill="#2d3748">r</text>
+  <text x="60" y="40" font-size="13" fill="#2d3748">F</text>
+  <text x="56" y="80" font-size="12" fill="#e53e3e">斥力</text>
+  <text x="56" y="180" font-size="12" fill="#2b6cb0">引力</text>
+  <!-- 分子力曲线（斥力区急降，过 r0 后小引力尾巴） -->
+  <path d="M 92 32 C 130 60, 165 105, 185 120 C 215 143, 300 150, 420 140 C 500 133, 560 126, 595 123"
+        fill="none" stroke="#2b6cb0" stroke-width="2.5"/>
+  <!-- r0 标记 -->
+  <line x1="185" y1="120" x2="185" y2="265" stroke="#718096" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="175" y="285" font-size="13" fill="#1a365d">r₀</text>
+  <circle cx="185" cy="120" r="4" fill="#e53e3e"/>
+  <text x="200" y="105" font-size="12" fill="#1a365d">r = r₀ 时 F = 0</text>
+  <text x="330" y="230" font-size="12" fill="#2b6cb0">r &gt; r₀：表现为引力</text>
+  <text x="92" y="245" font-size="12" fill="#e53e3e">r &lt; r₀：表现为斥力</text>
+</svg>
+
+<h3>2.4 布朗运动</h3>
+
+<p>悬浮在液体（或气体）中的<strong>固体小颗粒</strong>（如花粉、墨汁颗粒）做的永不停息的无规则运动，叫布朗运动。</p>
+
+<div class="key-point">
+  <strong>本质三连：</strong>① 布朗运动是<strong>小颗粒</strong>的运动，<strong>不是</strong>分子的运动；② 它<strong>间接反映</strong>了液体分子在做无规则热运动（颗粒被四面八方的水分子不平衡撞击所致）；③ 颗粒越小、温度越高，布朗运动越明显。
+</div>
+
+<h3>2.5 温度与内能</h3>
+
+<table>
+  <tr><th>物理量</th><th>符号</th><th>单位</th><th>微观意义</th></tr>
+  <tr><td>温度</td><td>$T$</td><td>K（开尔文）；常用 ℃，$T = t + 273.15$</td><td class="l"><strong>分子热运动平均动能的标志</strong>。温度相同 ⇒ 平均动能相同（与物质种类无关）</td></tr>
+  <tr><td>分子平均动能</td><td>$\bar{E}_{\mathrm{k}}$</td><td>J</td><td class="l">只由温度决定；注意是「平均」，单个分子动能千差万别</td></tr>
+  <tr><td>分子势能</td><td>$E_{\mathrm{p}}$</td><td>J</td><td class="l">由分子间相对位置决定，宏观上与物体的<strong>体积</strong>有关</td></tr>
+  <tr><td>内能</td><td>$U$</td><td>J</td><td class="l">物体内部<strong>所有</strong>分子动能与分子势能的总和，$U = N\bar{E}_{\mathrm{k}} + E_{\mathrm{p总}}$，与 $T$、$V$、物质的量都有关</td></tr>
+  <tr><td>阿伏伽德罗常数</td><td>$N_A$</td><td>$\mathrm{mol^{-1}}$</td><td class="l">$N_A = 6.02\times 10^{23}\ \mathrm{mol^{-1}}$，宏观与微观的桥梁</td></tr>
+</table>
+
+<div class="warn">
+  <strong>关键辨析：</strong>温度是「平均动能」的标志，<strong>不是内能的标志</strong>。温度相同的两杯水，质量大的内能大（分子多）；0 ℃ 的冰熔化成 0 ℃ 的水，温度不变、平均动能不变，但吸收热量使分子势能增大，<strong>内能增大</strong>。
+</div>
+
+<h3>2.6 固体和液体（了解级）</h3>
+
+<ul>
+  <li><strong>晶体 vs 非晶体：</strong>晶体有规则的几何外形、有确定的熔点，内部微粒排列有序；非晶体（玻璃、沥青、松香）无规则外形、无确定熔点，加热时逐渐软化。单晶体各向异性，多晶体和非晶体各向同性。</li>
+  <li><strong>液体表面张力：</strong>液体表面层分子间距较大，分子间表现为引力，使液面有<strong>收缩到最小面积</strong>的趋势。实例：小水滴呈球形、荷叶上的露珠、水黾能站在水面、毛细现象。</li>
+</ul>
+
+<h2 id="s3">三、公式与推导（含适用条件）</h2>
+
+<h3>3.1 微观量估算的通用链条</h3>
+
+<p>已知物质的摩尔质量 $M$、密度 $\rho$，质量为 $m$ 的物体中：</p>
+
+$$n = \frac{m}{M} \quad (\text{物质的量}), \qquad N = n N_A = \frac{m}{M}N_A \quad (\text{分子总数})$$
+
+$$V_{\mathrm{m}} = \frac{M}{\rho} \quad (\text{摩尔体积}), \qquad V_0 = \frac{V_{\mathrm{m}}}{N_A} = \frac{M}{\rho N_A} \quad (\text{一个分子占的体积})$$
+
+<p>把分子看成小球：$V_0 = \dfrac{1}{6}\pi d^3$，得分子直径</p>
+
+$$d = \sqrt[3]{\frac{6V_0}{\pi}} \approx \sqrt[3]{V_0} \quad (\text{数量级估算时常直接开立方})$$
+
+<div class="warn">
+  <strong>适用条件与边界（重点！）：</strong>
+  <ul>
+    <li>$V_0 = \dfrac{M}{\rho N_A}$ 对<strong>固体、液体</strong>是分子本身的体积；对<strong>气体</strong>只是分子平均占据的空间，此时 $d = \sqrt[3]{V_0}$ 算出来的是<strong>分子间的平均距离</strong>，不是分子直径。</li>
+    <li>标准状况下气体摩尔体积 $V_{\mathrm{m}} = 22.4\ \mathrm{L/mol}$，只能用于<strong>标准状况（0 ℃、1 atm）的气体</strong>。</li>
+    <li>估算题只要求<strong>数量级正确</strong>，看到 $d \approx 10^{-10}\ \mathrm{m}$ 、分子间距 $\approx 10^{-9}\ \mathrm{m}$ 就要有数感。</li>
+  </ul>
+</div>
+
+<h3>3.2 油膜法测分子直径</h3>
+
+<p><strong>实验原理：</strong>把一滴已知浓度的油酸酒精溶液滴到撒有痱子粉的水面上，油酸在水面散开形成<strong>单分子层油膜</strong>（把油酸分子看成一个个紧挨着的小球，膜厚 = 一个分子的直径）。</p>
+
+$$d = \frac{V}{S}$$
+
+<p>其中 $V$ 是<strong>一滴溶液中纯油酸的体积</strong>，$S$ 是油膜的面积。</p>
+
+<div class="deep">
+  <strong>推导与建模思想：</strong>设溶液由 $V_{\text{总}}$ 酒精溶液含纯油酸 $V_{\text{油}}$ 配成，则一滴（体积 $V_{\text{滴}}$）中含纯油酸 $V = V_{\text{滴}} \cdot \dfrac{V_{\text{油}}}{V_{\text{总}}}$。酒精溶于水挥发掉，纯油酸铺成面积 $S$、厚度 $d$ 的「薄膜」，体积守恒：$V = S d \Rightarrow d = V/S$。<br>
+  <strong>适用条件：</strong>① 必须形成<strong>单分子层</strong>（油膜不能重叠、不能破到容器边）；② $V$ 必须代入<strong>纯油酸</strong>体积，不是一滴溶液的体积——这是本实验最常见的错误。
+</div>
+
+<h3>3.3 分子势能与分子力的对应关系</h3>
+
+<ul>
+  <li>取无穷远处 $E_{\mathrm{p}} = 0$。$r = r_0$ 处分子力为零，分子势能<strong>最小（为负值）</strong>。</li>
+  <li>$r$ 从 $r_0$ 增大：分子力做负功（引力被拉远），$E_{\mathrm{p}}$ 增大；$r$ 从 $r_0$ 减小：斥力做负功，$E_{\mathrm{p}}$ 也增大。</li>
+  <li>判断口诀：<strong>「力为零处势最低，远离靠近都升高」</strong>。分子力曲线的「零点」对应势能曲线的「最低点」，这个对应关系常考。</li>
+</ul>
+
+<h2 id="s4">四、典型例题</h2>
+
+<h3>例1（阿伏伽德罗常数估算 · 水的分子）</h3>
+
+<p>已知水的摩尔质量 $M = 18\ \mathrm{g/mol}$，水的密度 $\rho = 1.0\times 10^{3}\ \mathrm{kg/m^3}$，$N_A = 6.02\times 10^{23}\ \mathrm{mol^{-1}}$。求：(1) 1 g 水中约有多少个水分子；(2) 估算一个水分子的直径。</p>
+
+<p><strong>解：</strong></p>
+<p>(1) 1 g 水的物质的量 $n = \dfrac{m}{M} = \dfrac{1}{18}\ \mathrm{mol} \approx 0.0556\ \mathrm{mol}$，分子数</p>
+$$N = nN_A = \frac{1}{18}\times 6.02\times 10^{23} \approx 3.3\times 10^{22}\ \text{个}$$
+
+<p>(2) 水的摩尔体积 $V_{\mathrm{m}} = \dfrac{M}{\rho} = \dfrac{18\times 10^{-3}}{1.0\times 10^{3}} = 1.8\times 10^{-5}\ \mathrm{m^3/mol}$。一个水分子占的体积</p>
+$$V_0 = \frac{V_{\mathrm{m}}}{N_A} = \frac{1.8\times 10^{-5}}{6.02\times 10^{23}} \approx 3.0\times 10^{-29}\ \mathrm{m^3}$$
+
+<p>由 $V_0 = \dfrac{1}{6}\pi d^3$ 得</p>
+$$d = \sqrt[3]{\frac{6V_0}{\pi}} = \sqrt[3]{\frac{6\times 3.0\times 10^{-29}}{3.14}} \approx \sqrt[3]{5.7\times 10^{-29}} \approx 3.9\times 10^{-10}\ \mathrm{m}$$
+
+<p><strong>答：</strong>(1) 约 $3.3\times 10^{22}$ 个；(2) 直径约 $4\times 10^{-10}\ \mathrm{m}$，数量级 $10^{-10}\ \mathrm{m}$，与预期一致。<span class="stars">★★★</span>（水是液体，$V_0$ 就是分子本身的体积，可以算直径）</p>
+
+<h3>例2（油膜法测分子直径）</h3>
+
+<p>把 1 mL 油酸溶于酒精配成 200 mL 油酸酒精溶液。测得 1 mL 溶液恰为 50 滴。取一滴该溶液滴在撒有痱子粉的水面上，待油膜稳定后测得油膜面积 $S = 0.20\ \mathrm{m^2}$。求油酸分子的直径。</p>
+
+<p><strong>解：</strong>一滴溶液的体积 $V_{\text{滴}} = \dfrac{1}{50}\ \mathrm{mL} = 0.02\ \mathrm{mL}$。</p>
+<p>溶液浓度：200 mL 溶液中含纯油酸 1 mL，所以一滴中<strong>纯油酸</strong>的体积</p>
+$$V = 0.02\ \mathrm{mL} \times \frac{1}{200} = 1.0\times 10^{-4}\ \mathrm{mL} = 1.0\times 10^{-10}\ \mathrm{m^3}$$
+
+<p>油膜为单分子层，故</p>
+$$d = \frac{V}{S} = \frac{1.0\times 10^{-10}}{0.20} = 5.0\times 10^{-10}\ \mathrm{m}$$
+
+<p><strong>答：</strong>油酸分子直径约为 $5\times 10^{-10}\ \mathrm{m}$。</p>
+
+<div class="warn">
+  <strong>本题最易错：</strong>直接把 $0.02\ \mathrm{mL}$（一滴<strong>溶液</strong>的体积）代入 $d = V/S$，会算出 $1\times 10^{-7}\ \mathrm{m}$——比真实值大 3 个数量级。一定要乘浓度换算成<strong>纯油酸</strong>体积。
+</div>
+
+<h3>例3（气体分子间距估算）</h3>
+
+<p>标准状况下，气体的摩尔体积为 $22.4\ \mathrm{L/mol}$。估算标准状况下气体分子间的平均距离，并与分子直径比较。</p>
+
+<p><strong>解：</strong>$V_{\mathrm{m}} = 22.4\ \mathrm{L/mol} = 2.24\times 10^{-2}\ \mathrm{m^3/mol}$。每个分子平均占据的空间</p>
+$$V_0 = \frac{V_{\mathrm{m}}}{N_A} = \frac{2.24\times 10^{-2}}{6.02\times 10^{23}} \approx 3.7\times 10^{-26}\ \mathrm{m^3}$$
+
+<p>把每个分子的「领地」看成小立方体，分子间距</p>
+$$d = \sqrt[3]{V_0} = \sqrt[3]{3.7\times 10^{-26}} \approx 3.3\times 10^{-9}\ \mathrm{m}$$
+
+<p><strong>答：</strong>分子间距约 $3\times 10^{-9}\ \mathrm{m}$，约为分子直径（$10^{-10}\ \mathrm{m}$）的<strong>十几倍</strong>。这正说明气体分子间距离很大、分子力可忽略——理想气体模型的微观图景。（顺带得到标准状况下气体分子数密度 $\dfrac{N_A}{V_{\mathrm{m}}} \approx 2.7\times 10^{25}\ \mathrm{m^{-3}}$。）</p>
+
+<h3>例4（概念辨析：温度、内能与布朗运动）</h3>
+
+<p>下列说法正确的是（&nbsp;&nbsp;）</p>
+<p>A. 布朗运动就是液体分子的无规则运动<br>
+B. 温度相同的氢气和氧气，分子平均动能相同<br>
+C. 0 ℃ 的冰熔化成 0 ℃ 的水，内能不变<br>
+D. 分子间距离增大时，分子势能一定增大</p>
+
+<p><strong>逐项分析：</strong></p>
+<ul>
+  <li><strong>A 错。</strong>布朗运动是悬浮<strong>小颗粒</strong>的运动，它间接反映液体分子的无规则运动，把「反映」说成「就是」，偷换了研究对象。</li>
+  <li><strong>B 对。</strong>温度是分子平均动能的标志，温度相同 ⇒ 平均动能相同，与分子种类无关（氢分子质量小，所以氢分子平均<strong>速率</strong>反而更大——注意区分「动能」和「速率」）。</li>
+  <li><strong>C 错。</strong>熔化过程吸热，温度不变 ⇒ 分子平均动能不变，但分子势能增大，故内能<strong>增大</strong>。</li>
+  <li><strong>D 错。</strong>要分段看：若 $r < r_0$（斥力区），距离增大时斥力做正功，分子势能<strong>减小</strong>；只有从 $r > r_0$ 起增大距离，势能才增大。少了前提条件就是错。</li>
+</ul>
+<p><strong>答：B。</strong>这种四选一的辨析题就是本章高考的原型，每个错误选项都对应一个经典易错点（见第五部分）。</p>
+
+<h2 id="s5">五、易错点与成因分析</h2>
+
+<table>
+  <tr><th>易错点</th><th>典型错误说法</th><th>正确结论与成因分析</th></tr>
+  <tr>
+    <td class="l"><strong>布朗运动的对象</strong></td>
+    <td class="l">「布朗运动是分子的运动」</td>
+    <td class="l">布朗运动是悬浮<strong>颗粒</strong>的运动。成因：颗粒远大于分子，肉眼（显微镜）可见；分子本身看不见。布朗运动只是<strong>间接证据</strong>，证明液体分子在做无规则热运动。</td>
+  </tr>
+  <tr>
+    <td class="l"><strong>温度与内能混为一谈</strong></td>
+    <td class="l">「温度高的物体内能一定大」「温度不变内能就不变」</td>
+    <td class="l">温度只决定<strong>平均动能</strong>。内能还取决于分子数（质量）和分子势能（体积、物态）。成因：把「平均动能的标志」误记成「内能的标志」。反例：0 ℃ 冰熔化成 0 ℃ 水吸热，内能增大。</td>
+  </tr>
+  <tr>
+    <td class="l"><strong>气体分子「体积」</strong></td>
+    <td class="l">用 $V_0 = V_{\mathrm{m}}/N_A$ 算气体分子直径</td>
+    <td class="l">对气体，$V_0$ 是分子平均<strong>占据的空间</strong>，开立方得到的是<strong>分子间距</strong>（约 $10^{-9}\ \mathrm{m}$），不是分子直径。成因：忽略了气体分子间距离远大于分子线度这一基本图景。</td>
+  </tr>
+  <tr>
+    <td class="l"><strong>分子力与分子势能的对应</strong></td>
+    <td class="l">「$r = r_0$ 时分子力为零，所以分子势能为零」</td>
+    <td class="l">$r_0$ 处分子力为零、势能<strong>最小（负值）</strong>，势能零点人为取在无穷远。成因：混淆了「力」与「势能」两条曲线的特征点——力的零点对应势能的最低点，而不是势能的零点。</td>
+  </tr>
+  <tr>
+    <td class="l"><strong>分子势能增减不分段</strong></td>
+    <td class="l">「分子间距增大，分子势能一定增大」</td>
+    <td class="l">$r < r_0$ 时增大距离，斥力做正功，势能<strong>减小</strong>；$r > r_0$ 时增大距离，引力做负功，势能增大。成因：没有以 $r_0$ 为分界分段讨论。</td>
+  </tr>
+  <tr>
+    <td class="l"><strong>油膜法代错 V</strong></td>
+    <td class="l">把一滴溶液的体积直接代入 $d = V/S$</td>
+    <td class="l">$V$ 必须是<strong>纯油酸</strong>的体积 = 一滴溶液体积 × 浓度。成因：审题时漏掉「溶液」与「纯油酸」的区别。</td>
+  </tr>
+  <tr>
+    <td class="l"><strong>扩散与对流的干扰</strong></td>
+    <td class="l">「搅拌使墨水散开是扩散」</td>
+    <td class="l">扩散是<strong>自发</strong>的、由分子热运动引起的相互渗透；搅拌、风吹是机械运动，不是扩散。判断标准：没有外力搅动时仍能自发混合，才是扩散。</td>
+  </tr>
+</table>
+
+<h2 id="s6">六、章末自检清单</h2>
+
+<p>合上书本，逐项自测。能打 √ 才算过关：</p>
+
+<h4>概念关</h4>
+<ul>
+  <li>☐ 能完整说出分子动理论的三条基本观点</li>
+  <li>☐ 能解释布朗运动的对象、本质、影响因素（颗粒越小、温度越高越明显），并能指出「布朗运动=分子运动」为什么错</li>
+  <li>☐ 能区分扩散与机械混合</li>
+  <li>☐ 能说明「温度是分子平均动能的标志」的准确含义，并解释为什么温度相同的氢气和氧气平均速率不同</li>
+  <li>☐ 能写出内能的构成，并举出「温度不变但内能改变」的例子</li>
+  <li>☐ 能说出晶体与非晶体的区别、液体表面张力的成因和实例</li>
+</ul>
+
+<h4>公式与估算关</h4>
+<ul>
+  <li>☐ 记住 $N_A = 6.02\times 10^{23}\ \mathrm{mol^{-1}}$，理解它的桥梁作用</li>
+  <li>☐ 能独立推导 $N = \dfrac{m}{M}N_A$、$V_0 = \dfrac{M}{\rho N_A}$、$d = \sqrt[3]{6V_0/\pi}$</li>
+  <li>☐ 清楚 $V_0 = V_{\mathrm{m}}/N_A$ 对固液是分子体积、对气体是占据空间的区别</li>
+  <li>☐ 能背出数量级：分子直径 $\sim 10^{-10}\ \mathrm{m}$，气体分子间距 $\sim 10^{-9}\ \mathrm{m}$</li>
+  <li>☐ 掌握油膜法实验：原理（单分子层）、步骤、$d = V/S$ 中 $V$ 指纯油酸体积</li>
+</ul>
+
+<h4>图象与曲线关</h4>
+<ul>
+  <li>☐ 能徒手画出分子力随 $r$ 变化的曲线，标出 $r_0$，说明三段区间的引力/斥力表现</li>
+  <li>☐ 能画出分子势能曲线，说明 $r_0$ 处「力为零、势能最低」的对应关系</li>
+  <li>☐ 能分段判断分子间距变化时分子势能的增减</li>
+</ul>
+
+<h4>易错点关</h4>
+<ul>
+  <li>☐ 第七部分的 7 个易错点，每个都能讲出「错在哪、为什么」</li>
+  <li>☐ 做 10 道本章选择题，正确率达到 90% 以上</li>
+</ul>
+
+<hr>
+<p style="color: var(--muted); text-align: center;">本章内容不多，但它是热学的「世界观」——后面 3.15 气体定律里的压强、温度微观解释，都要靠本章打底。学透了，高考这 6 分稳拿。加油，小兵！</p>
+
+</body>
+</html>

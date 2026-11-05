@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.21 化学实验基本操作与仪器-深度学习材料</title>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#0e7c7b; --subject-soft:#eef7f6;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 化学点缀层（无 JS，纯文本方程式） ===== */
+/* 语义卡片（例题=紫 / 易错=琥珀 / 概念=蓝 / 提示=科目色 / 结构=中性墨） */
+.card { border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 18px; margin: 14px 0; page-break-inside: avoid; }
+.card .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
+.card.concept { background: var(--c-concept-bg); } .card.concept .tag { background: var(--c-concept); color: #fff; }
+.card.example { background: var(--c-example-bg); } .card.example .tag { background: var(--c-example); color: #fff; }
+.card.trap { background: var(--c-trap-bg); } .card.trap .tag { background: var(--c-trap); color: #fff; }
+.card.note { background: var(--subject-soft); } .card.note .tag { background: var(--subject); color: #fff; }
+.card.violet { background: var(--canvas); } .card.violet .tag { background: var(--ink); color: #fff; }
+/* 方程式容器（统一灰底盒 + 科目色左边条） */
+.eq { display: block; background: var(--formula-bg); border: 1px solid var(--line); border-left: 4px solid var(--subject); border-radius: 8px; padding: var(--formula-pad); margin: 10px 0; font-size: 16px; text-align: center; letter-spacing: .3px; page-break-inside: avoid; }
+.eq-arrow { position: relative; display: inline-block; margin: 0 6px; font-weight: 600; }
+.eq-arrow::before { content: attr(data-cond); position: absolute; left: 50%; transform: translateX(-50%); top: -1.05em; font-size: 10.5px; font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
+.state { font-size: .72em; font-style: italic; color: var(--ink-soft); }
+sub, sup { font-size: .72em; line-height: 0; }
+.formula { font-size: 1.05em; }
+.kbd { background: #f0f2f5; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 13px; }
+/* 三栏对比 */
+.triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; page-break-inside: avoid; }
+.triple .cell { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: 14px; }
+.triple .cell h4 { margin: 0 0 8px; font-size: 13.5px; text-align: center; padding: 4px 0; border-radius: 6px; color: #fff; }
+.triple .cell:nth-child(1) h4 { background: var(--c-trap); }
+.triple .cell:nth-child(2) h4 { background: var(--c-example); }
+.triple .cell:nth-child(3) h4 { background: var(--subject); }
+/* 步骤与答案 */
+.step { display: flex; gap: 10px; margin: 8px 0; }
+.step .no { flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--c-method); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.ans { background: #fff; border: 1px dashed var(--c-method); border-radius: 8px; padding: 8px 14px; margin: 8px 0; }
+.chap-foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-soft); text-align: center; }
+@media (max-width: 640px) { .triple { grid-template-columns: 1fr; } }
+@media print {
+  .card { border: 1px solid #999; background: #fff !important; }
+  .card .tag { border: 1px solid #333; background: #fff !important; color: #000; }
+  .eq { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .chap-foot { border-top: none; }
+}
+</style>
+</head>
+<body>
+<nav class="chap-nav">高考备考 · 化学 · 深度学习材料 ｜ 化学实验 ｜ 3.21 化学实验基本操作与仪器</nav>
+<header class="chap-head">
+  <h1>3.21 化学实验基本操作与仪器</h1>
+  <p class="chap-meta">高中化学 · 深度学习材料 · 面向 2029 届云南高考</p>
+  <p class="chap-intro">化学是一门以实验为基础的科学，实验基本操作是高考实验题的"基本功"，也是选择题和实验大题的高频考点。本章带你把常见仪器、基本操作、气密性检查和实验安全一次讲透——这些细节看似简单，却是高考最容易拉开差距的地方，每一个"注意事项"背后都有化学原理支撑。</p>
+</header>
+<main>
+
+<section>
+<h2>一、知识全景</h2>
+<p>本章围绕"仪器—操作—安全"三条主线展开，是后续 3.22（检验与分离）、3.23（物质制备）和一切实验综合题的地基。</p>
+<table>
+<thead>
+<tr>
+<th>知识点</th>
+<th>核心内容</th>
+<th>高考要求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>常见仪器</td>
+<td>可加热仪器（试管、蒸发皿、坩埚、烧杯、烧瓶等）、计量仪器（量筒、托盘天平、容量瓶、滴定管）、分离仪器（漏斗、分液漏斗、冷凝管）、存放仪器（细口瓶、广口瓶、集气瓶）</td>
+<td>能识别仪器图形、写准名称、说清用途与使用注意事项</td>
+</tr>
+<tr>
+<td>药品取用与加热</td>
+<td>固体/液体药品取用规则、酒精灯使用、给固体和液体加热的不同要求</td>
+<td>操作规范表述准确，能判断操作正误</td>
+</tr>
+<tr>
+<td>溶解、过滤、蒸发</td>
+<td>玻璃棒的多种用途、过滤"一贴二低三靠"、蒸发结晶的停止时机</td>
+<td>操作要点完整，能在流程题中规范作答</td>
+</tr>
+<tr>
+<td>蒸馏与萃取分液</td>
+<td>蒸馏装置（温度计位置、冷凝水方向、沸石）、萃取剂选择、分液漏斗使用</td>
+<td>装置判断与改错是高频考点，要求零失误</td>
+</tr>
+<tr>
+<td>试纸的使用</td>
+<td>pH 试纸（不润湿）、石蕊试纸与淀粉 KI 试纸（润湿）</td>
+<td>能区分不同试纸的使用方法并解释原因</td>
+</tr>
+<tr>
+<td>气密性检查</td>
+<td>微热法、液差法、推拉法</td>
+<td>能根据装置选择方法，并用"操作→现象→结论"规范表述</td>
+</tr>
+<tr>
+<td>实验安全</td>
+<td>防倒吸、防暴沸、防堵塞、常见事故处理、危险品标志</td>
+<td>具备安全意识，知道常见意外的正确处理方法</td>
+</tr>
+</tbody>
+</table>
+<div class="card note">
+<span class="tag">学法提示</span>
+<p>本章知识"碎而不难"，高考从不直接考"背仪器"，而是把仪器与操作藏在装置图判断、操作正误选择、实验流程填空里。学习时建议：每学一种仪器就追问三个问题——<strong>它叫什么名字？它适合做什么？用错了会怎样？</strong>把"注意事项"当原理来理解，而不是当条文来死记。</p>
+</div>
+</section>
+
+<section>
+<h2>二、核心概念精讲</h2>
+
+<h3>2.1 常见仪器分类与使用注意</h3>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>（1）可加热仪器：分清"直接加热"与"垫陶土网加热"</h4>
+<p><strong>是什么</strong>：按能否承受火焰直接加热分为两类——</p>
+<ul>
+<li><strong>可直接加热</strong>：试管、蒸发皿、坩埚、燃烧匙。这类仪器底部面积小、材质耐高温（陶瓷、石英玻璃），可直接接触火焰。</li>
+<li><strong>垫陶土网加热</strong>：烧杯、烧瓶（圆底/平底/蒸馏烧瓶）、锥形瓶。这类仪器底部面积大，直接受热会因受热不均而炸裂，必须垫陶土网使热量均匀分散。</li>
+</ul>
+<p><strong>为什么（微观解释）</strong>：玻璃是热的不良导体，局部骤热时玻璃内外层膨胀程度不同，产生内应力导致炸裂。陶土网把火焰的集中热量"摊开"，使容器底部各点温度接近，避免应力集中。</p>
+<p><strong>常见混淆与边界</strong>：</p>
+<ul>
+<li>量筒、容量瓶、集气瓶、漏斗等<strong>不能加热</strong>，受热会变形或炸裂，且量器受热后容积改变，失去精确度。</li>
+<li>给试管中液体加热：液体体积不超过试管容积的 1/3，试管夹夹在距管口约 1/3 处，管口不能对着人，先预热再集中加热。</li>
+<li>给试管中固体加热：试管口略向下倾斜，防止冷凝水倒流炸裂试管（典型应用：加热 NH<sub>4</sub>Cl 与 Ca(OH)<sub>2</sub> 制 NH<sub>3</sub>）。</li>
+</ul>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>（2）计量仪器：读准精度、用对场合</h4>
+<table>
+<thead>
+<tr>
+<th>仪器</th>
+<th>精确度</th>
+<th>关键注意事项</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>托盘天平</td>
+<td>0.1 g</td>
+<td>左物右码；药品不能直接放托盘上（放称量纸或小烧杯）；NaOH 等易潮解、有腐蚀性的固体必须放在小烧杯中称量</td>
+</tr>
+<tr>
+<td>量筒</td>
+<td>0.1 mL</td>
+<td>无"0"刻度；不能加热、不能作反应容器、不能稀释浓硫酸；读数时视线与凹液面最低处相平；仰视读数偏小、俯视读数偏大</td>
+</tr>
+<tr>
+<td>容量瓶</td>
+<td>标有温度（20 ℃）和容积</td>
+<td>用于配制一定物质的量浓度的溶液；不能溶解固体、不能加热、不能长期存放溶液；使用前先查漏</td>
+</tr>
+<tr>
+<td>滴定管</td>
+<td>0.01 mL</td>
+<td>分酸式（玻璃活塞，装酸性或氧化性溶液）和碱式（乳胶管+玻璃珠，装碱性溶液）；KMnO<sub>4</sub> 溶液必须盛酸式滴定管（会腐蚀橡胶）</td>
+</tr>
+<tr>
+<td>温度计</td>
+<td>视量程而定</td>
+<td>不能当玻璃棒搅拌；水银球位置随用途而变（详见蒸馏与石油分馏、制乙烯）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>为什么</strong>：计量仪器的精度由制造工艺决定，量筒是"量出式"粗量器，滴定管是"量出式"精量器。混淆精度是高考选择题常设的陷阱——"用托盘天平称取 10.05 g 食盐"这种表述必错，因为托盘天平读不到 0.01 g。</p>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>（3）分离仪器与存放仪器</h4>
+<p><strong>分离仪器</strong>：</p>
+<ul>
+<li><strong>普通漏斗</strong>：用于过滤，或向小口容器中转移液体。</li>
+<li><strong>长颈漏斗</strong>：用于固液不加热制气装置中添加液体；末端必须伸入液面以下形成"液封"，否则气体从漏斗逸出。</li>
+<li><strong>分液漏斗</strong>：用于萃取分液，或向反应器中滴加液体（可控制滴加速率）；使用前必须查漏。</li>
+<li><strong>冷凝管</strong>：蒸馏时冷凝蒸气，冷却水"下口进、上口出"，保证冷凝管内始终充满水，内外管之间逆流换热效率高。</li>
+<li><strong>洗气瓶、干燥管（U 形管/球形干燥管）</strong>：盛放液体或固体干燥剂、除杂试剂；洗气瓶气体"长进短出"。</li>
+</ul>
+<p><strong>存放仪器</strong>：</p>
+<ul>
+<li><strong>广口瓶</strong>存固体药品，<strong>细口瓶</strong>存液体药品；<strong>棕色瓶</strong>存见光易分解的物质（浓硝酸、AgNO<sub>3</sub> 溶液、氯水）。</li>
+<li>盛放碱性溶液（NaOH、Na<sub>2</sub>CO<sub>3</sub>）的试剂瓶用橡胶塞，不用玻璃塞——OH<sup>−</sup> 会与玻璃中的 SiO<sub>2</sub> 反应生成有黏性的 Na<sub>2</sub>SiO<sub>3</sub>，使瓶塞与瓶口黏结。</li>
+<li><strong>集气瓶</strong>：收集和暂时存放气体，瓶口磨砂，与毛玻璃片配合使用。</li>
+<li><strong>滴瓶</strong>：盛放少量常用液体试剂，滴管专用，滴加后插回原瓶，不能混用、不能平放或倒置（药液腐蚀胶帽）。</li>
+</ul>
+</div>
+
+<h3>2.2 药品取用与加热</h3>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>药品取用的"三不"与用量规则</h4>
+<p><strong>三不原则</strong>：不能用手直接接触药品；不要把鼻孔凑到容器口直接闻气味（应用手在瓶口轻轻扇动，使少量气体飘进鼻孔）；不得品尝任何药品的味道。</p>
+<p><strong>用量规则</strong>：无用量说明时，液体取 1~2 mL，固体只需盖满试管底部。取多了不是"更保险"，而是浪费药品、延长反应时间，甚至引发危险（如加热时暴沸喷溅）。</p>
+<p><strong>固体药品</strong>：块状用镊子（"一横二放三慢竖"，防止砸破试管底）；粉末状用药匙或纸槽（"一斜二送三直立"）。</p>
+<p><strong>液体药品</strong>：倾倒时瓶塞倒放（防止污染瓶塞进而污染整瓶试剂）、标签向手心（防止残液流下腐蚀标签）、瓶口紧挨试管口；滴加时用胶头滴管竖直悬空于试管口上方，不伸入试管、不碰管壁。</p>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>酒精灯与加热操作</h4>
+<p><strong>酒精灯四禁止</strong>：</p>
+<ul>
+<li>禁止向燃着的酒精灯里添加酒精（酒精量应为其容积的 1/4~2/3）；</li>
+<li>禁止用燃着的酒精灯去引燃另一只酒精灯（会洒出酒精引起失火，应用火柴点燃）；</li>
+<li>禁止用嘴吹灭（会把火焰压入灯内引起灯内酒精蒸气爆燃，应用灯帽盖灭，盖灭后轻提一下灯帽再盖好）；</li>
+<li>禁止碰倒酒精灯，万一洒出的酒精在桌上燃烧，立即用湿抹布或沙土盖灭。</li>
+</ul>
+<p><strong>为什么用外焰加热</strong>：外焰处酒精蒸气与空气接触最充分、燃烧最完全，温度最高；焰心处酒精蒸气未充分燃烧，温度最低。加热时还要先预热（移动酒精灯或来回移动试管），使仪器均匀受热，防止局部骤热炸裂。</p>
+</div>
+
+<h3>2.3 溶解、过滤、蒸发</h3>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>溶解与玻璃棒的"万能配角"角色</h4>
+<p>溶解在烧杯中进行，用玻璃棒搅拌加速溶解（不能用水温度计搅拌）。玻璃棒在实验中反复出现：溶解时<strong>搅拌</strong>、过滤时<strong>引流</strong>、蒸发时<strong>搅拌防飞溅</strong>、转移固体时<strong>转移</strong>、测 pH 时<strong>蘸取</strong>。高考常问"某操作中玻璃棒的作用"，务必对应到具体场景作答。</p>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>过滤："一贴、二低、三靠"</h4>
+<p><strong>是什么</strong>：利用颗粒大小差异，把不溶性固体与液体分离的操作。</p>
+<ul>
+<li><strong>一贴</strong>：滤纸紧贴漏斗内壁（之间不留气泡，否则减慢过滤速度）；</li>
+<li><strong>二低</strong>：滤纸边缘低于漏斗边缘；漏斗内液面低于滤纸边缘（防止液体从滤纸与漏斗壁之间"短路"流下，使滤液浑浊）；</li>
+<li><strong>三靠</strong>：烧杯嘴紧靠玻璃棒（引流）；玻璃棒下端轻靠三层滤纸一侧（防止戳破滤纸）；漏斗下端管口紧靠接收烧杯内壁（防止滤液飞溅）。</li>
+</ul>
+<p><strong>边界</strong>：若过滤后滤液仍浑浊，可能原因是滤纸破损、液面高于滤纸边缘、仪器不洁——应更换滤纸重新过滤。过滤只能除去<strong>不溶性</strong>固体，不能除去溶解在水中的离子。</p>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>蒸发：停止加热的时机是采分点</h4>
+<p>蒸发在蒸发皿中进行，用酒精灯直接加热、玻璃棒不断搅拌（使受热均匀，防止局部过热造成液滴飞溅）。<strong>当蒸发皿中出现较多固体（大量晶体析出）时停止加热</strong>，利用余热把剩余液体蒸干。若加热至完全干燥再停火，晶体受热迸溅，且某些盐会因过热分解或失去结晶水（如 CuSO<sub>4</sub>·5H<sub>2</sub>O 受热失去结晶水变白）。蒸发皿中液体不能超过其容积的 2/3。</p>
+</div>
+
+<h3>2.4 蒸馏与萃取分液</h3>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>蒸馏：利用沸点差异分离互溶液体</h4>
+<p><strong>装置四大考点</strong>（高考装置改错题的"常客"）：</p>
+<ol>
+<li><strong>温度计水银球位于蒸馏烧瓶支管口处</strong>——测的是蒸气的温度（即馏分的沸点），不是液体的温度；插入液面下是错的。</li>
+<li><strong>冷凝管冷却水"下进上出"</strong>——保证冷凝管内始终充满水，蒸气与冷却水逆向流动，冷凝效果最好；上进下出则冷凝管充不满，冷凝效率低。</li>
+<li><strong>加入几粒沸石（碎瓷片）防暴沸</strong>——沸石的多孔结构中封有空气，受热时空气逸出形成气化中心，使沸腾平稳；若忘记加，必须<strong>停止加热、冷却后再补加</strong>，绝不能向沸腾液体中直接投入（会引起剧烈暴沸喷溅）。</li>
+<li>蒸馏烧瓶中所盛液体体积为其容积的 1/3~2/3。</li>
+</ol>
+<p><strong>适用边界</strong>：分离沸点相差较大（一般相差 30 ℃以上）的互溶液体混合物，或从溶液中回收溶剂。若两种液体沸点很接近，一次蒸馏难以分离干净，需分馏（如石油分馏）。</p>
+</div>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>萃取与分液：相似相溶原理的直接应用</h4>
+<p><strong>萃取</strong>：利用溶质在两种互不相溶的溶剂中溶解度的差异，用一种溶剂把溶质从它与另一种溶剂组成的溶液中提取出来。</p>
+<p><strong>萃取剂选择三条件</strong>（缺一不可）：</p>
+<ol>
+<li>与原溶剂<strong>互不相溶</strong>（酒精与水互溶，故酒精不能作萃取剂）；</li>
+<li>溶质在萃取剂中的溶解度<strong>远大于</strong>在原溶剂中的溶解度；</li>
+<li>萃取剂与溶质<strong>不发生反应</strong>（萃取是物理过程）。</li>
+</ol>
+<p>典型实例：用 CCl<sub>4</sub> 或苯萃取碘水中的 I<sub>2</sub>、溴水中的 Br<sub>2</sub>。注意 CCl<sub>4</sub> 密度比水大（下层显紫色），苯密度比水小（上层显橙红色）——<strong>显色层位置取决于萃取剂密度</strong>，是选择题常见陷阱。</p>
+<p><strong>分液操作</strong>：将混合液转入分液漏斗，静置分层；打开上口玻璃塞（或使塞上凹槽对准小孔，平衡内外气压，液体才能顺利流下）；<strong>下层液体从下口放出，上层液体从上口倒出</strong>。若上层也从下口放，会被下口残留的下层液体污染。</p>
+</div>
+
+<h3>2.5 试纸的使用</h3>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>润湿与否，取决于"测什么"</h4>
+<table>
+<thead>
+<tr>
+<th>试纸</th>
+<th>用途</th>
+<th>是否润湿</th>
+<th>正确操作与读数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pH 试纸</td>
+<td>测溶液 pH</td>
+<td><strong>不能润湿</strong></td>
+<td>取一小块放在洁净干燥的表面皿（或玻璃片）上，用玻璃棒蘸取待测液点在试纸中部，变色后与标准比色卡对比读数，读数为整数</td>
+</tr>
+<tr>
+<td>红色/蓝色石蕊试纸</td>
+<td>检验气体酸碱性</td>
+<td><strong>先润湿</strong></td>
+<td>用蒸馏水润湿后粘在玻璃棒一端，靠近气体出口：NH<sub>3</sub> 使湿润红色石蕊试纸变蓝；Cl<sub>2</sub> 使湿润蓝色石蕊试纸先变红后褪色</td>
+</tr>
+<tr>
+<td>淀粉 KI 试纸</td>
+<td>检验氧化性气体</td>
+<td><strong>先润湿</strong></td>
+<td>润湿后靠近气体：Cl<sub>2</sub>、Br<sub>2</sub>、NO<sub>2</sub>、O<sub>3</sub> 等氧化性气体使试纸变蓝（I<sup>−</sup> 被氧化为 I<sub>2</sub>，I<sub>2</sub> 遇淀粉显蓝色）</td>
+</tr>
+<tr>
+<td>品红试纸</td>
+<td>检验 SO<sub>2</sub></td>
+<td>润湿</td>
+<td>SO<sub>2</sub> 使品红褪色，加热后红色恢复（与 Cl<sub>2</sub> 的漂白相区别）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>为什么 pH 试纸不能润湿</strong>：润湿相当于把待测液稀释了——若待测液是酸，测得 pH 偏大；若是碱，测得 pH 偏小；若是中性则无影响。而检验气体时必须润湿，是因为干燥的气体无法与试纸上的指示剂发生离子反应，先溶解在润湿的水膜中才能显色或反应。</p>
+<p><strong>常见错误</strong>：把试纸直接浸入试剂瓶中的待测液（污染整瓶试剂）；用 pH 试纸测浓硫酸（浓硫酸脱水使试纸炭化）；测氯水的 pH（HClO 漂白试纸，先变红后褪色，读数不准）。</p>
+</div>
+
+<h3>2.6 气密性检查三法</h3>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>气密性检查：先形成密闭体系，再制造压强差</h4>
+<p><strong>原理共性</strong>：所有气密性检查的本质都是——把装置变成一个<strong>密闭体系</strong>，然后改变内部压强（升温膨胀或推拉活塞），观察与大气连通的出口处是否有相应的现象；松手（或冷却）后压强恢复，观察是否有"回弹"现象。两部分现象都要写，缺一不可。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>适用装置</th>
+<th>规范表述（操作→现象→结论）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>微热法</td>
+<td>只有一个气体出口的简单装置（如固固加热制气装置）</td>
+<td>将导管末端浸入水中，用手（或酒精灯微热）捂住（加热）试管，导管口有气泡冒出；松开手（停止加热）后，导管内形成一段稳定的水柱，则气密性良好</td>
+</tr>
+<tr>
+<td>液差法</td>
+<td>带长颈漏斗的固液不加热装置（如简易 CO<sub>2</sub> 发生器）</td>
+<td>用止水夹夹紧橡胶管，向长颈漏斗中加水至漏斗下端浸没且漏斗内液面高于试管内液面，静置一段时间后液面差保持不变，则气密性良好</td>
+</tr>
+<tr>
+<td>推拉法</td>
+<td>带注射器的装置</td>
+<td>将导管末端浸入水中，缓慢向外拉注射器活塞，导管口有气泡冒出（或向内推活塞，导管内形成一段水柱），则气密性良好</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键点</strong>：微热法中"气泡"是受热气体膨胀逸出，"水柱"是冷却后气体收缩、外界大气压把水压入导管形成的——只说看到气泡而漏写水柱，是高考最常见的丢分点。带分液漏斗的装置检查前必须先关闭活塞；带长颈漏斗的必须先液封。</p>
+</div>
+
+<h3>2.7 实验安全与事故处理</h3>
+
+<div class="card concept">
+<span class="tag">核心概念</span>
+<h4>常见事故的正确处理</h4>
+<table>
+<thead>
+<tr>
+<th>事故</th>
+<th>正确处理</th>
+<th>原理/错误做法辨析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>酒精灯洒出酒精着火</td>
+<td>立即用湿抹布或沙土盖灭</td>
+<td>隔绝空气灭火；不能用水泼（酒精密度小于水且与水互溶，随水流动扩大燃烧面积）</td>
+</tr>
+<tr>
+<td>浓硫酸沾到皮肤</td>
+<td>立即用大量水冲洗，再涂 3%~5% 的 NaHCO<sub>3</sub> 溶液</td>
+<td>新版教材表述：直接大量水冲洗，利用水带走稀释热；切勿先擦（扩大接触面）</td>
+</tr>
+<tr>
+<td>碱液（NaOH）沾到皮肤</td>
+<td>大量水冲洗，再涂硼酸溶液</td>
+<td>硼酸是弱酸，中和残留的碱且不腐蚀皮肤</td>
+</tr>
+<tr>
+<td>酸（或碱）溅入眼睛</td>
+<td>立即用大量水冲洗，边洗边眨眼睛，然后就医</td>
+<td>绝不可揉眼</td>
+</tr>
+<tr>
+<td>温度计打破，汞洒落</td>
+<td>立即撒上硫粉</td>
+<td>Hg(l) + S(s) → HgS(s)，把易挥发、有毒的汞转化为难挥发的硫化汞</td>
+</tr>
+<tr>
+<td>钠、钾等着火</td>
+<td>用沙土盖灭</td>
+<td>不能用水（2Na + 2H<sub>2</sub>O → 2NaOH + H<sub>2</sub>↑，放出易燃氢气）也不能用 CO<sub>2</sub> 灭火器（Na 燃烧生成 Na<sub>2</sub>O<sub>2</sub>，与 CO<sub>2</sub> 反应放出 O<sub>2</sub> 助燃）</td>
+</tr>
+<tr>
+<td>苯酚沾到皮肤</td>
+<td>立即用酒精洗涤</td>
+<td>苯酚易溶于酒精，微溶于水，水洗效果不好</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="card note">
+<span class="tag">归纳</span>
+<p><strong>防倒吸的三种常见装置</strong>：①倒置漏斗边缘刚好接触液面（气体易溶于水时，如用水吸收 HCl、NH<sub>3</sub>）；②安全瓶（在气体发生装置与吸收装置之间接一个空瓶，进气管短、出气管短）；③肚容球（干燥管粗端靠近液面）。倒吸的本质是气体大量溶解或反应使装置内压强骤降，外界大气压把液体压回前面的装置——轻则污染试剂，重则炸裂热的玻璃仪器。</p>
+<p><strong>点燃可燃性气体前必须验纯</strong>：H<sub>2</sub>、CO、CH<sub>4</sub> 与空气混合达爆炸极限遇明火爆炸。用排水法收集一小试管气体，拇指堵住管口移近火焰：发出尖锐爆鸣声则不纯，声音很小（"噗"的一声）则纯净。</p>
+</div>
+</section>
+
+<section>
+<h2>三、三重表征贯通</h2>
+<p>实验操作不是死记硬背的条文，每个动作背后都有粒子层面的原理。下面三组典型操作，请从"宏观操作与现象—微观原理—符号与要点"三个层面打通理解。</p>
+
+<h3>第 1 组：蒸馏——沸点差异的利用</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观（装置·操作·现象）</h4>
+<p>装置：蒸馏烧瓶＋温度计（水银球在支管口）＋冷凝管（水下进上出）＋牛角管＋锥形瓶，烧瓶中加入几粒沸石。</p>
+<p>操作与现象：加热含 NaCl 的水溶液，温度升至 100 ℃左右并保持稳定，烧瓶内水沸腾，冷凝管内壁出现无色液滴，锥形瓶中逐渐收集到无色澄清的蒸馏水；烧瓶中液体逐渐减少。</p>
+</div>
+<div class="cell">
+<h4>微观（原理解释）</h4>
+<p>水分子间靠氢键和范德华力结合，受热获得能量，运动加剧，部分分子克服分子间作用力逸出液面成为蒸气；蒸气进入低温的冷凝管，分子能量降低、运动减慢，重新聚集为液态。</p>
+<p>Na<sup>+</sup>、Cl<sup>−</sup> 以离子键与水分子结合，沸点极高，无法随水蒸气逸出，留在烧瓶中——蒸馏分离的是"挥发性差异"。</p>
+</div>
+<div class="cell">
+<h4>符号（要点表达）</h4>
+<p>H<sub>2</sub>O(l) <span class="eq-arrow" data-cond="加热">→</span> H<sub>2</sub>O(g) <span class="eq-arrow" data-cond="冷凝">→</span> H<sub>2</sub>O(l)</p>
+<p>操作口诀：</p>
+<p>①温度计水银球——支管口；</p>
+<p>②冷凝水——下进上出；</p>
+<p>③加沸石——防暴沸，忘加须冷却再补；</p>
+<p>④液体量——1/3 ~ 2/3。</p>
+</div>
+</div>
+
+<h3>第 2 组：萃取分液——溶解度差异（相似相溶）的利用</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观（装置·操作·现象）</h4>
+<p>向 10 mL 黄褐色碘水中加入 3 mL CCl<sub>4</sub>，塞好分液漏斗玻璃塞，倒转漏斗振荡（适时打开活塞放气），静置。</p>
+<p>现象：液体分为两层，上层（水层）颜色变浅接近无色，下层（CCl<sub>4</sub> 层）呈紫红色。分液时先打开上口玻璃塞，下层紫色液体从下口放出，上层液体从上口倒出。</p>
+</div>
+<div class="cell">
+<h4>微观（原理解释）</h4>
+<p>I<sub>2</sub> 是非极性分子，CCl<sub>4</sub> 是非极性溶剂，二者分子间作用力类型相似，I<sub>2</sub> 在 CCl<sub>4</sub> 中的溶解度（约为水中溶解度的 80 多倍）远大于在极性溶剂水中的溶解度——"相似相溶"。</p>
+<p>振荡时 I<sub>2</sub> 分子在两相界面反复迁移，最终按溶解度比例重新分配，绝大部分进入 CCl<sub>4</sub> 层。萃取是物理变化，I<sub>2</sub> 分子本身没有改变。</p>
+</div>
+<div class="cell">
+<h4>符号（要点表达）</h4>
+<p>I<sub>2</sub>(水层) <span class="eq-arrow" data-cond="CCl₄萃取">→</span> I<sub>2</sub>(CCl<sub>4</sub>层)</p>
+<p>萃取剂三条件：互不相溶；溶解度大；不发生反应。</p>
+<p>分液口诀：先开塞，再开活塞；下流下，上倒上。</p>
+<p>注意：CCl<sub>4</sub> 密度 &gt; 水（有色层在下）；苯密度 &lt; 水（有色层在上）。</p>
+</div>
+</div>
+
+<h3>第 3 组：过滤——颗粒大小差异的利用（以粗盐提纯为例）</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观（装置·操作·现象）</h4>
+<p>装置：铁架台＋烧杯＋普通漏斗＋玻璃棒，滤纸折叠后紧贴漏斗内壁。</p>
+<p>操作：粗盐溶于水后的悬浊液沿玻璃棒缓缓注入漏斗，液面始终低于滤纸边缘。</p>
+<p>现象：滤纸上留下灰黄色不溶物（泥沙），沿漏斗壁流下澄清透明的滤液。</p>
+</div>
+<div class="cell">
+<h4>微观（原理解释）</h4>
+<p>滤纸纤维交织形成大量微小孔隙。泥沙是直径远大于孔隙的固体颗粒聚集体，无法通过，被截留在滤纸上；Na<sup>+</sup>、Cl<sup>−</sup> 与水分子直径不足 1 nm，远小于滤纸孔隙，随水一起顺利通过。</p>
+<p>过滤的本质是"筛分"——按粒子直径大小分级，与化学性质无关，是物理变化。</p>
+</div>
+<div class="cell">
+<h4>符号（要点表达）</h4>
+<p>粗盐(含泥沙) <span class="eq-arrow" data-cond="溶解·过滤">→</span> NaCl 溶液（滤液）</p>
+<p>操作口诀："一贴、二低、三靠"。</p>
+<p>玻璃棒作用：引流，防止液体外溅或冲破滤纸。</p>
+<p>滤液仍浑浊 → 滤纸破损或液面超高 → 重滤。</p>
+</div>
+</div>
+</section>
+
+<section>
+<h2>四、典型例题分步拆解</h2>
+
+<div class="card example">
+<span class="tag">例 1 · 仪器使用</span>
+<p><strong>题目</strong>：下列实验操作正确的是（　　）</p>
+<p>A．用托盘天平称量 10.05 g 固体 NaCl</p>
+<p>B．用 100 mL 量筒量取 8.5 mL 稀盐酸</p>
+<p>C．蒸馏时，温度计水银球插入蒸馏烧瓶的液面以下</p>
+<p>D．稀释浓硫酸时，将浓硫酸沿烧杯内壁缓缓注入水中，并用玻璃棒不断搅拌</p>
+<p><strong>【思路点拨】</strong>逐项对照"仪器精度—操作规范"两张清单：量器的量程选择、精确度、温度计位置、稀释原则，都是本章刚讲过的"死知识+活原理"。</p>
+<div class="step">
+<div class="no">1</div>
+<p>A 项：托盘天平的精确度为 0.1 g，无法称出 10.05 g（小数点后两位），错误。要精确到 0.01 g 需用分析天平或电子天平。</p>
+</div>
+<div class="step">
+<div class="no">2</div>
+<p>B 项：量筒量程选择遵循"大而近"原则——量取 8.5 mL 应选 10 mL 量筒；用 100 mL 量筒量取 8.5 mL，量程过大导致读数误差大，错误。</p>
+</div>
+<div class="step">
+<div class="no">3</div>
+<p>C 项：蒸馏时温度计测的是<strong>蒸气</strong>的温度，水银球应位于蒸馏烧瓶<strong>支管口处</strong>，插入液面下测的是液体温度，且液体沸腾时温度与蒸气温度含义不同，错误。</p>
+</div>
+<div class="step">
+<div class="no">4</div>
+<p>D 项：浓硫酸密度比水大且稀释放热剧烈。将浓硫酸沿器壁缓慢注入水中并不断搅拌，能使热量及时散失；若把水倒入浓硫酸，水浮在浓硫酸表面剧烈沸腾，酸液飞溅伤人。正确。</p>
+</div>
+<div class="ans">
+<p><strong>【答案】</strong>D</p>
+<p><strong>【方法总结】</strong>"仪器选择看精度与量程，操作判断想原理与后果"。稀释口诀：<strong>酸入水，沿器壁，慢慢倒，不断搅</strong>（密度大、放热多的液体倒入密度小的）。</p>
+</div>
+</div>
+
+<div class="card example">
+<span class="tag">例 2 · 气密性检查表述</span>
+<p><strong>题目</strong>：实验室用石灰石与稀盐酸在带长颈漏斗的锥形瓶中反应制取 CO<sub>2</sub>。请叙述检查该装置气密性的方法。</p>
+<p><strong>【思路点拨】</strong>该装置有长颈漏斗和导管两个出口，属于"液差法"的适用场景。答题按"形成密闭体系 → 制造液面差 → 观察变化"三步组织语言，操作、现象、结论一个都不能少。</p>
+<div class="step">
+<div class="no">1</div>
+<p><strong>封闭出口</strong>：用止水夹夹紧导管上的橡胶管，使装置成为密闭体系（这是所有气密性检查的前提，不写必扣分）。</p>
+</div>
+<div class="step">
+<div class="no">2</div>
+<p><strong>制造压强差</strong>：向长颈漏斗中加水，使漏斗下端管口浸没在液面以下，继续加水至漏斗内液面高于锥形瓶内液面一段高度。</p>
+</div>
+<div class="step">
+<div class="no">3</div>
+<p><strong>观察与结论</strong>：静置，若一段时间内长颈漏斗中液面与锥形瓶中液面的高度差保持不变（不下降），说明装置气密性良好；若液面差逐渐减小直至相平，则漏气。</p>
+</div>
+<div class="ans">
+<p><strong>【答案】</strong>用止水夹夹紧橡胶管，向长颈漏斗中加水至其下端浸没并使漏斗中液面高于锥形瓶中液面，静置片刻，若液面差保持不变，则装置气密性良好。</p>
+<p><strong>【方法总结】</strong>气密性检查答题模板：<strong>"封（封闭体系）→ 变（改变压强/形成液差）→ 看（稳定现象）→ 判（得出结论）"</strong>。液面差"保持不变"是关键词，只写"形成液面差"不给满分。</p>
+</div>
+</div>
+
+<div class="card example">
+<span class="tag">例 3 · 粗盐提纯的操作排序与目的</span>
+<p><strong>题目</strong>：粗盐中含泥沙等不溶性杂质。某同学提纯粗盐的操作有：①蒸发结晶；②过滤；③溶解；④计算产率。请排列正确顺序，并回答：（1）第②步中玻璃棒的作用是什么？（2）第①步中何时停止加热？（3）若最终所得精盐产率明显偏低，可能的原因有哪些（答两条）？</p>
+<p><strong>【思路点拨】</strong>这是"溶解→过滤→蒸发"经典三部曲，玻璃棒作用和蒸发停止时机都是直接采分点；产率分析要沿着"每一步哪里有食盐损失"的思路排查。</p>
+<div class="step">
+<div class="no">1</div>
+<p><strong>排序</strong>：③溶解 → ②过滤 → ①蒸发结晶 → ④计算产率。先把 NaCl 溶于水，再除去不溶泥沙，最后把 NaCl 从溶液中结晶出来。</p>
+</div>
+<div class="step">
+<div class="no">2</div>
+<p><strong>问题(1)</strong>：过滤中玻璃棒的作用是<strong>引流</strong>——使液体沿玻璃棒缓缓流入漏斗，防止直接倾倒冲破滤纸或使液体溅出。</p>
+</div>
+<div class="step">
+<div class="no">3</div>
+<p><strong>问题(2)</strong>：当蒸发皿中出现<strong>较多固体</strong>（大量晶体析出）时停止加热，用余热蒸干剩余水分。加热至干再停会导致晶体飞溅、产率偏低。</p>
+</div>
+<div class="step">
+<div class="no">4</div>
+<p><strong>问题(3)</strong>：沿流程找损失：①溶解时粗盐未充分溶解就过滤（NaCl 留在泥沙中被弃去）；②过滤或转移时液体溅出；③蒸发时液滴飞溅；④转移精盐时蒸发皿中有残留。任答两条即可。</p>
+</div>
+<div class="ans">
+<p><strong>【答案】</strong>顺序：③②①④；(1) 引流；(2) 出现较多固体时停止加热，余热蒸干；(3) 粗盐未完全溶解就过滤；蒸发时液体飞溅（或转移时有残留等合理答案）。</p>
+<p><strong>【方法总结】</strong>流程类问题按"先理顺序、再抠细节、后析误差"三步走。误差分析的黄金思路：<strong>沿着流程找"目标物质在哪一步有损失或增加"</strong>，不要凭空乱想。</p>
+</div>
+</div>
+
+<div class="card example">
+<span class="tag">例 4 · 萃取分液综合</span>
+<p><strong>题目</strong>：从碘水中提取碘，可供选择的试剂有：A．四氯化碳　B．酒精　C．直馏汽油（密度比水小）。</p>
+<p>（1）不能选用的试剂是________，原因是________。</p>
+<p>（2）若选用 A，振荡、静置后，碘的 CCl<sub>4</sub> 层在________（填"上"或"下"）层，呈________色；分液时，该层液体从分液漏斗的________放出。</p>
+<p>（3）萃取、分液后，要从碘的 CCl<sub>4</sub> 溶液中回收 CCl<sub>4</sub>，应采用的方法是________。</p>
+<p><strong>【思路点拨】</strong>第(1)问考萃取剂三条件，第(2)问考密度与分液操作，第(3)问考"萃取之后怎么办"——互溶但沸点不同的液体用蒸馏。</p>
+<div class="step">
+<div class="no">1</div>
+<p>(1) 酒精与水<strong>互溶</strong>，加入后不会分层，无法把碘"拽"到另一相，违背萃取剂条件①"与原溶剂互不相溶"，故不能选 B。</p>
+</div>
+<div class="step">
+<div class="no">2</div>
+<p>(2) CCl<sub>4</sub> 密度（约 1.6 g/mL）大于水，故碘的 CCl<sub>4</sub> 层在<strong>下</strong>层，呈<strong>紫红（紫）</strong>色；下层液体从分液漏斗的<strong>下口</strong>放出。</p>
+</div>
+<div class="step">
+<div class="no">3</div>
+<p>(3) I<sub>2</sub> 与 CCl<sub>4</sub> 互溶但沸点差异大（CCl<sub>4</sub> 沸点 77 ℃，I<sub>2</sub> 沸点 184 ℃），用<strong>蒸馏</strong>的方法蒸出 CCl<sub>4</sub> 回收。</p>
+</div>
+<div class="ans">
+<p><strong>【答案】</strong>(1) B；酒精与水互溶，不分层，不能作萃取剂。(2) 下；紫红；下口。(3) 蒸馏。</p>
+<p><strong>【方法总结】</strong>萃取只是"转移富集"，得到的是碘的 CCl<sub>4</sub> 溶液而不是纯碘；要得纯碘或回收萃取剂，还需蒸馏。记住有色层位置口诀：<strong>"四氯化碳沉底下，苯和汽油浮在上"</strong>。</p>
+</div>
+</div>
+</section>
+
+<section>
+<h2>五、易错点与成因</h2>
+
+<div class="card trap">
+<span class="tag">易错点 1</span>
+<p><strong>易错表现</strong>：用 pH 试纸测溶液 pH 前，先把试纸用蒸馏水润湿，认为"湿润了反应更充分"。</p>
+<p><strong>错误成因</strong>：把检验气体的石蕊试纸（需润湿）的操作机械迁移到了测 pH 上，没有区分两类试纸的原理差异。</p>
+<p><strong>正确理解</strong>：pH 试纸润湿相当于把待测液稀释——测酸结果偏大、测碱结果偏小、中性溶液才无影响。而石蕊试纸、淀粉 KI 试纸检验的是气体，气体必须先溶解在试纸表面的水膜中才能反应显色，所以必须润湿。</p>
+<p><strong>避坑口诀</strong>：<strong>"测 pH 不润湿，验气体先润湿"</strong>——前者怕稀释，后者要溶解。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 2</span>
+<p><strong>易错表现</strong>：蒸馏装置中把温度计插入液面以下，冷凝管"上进下出"接冷却水。</p>
+<p><strong>错误成因</strong>：受"测温度就要把温度计插进被测物"的直觉影响，没想清楚蒸馏时温度计真正测的对象是蒸气；对逆流换热原理不理解，凭"水从上往下流自然"的错误直觉接反方向。</p>
+<p><strong>正确理解</strong>：温度计水银球在<strong>支管口处</strong>，测蒸气温度从而指示馏分沸点；冷凝水<strong>下进上出</strong>，保证冷凝管内始终充满水，蒸气与冷水逆向流动、换热充分。若上进下出，水靠重力快速流走，冷凝管内半空，冷凝效果差。</p>
+<p><strong>避坑口诀</strong>：<strong>"温度计守支管口，冷却水低进高出"</strong>。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 3</span>
+<p><strong>易错表现</strong>：分液时，把上层液体也从下口放出；或者没打开上口玻璃塞就旋转活塞，发现液体流不出来。</p>
+<p><strong>错误成因</strong>：只记"从下口放"，不理解"上倒下放"是为了防止上下层交叉污染；不清楚大气压的作用——塞子密闭时，液体流出一点后漏斗内气压减小，外界大气压"顶住"液体使其流不出。</p>
+<p><strong>正确理解</strong>：分液前先打开上口玻璃塞（或使塞上凹槽对准小孔）平衡气压；下层液体从下口放出，当界面恰好到达活塞处立即关闭，上层液体从<strong>上口倒出</strong>。若上层也走下口，会沾附下口残留的下层液体。</p>
+<p><strong>避坑口诀</strong>：<strong>"先开塞，再开活塞；下走下口，上走上口"</strong>。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 4</span>
+<p><strong>易错表现</strong>：气密性检查只写"将导管口浸入水中，用手握住试管，导管口有气泡冒出，证明气密性良好"，漏掉松手后的水柱现象。</p>
+<p><strong>错误成因</strong>：不理解检查原理是"先膨胀逸出、后收缩回流"的完整过程，把冒气泡当成唯一判据。实际上装置漏气时，微热下少量气体也可能从导管口鼓出气泡（漏气较慢时），单看气泡不可靠。</p>
+<p><strong>正确理解</strong>：必须写全两组现象——<strong>微热时导管口有气泡冒出；松开手（停止加热）后导管内形成一段稳定的水柱</strong>。水柱是装置内气体冷却收缩、压强减小、外界大气压把水压入导管形成的，只有密闭体系才能维持稳定水柱。</p>
+<p><strong>避坑口诀</strong>：<strong>"气泡加水柱，两者都写全"</strong>。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 5</span>
+<p><strong>易错表现</strong>：蒸发结晶时持续加热到水分完全蒸干才停止加热；给试管中的固体加热时试管口向上倾斜。</p>
+<p><strong>错误成因</strong>：以为"蒸得越干越好"，忽视了余热的作用和晶体受热迸溅、分解的风险；不明白固体药品（尤其含结晶水或反应生成水）加热产生的水蒸气会在较冷的试管口冷凝成液态水。</p>
+<p><strong>正确理解</strong>：蒸发皿中出现<strong>较多固体</strong>时即停止加热，靠余热蒸干；加热固体时试管口<strong>略向下倾斜</strong>，防止冷凝水倒流使灼热的试管炸裂。</p>
+<p><strong>避坑口诀</strong>：<strong>"多晶即停余热干，固热管口略朝向下"</strong>。</p>
+</div>
+</section>
+
+<section>
+<h2>六、章末自检清单</h2>
+<p>合上书本，逐条自测。任何一条答不上来，请回到对应小节再读一遍。</p>
+<ul class="checklist">
+<li>我能说出哪些仪器可直接加热、哪些必须垫陶土网、哪些绝不能加热，并解释原因。</li>
+<li>我能说出量筒、托盘天平、容量瓶、滴定管的精确度，并判断"称取 10.05 g""量筒稀释浓硫酸"等说法的正误。</li>
+<li>我能复述固体、液体药品取用的规范操作（瓶塞倒放、标签向手心、滴管竖直悬空）。</li>
+<li>我能完整说出过滤"一贴二低三靠"的每一项内容及其目的。</li>
+<li>我能准确回答蒸发结晶时停止加热的时机（出现较多固体、余热蒸干）及原因。</li>
+<li>我能指出蒸馏装置的四大要点：温度计水银球位置、冷凝水流向、沸石作用与补加时机、液体量范围。</li>
+<li>我能说出萃取剂选择的三个条件，并解释酒精为何不能萃取碘水中的碘。</li>
+<li>我能区分 pH 试纸（不润湿）与石蕊试纸、淀粉 KI 试纸（润湿）的使用方法并说明原因。</li>
+<li>我能用"操作→现象→结论"的格式规范书写微热法、液差法、推拉法三种气密性检查方法。</li>
+<li>我能说出浓硫酸沾肤、酒精洒落着火、汞洒落、钠着火等事故的正确处理方法及原理。</li>
+<li>我能解释防倒吸的原理，并识别倒置漏斗、安全瓶等防倒吸装置。</li>
+</ul>
+</section>
+
+</main>
+<footer class="chap-foot">高考备考 · 化学 · 深度学习材料 · 2026</footer>
+</body>
+</html>

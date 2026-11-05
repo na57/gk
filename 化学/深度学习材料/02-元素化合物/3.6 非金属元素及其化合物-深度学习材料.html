@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.6 非金属元素及其化合物-深度学习材料</title>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#0e7c7b; --subject-soft:#eef7f6;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 化学点缀层（无 JS，纯文本方程式） ===== */
+/* 语义卡片（例题=紫 / 易错=琥珀 / 概念=蓝 / 提示=科目色 / 结构=中性墨） */
+.card { border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 18px; margin: 14px 0; page-break-inside: avoid; }
+.card .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
+.card.concept { background: var(--c-concept-bg); } .card.concept .tag { background: var(--c-concept); color: #fff; }
+.card.example { background: var(--c-example-bg); } .card.example .tag { background: var(--c-example); color: #fff; }
+.card.trap { background: var(--c-trap-bg); } .card.trap .tag { background: var(--c-trap); color: #fff; }
+.card.note { background: var(--subject-soft); } .card.note .tag { background: var(--subject); color: #fff; }
+.card.violet { background: var(--canvas); } .card.violet .tag { background: var(--ink); color: #fff; }
+/* 方程式容器（统一灰底盒 + 科目色左边条） */
+.eq { display: block; background: var(--formula-bg); border: 1px solid var(--line); border-left: 4px solid var(--subject); border-radius: 8px; padding: var(--formula-pad); margin: 10px 0; font-size: 16px; text-align: center; letter-spacing: .3px; page-break-inside: avoid; }
+.eq-arrow { position: relative; display: inline-block; margin: 0 6px; font-weight: 600; }
+.eq-arrow::before { content: attr(data-cond); position: absolute; left: 50%; transform: translateX(-50%); top: -1.05em; font-size: 10.5px; font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
+.state { font-size: .72em; font-style: italic; color: var(--ink-soft); }
+sub, sup { font-size: .72em; line-height: 0; }
+.formula { font-size: 1.05em; }
+.kbd { background: #f0f2f5; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 13px; }
+/* 三栏对比 */
+.triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; page-break-inside: avoid; }
+.triple .cell { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: 14px; }
+.triple .cell h4 { margin: 0 0 8px; font-size: 13.5px; text-align: center; padding: 4px 0; border-radius: 6px; color: #fff; }
+.triple .cell:nth-child(1) h4 { background: var(--c-trap); }
+.triple .cell:nth-child(2) h4 { background: var(--c-example); }
+.triple .cell:nth-child(3) h4 { background: var(--subject); }
+/* 步骤与答案 */
+.step { display: flex; gap: 10px; margin: 8px 0; }
+.step .no { flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--c-method); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.ans { background: #fff; border: 1px dashed var(--c-method); border-radius: 8px; padding: 8px 14px; margin: 8px 0; }
+.chap-foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-soft); text-align: center; }
+@media (max-width: 640px) { .triple { grid-template-columns: 1fr; } }
+@media print {
+  .card { border: 1px solid #999; background: #fff !important; }
+  .card .tag { border: 1px solid #333; background: #fff !important; color: #000; }
+  .eq { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .chap-foot { border-top: none; }
+}
+</style>
+</head>
+<body>
+<nav class="chap-nav">高考备考 · 化学 · 深度学习材料 ｜ 元素化合物 ｜ 3.6 非金属元素及其化合物</nav>
+<header class="chap-head">
+  <h1>3.6 非金属元素及其化合物</h1>
+  <p class="chap-meta">高中化学 · 深度学习材料 · 面向 2029 届云南高考</p>
+  <p class="chap-intro">非金属元素是无机化学的另一座大山：氯、硫、氮、硅四条主线，价态变化多、氧化还原密集，是高考选择题、实验题和工业流程题的常客。学习本章的关键抓手是「化合价」——把每种元素的各价态排成一条线，理清谁氧化谁、谁还原谁，再记住特征现象（黄绿色、刺激性气味、白烟、喷泉），知识网络自然成型。</p>
+</header>
+<main>
+
+<section>
+<h2>一、知识全景</h2>
+<p>本章按「氯 → 硫 → 氮 → 硅」四条线展开，每条线内部按「单质 → 氢化物 → 氧化物 → 含氧酸 → 盐」的链条推进。</p>
+<table>
+  <tr><th>知识点</th><th>核心内容</th><th>高考要求</th></tr>
+  <tr><td>氯及其化合物</td><td>Cl<sub>2</sub>、HClO、次氯酸盐、氯水的成分与性质</td><td>掌握氯的价态变化（−1、0、+1、+5、+7），理解氯水的多重性质（酸性、漂白性、强氧化性）</td></tr>
+  <tr><td>硫及其化合物</td><td>S、SO<sub>2</sub>、SO<sub>3</sub>、H<sub>2</sub>SO<sub>3</sub>、H<sub>2</sub>SO<sub>4</sub>、硫酸盐</td><td>硫的各价态转化清楚，浓硫酸三大特性（吸水性、脱水性、强氧化性）理解透彻，SO<sub>2</sub> 的漂白与还原能区分</td></tr>
+  <tr><td>氮及其化合物</td><td>N<sub>2</sub>、NO、NO<sub>2</sub>、NH<sub>3</sub>、HNO<sub>3</sub>、铵盐</td><td>氮的各价态转化熟练，硝酸强氧化性的浓稀差异掌握清楚，NH<sub>3</sub> 的制法与喷泉实验理解到位</td></tr>
+  <tr><td>硅及其化合物</td><td>Si、SiO<sub>2</sub>、硅酸、硅酸盐、硅的制备</td><td>了解硅及其化合物的特性（SiO<sub>2</sub> 与 HF 反应、硅酸盐的氧化物表示法、粗硅提纯）</td></tr>
+  <tr><td>非金属通性</td><td>非金属性强弱比较、氢化物稳定性、最高价含氧酸酸性</td><td>掌握非金属性强弱的比较方法（与周期律衔接）</td></tr>
+</table>
+<div class="card note">
+  <span class="tag">学习方法</span>
+  <p>非金属的复习主线是<strong>化合价</strong>：把每种元素的价态阶梯写出来，如硫：H<sub>2</sub>S（−2）→ S（0）→ SO<sub>2</sub>（+4）→ SO<sub>3</sub>/H<sub>2</sub>SO<sub>4</sub>（+6）；氮：NH<sub>3</sub>（−3）→ N<sub>2</sub>（0）→ NO（+2）→ NO<sub>2</sub>（+4）→ HNO<sub>3</sub>（+5）。低价态常显还原性、高价态常显氧化性、中间价态「两边倒」。再叠加「连续氧化」关系（N<sub>2</sub>→NO→NO<sub>2</sub>，S→SO<sub>2</sub>→SO<sub>3</sub>），推断题的骨架就搭好了。</p>
+</div>
+</section>
+
+<section>
+<h2>二、核心概念精讲</h2>
+
+<h3>2.1 氯气（Cl<sub>2</sub>）：第一种被系统研究的气体元素</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>是什么</strong>：黄绿色、有强烈刺激性气味的有毒气体，密度比空气大，能溶于水（1 体积水约溶解 2 体积 Cl<sub>2</sub>），易液化（液氯）。</p>
+  <p><strong>为什么活泼</strong>：氯原子最外层 7 个电子，极易得到 1 个电子形成 Cl<sup>−</sup>，所以 Cl<sub>2</sub> 是强氧化剂，能与绝大多数金属、非金属直接化合。</p>
+  <p><strong>适用边界</strong>：Cl<sub>2</sub> 与变价金属反应时生成<strong>高价态</strong>氯化物（FeCl<sub>3</sub>、CuCl<sub>2</sub>），这与盐酸（弱氧化剂，只能把 Fe 氧化到 +2 价）形成鲜明对比——常用来比较 Cl<sub>2</sub> 与 HCl、S 的氧化性强弱。</p>
+  <p><strong>常见混淆</strong>：氯气（单质，黄绿色）、液氯（Cl<sub>2</sub> 的液态，纯净物）、氯水（Cl<sub>2</sub> 的水溶液，混合物，浅黄绿色）三者是「同一物质的不同形态 vs 混合物」的关系，性质差异很大。</p>
+</div>
+<h4>氯气的主要反应</h4>
+<span class="eq">H<sub>2</sub><span class="state">(g)</span> + Cl<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="点燃或光照">→</span> 2HCl<span class="state">(g)</span>　（安静燃烧，苍白色火焰，瓶口有白雾）</span>
+<span class="eq">2Na<span class="state">(s)</span> + Cl<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="点燃">→</span> 2NaCl<span class="state">(s)</span>　（剧烈燃烧，黄色火焰，产生白烟）</span>
+<span class="eq">2Fe<span class="state">(s)</span> + 3Cl<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="点燃">→</span> 2FeCl<sub>3</sub><span class="state">(s)</span>　（产生棕褐色的烟，溶于水得黄色溶液）</span>
+<span class="eq">Cu<span class="state">(s)</span> + Cl<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="点燃">→</span> CuCl<sub>2</sub><span class="state">(s)</span>　（产生棕黄色的烟，溶于水得蓝绿色溶液）</span>
+<div class="card note">
+  <span class="tag">现象辨析</span>
+  <p>「烟」与「雾」的区别：烟是<strong>固体小颗粒</strong>（如 NaCl、FeCl<sub>3</sub> 固体颗粒），雾是<strong>小液滴</strong>（如 HCl 气体溶于空气中的水蒸气形成的盐酸小液滴）。H<sub>2</sub> 在 Cl<sub>2</sub> 中燃烧产生「白雾」，Na 在 Cl<sub>2</sub> 中燃烧产生「白烟」——高考选择题常在这里设陷阱。</p>
+</div>
+<span class="eq">Cl<sub>2</sub><span class="state">(g)</span> + 2NaOH<span class="state">(aq)</span> <span class="eq-arrow" data-cond="冷、稀">→</span> NaCl<span class="state">(aq)</span> + NaClO<span class="state">(aq)</span> + H<sub>2</sub>O<span class="state">(l)</span>　（尾气吸收原理）</span>
+<span class="eq">2Cl<sub>2</sub><span class="state">(g)</span> + 2Ca(OH)<sub>2</sub><span class="state">(s)</span> <span class="eq-arrow" data-cond="">→</span> CaCl<sub>2</span> + Ca(ClO)<sub>2</sub> + 2H<sub>2</sub>O　（工业制漂白粉）</span>
+<span class="eq">Cl<sub>2</sub><span class="state">(g)</span> + 2KI<span class="state">(aq)</span> <span class="eq-arrow" data-cond="">→</span> 2KCl + I<sub>2</sub>　（溶液由无色变为黄褐色，加淀粉变蓝）</span>
+<span class="eq">Cl<sub>2</sub><span class="state">(g)</span> + 2NaBr<span class="state">(aq)</span> <span class="eq-arrow" data-cond="">→</span> 2NaCl + Br<sub>2</sub>　（溶液由无色变为橙黄色）</span>
+<h4>氯气的实验室制法</h4>
+<span class="eq">MnO<sub>2</sub><span class="state">(s)</span> + 4HCl<span class="state">(浓)</span> <span class="eq-arrow" data-cond="加热">→</span> MnCl<sub>2</sub><span class="state">(aq)</span> + Cl<sub>2</sub><span class="state">(g)</span>↑ + 2H<sub>2</sub>O<span class="state">(l)</span></span>
+<p>装置要点：固液加热型；用<strong>饱和食盐水</strong>除去 HCl（Cl<sub>2</sub> 在饱和食盐水中溶解度小），用<strong>浓硫酸</strong>干燥；收集用向上排空气法或排饱和食盐水法；尾气用 <strong>NaOH 溶液</strong>吸收（不能用 Ca(OH)<sub>2</sub> 溶液——浓度太小，吸收不完全）。检验：使湿润的淀粉-KI 试纸变蓝。</p>
+
+<h3>2.2 氯水、次氯酸与次氯酸盐：一瓶氯水七种粒子</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>氯水的成分</strong>：Cl<sub>2</sub> 溶于水时只有一部分与水反应：Cl<sub>2</sub> + H<sub>2</sub>O ⇌ HCl + HClO。新制氯水中含有「三分四离」七种粒子——分子：Cl<sub>2</sub>（多）、H<sub>2</sub>O、HClO（少）；离子：H<sup>+</sup>、Cl<sup>−</sup>、ClO<sup>−</sup>、OH<sup>−</sup>（极少量）。</p>
+  <p><strong>为什么氯水有「多重性格」</strong>：Cl<sub>2</sub> 和 HClO 都有强氧化性（漂白、杀菌、氧化 I<sup>−</sup>/Br<sup>−</sup>/Fe<sup>2+</sup>）；H<sup>+</sup> 使氯水显酸性（使石蕊先变红）；HClO 的强氧化性又把变红的石蕊漂白（后褪色）——所以「紫色石蕊试液滴入新制氯水：先变红后褪色」是氯水成分的经典证明。</p>
+  <p><strong>适用边界</strong>：久置氯水中 HClO 见光分解（2HClO <span class="eq-arrow" data-cond="光照">→</span> 2HCl + O<sub>2</sub>↑），平衡右移，最终变成稀盐酸，漂白能力丧失。因此氯水要<strong>现用现配，棕色瓶避光保存</strong>。</p>
+  <p><strong>常见混淆</strong>：液氯是纯净物（只有 Cl<sub>2</sub> 分子），无漂白性；氯水是混合物，有漂白性。干燥的有色布条遇干燥 Cl<sub>2</sub> 不褪色，湿润布条才褪色——起漂白作用的是 HClO 而不是 Cl<sub>2</sub> 本身。</p>
+</div>
+<table>
+  <tr><th>加入试剂</th><th>现象</th><th>起作用的粒子</th></tr>
+  <tr><td>紫色石蕊试液</td><td>先变红后褪色</td><td>H<sup>+</sup>（变红）、HClO（漂白褪色）</td></tr>
+  <tr><td>Na<sub>2</sub>CO<sub>3</sub> 溶液</td><td>产生无色气泡</td><td>H<sup>+</sup></td></tr>
+  <tr><td>AgNO<sub>3</sub> 溶液</td><td>产生白色沉淀（AgCl）</td><td>Cl<sup>−</sup></td></tr>
+  <tr><td>KI-淀粉溶液</td><td>变蓝</td><td>Cl<sub>2</sub>（氧化 I<sup>−</sup> 生成 I<sub>2</sub>）</td></tr>
+  <tr><td>FeCl<sub>2</sub> 溶液</td><td>溶液由浅绿变黄色</td><td>Cl<sub>2</sub>（氧化 Fe<sup>2+</sup>）</td></tr>
+  <tr><td>有色布条</td><td>布条褪色</td><td>HClO（强氧化性漂白）</td></tr>
+</table>
+<h4>次氯酸（HClO）与次氯酸盐</h4>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>HClO 的三性</strong>：① 弱酸性（比碳酸还弱，所以 Ca(ClO)<sub>2</sub> 能与 CO<sub>2</sub>、H<sub>2</sub>O 反应）；② 强氧化性（漂白、杀菌消毒的原理）；③ 不稳定性（见光或受热分解：2HClO <span class="eq-arrow" data-cond="光照">→</span> 2HCl + O<sub>2</sub>↑）。</p>
+  <p><strong>漂白粉</strong>：工业上用 Cl<sub>2</sub> 与石灰乳反应制得，是 CaCl<sub>2</sub> 与 Ca(ClO)<sub>2</sub> 的混合物，<strong>有效成分是 Ca(ClO)<sub>2</sub></strong>。漂白原理：Ca(ClO)<sub>2</sub> + CO<sub>2</sub> + H<sub>2</sub>O = CaCO<sub>3</sub>↓ + 2HClO（空气中的 CO<sub>2</sub> 就能把强氧化性的 HClO「置换」出来——强酸制弱酸）。漂白粉敞口放置会失效（生成的 HClO 分解），须密封保存。</p>
+  <p><strong>「84」消毒液</strong>：有效成分 NaClO，由 Cl<sub>2</sub> 与冷稀 NaOH 反应制得。不能与洁厕灵（含盐酸）混用：ClO<sup>−</sup> + Cl<sup>−</sup> + 2H<sup>+</sup> = Cl<sub>2</sub>↑ + H<sub>2</sub>O，会产生有毒氯气。</p>
+</div>
+<h4>Cl<sup>−</sup> 的检验</h4>
+<p>取样于试管中，先加<strong>稀硝酸酸化</strong>（排除 CO<sub>3</sub><sup>2−</sup> 等离子的干扰——Ag<sub>2</sub>CO<sub>3</sub> 也是沉淀，但能溶于稀硝酸），再滴加 AgNO<sub>3</sub> 溶液，若生成<strong>不溶于稀硝酸的白色沉淀</strong>，则证明原溶液中含 Cl<sup>−</sup>：Ag<sup>+</sup> + Cl<sup>−</sup> = AgCl↓。注意：试剂顺序不能颠倒（先加 AgNO<sub>3</sub> 生成的白色沉淀可能是 Ag<sub>2</sub>CO<sub>3</sub>），也不能用盐酸酸化（会引入 Cl<sup>−</sup>，造成假阳性）。</p>
+
+<h3>2.3 硫单质（S）与二氧化硫（SO<sub>2</sub>）</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>硫单质</strong>：黄色或淡黄色固体（俗称硫磺），质脆，不溶于水，微溶于酒精，易溶于 CS<sub>2</sub>（洗涤试管内壁残留的硫可用 CS<sub>2</sub> 或热 NaOH 溶液）。硫的氧化性较弱，与变价金属反应生成<strong>低价态</strong>硫化物：Fe + S <span class="eq-arrow" data-cond="加热">→</span> FeS、2Cu + S <span class="eq-arrow" data-cond="加热">→</span> Cu<sub>2</sub>S——与 Cl<sub>2</sub> 对比，说明氧化性 Cl<sub>2</sub> &gt; S。</p>
+  <p><strong>SO<sub>2</sub> 是什么</strong>：无色、有刺激性气味的有毒气体（大气污染物、形成酸雨的元凶之一），密度比空气大，易液化，易溶于水（1:40）。</p>
+  <p><strong>SO<sub>2</sub> 的四重性质</strong>：① 酸性氧化物的通性（与水、碱、碱性氧化物反应）；② <strong>漂白性</strong>（与某些有色物质化合生成不稳定的无色物质，加热又复原——可逆漂白，与 HClO 的永久漂白不同）；③ <strong>还原性</strong>（为主，+4 价易被 O<sub>2</sub>、Cl<sub>2</sub>、KMnO<sub>4</sub>、H<sub>2</sub>O<sub>2</sub>、Fe<sup>3+</sup> 氧化为 +6 价）；④ 弱氧化性（只在与 H<sub>2</sub>S 反应时体现：SO<sub>2</sub> + 2H<sub>2</sub>S = 3S↓ + 2H<sub>2</sub>O）。</p>
+</div>
+<span class="eq">S<span class="state">(s)</span> + O<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="点燃">→</span> SO<sub>2</sub><span class="state">(g)</span>　（空气中淡蓝色火焰、纯氧中明亮的蓝紫色火焰，生成刺激性气味气体）</span>
+<span class="eq">SO<sub>2</sub><span class="state">(g)</span> + H<sub>2</sub>O<span class="state">(l)</span> ⇌ H<sub>2</sub>SO<sub>3</sub><span class="state">(aq)</span>　（可逆反应，H<sub>2</sub>SO<sub>3</sub> 是中强酸）</span>
+<span class="eq">SO<sub>2</sub> + Cl<sub>2</sub> + 2H<sub>2</sub>O <span class="eq-arrow" data-cond="">→</span> H<sub>2</sub>SO<sub>4</sub> + 2HCl　（等体积 SO<sub>2</sub> 与 Cl<sub>2</sub> 混合通入水中，漂白性消失！）</span>
+<span class="eq">SO<sub>2</sub> + 2H<sub>2</sub>S<span class="state">(g)</span> <span class="eq-arrow" data-cond="">→</span> 3S<span class="state">(s)</span>↓ + 2H<sub>2</sub>O　（瓶壁出现淡黄色固体和水珠）</span>
+<span class="eq">2SO<sub>2</sub><span class="state">(g)</span> + O<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="催化剂、加热">⇌</span> 2SO<sub>3</sub><span class="state">(g)</span>　（接触法制硫酸的核心反应，可逆）</span>
+<span class="eq">SO<sub>3</sub><span class="state">(g)</span> + H<sub>2</sub>O<span class="state">(l)</span> <span class="eq-arrow" data-cond="">→</span> H<sub>2</sub>SO<sub>4</sub><span class="state">(aq)</span>　（放出大量热，工业上用 98.3% 浓硫酸吸收 SO<sub>3</sub> 防止形成酸雾）</span>
+<div class="card note">
+  <span class="tag">鉴别与检验</span>
+  <p>① 鉴别 SO<sub>2</sub> 和 CO<sub>2</sub>（都能使澄清石灰水变浑浊）：用<strong>品红溶液</strong>（SO<sub>2</sub> 使其褪色，CO<sub>2</sub> 不能）或酸性 KMnO<sub>4</sub> 溶液（SO<sub>2</sub> 使其褪色）。② 检验混合气体中的 SO<sub>2</sub> 和 CO<sub>2</sub>：先通过品红（检验 SO<sub>2</sub>）→ 酸性 KMnO<sub>4</sub>（除尽 SO<sub>2</sub>）→ 再次品红（确认 SO<sub>2</sub> 已除尽）→ 澄清石灰水（检验 CO<sub>2</sub>）。这是高考实验题的经典排序。</p>
+</div>
+<h4>SO<sub>2</sub> 的实验室制法与尾气处理</h4>
+<span class="eq">Na<sub>2</sub>SO<sub>3</sub><span class="state">(s)</span> + H<sub>2</sub>SO<sub>4</sub><span class="state">(较浓)</span> <span class="eq-arrow" data-cond="">→</span> Na<sub>2</sub>SO<sub>4</sub><span class="state">(aq)</span> + SO<sub>2</sub><span class="state">(g)</span>↑ + H<sub>2</sub>O<span class="state">(l)</span></span>
+<p>装置：固液不加热型；收集用向上排空气法（SO<sub>2</sub> 密度大于空气）；尾气用 <strong>NaOH 溶液</strong>吸收：SO<sub>2</sub> + 2NaOH = Na<sub>2</sub>SO<sub>3</sub> + H<sub>2</sub>O。导管末端应接倒置漏斗<strong>防倒吸</strong>——SO<sub>2</sub> 易溶于水且与碱快速反应，导管内气压骤降会把液体倒吸入反应装置。</p>
+
+<h3>2.4 浓硫酸：三大特性逐个击破</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>是什么</strong>：纯硫酸是无色油状液体，沸点高（难挥发），密度 1.84 g/cm³。常用浓硫酸质量分数 98.3%，物质的量浓度约 18.4 mol/L。</p>
+  <p><strong>稀释操作</strong>：必须把<strong>浓硫酸沿器壁慢慢注入水中</strong>，并用玻璃棒不断搅拌（浓硫酸溶于水放出大量的热，若把水倒入浓硫酸，水密度小浮在上面暴沸飞溅）。口诀：「酸入水，沿器壁，慢慢倒，不断搅。」</p>
+</div>
+<table>
+  <tr><th>特性</th><th>本质</th><th>典型实例</th></tr>
+  <tr><td><strong>吸水性</strong></td><td>吸收现成的水分子（物理+化学），作干燥剂</td><td>干燥 H<sub>2</sub>、O<sub>2</sub>、CO<sub>2</sub>、Cl<sub>2</sub> 等（不能干燥 NH<sub>3</sub>——酸碱反应；不能干燥 H<sub>2</sub>S、HBr、HI——氧化还原反应）</td></tr>
+  <tr><td><strong>脱水性</strong></td><td>把有机物中 H、O 原子按 2:1（水的组成）脱去，剩余碳（化学变化）</td><td>蔗糖（C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>）遇浓硫酸变黑膨胀（「黑面包」实验）；纸张、皮肤遇浓硫酸炭化</td></tr>
+  <tr><td><strong>强氧化性</strong></td><td>+6 价硫得电子被还原为 SO<sub>2</sub></td><td>加热时氧化 Cu 等不活泼金属；常温使 Fe、Al <strong>钝化</strong>；氧化 C 等非金属</td></tr>
+</table>
+<span class="eq">Cu<span class="state">(s)</span> + 2H<sub>2</sub>SO<sub>4</sub><span class="state">(浓)</span> <span class="eq-arrow" data-cond="加热">→</span> CuSO<sub>4</sub><span class="state">(aq)</span> + SO<sub>2</sub><span class="state">(g)</span>↑ + 2H<sub>2</sub>O<span class="state">(l)</span></span>
+<p>现象：加热后铜片逐渐溶解，产生有刺激性气味的气体（能使品红褪色），反应液冷却稀释后呈蓝色。注意：2 mol 浓硫酸中只有 1 mol 作氧化剂（被还原为 SO<sub>2</sub>），另 1 mol 起酸的作用（生成 CuSO<sub>4</sub>）——「一半氧化剂，一半酸」。</p>
+<span class="eq">C<span class="state">(s)</span> + 2H<sub>2</sub>SO<sub>4</sub><span class="state">(浓)</span> <span class="eq-arrow" data-cond="加热">→</span> CO<sub>2</sub><span class="state">(g)</span>↑ + 2SO<sub>2</sub><span class="state">(g)</span>↑ + 2H<sub>2</sub>O<span class="state">(l)</span></span>
+<div class="card note">
+  <span class="tag">浓稀对比</span>
+  <p>稀硫酸是「普通的酸」（H<sup>+</sup> 体现氧化性，与活泼金属放 H<sub>2</sub>）；浓硫酸是「强氧化性酸」（+6 价 S 体现氧化性，还原产物一般是 SO<sub>2</sub>，不放 H<sub>2</sub>）。随着反应进行，浓硫酸逐渐变稀，性质也随之切换——如 Cu 与浓硫酸反应，变稀后反应停止（Cu 不与稀硫酸反应），所以「1 mol Cu 与足量浓硫酸反应」与「含 2 mol H<sub>2</sub>SO<sub>4</sub> 的浓硫酸与足量 Cu 反应」生成的 SO<sub>2</sub> 并不相同，后者硫酸有剩余，生成的 SO<sub>2</sub> 小于 1 mol。这是计算题的经典陷阱。</p>
+</div>
+<h4>接触法制硫酸（工业流程）</h4>
+<table>
+  <tr><th>阶段</th><th>主要设备</th><th>反应原理 / 操作要点</th></tr>
+  <tr><td>造气（制 SO<sub>2</sub>）</td><td>沸腾炉</td><td>S + O<sub>2</sub> <span class="eq-arrow" data-cond="点燃">→</span> SO<sub>2</sub>（或煅烧黄铁矿：4FeS<sub>2</sub> + 11O<sub>2</sub> <span class="eq-arrow" data-cond="高温">→</span> 2Fe<sub>2</sub>O<sub>3</sub> + 8SO<sub>2</sub>）</td></tr>
+  <tr><td>接触氧化</td><td>接触室</td><td>2SO<sub>2</sub> + O<sub>2</sub> <span class="eq-arrow" data-cond="V₂O₅ 催化、加热">⇌</span> 2SO<sub>3</sub>（可逆反应，常压进行，用热交换器回收反应热）</td></tr>
+  <tr><td>吸收成酸</td><td>吸收塔</td><td>用 <strong>98.3% 浓硫酸</strong>吸收 SO<sub>3</sub>（防止直接用水吸收时放热剧烈形成酸雾），再稀释得到各种浓度的成品酸</td></tr>
+</table>
+<p>工业思想关键词：<strong>逆流吸收</strong>（气体与液体逆向流动，吸收充分）、<strong>热交换</strong>（用反应放出的热预热原料气，节能）、<strong>循环利用</strong>（未反应的 SO<sub>2</sub> 返回接触室，提高转化率）。</p>
+
+<h3>2.5 氮气（N<sub>2</sub>）与氮的氧化物</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>N<sub>2</sub> 为什么稳定</strong>：N<sub>2</sub> 分子中存在氮氮三键（N≡N），键能很大（946 kJ/mol），断裂需要很高能量，所以常温下 N<sub>2</sub> 化学性质很稳定，可作保护气。但在放电/高温下能与 O<sub>2</sub>、H<sub>2</sub>、Mg 反应。</p>
+  <p><strong>固氮</strong>：把游离态的氮（N<sub>2</sub>）转化为化合态氮的过程。自然固氮：雷雨发庄稼（N<sub>2</sub> → NO → NO<sub>2</sub> → HNO<sub>3</sub> → 硝酸盐）；人工固氮：合成氨（N<sub>2</sub> + 3H<sub>2</sub> ⇌ 2NH<sub>3</sub>，高温高压催化剂）。</p>
+</div>
+<span class="eq">N<sub>2</sub><span class="state">(g)</span> + O<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="放电或高温">→</span> 2NO<span class="state">(g)</span>　（无色气体）</span>
+<span class="eq">2NO<span class="state">(g)</span> + O<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="">→</span> 2NO<sub>2</sub><span class="state">(g)</span>　（无色气体立即变为红棕色——检验 NO 的特征现象）</span>
+<span class="eq">3NO<sub>2</sub><span class="state">(g)</span> + H<sub>2</sub>O<span class="state">(l)</span> <span class="eq-arrow" data-cond="">→</span> 2HNO<sub>3</sub><span class="state">(aq)</span> + NO<span class="state">(g)</span>　（红棕色褪去，工业制硝酸）</span>
+<table>
+  <tr><th>对比项</th><th>NO</th><th>NO<sub>2</sub></th></tr>
+  <tr><td>颜色气味</td><td>无色无味气体</td><td>红棕色、有刺激性气味气体</td></tr>
+  <tr><td>溶解性</td><td>难溶于水</td><td>与水反应（3:1 比例生成 HNO<sub>3</sub> 和 NO）</td></tr>
+  <tr><td>毒性</td><td>有毒（与 CO 类似，结合血红蛋白）</td><td>有毒（刺激呼吸道，酸雨成因之一）</td></tr>
+  <tr><td>收集方法</td><td>只能用排水法（遇空气即被氧化）</td><td>只能用向上排空气法（与水反应）</td></tr>
+  <tr><td>相互转化</td><td colspan="2">2NO + O<sub>2</sub> = 2NO<sub>2</sub>；3NO<sub>2</sub> + H<sub>2</sub>O = 2HNO<sub>3</sub> + NO</td></tr>
+</table>
+<div class="card note">
+  <span class="tag">计算模型</span>
+  <p>NO<sub>2</sub>、NO 与 O<sub>2</sub> 混合溶于水的计算是经典题型，核心是把分步方程式叠加：4NO<sub>2</sub> + O<sub>2</sub> + 2H<sub>2</sub>O = 4HNO<sub>3</sub>（V(NO<sub>2</sub>):V(O<sub>2</sub>) = 4:1 恰好无剩余）；4NO + 3O<sub>2</sub> + 2H<sub>2</sub>O = 4HNO<sub>3</sub>（4:3 恰好无剩余）。先按比例判断谁过量，再求剩余气体体积。</p>
+</div>
+
+<h3>2.6 氨气（NH<sub>3</sub>）：唯一的碱性气体</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>是什么</strong>：无色、有刺激性气味的气体，密度比空气小，<strong>极易溶于水</strong>（常温常压下 1 体积水约溶解 700 体积 NH<sub>3</sub>）——这是喷泉实验的物理基础。</p>
+  <p><strong>为什么水溶液显碱性</strong>：NH<sub>3</sub> 溶于水后大部分与水结合成一水合氨（NH<sub>3</sub>·H<sub>2</sub>O），一水合氨是弱碱，部分电离出 NH<sub>4</sub><sup>+</sup> 和 OH<sup>−</sup>：NH<sub>3</sub> + H<sub>2</sub>O ⇌ NH<sub>3</sub>·H<sub>2</sub>O ⇌ NH<sub>4</sub><sup>+</sup> + OH<sup>−</sup>。注意：使溶液显碱性的是 NH<sub>3</sub>·H<sub>2</sub>O 的电离，<strong>氨气本身不是碱</strong>；液氨是纯净物，氨水是混合物。</p>
+  <p><strong>还原性</strong>：NH<sub>3</sub> 中 N 为 −3 价（最低价），只有还原性。催化氧化是工业制硝酸的第一步：4NH<sub>3</sub> + 5O<sub>2</sub> <span class="eq-arrow" data-cond="催化剂、加热">→</span> 4NO + 6H<sub>2</sub>O。</p>
+</div>
+<span class="eq">NH<sub>3</sub><span class="state">(g)</span> + HCl<span class="state">(g)</span> <span class="eq-arrow" data-cond="">→</span> NH<sub>4</sub>Cl<span class="state">(s)</span>　（两根玻璃棒分别蘸浓氨水、浓盐酸靠近，产生大量白烟——互相检验）</span>
+<span class="eq">2NH<sub>4</sub>Cl<span class="state">(s)</span> + Ca(OH)<sub>2</sub><span class="state">(s)</span> <span class="eq-arrow" data-cond="加热">→</span> CaCl<sub>2</sub><span class="state">(s)</span> + 2NH<sub>3</sub><span class="state">(g)</span>↑ + 2H<sub>2</sub>O<span class="state">(l)</span>　（实验室制氨气）</span>
+<span class="eq">4NH<sub>3</sub><span class="state">(g)</span> + 5O<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="催化剂、加热">→</span> 4NO<span class="state">(g)</span> + 6H<sub>2</sub>O<span class="state">(l)</span></span>
+<div class="card note">
+  <span class="tag">实验室制氨气的细节</span>
+  <p>① 装置：固体加热型（试管口略向下倾斜，防止冷凝水倒流炸裂试管）；② 干燥：用<strong>碱石灰</strong>（NaOH 与 CaO 的混合物），不能用浓硫酸（酸性，吸收 NH<sub>3</sub>）、不能用无水 CaCl<sub>2</sub>（与 NH<sub>3</sub> 反应生成 CaCl<sub>2</sub>·8NH<sub>3</sub>）；③ 收集：向下排空气法，试管口塞一团棉花（防止对流，使收集更纯）；④ 验满：湿润的红色石蕊试纸靠近试管口<strong>变蓝</strong>，或蘸浓盐酸的玻璃棒靠近产生<strong>白烟</strong>；⑤ 快速制法：加热浓氨水，或向浓氨水中加入生石灰（CaO 吸水放热，促使 NH<sub>3</sub> 逸出）。</p>
+</div>
+<h4>喷泉实验</h4>
+<p>烧瓶中充满干燥的 NH<sub>3</sub>（或 HCl），倒置在水槽中，挤入少量水后，水沿导管喷涌而上形成「喷泉」，最终液体几乎充满整个烧瓶。原理：NH<sub>3</sub> 极易溶于水（1:700），少量水溶解大量 NH<sub>3</sub> 后烧瓶内气压骤降，外界大气压把水压入烧瓶。若水中滴有酚酞，NH<sub>3</sub> 喷泉呈<strong>红色</strong>（氨水显碱性）；HCl 喷泉滴石蕊呈红色。能做喷泉实验的气体共同特征：在该液体中溶解度极大（或能与液体快速反应），如 HCl/水、NH<sub>3</sub>/水、CO<sub>2</sub>/浓 NaOH 溶液。</p>
+
+<h3>2.7 硝酸（HNO<sub>3</sub>）：浓度决定产物</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>是什么</strong>：纯硝酸是无色、易挥发、有刺激性气味的液体。浓硝酸（69%）常因溶有分解产生的 NO<sub>2</sub> 而呈<strong>黄色</strong>，须用<strong>棕色瓶、阴凉处</strong>保存。</p>
+  <p><strong>不稳定性</strong>：4HNO<sub>3</sub> <span class="eq-arrow" data-cond="光照或加热">→</span> 4NO<sub>2</sub>↑ + O<sub>2</sub>↑ + 2H<sub>2</sub>O。</p>
+  <p><strong>强氧化性的浓稀差异（本章最核心）</strong>：硝酸无论浓稀都是强氧化性酸，与金属反应<strong>不产生 H<sub>2</sub></strong>。浓硝酸的还原产物一般是 NO<sub>2</sub>，稀硝酸的还原产物一般是 NO；硝酸越稀，产物中氮的价态越低（极稀时可到 N<sub>2</sub>O 甚至 NH<sub>4</sub>NO<sub>3</sub>）。</p>
+  <p><strong>钝化</strong>：常温下，Fe、Al 遇浓硝酸（及浓硫酸）表面生成致密氧化膜而钝化（化学变化），加热则继续反应。</p>
+</div>
+<span class="eq">Cu<span class="state">(s)</span> + 4HNO<sub>3</sub><span class="state">(浓)</span> <span class="eq-arrow" data-cond="">→</span> Cu(NO<sub>3</sub>)<sub>2</sub><span class="state">(aq)</span> + 2NO<sub>2</sub><span class="state">(g)</span>↑ + 2H<sub>2</sub>O<span class="state">(l)</span>　（剧烈反应，产生红棕色气体，溶液变蓝绿色）</span>
+<span class="eq">3Cu<span class="state">(s)</span> + 8HNO<sub>3</sub><span class="state">(稀)</span> <span class="eq-arrow" data-cond="">→</span> 3Cu(NO<sub>3</sub>)<sub>2</sub><span class="state">(aq)</span> + 2NO<span class="state">(g)</span>↑ + 4H<sub>2</sub>O<span class="state">(l)</span>　（反应较慢，无色气体在试管口变红棕色）</span>
+<span class="eq">C<span class="state">(s)</span> + 4HNO<sub>3</sub><span class="state">(浓)</span> <span class="eq-arrow" data-cond="加热">→</span> CO<sub>2</sub><span class="state">(g)</span>↑ + 4NO<sub>2</sub><span class="state">(g)</span>↑ + 2H<sub>2</sub>O<span class="state">(l)</span></span>
+<table>
+  <tr><th>对比项</th><th>浓硝酸</th><th>稀硝酸</th></tr>
+  <tr><td>与 Cu 反应剧烈程度</td><td>剧烈，常温即反应</td><td>较慢，需微热加快</td></tr>
+  <tr><td>还原产物</td><td>NO<sub>2</sub>（+4 价）</td><td>NO（+2 价）</td></tr>
+  <tr><td>电子转移</td><td>1 mol HNO<sub>3</sub> 作氧化剂得 1 mol e<sup>−</sup></td><td>1 mol HNO<sub>3</sub> 作氧化剂得 3 mol e<sup>−</sup></td></tr>
+  <tr><td>「酸作用 vs 氧化剂」比例（以 Cu 为例）</td><td>4 HNO<sub>3</sub>：2 酸 + 2 氧化剂</td><td>8 HNO<sub>3</sub>：6 酸 + 2 氧化剂</td></tr>
+  <tr><td>氧化性强弱</td><td colspan="2">浓硝酸氧化性更强（得电子能力看反应难易，不看得电子总数）</td></tr>
+</table>
+
+<h3>2.8 铵盐：遇碱放氨，受热易分解</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>是什么</strong>：由 NH<sub>4</sub><sup>+</sup> 与酸根离子构成的盐，都易溶于水，都是晶体。</p>
+  <p><strong>两大化学性质</strong>：① <strong>受热易分解</strong>：NH<sub>4</sub>Cl <span class="eq-arrow" data-cond="加热">→</span> NH<sub>3</sub>↑ + HCl↑（试管底部固体「消失」，在试管口重新生成白色固体——先升华假象，实为分解又化合）；NH<sub>4</sub>HCO<sub>3</sub> <span class="eq-arrow" data-cond="加热">→</span> NH<sub>3</sub>↑ + H<sub>2</sub>O + CO<sub>2</sub>↑。② <strong>与碱反应放出氨气</strong>：NH<sub>4</sub><sup>+</sup> + OH<sup>−</sup> <span class="eq-arrow" data-cond="加热">→</span> NH<sub>3</sub>↑ + H<sub>2</sub>O——这是 NH<sub>4</sub><sup>+</sup> 的检验方法：取样，加浓 NaOH 溶液并加热，产生使湿润红色石蕊试纸变蓝的刺激性气味气体。</p>
+  <p><strong>适用边界</strong>：铵态氮肥（如 NH<sub>4</sub>Cl、(NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub>）<strong>不能与草木灰（K<sub>2</sub>CO<sub>3</sub>，碱性）混用</strong>，否则相互促进水解放出 NH<sub>3</sub>，降低肥效。</p>
+</div>
+
+<h3>2.9 硅（Si）与二氧化硅（SiO<sub>2</sub>）：信息时代的基石</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>硅单质</strong>：灰黑色、有金属光泽的固体（晶体硅），硬而脆，是良好的半导体材料（介于导体与绝缘体之间），用于芯片、太阳能电池。常温下化学性质不活泼，只与 F<sub>2</sub>、HF、强碱反应；加热时能与 O<sub>2</sub>、Cl<sub>2</sub> 反应。</p>
+  <p><strong>SiO<sub>2</sub> 是什么</strong>：SiO<sub>2</sub> 是<strong>原子晶体</strong>（由 Si、O 原子直接构成，不存在单个「SiO<sub>2</sub> 分子」，SiO<sub>2</sub> 只是最简式），熔点高、硬度大，不溶于水。石英、水晶、玛瑙、光导纤维、沙子的主要成分都是 SiO<sub>2</sub>。</p>
+  <p><strong>SiO<sub>2</sub> 的双重身份</strong>：它是<strong>酸性氧化物</strong>（与强碱、碱性氧化物反应生成硅酸盐），但<strong>不溶于水、不与水反应</strong>（对应的水化物 H<sub>2</sub>SiO<sub>3</sub> 只能用间接方法制备）；它又能与氢氟酸反应——这是它区别于 CO<sub>2</sub> 的特性，也是氢氟酸不能用玻璃瓶盛放、可用来刻蚀玻璃的原因。</p>
+  <p><strong>常见混淆</strong>：SiO<sub>2</sub> 与 CO<sub>2</sub> 化学式相似，但物理性质天差地别（SiO<sub>2</sub> 原子晶体高熔点、CO<sub>2</sub> 分子晶体低熔点）；不能用「SiO<sub>2</sub> + 水 → 硅酸」，也不能说「SiO<sub>2</sub> 是两性氧化物」（只与 HF 这一种酸反应，且 SiF<sub>4</sub> 不是盐，不算两性）。</p>
+</div>
+<span class="eq">Si<span class="state">(s)</span> + O<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="加热">→</span> SiO<sub>2</sub><span class="state">(s)</span></span>
+<span class="eq">Si<span class="state">(s)</span> + 2NaOH<span class="state">(aq)</span> + H<sub>2</sub>O<span class="state">(l)</span> <span class="eq-arrow" data-cond="">→</span> Na<sub>2</sub>SiO<sub>3</sub><span class="state">(aq)</span> + 2H<sub>2</sub><span class="state">(g)</span>↑　（硅与强碱反应，类似铝）</span>
+<span class="eq">SiO<sub>2</sub><span class="state">(s)</span> + 2C<span class="state">(s)</span> <span class="eq-arrow" data-cond="高温">→</span> Si<span class="state">(s)</span> + 2CO<span class="state">(g)</span>↑　（工业制粗硅，注意产物是 CO 不是 CO<sub>2</sub>）</span>
+<span class="eq">SiO<sub>2</sub><span class="state">(s)</span> + 2NaOH<span class="state">(aq)</span> <span class="eq-arrow" data-cond="">→</span> Na<sub>2</sub>SiO<sub>3</sub><span class="state">(aq)</span> + H<sub>2</sub>O<span class="state">(l)</span>　（装碱液的试剂瓶用橡胶塞的原因）</span>
+<span class="eq">SiO<sub>2</sub><span class="state">(s)</span> + 4HF<span class="state">(aq)</span> <span class="eq-arrow" data-cond="">→</span> SiF<sub>4</sub><span class="state">(g)</span>↑ + 2H<sub>2</sub>O<span class="state">(l)</span>　（刻蚀玻璃）</span>
+<span class="eq">SiO<sub>2</sub><span class="state">(s)</span> + Na<sub>2</sub>CO<sub>3</sub><span class="state">(s)</span> <span class="eq-arrow" data-cond="高温">→</span> Na<sub>2</sub>SiO<sub>3</sub><span class="state">(s)</span> + CO<sub>2</sub><span class="state">(g)</span>↑　（制玻璃原理之一）</span>
+<span class="eq">SiO<sub>2</sub><span class="state">(s)</span> + CaCO<sub>3</sub><span class="state">(s)</span> <span class="eq-arrow" data-cond="高温">→</span> CaSiO<sub>3</sub><span class="state">(s)</span> + CO<sub>2</sub><span class="state">(g)</span>↑　（制玻璃原理之二）</span>
+<div class="card note">
+  <span class="tag">易混提醒</span>
+  <p>「SiO<sub>2</sub> + Na<sub>2</sub>CO<sub>3</sub> <span class="eq-arrow" data-cond="高温">→</span> Na<sub>2</sub>SiO<sub>3</sub> + CO<sub>2</sub>↑」<strong>不能</strong>说明硅酸的酸性比碳酸强！该反应在高温下进行，驱动力是 CO<sub>2</sub> 气体逸出（高沸点物质制低沸点物质），与溶液中的「强酸制弱酸」不是同一原理。事实上酸性：H<sub>2</sub>CO<sub>3</sub> &gt; H<sub>2</sub>SiO<sub>3</sub>（向 Na<sub>2</sub>SiO<sub>3</sub> 溶液中通 CO<sub>2</sub> 能生成硅酸沉淀可以证明）。</p>
+</div>
+<h4>高纯硅的制备（粗硅提纯）</h4>
+<span class="eq">SiO<sub>2</sub><span class="state">(s)</span> + 2C<span class="state">(s)</span> <span class="eq-arrow" data-cond="高温">→</span> Si<span class="state">(粗)</span> + 2CO<span class="state">(g)</span>↑</span>
+<span class="eq">Si<span class="state">(粗)</span> + 2Cl<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="加热">→</span> SiCl<sub>4</sub><span class="state">(l)</span></span>
+<span class="eq">SiCl<sub>4</sub><span class="state">(l)</span> + 2H<sub>2</sub><span class="state">(g)</span> <span class="eq-arrow" data-cond="高温">→</span> Si<span class="state">(纯)</span> + 4HCl<span class="state">(g)</span></span>
+<p>提纯思路：先把固体杂质「气化转移」——粗硅与 Cl<sub>2</sub> 反应生成易挥发的 SiCl<sub>4</sub>（沸点仅 57.6 ℃），蒸馏提纯后再用 H<sub>2</sub> 还原得到高纯硅。「转化为易分离的中间体」是工业提纯物质的经典思路。</p>
+<h4>硅酸与硅酸盐</h4>
+<span class="eq">Na<sub>2</sub>SiO<sub>3</sub><span class="state">(aq)</span> + 2HCl<span class="state">(aq)</span> <span class="eq-arrow" data-cond="">→</span> 2NaCl<span class="state">(aq)</span> + H<sub>2</sub>SiO<sub>3</sub><span class="state">(s)</span>↓　（白色胶状沉淀，强酸制弱酸）</span>
+<span class="eq">H<sub>2</sub>SiO<sub>3</sub><span class="state">(s)</span> <span class="eq-arrow" data-cond="加热">→</span> SiO<sub>2</sub><span class="state">(s)</span> + H<sub>2</sub>O<span class="state">(l)</span></span>
+<p>硅酸是白色胶状、难溶于水的弱酸（比碳酸还弱），不能直接由 SiO<sub>2</sub> 与水反应制得。Na<sub>2</sub>SiO<sub>3</sub> 的水溶液俗称<strong>水玻璃</strong>，是矿物胶（黏合剂）、防火剂。硅酸盐组成复杂，常用氧化物形式表示，如硅酸钠 Na<sub>2</sub>SiO<sub>3</sub> 写成 Na<sub>2</sub>O·SiO<sub>2</sub>，高岭石 Al<sub>2</sub>(Si<sub>2</sub>O<sub>5</sub>)(OH)<sub>4</sub> 写成 Al<sub>2</sub>O<sub>3</sub>·2SiO<sub>2</sub>·2H<sub>2</sub>O（书写顺序：活泼金属氧化物 → 较活泼金属氧化物 → SiO<sub>2</sub> → H<sub>2</sub>O）。三大硅酸盐产品：水泥、玻璃、陶瓷。</p>
+<div class="card note">
+  <span class="tag">材料辨析</span>
+  <p>传统硅酸盐材料：水泥、玻璃（Na<sub>2</sub>SiO<sub>3</sub>·CaSiO<sub>3</sub>·SiO<sub>2</sub> 的混合物）、陶瓷。新型无机非金属材料：SiO<sub>2</sub> 光导纤维（传导光信号，不是导电！）、SiC（金刚砂）、Si<sub>3</sub>N<sub>4</sub> 陶瓷。高频考点：光导纤维的主要成分是 SiO<sub>2</sub> 而不是 Si；计算机芯片的主要成分是晶体 Si 而不是 SiO<sub>2</sub>。</p>
+</div>
+
+<h3>2.10 非金属性强弱的比较方法</h3>
+<div class="card concept">
+  <span class="tag">核心概念</span>
+  <p><strong>为什么比较</strong>：非金属性即原子得电子的能力，它决定了一系列宏观性质。掌握比较方法，就能把零散事实串成规律，也为第三章元素周期律埋下伏笔。以氯、硫的比较为例：</p>
+  <p><strong>五大判据</strong>：</p>
+  <ul>
+    <li><strong>单质与 H<sub>2</sub> 化合的难易</strong>：Cl<sub>2</sub> 与 H<sub>2</sub> 光照即剧烈反应（甚至爆炸），S 与 H<sub>2</sub> 需持续加热且反应不完全 → 非金属性 Cl &gt; S。越容易化合，非金属性越强。</li>
+    <li><strong>气态氢化物的稳定性</strong>：HCl 很稳定，H<sub>2</sub>S 受热易分解 → 非金属性 Cl &gt; S。氢化物越稳定，非金属性越强。</li>
+    <li><strong>最高价氧化物对应水化物的酸性</strong>：酸性 HClO<sub>4</sub> &gt; H<sub>2</sub>SO<sub>4</sub> → 非金属性 Cl &gt; S。注意必须用<strong>最高价</strong>含氧酸比较，不能用 HClO（氯为 +1 价）与 H<sub>2</sub>SO<sub>4</sub> 比较。</li>
+    <li><strong>单质间的置换反应</strong>：Cl<sub>2</sub> + H<sub>2</sub>S = 2HCl + S↓（氯气把硫置换出来）→ 氧化性 Cl<sub>2</sub> &gt; S，非金属性 Cl &gt; S。</li>
+    <li><strong>与变价金属反应的产物价态</strong>：Cl<sub>2</sub> 把 Fe 氧化到 +3 价（FeCl<sub>3</sub>），S 只能把 Fe 氧化到 +2 价（FeS）→ 氧化性 Cl<sub>2</sub> &gt; S。</li>
+  </ul>
+  <p><strong>常见混淆</strong>：比较非金属性不能用「氢化物水溶液的酸性」（如酸性 HCl &lt; HI，但非金属性 Cl &gt; I）——氢化物酸性强弱与非金属性没有必然联系，正确的判据是氢化物的<strong>热稳定性</strong>。</p>
+</div>
+</section>
+
+<section>
+<h2>三、三重表征贯通</h2>
+<p>非金属元素的现象丰富、粒子转化微妙，是最能体现「宏观 — 微观 — 符号」三重表征威力的一章。以下六组经典，请做到「看到现象能写方程式、看到方程式能想微观」。</p>
+
+<h3>3.1 氯气与水的反应（氯水的诞生）</h3>
+<div class="triple">
+  <div class="cell"><h4>宏观现象</h4>
+    <p>黄绿色 Cl<sub>2</sub> 通入水中，得到浅黄绿色的氯水，有刺激性气味；向氯水中滴入紫色石蕊试液，<strong>先变红，后褪色</strong>；光照氯水，缓慢产生无色气泡（O<sub>2</sub>），黄绿色逐渐褪去，最终变为无色溶液。</p>
+  </div>
+  <div class="cell"><h4>微观粒子</h4>
+    <p>部分 Cl<sub>2</sub> 分子与水发生歧化反应：一个 Cl 原子得电子成为 Cl<sup>−</sup>，另一个失电子与 OH<sup>−</sup> 结合成 HClO（Cl 从 0 价分别变为 −1 价和 +1 价）。溶液中同时存在 Cl<sub>2</sub>、HClO、H<sup>+</sup>、Cl<sup>−</sup> 等粒子：H<sup>+</sup> 使石蕊变红，HClO 的强氧化性又把红色有机色素破坏（漂白）。光照下 HClO 分解，平衡不断右移直至 Cl<sub>2</sub> 耗尽。</p>
+  </div>
+  <div class="cell"><h4>符号表达</h4>
+    <p class="formula">Cl<sub>2</sub> + H<sub>2</sub>O ⇌ HCl + HClO</p>
+    <p class="formula">离子方程式：Cl<sub>2</sub> + H<sub>2</sub>O ⇌ H<sup>+</sup> + Cl<sup>−</sup> + HClO</p>
+    <p class="formula">2HClO <span class="eq-arrow" data-cond="光照">→</span> 2HCl + O<sub>2</sub>↑（久置氯水变成稀盐酸）</p>
+  </div>
+</div>
+
+<h3>3.2 二氧化硫使品红褪色与使高锰酸钾褪色：一字之差，原理迥异</h3>
+<div class="triple">
+  <div class="cell"><h4>宏观现象</h4>
+    <p>SO<sub>2</sub> 通入品红溶液，红色<strong>褪去</strong>；加热褪色后的溶液，<strong>红色恢复</strong>。SO<sub>2</sub> 通入酸性 KMnO<sub>4</sub> 溶液（紫色）或溴水（橙黄色），颜色<strong>褪去且不恢复</strong>；滴入 BaCl<sub>2</sub> 溶液，再加入盐酸无变化，若再滴入氯水则产生白色沉淀（BaSO<sub>4</sub>）。</p>
+  </div>
+  <div class="cell"><h4>微观粒子</h4>
+    <p>漂白机理：SO<sub>2</sub> 分子与品红等有色有机物结合生成<strong>不稳定的无色加合物</strong>，受热又分解复原——非氧化还原的可逆漂白。使 KMnO<sub>4</sub>/溴水褪色则是氧化还原：+4 价的 S 失电子升为 +6 价（SO<sub>4</sub><sup>2−</sup>），MnO<sub>4</sub><sup>−</sup> 被还原为无色的 Mn<sup>2+</sup>、Br<sub>2</sub> 被还原为 Br<sup>−</sup>——SO<sub>2</sub> 体现还原性，褪色不可逆。</p>
+  </div>
+  <div class="cell"><h4>符号表达</h4>
+    <p class="formula">漂白：SO<sub>2</sub> + 有色物质 ⇌ 无色物质（可逆）</p>
+    <p class="formula">还原性：5SO<sub>2</sub> + 2MnO<sub>4</sub><sup>−</sup> + 2H<sub>2</sub>O = 5SO<sub>4</sub><sup>2−</sup> + 2Mn<sup>2+</sup> + 4H<sup>+</sup></p>
+    <p class="formula">SO<sub>2</sub> + Br<sub>2</sub> + 2H<sub>2</sub>O = H<sub>2</sub>SO<sub>4</sub> + 2HBr</p>
+  </div>
+</div>
+
+<h3>3.3 氨的喷泉实验：大气压推动的红色喷泉</h3>
+<div class="triple">
+  <div class="cell"><h4>宏观现象</h4>
+    <p>圆底烧瓶充满干燥 NH<sub>3</sub>，倒置在滴有酚酞的水槽中；挤入少量水后打开止水夹，水立即沿导管<strong>喷涌而上形成红色喷泉</strong>，最终液体几乎充满整个烧瓶。若换用 HCl 气体与紫色石蕊试液，同样喷起红色喷泉。</p>
+  </div>
+  <div class="cell"><h4>微观粒子</h4>
+    <p>NH<sub>3</sub> 分子与 H<sub>2</sub>O 分子间形成氢键，溶解度极大（1:700）：挤入的少量水瞬间溶解大量 NH<sub>3</sub>，烧瓶内气体骤减、气压远低于外界大气压，大气压把水压入烧瓶形成喷泉。进入瓶中的 NH<sub>3</sub> 继续溶解并部分转化为 NH<sub>3</sub>·H<sub>2</sub>O，电离出 OH<sup>−</sup> 使酚酞变红。</p>
+  </div>
+  <div class="cell"><h4>符号表达</h4>
+    <p class="formula">NH<sub>3</sub> + H<sub>2</sub>O ⇌ NH<sub>3</sub>·H<sub>2</sub>O ⇌ NH<sub>4</sub><sup>+</sup> + OH<sup>−</sup></p>
+    <p class="formula">喷泉条件：气体在该液体中溶解度极大（或快速反应）</p>
+    <p class="formula">适用组合：NH<sub>3</sub>/水、HCl/水、CO<sub>2</sub>/NaOH 浓溶液</p>
+  </div>
+</div>
+
+<h3>3.4 铜与浓硝酸、稀硝酸的反应：一对「兄弟实验」</h3>
+<div class="triple">
+  <div class="cell"><h4>宏观现象</h4>
+    <p><strong>浓硝酸 + 铜</strong>：剧烈反应，铜片迅速溶解，产生大量<strong>红棕色气体</strong>（NO<sub>2</sub>），溶液变为蓝绿色。<strong>稀硝酸 + 铜</strong>：反应缓慢，铜片逐渐溶解，产生<strong>无色气体</strong>（NO），在试管口与空气接触后变为红棕色（2NO + O<sub>2</sub> = 2NO<sub>2</sub>），溶液变为蓝色。</p>
+  </div>
+  <div class="cell"><h4>微观粒子</h4>
+    <p>两者都是 +5 价的 N 作氧化剂、Cu 失电子变为 Cu<sup>2+</sup>。浓硝酸中 HNO<sub>3</sub> 浓度大，每个 N 只降 1 价（+5→+4，得 1 个电子）即满足，故生成 NO<sub>2</sub>；稀硝酸中 HNO<sub>3</sub> 浓度小，N 降 3 价（+5→+2，得 3 个电子），生成 NO。酸根离子 NO<sub>3</sub><sup>−</sup> 在酸性条件下才显强氧化性——稀硝酸盐溶液（如 KNO<sub>3</sub>）遇铜不反应，加稀硫酸后就能反应。</p>
+  </div>
+  <div class="cell"><h4>符号表达</h4>
+    <p class="formula">Cu + 4HNO<sub>3</sub>(浓) = Cu(NO<sub>3</sub>)<sub>2</sub> + 2NO<sub>2</sub>↑ + 2H<sub>2</sub>O</p>
+    <p class="formula">3Cu + 8HNO<sub>3</sub>(稀) = 3Cu(NO<sub>3</sub>)<sub>2</sub> + 2NO↑ + 4H<sub>2</sub>O</p>
+    <p class="formula">离子方程式（稀）：3Cu + 8H<sup>+</sup> + 2NO<sub>3</sub><sup>−</sup> = 3Cu<sup>2+</sup> + 2NO↑ + 4H<sub>2</sub>O</p>
+  </div>
+</div>
+
+<h3>3.5 浓硫酸与铜的反应：酸性和氧化性的「双人舞」</h3>
+<div class="triple">
+  <div class="cell"><h4>宏观现象</h4>
+    <p>铜片与浓硫酸<strong>常温下不反应</strong>；加热后铜片逐渐溶解，产生有<strong>刺激性气味</strong>的气体（能使品红溶液褪色），试管底部可能出现灰白色固体（无水 CuSO<sub>4</sub>，因浓硫酸吸水）；将反应液冷却后倒入水中，溶液呈<strong>蓝色</strong>。</p>
+  </div>
+  <div class="cell"><h4>微观粒子</h4>
+    <p>浓硫酸中起氧化作用的是 +6 价的 S（不是 H<sup>+</sup>），它被还原为 +4 价的 SO<sub>2</sub>；Cu 原子失去 2 个电子变为 Cu<sup>2+</sup>，与未被还原的 SO<sub>4</sub><sup>2−</sup> 结合成 CuSO<sub>4</sub>。每 2 分子浓硫酸中，1 分子作氧化剂（S 降价）、1 分子只提供酸根（体现酸性）。由于水少，生成的 CuSO<sub>4</sub> 以白色固体析出，稀释后才显蓝色（Cu<sup>2+</sup> 水合离子）。</p>
+  </div>
+  <div class="cell"><h4>符号表达</h4>
+    <p class="formula">Cu + 2H<sub>2</sub>SO<sub>4</sub>(浓) <span class="eq-arrow" data-cond="加热">→</span> CuSO<sub>4</sub> + SO<sub>2</sub>↑ + 2H<sub>2</sub>O</p>
+    <p class="formula">电子转移：Cu ~ 2e<sup>−</sup> ~ SO<sub>2</sub></p>
+    <p class="formula">浓硫酸角色：一半氧化剂 + 一半酸</p>
+  </div>
+</div>
+
+<h3>3.6 铵盐与碱共热：检验 NH<sub>4</sub><sup>+</sup> 的「气味信号」</h3>
+<div class="triple">
+  <div class="cell"><h4>宏观现象</h4>
+    <p>取少量 NH<sub>4</sub>Cl 固体于试管中，加入浓 NaOH 溶液并加热，试管口放一片湿润的红色石蕊试纸。加热后产生有<strong>刺激性气味</strong>的气体，湿润的红色石蕊试纸<strong>变蓝</strong>；若用蘸有浓盐酸的玻璃棒靠近试管口，会看到<strong>白烟</strong>。</p>
+  </div>
+  <div class="cell"><h4>微观粒子</h4>
+    <p>NH<sub>4</sub><sup>+</sup> 把 H<sup>+</sup>「交给」OH<sup>−</sup>，先生成 NH<sub>3</sub>·H<sub>2</sub>O（NH<sub>4</sub><sup>+</sup> + OH<sup>−</sup> ⇌ NH<sub>3</sub>·H<sub>2</sub>O）；加热促使 NH<sub>3</sub>·H<sub>2</sub>O 分解并降低 NH<sub>3</sub> 的溶解度，NH<sub>3</sub> 分子大量逸出。逸出的 NH<sub>3</sub> 在试纸表面溶于水，电离出 OH<sup>−</sup> 使红色石蕊试纸变蓝；遇到浓盐酸挥发出的 HCl 分子，则化合成 NH<sub>4</sub>Cl 固体小颗粒（白烟）。</p>
+  </div>
+  <div class="cell"><h4>符号表达</h4>
+    <p class="formula">NH<sub>4</sub><sup>+</sup> + OH<sup>−</sup> <span class="eq-arrow" data-cond="加热">→</span> NH<sub>3</sub>↑ + H<sub>2</sub>O</p>
+    <p class="formula">NH<sub>3</sub> + H<sub>2</sub>O ⇌ NH<sub>3</sub>·H<sub>2</sub>O ⇌ NH<sub>4</sub><sup>+</sup> + OH<sup>−</sup>（试纸变蓝的原理）</p>
+    <p class="formula">NH<sub>3</sub> + HCl = NH<sub>4</sub>Cl（白烟）</p>
+  </div>
+</div>
+</section>
+
+<section>
+<h2>四、典型例题分步拆解</h2>
+
+<div class="card example">
+  <span class="tag">例题 1 · 氯水成分与性质分析</span>
+  <p><strong>题目</strong>：新制氯水中含有多种粒子。某研究性学习小组进行如下实验：（1）向新制氯水中滴加紫色石蕊试液，观察到的现象是____，原因是____。（2）向新制氯水中加入 Na<sub>2</sub>CO<sub>3</sub> 粉末，有气泡产生，写出反应的离子方程式。（3）将氯水光照一段时间后，溶液的 pH 如何变化？漂白能力如何变化？说明原因。</p>
+  <p>【思路点拨】氯水是「三分四离」的混合体系，回答现象题时先想「哪种粒子在起作用」：酸看 H<sup>+</sup>、沉淀看 Cl<sup>−</sup>、漂白看 HClO、氧化看 Cl<sub>2</sub> 和 HClO。</p>
+  <div class="step"><div class="no">1</div><p>（1）现象：<strong>石蕊试液先变红，后褪色</strong>。原因：氯水中含有 H<sup>+</sup>（来自 HCl 的完全电离和 HClO 的少量电离），使石蕊变红；同时氯水中的 HClO 具有强氧化性，把变红的石蕊氧化漂白，所以红色又褪去。</p></div>
+  <div class="step"><div class="no">2</div><p>（2）气泡是 CO<sub>2</sub>，由氯水中的 H<sup>+</sup> 与 CO<sub>3</sub><sup>2−</sup> 反应生成：2H<sup>+</sup> + CO<sub>3</sub><sup>2−</sup> = H<sub>2</sub>O + CO<sub>2</sub>↑。注意 HClO 酸性比 H<sub>2</sub>CO<sub>3</sub> 弱，不与 Na<sub>2</sub>CO<sub>3</sub> 反应放 CO<sub>2</sub>（高中阶段按此处理）。</p></div>
+  <div class="step"><div class="no">3</div><p>（3）光照时 HClO 分解：2HClO <span class="eq-arrow" data-cond="光照">→</span> 2HCl + O<sub>2</sub>↑，生成的盐酸是强酸，且 Cl<sub>2</sub> + H<sub>2</sub>O ⇌ HCl + HClO 平衡不断右移，H<sup>+</sup> 浓度增大，<strong>pH 变小</strong>；HClO 不断消耗，<strong>漂白能力减弱直至消失</strong>，最终氯水变成稀盐酸。</p></div>
+  <div class="ans"><strong>【答案】</strong>（1）先变红后褪色；H<sup>+</sup> 使其变红，HClO 的强氧化性使其褪色。（2）2H<sup>+</sup> + CO<sub>3</sub><sup>2−</sup> = H<sub>2</sub>O + CO<sub>2</sub>↑。（3）pH 变小，漂白能力消失；HClO 见光分解生成盐酸，平衡右移，H<sup>+</sup> 增多而 HClO 耗尽。</div>
+  <p>【方法总结】分析氯水问题的「粒子定位法」：看到酸/气泡找 H<sup>+</sup>，看到白色沉淀（AgCl）找 Cl<sup>−</sup>，看到漂白找 HClO，看到氧化 I<sup>−</sup>/Fe<sup>2+</sup> 找 Cl<sub>2</sub>。久置氯水 = 稀盐酸，这个结论要形成条件反射。</p>
+</div>
+
+<div class="card example">
+  <span class="tag">例题 2 · SO<sub>2</sub> 与 CO<sub>2</sub> 混合气体的检验</span>
+  <p><strong>题目</strong>：某无色气体可能由 CO<sub>2</sub> 和 SO<sub>2</sub> 中的一种或两种组成。实验室提供以下试剂：品红溶液、酸性 KMnO<sub>4</sub> 溶液、澄清石灰水。请设计实验确认气体成分，说明试剂使用顺序和判断依据。</p>
+  <p>【思路点拨】SO<sub>2</sub> 和 CO<sub>2</sub> 都能使澄清石灰水变浑浊（CaSO<sub>3</sub>、CaCO<sub>3</sub> 都是白色沉淀），所以石灰水不能区分二者；必须先用 SO<sub>2</sub> 的漂白性检验它，除尽之后再验 CO<sub>2</sub>。</p>
+  <div class="step"><div class="no">1</div><p>顺序设计：气体依次通过 ①品红溶液 → ②酸性 KMnO<sub>4</sub> 溶液 → ③品红溶液 → ④澄清石灰水。</p></div>
+  <div class="step"><div class="no">2</div><p>装置①的作用：<strong>检验 SO<sub>2</sub></strong>。若品红褪色，证明含 SO<sub>2</sub>；若不褪色，则气体中无 SO<sub>2</sub>。</p></div>
+  <div class="step"><div class="no">3</div><p>装置②的作用：<strong>除去 SO<sub>2</sub></strong>（5SO<sub>2</sub> + 2MnO<sub>4</sub><sup>−</sup> + 2H<sub>2</sub>O = 5SO<sub>4</sub><sup>2−</sup> + 2Mn<sup>2+</sup> + 4H<sup>+</sup>），防止干扰 CO<sub>2</sub> 的检验。</p></div>
+  <div class="step"><div class="no">4</div><p>装置③的作用：<strong>确认 SO<sub>2</sub> 已被除尽</strong>。若品红不褪色，说明 SO<sub>2</sub> 已完全除去——这一步最易遗漏，却正是得分关键。</p></div>
+  <div class="step"><div class="no">5</div><p>装置④的作用：检验 CO<sub>2</sub>。若澄清石灰水变浑浊，证明含 CO<sub>2</sub>。</p></div>
+  <div class="ans"><strong>【答案】</strong>按「品红（检）→ KMnO<sub>4</sub>（除）→ 品红（验尽）→ 石灰水（检 CO<sub>2</sub>）」顺序：①褪色则含 SO<sub>2</sub>，④变浑浊则含 CO<sub>2</sub>；综合判断成分。</div>
+  <p>【方法总结】多种气体连续检验的通用原则：<strong>先检验的不能干扰后检验的，每除掉一种气体必须验证「已除尽」</strong>。类似模型还有「H<sub>2</sub>O、CO<sub>2</sub>、CO 的检验顺序」（先验水，再验 CO<sub>2</sub>，最后把 CO 氧化成 CO<sub>2</sub> 再验）。</p>
+</div>
+
+<div class="card example">
+  <span class="tag">例题 3 · 铜与硝酸反应的计算</span>
+  <p><strong>题目</strong>：将 3.2 g 铜与 50 mL 一定浓度的硝酸恰好完全反应（铜无剩余，硝酸的还原产物只有 NO<sub>2</sub> 和 NO），收集到标准状况下的混合气体 1.12 L。求：（1）混合气体中 NO<sub>2</sub> 和 NO 的物质的量；（2）反应后溶液中 Cu(NO<sub>3</sub>)<sub>2</sub> 的物质的量浓度（设溶液体积仍为 50 mL）。</p>
+  <p>【思路点拨】铜的物质的量固定，它失去的电子总数 = 硝酸得电子总数（电子守恒），这是连接两种气体的桥梁；Cu<sup>2+</sup> 全部来自铜，直接由铜守恒。</p>
+  <div class="step"><div class="no">1</div><p>n(Cu) = 3.2 g ÷ 64 g/mol = 0.05 mol，失电子：0.05 mol × 2 = 0.10 mol。混合气体总物质的量 = 1.12 L ÷ 22.4 L/mol = 0.05 mol。</p></div>
+  <div class="step"><div class="no">2</div><p>设 NO<sub>2</sub> 为 x mol，NO 为 y mol。HNO<sub>3</sub> → NO<sub>2</sub> 得 1 e<sup>−</sup>，HNO<sub>3</sub> → NO 得 3 e<sup>−</sup>。</p></div>
+  <div class="step"><div class="no">3</div><p>列方程组：x + y = 0.05（气体总量）；x + 3y = 0.10（电子守恒）。两式相减：2y = 0.05，y = 0.025 mol，x = 0.025 mol。</p></div>
+  <div class="step"><div class="no">4</div><p>铜守恒：n[Cu(NO<sub>3</sub>)<sub>2</sub>] = n(Cu) = 0.05 mol，c[Cu(NO<sub>3</sub>)<sub>2</sub>] = 0.05 mol ÷ 0.050 L = 1.0 mol/L。</p></div>
+  <div class="ans"><strong>【答案】</strong>（1）n(NO<sub>2</sub>) = n(NO) = <strong>0.025 mol</strong>；（2）c[Cu(NO<sub>3</sub>)<sub>2</sub>] = <strong>1.0 mol/L</strong>。</div>
+  <p>【方法总结】硝酸计算题「两守恒」通吃：<strong>电子守恒</strong>（金属失电子 = N 得电子）+<strong>原子守恒</strong>（Cu → Cu(NO<sub>3</sub>)<sub>2</sub>；N 原子 = 气体中的 N + 盐中 NO<sub>3</sub><sup>−</sup> 的 N）。不需要分别写两个方程式，设两个未知数列方程组即可。</p>
+</div>
+
+<div class="card example">
+  <span class="tag">例题 4 · 喷泉实验与氨水浓度计算</span>
+  <p><strong>题目</strong>：用圆底烧瓶收集满干燥的 NH<sub>3</sub>，在标准状况下做喷泉实验。实验结束后，水恰好充满整个烧瓶。求所得氨水的物质的量浓度。（结果保留三位有效数字）</p>
+  <p>【思路点拨】抓住「烧瓶体积」这个桥梁：烧瓶有多大，原 NH<sub>3</sub> 就有多少体积；最终溶液也充满整个烧瓶，溶液体积 = 烧瓶体积。用 V 表示烧瓶体积，两个体积会约掉。</p>
+  <div class="step"><div class="no">1</div><p>设烧瓶体积为 V L。标准状况下，n(NH<sub>3</sub>) = V L ÷ 22.4 L/mol = V/22.4 mol。</p></div>
+  <div class="step"><div class="no">2</div><p>NH<sub>3</sub> 极易溶于水，实验后水充满烧瓶，所得氨水体积 = V L（忽略溶解导致的体积变化，高中阶段默认溶液体积等于进入的水的体积，即烧瓶容积）。</p></div>
+  <div class="step"><div class="no">3</div><p>c(NH<sub>3</sub>) = (V/22.4) mol ÷ V L = 1/22.4 mol/L ≈ 0.0446 mol/L。</p></div>
+  <div class="ans"><strong>【答案】</strong>所得氨水的物质的量浓度为 <strong>0.0446 mol/L（即 1/22.4 mol/L）</strong>。</div>
+  <p>【方法总结】喷泉实验浓度计算的关键是「设而不求」：烧瓶体积 V 最终约掉，结果只与气体摩尔体积有关（标准状况下恒为 1/22.4 mol/L），与烧瓶大小、气体种类（只要全溶、无剩余）无关。若气体是 HCl，结果相同；若收集的 NH<sub>3</sub> 不纯（混有空气），则水不能充满，浓度仍为 1/22.4 mol/L（因为溶解的 NH<sub>3</sub> 与进入的水仍按比例对应）——这个结论常作为选择题的「反直觉」选项出现。</p>
+</div>
+
+<div class="card example">
+  <span class="tag">例题 5 · NO<sub>2</sub>、O<sub>2</sub> 混合气体溶于水</span>
+  <p><strong>题目</strong>：将 12 mL NO<sub>2</sub> 和 O<sub>2</sub> 的混合气体通入倒扣在水槽中的量筒内，充分反应后，量筒内剩余 2 mL 无色气体。求原混合气体中 NO<sub>2</sub> 和 O<sub>2</sub> 各多少毫升？</p>
+  <p>【思路点拨】总反应 4NO<sub>2</sub> + O<sub>2</sub> + 2H<sub>2</sub>O = 4HNO<sub>3</sub>，恰好完全反应时 V(NO<sub>2</sub>):V(O<sub>2</sub>) = 4:1。剩余 2 mL 无色气体有两种可能：O<sub>2</sub> 过量（剩 O<sub>2</sub>）或 NO<sub>2</sub> 过量（过量的 NO<sub>2</sub> 与水反应生成 NO，剩 NO）——分类讨论是这类题的灵魂。</p>
+  <div class="step"><div class="no">1</div><p>情况一：剩余 2 mL 是 O<sub>2</sub>。则参加 4:1 反应的气体共 12 − 2 = 10 mL，其中 NO<sub>2</sub> 占 4/5，即 8 mL；O<sub>2</sub> 共 2 + 2 = 4 mL？——核算：参加反应的 O<sub>2</sub> = 10 mL × 1/5 = 2 mL，加上剩余 2 mL，O<sub>2</sub> 共 4 mL，NO<sub>2</sub> 8 mL。</p></div>
+  <div class="step"><div class="no">2</div><p>验证：8 : 2 = 4 : 1 恰好反应，剩 O<sub>2</sub> 2 mL，总量 12 mL。✔</p></div>
+  <div class="step"><div class="no">3</div><p>情况二：剩余 2 mL 是 NO（NO<sub>2</sub> 过量时，过量部分按 3NO<sub>2</sub> + H<sub>2</sub>O = 2HNO<sub>3</sub> + NO 转化，每 3 体积 NO<sub>2</sub> 剩 1 体积 NO）。则过量的 NO<sub>2</sub> 为 2 × 3 = 6 mL；参加 4:1 反应的混合气为 12 − 6 = 6 mL，其中 NO<sub>2</sub> = 6 × 4/5 = 4.8 mL，O<sub>2</sub> = 6 × 1/5 = 1.2 mL。</p></div>
+  <div class="step"><div class="no">4</div><p>情况二汇总：NO<sub>2</sub> 共 4.8 + 6 = 10.8 mL，O<sub>2</sub> 1.2 mL。验证：10.8 − 6 = 4.8 与 1.2 之比为 4:1，过量 6 mL NO<sub>2</sub> 生成 2 mL NO，总量 12 mL。✔</p></div>
+  <div class="ans"><strong>【答案】</strong>两组解：① NO<sub>2</sub> 8 mL、O<sub>2</sub> 4 mL（剩余 O<sub>2</sub> 2 mL）；② NO<sub>2</sub> 10.8 mL、O<sub>2</sub> 1.2 mL（NO<sub>2</sub> 过量，转化为剩余 NO 2 mL）。</div>
+  <p>【方法总结】氮氧化物溶于水的计算三步走：① 写出叠加方程式（4NO<sub>2</sub>+O<sub>2</sub>、4NO+3O<sub>2</sub>）确定恰好反应比例；② 判断剩余气体可能是什么（必分类讨论！）；③ NO<sub>2</sub> 过量时记住「3 份 NO<sub>2</sub> → 1 份 NO」的换算。漏掉第二种情况是此类题的最大丢分点。</p>
+</div>
+
+<div class="card example">
+  <span class="tag">例题 6 · 工业流程：氨催化氧化法制硝酸</span>
+  <p><strong>题目</strong>：工业上用氨催化氧化法制硝酸，流程为：NH<sub>3</sub> →（催化氧化）→ NO →（氧化）→ NO<sub>2</sub> →（吸收）→ HNO<sub>3</sub>。（1）写出三步转化的化学方程式。（2）吸收塔中为什么要通入过量的空气？（3）从氧化还原角度分析，整个过程中 NH<sub>3</sub> 中的氮元素化合价发生了怎样的变化？</p>
+  <p>【思路点拨】这是「连续氧化」的典型工业应用：氮元素从 −3 价一路升高到 +5 价。吸收步骤中 NO<sub>2</sub> 与水反应会放出 NO，通入空气让 NO 再氧化为 NO<sub>2</sub> 循环吸收，从而提高原料的利用率。</p>
+  <div class="step"><div class="no">1</div><p>（1）第一步：4NH<sub>3</sub> + 5O<sub>2</sub> <span class="eq-arrow" data-cond="催化剂、加热">→</span> 4NO + 6H<sub>2</sub>O；第二步：2NO + O<sub>2</sub> = 2NO<sub>2</sub>；第三步：3NO<sub>2</sub> + H<sub>2</sub>O = 2HNO<sub>3</sub> + NO。</p></div>
+  <div class="step"><div class="no">2</div><p>（2）第三步产生的 NO 若不处理会浪费氮元素并污染环境；通入过量空气（提供 O<sub>2</sub>）使 NO 不断被氧化为 NO<sub>2</sub> 再被吸收，总效果相当于 4NO<sub>2</sub> + O<sub>2</sub> + 2H<sub>2</sub>O = 4HNO<sub>3</sub>，使氮元素尽可能完全转化为硝酸，提高产率并减少污染。</p></div>
+  <div class="step"><div class="no">3</div><p>（3）NH<sub>3</sub> 中 N 为 −3 价，最终 HNO<sub>3</sub> 中 N 为 +5 价，每个 N 原子共失去 8 个电子，全程被氧化；O<sub>2</sub> 是整个流程中唯一的氧化剂。该流程体现了「低价态非金属氢化物经连续氧化制取最高价含氧酸」的工业思想（类比：S → SO<sub>2</sub> → SO<sub>3</sub> → H<sub>2</sub>SO<sub>4</sub>）。</p></div>
+  <div class="ans"><strong>【答案】</strong>见上述各步骤。</div>
+  <p>【方法总结】工业制酸的两大模板：① 氨法硝酸「NH<sub>3</sub> → NO → NO<sub>2</sub> → HNO<sub>3</sub>」（催化剂为铂铑合金网）；② 接触法硫酸「S/FeS<sub>2</sub> → SO<sub>2</sub> → SO<sub>3</sub> → 98.3% 浓硫酸吸收 → H<sub>2</sub>SO<sub>4</sub>」。记住「催化剂、热交换、逆流吸收、循环利用」四个工艺关键词，流程题就有底气。</p>
+</div>
+
+<div class="card example">
+  <span class="tag">例题 7 · 实验室制取并验证氯气性质的综合实验</span>
+  <p><strong>题目</strong>：实验室用 MnO<sub>2</sub> 与浓盐酸在加热条件下反应制取 Cl<sub>2</sub>，并依次验证 Cl<sub>2</sub> 的漂白性（干燥/湿润有色布条对比）和氧化性（NaBr 溶液、KI-淀粉溶液），最后进行尾气处理。请回答：（1）制得的 Cl<sub>2</sub> 中混有哪些杂质气体？如何依次除去？（2）干燥布条与湿润布条的现象分别是什么？可得出什么结论？（3）尾气用什么试剂吸收？写出离子方程式。</p>
+  <p>【思路点拨】气体实验题的通用框架是「发生 → 除杂 → 干燥 → 性质验证/收集 → 尾气处理」。净化顺序的原则是「<strong>先除杂、后干燥</strong>」——若先干燥再通过水溶液除杂，气体又会带出水蒸气，前功尽弃。</p>
+  <div class="step"><div class="no">1</div><p>（1）浓盐酸有挥发性，且反应生成水，故 Cl<sub>2</sub> 中混有 <strong>HCl 气体和水蒸气</strong>。先通过<strong>饱和食盐水</strong>除去 HCl（食盐水中高浓度的 Cl<sup>−</sup> 抑制 Cl<sub>2</sub> 与水的反应，降低 Cl<sub>2</sub> 的溶解度，而 HCl 极易溶于水被吸收），再通过<strong>浓硫酸</strong>除去水蒸气。</p></div>
+  <div class="step"><div class="no">2</div><p>（2）干燥的有色布条<strong>不褪色</strong>，湿润的有色布条<strong>褪色</strong>。对比结论：干燥的 Cl<sub>2</sub> 没有漂白性，真正起漂白作用的是 Cl<sub>2</sub> 与水反应生成的 <strong>HClO</strong>。</p></div>
+  <div class="step"><div class="no">3</div><p>（3）性质验证：Cl<sub>2</sub> 通入 NaBr 溶液，溶液由无色变为橙黄色——Cl<sub>2</sub> + 2Br<sup>−</sup> = 2Cl<sup>−</sup> + Br<sub>2</sub>；通入 KI-淀粉溶液，溶液变蓝——Cl<sub>2</sub> + 2I<sup>−</sup> = 2Cl<sup>−</sup> + I<sub>2</sub>。说明氧化性 Cl<sub>2</sub> &gt; Br<sub>2</sub> &gt; I<sub>2</sub>。</p></div>
+  <div class="step"><div class="no">4</div><p>（4）尾气用 <strong>NaOH 溶液</strong>吸收：Cl<sub>2</sub> + 2OH<sup>−</sup> = Cl<sup>−</sup> + ClO<sup>−</sup> + H<sub>2</sub>O。不能用澄清石灰水——Ca(OH)<sub>2</sub> 溶解度小、溶液浓度太低，吸收不完全。</p></div>
+  <div class="ans"><strong>【答案】</strong>（1）HCl、水蒸气；依次通过饱和食盐水、浓硫酸。（2）干燥布条不褪色、湿润布条褪色，说明起漂白作用的是 HClO 而不是 Cl<sub>2</sub>。（3）NaOH 溶液；Cl<sub>2</sub> + 2OH<sup>−</sup> = Cl<sup>−</sup> + ClO<sup>−</sup> + H<sub>2</sub>O。</div>
+  <p>【方法总结】气体制备类综合题用「五段式」框架拆解：发生装置（由反应物状态和反应条件决定）→ 除杂（试剂只吸收杂质、不与目标气体反应）→ 干燥（酸性/碱性/中性干燥剂的选择）→ 性质实验或收集 → 尾气处理（易溶于水的气体注意防倒吸）。把每一段的「为什么」想清楚，比死记装置图更有用。</p>
+</div>
+</section>
+
+<section>
+<h2>五、易错点与成因</h2>
+
+<div class="card trap">
+  <span class="tag">易错点 1</span>
+  <p><strong>易错表现</strong>：认为「干燥的 Cl<sub>2</sub> 能使干燥的有色布条褪色」，或「起漂白作用的是 Cl<sub>2</sub> 分子」。</p>
+  <p><strong>错误成因</strong>：把「氯气能漂白」这个生活化说法当成微观本质，没有理解漂白作用的真正来源是 Cl<sub>2</sub> 与水反应生成的 HClO。</p>
+  <p><strong>正确理解</strong>：起漂白作用的是 HClO（强氧化性破坏有色物质），不是 Cl<sub>2</sub>。干燥的 Cl<sub>2</sub> 遇干燥布条不褪色，遇湿润布条褪色；液氯无漂白性。验证实验：Cl<sub>2</sub> 依次通过干燥布条（不褪色）和湿润布条（褪色）。</p>
+  <p><strong>避坑口诀</strong>：「漂白功臣是次氯酸，干燥氯气干瞪眼。」</p>
+</div>
+
+<div class="card trap">
+  <span class="tag">易错点 2</span>
+  <p><strong>易错表现</strong>：认为「SO<sub>2</sub> 使溴水、酸性 KMnO<sub>4</sub> 褪色体现漂白性」，或认为「SO<sub>2</sub> 和 Cl<sub>2</sub> 等体积混合后漂白能力增强」。</p>
+  <p><strong>错误成因</strong>：把所有「褪色」都归为漂白，混淆了漂白（与有色物质化合，非氧化还原）与氧化还原褪色两种机理；不知道 SO<sub>2</sub> 与 Cl<sub>2</sub> 在水中恰好互相消耗。</p>
+  <p><strong>正确理解</strong>：SO<sub>2</sub> 使品红褪色 = 漂白性（可逆，加热复原）；使溴水/KMnO<sub>4</sub> 褪色 = 还原性（氧化还原，不可逆）。SO<sub>2</sub> + Cl<sub>2</sub> + 2H<sub>2</sub>O = H<sub>2</sub>SO<sub>4</sub> + 2HCl，等体积混合后两者恰好完全反应，<strong>漂白能力丧失</strong>。</p>
+  <p><strong>避坑口诀</strong>：「品红褪色是漂白，溴水高锰是还原；二强相遇双双亡。」</p>
+</div>
+
+<div class="card trap">
+  <span class="tag">易错点 3</span>
+  <p><strong>易错表现</strong>：认为「浓硫酸使蔗糖变黑体现吸水性」，或「浓硫酸能干燥 NH<sub>3</sub>、H<sub>2</sub>S」；把「钝化」当成不发生反应。</p>
+  <p><strong>错误成因</strong>：混淆吸水性（吸收现成的水）与脱水性（把 H、O 按 2:1 从有机物中夺走）的概念边界；不知道浓硫酸作为干燥剂的禁忌（碱性气体、还原性气体）；把钝化理解为「物理隔离」而非化学变化。</p>
+  <p><strong>正确理解</strong>：蔗糖（C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>）分子中本没有 H<sub>2</sub>O，浓硫酸按水的组成脱去 H、O 使碳游离出来变黑，这是<strong>脱水性</strong>（生成的碳又部分被氧化为 CO<sub>2</sub>，体现强氧化性，「黑面包」实验是脱水性+强氧化性的组合）。浓硫酸不能干燥 NH<sub>3</sub>（中和反应）、H<sub>2</sub>S/HBr/HI（氧化还原）。钝化是 Fe、Al 表面生成了致密氧化膜的<strong>化学变化</strong>，加热或稀释后膜被破坏会继续反应。</p>
+  <p><strong>避坑口诀</strong>：「吸水干燥看现成，脱水炭化看组成；氨气硫化氢，浓酸干燥都不行；钝化不是不反应，是生成了保护膜。」</p>
+</div>
+
+<div class="card trap">
+  <span class="tag">易错点 4</span>
+  <p><strong>易错表现</strong>：写「Cu + 4HNO<sub>3</sub>(浓)」的产物时生成 NO 或 H<sub>2</sub>；认为「稀硝酸氧化性比浓硝酸强」（因为氮降的价态更多）。</p>
+  <p><strong>错误成因</strong>：没有建立「浓度决定产物」的规律（浓 → NO<sub>2</sub>，稀 → NO），或错误地用「得电子总数」衡量氧化性强弱。氧化性强弱看得电子的<strong>难易程度</strong>（反应条件、剧烈程度），不看得电子多少。</p>
+  <p><strong>正确理解</strong>：硝酸与金属反应不产生 H<sub>2</sub>；浓硝酸还原产物为 NO<sub>2</sub>（N：+5→+4），稀硝酸为 NO（+5→+2）。浓硝酸常温就能剧烈氧化 Cu，稀硝酸则缓慢——<strong>浓硝酸氧化性更强</strong>（得电子更容易）。类似的：浓盐酸与 MnO<sub>2</sub> 反应、稀盐酸不反应，也说明浓度越大氧化/还原性越强。</p>
+  <p><strong>避坑口诀</strong>：「浓二氧化氮稀一氧化氮，氧化强弱看反应难不难。」</p>
+</div>
+
+<div class="card trap">
+  <span class="tag">易错点 5</span>
+  <p><strong>易错表现</strong>：认为「NH<sub>3</sub> 是碱」「氨水的溶质是 NH<sub>3</sub>·H<sub>2</sub>O」；收集 NH<sub>3</sub> 用向上排空气法，或用浓硫酸干燥 NH<sub>3</sub>。</p>
+  <p><strong>错误成因</strong>：混淆了「气体本身」与「其水溶液的酸碱性」——NH<sub>3</sub> 自身不能电离出 OH<sup>−</sup>，显碱性靠的是与水反应生成的 NH<sub>3</sub>·H<sub>2</sub>O；对氨水这个复杂体系（NH<sub>3</sub>、NH<sub>3</sub>·H<sub>2</sub>O、NH<sub>4</sub><sup>+</sup> 等共存）认识不清，溶质的界定规则（溶解的气体仍以原物质为溶质）没掌握；实验细节记忆不牢。</p>
+  <p><strong>正确理解</strong>：NH<sub>3</sub> 是碱性气体但不是碱（碱是电离出的阴离子全部是 OH<sup>−</sup> 的化合物）；氨水的溶质按 NH<sub>3</sub> 计算（计算物质的量浓度时以通入的 NH<sub>3</sub> 为准）。NH<sub>3</sub> 密度小于空气，用<strong>向下</strong>排空气法收集；干燥用碱石灰，绝不能用浓硫酸（2NH<sub>3</sub> + H<sub>2</sub>SO<sub>4</sub> = (NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub>）。</p>
+  <p><strong>避坑口诀</strong>：「氨气非碱氨水碱，溶质还按氨气算；向下排气碱石灰干。」</p>
+</div>
+
+<div class="card trap">
+  <span class="tag">易错点 6</span>
+  <p><strong>易错表现</strong>：认为「SiO<sub>2</sub> 能与水反应生成硅酸」，或由「SiO<sub>2</sub> + Na<sub>2</sub>CO<sub>3</sub> <span class="eq-arrow" data-cond="高温">→</span> Na<sub>2</sub>SiO<sub>3</sub> + CO<sub>2</sub>↑」得出「硅酸酸性强于碳酸」；认为光导纤维的成分是 Si。</p>
+  <p><strong>错误成因</strong>：把 CO<sub>2</sub> 的性质（溶于水生成碳酸）机械迁移到 SiO<sub>2</sub> 上，忽视 SiO<sub>2</sub> 是原子晶体、不溶于水的事实；不理解高温反应（气体逸出驱动）与溶液反应（强酸制弱酸）的原理不同；材料成分记忆混淆（Si 作芯片、SiO<sub>2</sub> 作光纤）。</p>
+  <p><strong>正确理解</strong>：SiO<sub>2</sub> 不与水反应，H<sub>2</sub>SiO<sub>3</sub> 只能用「Na<sub>2</sub>SiO<sub>3</sub> + 强酸」间接制得；酸性 H<sub>2</sub>CO<sub>3</sub> &gt; H<sub>2</sub>SiO<sub>3</sub>（证据：Na<sub>2</sub>SiO<sub>3</sub> + CO<sub>2</sub> + H<sub>2</sub>O = H<sub>2</sub>SiO<sub>3</sub>↓ + Na<sub>2</sub>CO<sub>3</sub>）；光导纤维、石英、水晶的成分是 SiO<sub>2</sub>，半导体芯片、太阳能电池的成分是晶体 Si。</p>
+  <p><strong>避坑口诀</strong>：「二氧化硅不恋水，硅酸要靠盐来制；高温反应不比酸，芯片是硅光纤是硅氧二。」</p>
+</div>
+
+<div class="card trap">
+  <span class="tag">易错点 7</span>
+  <p><strong>易错表现</strong>：认为「1 mol Cl<sub>2</sub> 与水充分反应转移 1 mol 电子」，或把 Cl<sub>2</sub> 与水的反应当作能进行到底的反应。</p>
+  <p><strong>错误成因</strong>：忽略了 Cl<sub>2</sub> 与水的反应是<strong>可逆反应</strong>（⇌），反应物不能完全转化；把方程式的计量关系当成了实际转化量。</p>
+  <p><strong>正确理解</strong>：Cl<sub>2</sub> + H<sub>2</sub>O ⇌ HCl + HClO 是可逆反应，新制氯水中仍有大量未反应的 Cl<sub>2</sub> 分子。1 mol Cl<sub>2</sub> 通入水中，实际发生反应的 Cl<sub>2</sub> 远小于 1 mol，转移电子数远小于 N<sub>A</sub>。类似的「可逆陷阱」还有：2SO<sub>2</sub> + O<sub>2</sub> ⇌ 2SO<sub>3</sub>、N<sub>2</sub> + 3H<sub>2</sub> ⇌ 2NH<sub>3</sub> 等——凡涉及可逆反应，「完全转化」「转移电子按投料全算」的说法一律错误。</p>
+  <p><strong>避坑口诀</strong>：「可逆反应用双向箭，投料再多也转不完。」</p>
+</div>
+
+<div class="card trap">
+  <span class="tag">易错点 8</span>
+  <p><strong>易错表现</strong>：收集 NO 用排空气法、收集 NO<sub>2</sub> 用排水法；或把 NH<sub>3</sub> 与 HCl 相遇的现象描述为「白雾」。</p>
+  <p><strong>错误成因</strong>：没有抓住两种气体与空气/水的「禁忌反应」：NO 一遇 O<sub>2</sub> 就变质（2NO + O<sub>2</sub> = 2NO<sub>2</sub>），所以不能用排空气法；NO<sub>2</sub> 一遇水就反应（3NO<sub>2</sub> + H<sub>2</sub>O = 2HNO<sub>3</sub> + NO），所以不能用排水法。同时混淆了「烟」（固体小颗粒）与「雾」（小液滴）。</p>
+  <p><strong>正确理解</strong>：NO 只能用排水法收集，NO<sub>2</sub> 只能用向上排空气法收集。NH<sub>3</sub> 与 HCl 相遇生成的 NH<sub>4</sub>Cl 是固体小颗粒，现象应描述为「产生<strong>白烟</strong>」；而 HCl 气体本身在空气中形成盐酸小液滴，才是「白雾」。</p>
+  <p><strong>避坑口诀</strong>：「一氧化氮怕氧气，排水收集最安心；二氧化氮怕见水，向上排气是正宗；烟是固体雾是液。」</p>
+</div>
+</section>
+
+<section>
+<h2>六、与前后章节的联系及高考怎么考</h2>
+<ul>
+  <li><strong>承上</strong>：本章是氧化还原反应与离子反应（第二章）的最大应用场——Cl<sub>2</sub>、浓硫酸、HNO<sub>3</sub> 三大强氧化剂，SO<sub>2</sub>、NH<sub>3</sub>、NO 等还原剂，每个反应都要能判断氧化剂/还原剂、配平、写离子方程式；「连续氧化」（S→SO<sub>2</sub>→SO<sub>3</sub>、N<sub>2</sub>→NO→NO<sub>2</sub>）是推断题的直接素材。</li>
+  <li><strong>启下</strong>：元素周期律（第三章）将用「非金属性强弱」统一解释本章事实：氧化性 Cl<sub>2</sub>&gt;S、氢化物稳定性 HCl&gt;H<sub>2</sub>S、最高价含氧酸酸性 HClO<sub>4</sub>&gt;H<sub>2</sub>SO<sub>4</sub>&gt;H<sub>2</sub>CO<sub>3</sub>&gt;H<sub>2</sub>SiO<sub>3</sub>；化学平衡（选必 1）会重新研究合成氨与 SO<sub>2</sub> 催化氧化这两个可逆反应；氮、硫的氧化物是「化学与环境」议题的主角（酸雨、光化学烟雾、臭氧空洞）。</li>
+  <li><strong>高考怎么考</strong>：① 选择题：氯水成分分析、SO<sub>2</sub> 性质辨析、浓硫酸特性判断、硅酸盐材料成分，几乎年年出现；② 实验题：Cl<sub>2</sub>/NH<sub>3</sub> 的制备与净化、喷泉实验设计、SO<sub>2</sub> 与 CO<sub>2</sub> 的连续检验、浓硫酸与蔗糖/Cu 的探究；③ 工业流程题：接触法制硫酸、氨催化氧化制硝酸、粗硅提纯；④ 计算题：硝酸与金属反应（电子守恒+原子守恒）、NO<sub>x</sub> 溶于水、喷泉实验浓度。全章在试卷中直接或间接占约 20 分，氮、硫两族是大题的高频载体。</li>
+</ul>
+<div class="card violet">
+  <span class="tag">规律汇总</span>
+  <p><strong>中学化学四大连续氧化关系</strong>（推断题的高频骨架，与金属部分对照记忆）：</p>
+  <ul>
+    <li>C → CO → CO<sub>2</sub>（燃料的不完全燃烧与完全燃烧）</li>
+    <li>N<sub>2</sub>/NH<sub>3</sub> → NO → NO<sub>2</sub>（雷雨发庄稼、工业制硝酸）</li>
+    <li>S/H<sub>2</sub>S → SO<sub>2</sub> → SO<sub>3</sub>（接触法制硫酸）</li>
+    <li>Na → Na<sub>2</sub>O → Na<sub>2</sub>O<sub>2</sub>（钠在空气中缓慢氧化与加热燃烧）</li>
+  </ul>
+  <p>凡推断题中出现「A 能被 O<sub>2</sub> 连续氧化」，优先从这四条线中排查。</p>
+</div>
+</section>
+
+<section>
+<h2>七、章末自检清单</h2>
+<ul class="checklist">
+  <li>我能说出氯水的「三分四离」七种粒子，并解释新制氯水使石蕊「先变红后褪色」的原因。</li>
+  <li>我能写出实验室制 Cl<sub>2</sub> 的方程式，说明净化（饱和食盐水、浓硫酸）、收集、尾气处理（NaOH）的装置与原理。</li>
+  <li>我能写出工业制漂白粉的方程式，说明其有效成分是 Ca(ClO)<sub>2</sub>，并写出漂白原理与失效原因。</li>
+  <li>我能区分 SO<sub>2</sub> 的漂白性（品红，可逆）与还原性（溴水、KMnO<sub>4</sub> 褪色，不可逆），并写出与 H<sub>2</sub>S 反应的方程式。</li>
+  <li>我能设计实验连续检验 SO<sub>2</sub> 和 CO<sub>2</sub>：品红→酸性 KMnO<sub>4</sub>→品红→澄清石灰水，并说明每一步的作用。</li>
+  <li>我能说出浓硫酸三大特性（吸水性、脱水性、强氧化性）的本质区别，写出 Cu、C 与浓硫酸反应的方程式，并解释「一半氧化剂一半酸」。</li>
+  <li>我能描述 NO 遇空气变红棕色、NO<sub>2</sub> 溶于水的现象，写出 N<sub>2</sub>→NO→NO<sub>2</sub>→HNO<sub>3</sub> 的连续反应，并用 4:1、4:3 模型做混合气体计算（含分类讨论）。</li>
+  <li>我能写出实验室制 NH<sub>3</sub> 的方程式，说明干燥（碱石灰）、收集（向下排空气）、验满（湿润红色石蕊试纸变蓝/白烟）的细节，解释喷泉实验原理并算出 1/22.4 mol/L 的浓度。</li>
+  <li>我能写出 Cu 与浓、稀硝酸反应的方程式和离子方程式，描述现象差异（红棕 vs 无色→试管口红棕），并用电子守恒做混合气体计算。</li>
+  <li>我能说出 NH<sub>4</sub><sup>+</sup> 的检验方法（加浓碱加热，湿润红色石蕊试纸变蓝），写出 NH<sub>4</sub>Cl、NH<sub>4</sub>HCO<sub>3</sub> 受热分解的方程式。</li>
+  <li>我能写出 SiO<sub>2</sub> 与 NaOH、HF、Na<sub>2</sub>CO<sub>3</sub>（高温）反应的方程式，说明玻璃刻蚀、碱液瓶用橡胶塞、制玻璃的原理。</li>
+  <li>我能辨析 Si 与 SiO<sub>2</sub> 的用途（芯片用 Si、光纤用 SiO<sub>2</sub>），说明硅酸的间接制法和酸性弱于碳酸的证据。</li>
+</ul>
+</section>
+
+</main>
+<footer class="chap-foot">高考备考 · 化学 · 深度学习材料 · 2026</footer>
+</body>
+</html>

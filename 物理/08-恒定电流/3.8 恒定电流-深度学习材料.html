@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>恒定电流 - 深度学习材料</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover：替换 {{章节名}} {{模块定位与分值}} {{章节号}} -->
+<nav class="chap-nav">高考备考 · 物理 · 深度学习材料 ｜ 3.8 恒定电流</nav>
+<header class="chap-head">
+  <h1>恒定电流</h1>
+  <p class="chap-meta"></p>
+</header>
+  <div class="subtitle">深度学习材料 · 概念 · 推导 · 模型 · 方法</div>
+  <div class="meta">
+    <span>高中物理 · 电磁学模块 · 实验题高发区</span><br>
+    <span>依据：《高考物理95+分备考指南》3.8节要求</span><br>
+    <span>适用：高一同步学习 &amp; 高考一轮复习</span><br>
+    <span>学生：小兵</span>
+  </div>
+</div>
+
+<p class="hint">
+  💡 提示：所有公式由 MathJax 渲染；带推导的公式请合上书独立推一遍
+</p>
+
+<!-- 目录：与正文 h2 的 id 对应 -->
+<div class="toc">
+  <strong>目录</strong>
+  <ol>
+    <li><a href="#s1">一、本章总览</a></li>
+    <li><a href="#s2">二、核心概念与物理量</a></li>
+    <li><a href="#s3">三、公式与推导（含适用条件）</a></li>
+    <li><a href="#s4">四、典型例题</a></li>
+    <li><a href="#s5">五、易错点与成因分析</a></li>
+    <li><a href="#s6">六、章末自检清单</a></li>
+  </ol>
+</div>
+
+<h2 id="s1">一、本章总览</h2>
+
+<p>小兵你好，欢迎来到电磁学的世界。从这一章开始，你手里研究的不再是小球、斜面和弹簧，而是一种看不见摸不着、却时刻在身边流动的东西——<strong>电流</strong>。这一章《恒定电流》是整个高中电磁学的地基：后面学磁场、电磁感应、交流电，都要先会算电路。</p>
+
+<h3>1.1 高考定位</h3>
+<p>云南高考物理满分 100 分、考试时间 75 分钟，自主命题。电磁学合计约 40 分，其中本章「恒定电流」的直接考查通常有 <strong>6~12 分</strong>，主要以两种形式出现：</p>
+<ul>
+  <li><strong>实验题（高发区）</strong>：伏安法测电阻、描绘小灯泡伏安特性曲线、测电源电动势和内阻、电表改装与多用电表，几乎年年必有一道电学实验，分值约 6~9 分；</li>
+  <li><strong>选择题/计算题局部</strong>：闭合电路动态分析、含电动机电路的功率计算、电路故障判断，常与电场、磁场知识综合。</li>
+</ul>
+<p>更重要的是，本章是「电磁感应综合大题」的电路子模型——不会闭合电路分析，压轴题第二问往往无从下手。所以这一章请按「地基」标准要求自己。</p>
+
+<h3>1.2 知识体系图</h3>
+<div class="map">
+  <div class="row"><div class="node root">恒定电流</div></div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node">基本概念</div>
+    <div class="node">基本规律</div>
+    <div class="node">电路分析</div>
+    <div class="node">电学实验</div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node leaf">电流 $I$ 与方向约定</div>
+    <div class="node leaf">电压 $U$ · 电阻 $R$</div>
+    <div class="node leaf">电动势 $E$</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">欧姆定律 $I=\dfrac{U}{R}$</div>
+    <div class="node leaf">电阻定律 $R=\rho\dfrac{L}{S}$</div>
+    <div class="node leaf">串并联规律</div>
+    <div class="node leaf">焦耳定律 $Q=I^2Rt$</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">闭合电路欧姆定律</div>
+    <div class="node leaf">路端电压 $U=E-Ir$</div>
+    <div class="node leaf">动态分析 · 等效电源</div>
+    <div class="node leaf">电源三种功率</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">伏安法（内接/外接）</div>
+    <div class="node leaf">电表改装</div>
+    <div class="node leaf">测 $E$ 和 $r$</div>
+  </div>
+</div>
+
+<h3>1.3 学法建议</h3>
+<div class="deep">
+<strong>给高一的你三条建议：</strong>
+<ul>
+  <li><strong>把「电」想成「水」</strong>：电压像水压、电流像水流、电阻像水管的狭窄程度。类比能帮你建立直觉，但学完每个公式后要回到电荷与能量层面再理解一遍。</li>
+  <li><strong>每个公式都要问「它什么时候不成立」</strong>：本章的坑几乎全是「适用条件」——欧姆定律、$P=I^2R$、最大功率条件，莫不如此。</li>
+  <li><strong>动手画电路图</strong>：实验题的胜负手在电路图。看到题目先在草稿纸上把回路、电表接法画清楚，再动笔算。</li>
+</ul>
+</div>
+
+<h2 id="s2">二、核心概念与物理量</h2>
+
+<h3>2.1 物理量速查表</h3>
+<table>
+  <tr><th>物理量</th><th>符号</th><th>定义（式）</th><th>单位</th><th>标/矢性</th><th>说明</th></tr>
+  <tr><td>电流</td><td>$I$</td><td>$I=\dfrac{q}{t}$</td><td>安培（$\text{A}$）</td><td>标量（有方向）</td><td class="l">方向不参与矢量合成，只表示电荷流向</td></tr>
+  <tr><td>电压（电势差）</td><td>$U$</td><td>$U=\dfrac{W}{q}$</td><td>伏特（$\text{V}$）</td><td>标量</td><td class="l">电场力移动电荷做功的本领</td></tr>
+  <tr><td>电阻</td><td>$R$</td><td>$R=\dfrac{U}{I}$（定义式）</td><td>欧姆（$\Omega$）</td><td>标量</td><td class="l">导体对电流的阻碍作用</td></tr>
+  <tr><td>电动势</td><td>$E$</td><td>$E=\dfrac{W_{\text{非}}}{q}$</td><td>伏特（$\text{V}$）</td><td>标量</td><td class="l">电源把其他形式能转化为电能的本领</td></tr>
+  <tr><td>电功</td><td>$W$</td><td>$W=UIt$</td><td>焦耳（$\text{J}$）</td><td>标量</td><td class="l">电流做的总功，$1\,\text{kW·h}=3.6\times10^6\,\text{J}$</td></tr>
+  <tr><td>电功率</td><td>$P$</td><td>$P=\dfrac{W}{t}=UI$</td><td>瓦特（$\text{W}$）</td><td>标量</td><td class="l">电流做功的快慢</td></tr>
+  <tr><td>电热</td><td>$Q$</td><td>$Q=I^2Rt$（焦耳定律）</td><td>焦耳（$\text{J}$）</td><td>标量</td><td class="l">电流通过导体产生的热量</td></tr>
+  <tr><td>电阻率</td><td>$\rho$</td><td>$R=\rho\dfrac{L}{S}$</td><td>$\Omega\cdot\text{m}$</td><td>标量</td><td class="l">材料属性，金属随温度升高而增大</td></tr>
+</table>
+
+<h3>2.2 电流：方向约定必须刻进脑子</h3>
+<p><strong>定义</strong>：电荷的定向移动形成电流。大小用单位时间内通过导体横截面的电荷量表示：</p>
+$$I=\frac{q}{t}$$
+<p>这一定义式对<strong>任何</strong>导电情况都成立（金属、电解液、气体均可），它是定义，不是谁推导出来的。</p>
+
+<div class="key-point">
+<strong>方向约定（必考细节）：</strong>物理学规定<strong>正电荷定向移动的方向为电流方向</strong>。
+<ul>
+  <li>金属导体中实际移动的是<strong>自由电子（负电荷）</strong>，所以电子定向移动方向与电流方向<strong>相反</strong>；</li>
+  <li>电解液中正、负离子反向移动，两者形成的电流方向<strong>相同</strong>，总电流 $I=\dfrac{|q_+|+|q_-|}{t}$——正负离子电荷量要<strong>相加</strong>，不是相减；</li>
+  <li>电流虽有方向，但叠加时不满足平行四边形定则，所以电流是<strong>标量</strong>。</li>
+</ul>
+</div>
+
+<p><strong>微观表达式</strong>：设导体单位体积内自由电荷数为 $n$，每个电荷带电量为 $q$，定向移动平均速率为 $v$，导体横截面积为 $S$，则</p>
+$$I=nqSv$$
+<p>推导见第三章 3.1。这个公式揭示了一件反直觉的事：金属中电子定向移动的平均速率只有约 $10^{-4}\,\text{m/s}$ 量级，比蜗牛还慢；电灯「一开就亮」，是因为<strong>电场以光速建立</strong>，驱动整个电路里的自由电子几乎同时开始移动，而不是某个电子从开关跑到了灯泡。</p>
+
+<h3>2.3 电动势与电压：一字之差，物理意义完全不同</h3>
+<p>这是本章第一个「灵魂考点」。两者单位都是伏特，都用 $U$ 附近的字母，但：</p>
+<table>
+  <tr><th>对比项</th><th>电动势 $E$</th><th>电压（电势差）$U$</th></tr>
+  <tr><td class="l">定义</td><td class="l">$E=\dfrac{W_{\text{非}}}{q}$，<strong>非静电力</strong>把单位正电荷从负极经电源内部搬到正极所做的功</td><td class="l">$U=\dfrac{W_{\text{静}}}{q}$，<strong>静电力</strong>把单位正电荷在两点间移动所做的功</td></tr>
+  <tr><td class="l">物理意义</td><td class="l">电源把化学能等转化为电能的本领，由电源本身决定</td><td class="l">外电路中两点间的电势差，随电路状态变化</td></tr>
+  <tr><td class="l">存在位置</td><td class="l">电源内部（由负极指向正极）</td><td class="l">电路中任意两点间</td></tr>
+  <tr><td class="l">数值关系</td><td class="l" colspan="2">断路时 $E=U_{\text{端}}$；通路时 $E=U_{\text{外}}+U_{\text{内}} &gt; U_{\text{外}}$（电源有内阻 $r$）</td></tr>
+</table>
+
+<blockquote>
+<p><strong>深度思考：为什么说「电动势是电源的身份证」？</strong></p>
+<p>一节干电池标着 1.5 V，无论接不接外电路、接多大电阻，这个值基本不变——它由电池内部的化学性质决定。而路端电压 $U_{\text{外}}$ 却随外电阻变化：外电阻越小（负载越「重」），电流越大，内阻分压越多，$U_{\text{外}}$ 越低。把电动势和路端电压混为一谈，是本章选择题最高频的失分点之一。</p>
+</blockquote>
+
+<h3>2.4 电阻：定义式与决定式要分清</h3>
+<ul>
+  <li><strong>定义式</strong> $R=\dfrac{U}{I}$：对任何元件「测出来」的电阻都可用它算，但 $R$ 并不由 $U$、$I$ 决定——就像密度 $\rho=\dfrac{m}{V}$ 不由 $m$ 决定一样；</li>
+  <li><strong>决定式</strong> $R=\rho\dfrac{L}{S}$（电阻定律）：对粗细均匀的金属导体，$R$ 由材料电阻率 $\rho$、长度 $L$、横截面积 $S$ 决定。把一根导线拉长为原来 2 倍，$L$ 加倍、$S$ 减半，$R$ 变为原来 <strong>4 倍</strong>——这类「比例变化」是选择题常客。</li>
+</ul>
+
+<h2 id="s3">三、公式与推导（含适用条件）</h2>
+
+<h3>3.1 电流微观表达式 $I=nqSv$ 的推导</h3>
+<p><strong>推导思路</strong>：在导体中取一段长为 $L=vt$ 的柱体（$t$ 时间内自由电荷恰好全部通过右端截面）。柱体内自由电荷总数为 $N=nSL=nSvt$，总电量 $Q=Nq=nqSvt$。由定义式：</p>
+$$I=\frac{Q}{t}=\frac{nqSvt}{t}=nqSv$$
+<p><strong>适用条件</strong>：适用于任何载流子浓度均匀的导体；$n$、$v$ 指<strong>一种</strong>载流子的参数（金属中只有电子）。</p>
+<div class="deep"><strong>提醒</strong>：由 $I=nqSv$ 可知，同一电流下横截面积 $S$ 越小，定向移动速率 $v$ 越大——这就是粗细不匀导线中「细处电荷跑得快」的原因，电荷不会在某处堆积（稳恒电流的连续性）。</div>
+
+<h3>3.2 部分电路欧姆定律</h3>
+$$I=\frac{U}{R}$$
+<p><strong>推导思路</strong>：由 $R=\dfrac{U}{I}$ 变形即得；其物理本质是——金属导体中自由电子在电场加速与晶格碰撞的共同作用下达到平均定向速率，宏观上表现为 $I$ 与 $U$ 成正比。</p>
+<div class="warn">
+<strong>适用条件（本章第一个大坑）：</strong>欧姆定律只适用于<strong>纯电阻电路</strong>——金属导体和电解液导电，且温度基本不变。
+<ul>
+  <li><strong>不适用</strong>：气体导电、半导体、二极管等非线性元件；</li>
+  <li><strong>不适用</strong>：电动机、电解槽等「含反电动势」的用电器——它们两端电压 $U$ 远大于 $IR$（见 3.5）；</li>
+  <li>伏安特性曲线（$I\text{-}U$ 图）是<strong>过原点直线</strong>的元件才叫线性元件；小灯泡灯丝因温度升高电阻变大，曲线向 $U$ 轴弯曲——这正是「描绘小灯泡伏安特性曲线」实验的核心现象。</li>
+</ul>
+</div>
+
+<h3>3.3 电阻定律与电阻率</h3>
+$$R=\rho\frac{L}{S}$$
+<p><strong>推导思路</strong>：实验发现 $R$ 与 $L$ 成正比（串联等效）、与 $S$ 成反比（并联等效），比例系数 $\rho$ 只由材料与温度决定。</p>
+<p><strong>适用条件</strong>：粗细均匀、电流分布均匀的导体。<strong>温度关系</strong>：金属 $\rho$ 随温度升高而增大；半导体相反；某些合金（锰铜、康铜）$\rho$ 几乎不随温度变化，故用来做标准电阻。</p>
+
+<h3>3.4 串联与并联：从两个守恒推出来</h3>
+<p><strong>串联</strong>：电流处处相等（电荷守恒），总电压等于各部分电压之和（能量守恒），故</p>
+$$R_{\text{串}}=R_1+R_2+\cdots,\qquad \frac{U_1}{U_2}=\frac{R_1}{R_2}\ (\text{分压与电阻成正比})$$
+<p><strong>并联</strong>：各支路电压相等，总电流等于各支路电流之和，故</p>
+$$\frac{1}{R_{\text{并}}}=\frac{1}{R_1}+\frac{1}{R_2}+\cdots,\qquad \frac{I_1}{I_2}=\frac{R_2}{R_1}\ (\text{分流与电阻成反比})$$
+<p><strong>常用结论</strong>：两电阻并联 $R_{\text{并}}=\dfrac{R_1R_2}{R_1+R_2}$；$n$ 个相同电阻 $R$ 并联得 $\dfrac{R}{n}$；并联总电阻<strong>小于任一支路电阻</strong>；混联电路中任一支路电阻增大，总电阻一定增大（动态分析的「总电阻单调性」依据）。</p>
+
+<h4>电表改装（串并联规律的直接应用，实验题高频）</h4>
+<p>表头（灵敏电流计）参数：满偏电流 $I_g$、内阻 $R_g$、满偏电压 $U_g=I_gR_g$。</p>
+<ul>
+  <li><strong>改装成电压表（量程 $U$）：串联分压电阻 $R$</strong>。满偏时 $I_g(R_g+R)=U$，得
+  $$R=\frac{U}{I_g}-R_g=(n-1)R_g,\qquad n=\frac{U}{U_g}\ \text{（量程扩大倍数）}$$</li>
+  <li><strong>改装成电流表（量程 $I$）：并联分流电阻 $R$</strong>。满偏时 $I_gR_g=(I-I_g)R$，得
+  $$R=\frac{I_gR_g}{I-I_g}=\frac{R_g}{n-1},\qquad n=\frac{I}{I_g}\ \text{（量程扩大倍数）}$$</li>
+</ul>
+<div class="key-point"><strong>记忆抓手</strong>：电压表「串联」大电阻（串分压），电流表「并联」小电阻（并分流）。改装后表盘刻度按新量程等比例重新标注；读数本质还是流过表头的电流，只是标尺换了。</div>
+
+<h3>3.5 电功、电功率与焦耳定律：三组公式谁都能用、谁不能乱用</h3>
+<p><strong>电功推导</strong>：电荷 $q=It$ 在电压 $U$ 下被电场力搬运，$W=qU=UIt$。这是<strong>定义层面</strong>的结果，对任何电路成立：</p>
+$$W=UIt,\qquad P=UI$$
+<p><strong>焦耳定律</strong>（实验定律）：电流通过导体产生的热量</p>
+$$Q=I^2Rt,\qquad P_{\text{热}}=I^2R$$
+<p>它对<strong>任何</strong>通电流的电阻都成立（包括电动机线圈的发热）。</p>
+<div class="warn">
+<strong>适用条件对比（本章最大的坑，没有之一）：</strong>
+<ul>
+  <li><strong>纯电阻电路</strong>（电炉、白炽灯、电阻丝）：电能全部转化为内能，$W=Q$，此时
+  $$P=UI=I^2R=\frac{U^2}{R}\ \text{三式等价，可随意选用}$$</li>
+  <li><strong>非纯电阻电路</strong>（电动机、电解槽、充电电池）：电能只有一部分变热，$W&gt;Q$，即
+  $$UI=I^2R+P_{\text{其他}}$$
+  此时 $P=UI$ 算总功率，$P_{\text{热}}=I^2R$ 只算发热，$P=\dfrac{U^2}{R}$ <strong>完全禁用</strong>（因为欧姆定律不成立，$U\neq IR$）。电动机输出的机械功率 $P_{\text{机}}=UI-I^2r$。</li>
+</ul>
+</div>
+
+<h3>3.6 闭合电路欧姆定律：本章的「国王公式」</h3>
+<p><strong>推导思路（能量守恒）</strong>：时间 $t$ 内，电源非静电力做功 $W_{\text{非}}=Eq=EIt$，这些能量全部转化为外电路电热 $I^2Rt$ 与内阻电热 $I^2rt$：</p>
+$$EIt=I^2Rt+I^2rt\ \Longrightarrow\ E=IR+Ir=U_{\text{外}}+U_{\text{内}}$$
+<p>对纯电阻外电路可写成：</p>
+$$I=\frac{E}{R+r}$$
+<p><strong>适用条件</strong>：$I=\dfrac{E}{R+r}$ 只适用于外电路为纯电阻的情况；而 $E=U_{\text{外}}+U_{\text{内}}$、$U_{\text{外}}=E-Ir$ 由能量守恒推出，对<strong>任何</strong>外电路（含电动机）都成立。</p>
+
+<h4>路端电压 $U=E-Ir$ 的三个推论</h4>
+<ul>
+  <li>外电阻 $R\uparrow\Rightarrow I\downarrow\Rightarrow Ir\downarrow\Rightarrow U\uparrow$——<strong>外阻越大，路端电压越高</strong>；断路时 $R\to\infty$，$I=0$，$U=E$（可用电压表粗测电动势）；</li>
+  <li>短路时 $R=0$，$I_{\text{短}}=\dfrac{E}{r}$（电流极大，危险，务必避免），$U=0$；</li>
+  <li>$U\text{-}I$ 图像是一条斜率为 $-r$、纵截距为 $E$ 的直线——<strong>测电源电动势和内阻实验</strong>的数据处理依据。</li>
+</ul>
+
+<h4>电源的三种功率与最大输出功率</h4>
+<table>
+  <tr><th>功率</th><th>表达式</th><th>含义</th></tr>
+  <tr><td>总功率</td><td>$P_{\text{总}}=EI$</td><td class="l">电源释放的全部功率</td></tr>
+  <tr><td>输出功率</td><td>$P_{\text{出}}=UI=I^2R$</td><td class="l">外电路得到的功率</td></tr>
+  <tr><td>内耗功率</td><td>$P_{\text{内}}=I^2r$</td><td class="l">内阻发热浪费的功率</td></tr>
+</table>
+<p><strong>最大输出功率推导（配方法）</strong>：</p>
+$$P_{\text{出}}=I^2R=\frac{E^2R}{(R+r)^2}=\frac{E^2}{\dfrac{(R-r)^2}{R}+4r}\leqslant\frac{E^2}{4r}$$
+<p>当且仅当 <strong>$R=r$</strong> 时取最大值 $P_{\max}=\dfrac{E^2}{4r}$。此时电源效率只有 $\eta=\dfrac{R}{R+r}=50\%$。</p>
+<div class="warn"><strong>注意</strong>：输出功率最大 ≠ 效率最高！$\eta=\dfrac{U}{E}=\dfrac{R}{R+r}$，$R$ 越大效率越高（$R\to\infty$ 时 $\eta\to100\%$，但输出功率趋于 0）。「$R=r$ 时功率最大」只适用于外电阻<strong>可调</strong>的纯电阻电路；若外电路是定值电阻 $R_0$ 加可变电阻，应把 $R_0$ 算进「等效内阻」再套结论（等效电源法）。</div>
+
+<h4>等效电源法（解题工具）</h4>
+<p>当研究对象只是电路中某一支路（尤其含可变电阻）时，可把「其余部分」等效为一个新电源：等效电动势 $E'=$ 该支路断开时两端的开路电压，等效内阻 $r'=$ 从断口看进去的等效电阻（理想电压表视为开路、理想电流表视为短路，电源保留内阻、去掉电动势）。这样复杂电路瞬间变成「一个电源接一个电阻」，最大功率、动态分析问题都迎刃而解。</p>
+
+<h3>3.7 滑动变阻器的两种接法（实验电路必考）</h3>
+<p>电学实验选电路，一半是在选滑动变阻器的接法。两种接法的对比必须烂熟：</p>
+<table>
+  <tr><th>对比项</th><th>限流接法</th><th>分压接法</th></tr>
+  <tr><td class="l">电路结构</td><td class="l">滑变串入主回路，靠改变接入电阻限流</td><td class="l">滑变整体接电源，负载只接滑片与一端之间</td></tr>
+  <tr><td class="l">负载电压调节范围</td><td class="l">$\dfrac{R_x}{R_x+R_{\text{滑}}}E \sim E$（不能到零）</td><td class="l">$0 \sim E$（可从零连续调节）</td></tr>
+  <tr><td class="l">能耗</td><td class="l">较小（节能）</td><td class="l">较大（滑变全阻始终通电）</td></tr>
+  <tr><td class="l">滑变规格选择</td><td class="l">总阻值与 $R_x$ 相当或略大</td><td class="l">选总阻值<strong>较小</strong>的（调节均匀，额定电流足够）</td></tr>
+</table>
+<div class="key-point"><strong>选择判据（背下来）：</strong>出现以下任一情况必须<strong>分压</strong>——① 题目要求电压（或电流）「从零开始」连续可调（如描绘小灯泡伏安特性曲线）；② 滑变总阻值远小于负载电阻，限流几乎调不动；③ 限流接法下最小电流仍超过电表量程或元件允许值。其余情况优先限流（结构简单、节能）。</div>
+<p><strong>推导一瞥</strong>：分压接法中，把滑片把滑变分成 $R_{\text{左}}$、$R_{\text{右}}$ 两段，负载 $R_x$ 与 $R_{\text{左}}$ 并联后再与 $R_{\text{右}}$ 串联；当 $R_{\text{滑}}\ll R_x$ 时并联部分几乎由滑变决定，输出电压近似随滑片位置线性变化——这就是「分压选小滑变调节均匀」的原因。</p>
+
+<h2 id="s4">四、典型例题</h2>
+
+<h3>例1　电表改装的计算（实验基础题）</h3>
+<p>一表头的满偏电流 $I_g=3\,\text{mA}$，内阻 $R_g=10\,\Omega$。</p>
+<p>（1）把它改装成量程 $0\sim0.6\,\text{A}$ 的电流表，应如何连接电阻？阻值多大？<br>
+（2）把它改装成量程 $0\sim3\,\text{V}$ 的电压表，应如何连接电阻？阻值多大？</p>
+<p><strong>过程分析</strong>：</p>
+<p>第（1）问，改装电流表要「分流」——并联一个小电阻 $R$。满偏时表头电流仍为 $I_g$，多余电流 $I-I_g$ 从 $R$ 流过，且两者电压相等：</p>
+$$I_gR_g=(I-I_g)R\ \Rightarrow\ R=\frac{I_gR_g}{I-I_g}=\frac{3\times10^{-3}\times10}{0.6-3\times10^{-3}}\,\Omega\approx0.0503\,\Omega$$
+<p>验算（倍数法）：$n=\dfrac{I}{I_g}=\dfrac{0.6}{0.003}=200$，$R=\dfrac{R_g}{n-1}=\dfrac{10}{199}\approx0.0503\,\Omega$ ✓（两法一致）。</p>
+<p>第（2）问，改装电压表要「分压」——串联一个大电阻 $R'$。满偏时回路电流为 $I_g$，总电压为 $3\,\text{V}$：</p>
+$$I_g(R_g+R')=3\ \Rightarrow\ R'=\frac{3}{3\times10^{-3}}-10=990\,\Omega$$
+<p>验算：$U_g=I_gR_g=0.03\,\text{V}$，$n=\dfrac{3}{0.03}=100$，$R'=(n-1)R_g=99\times10=990\,\Omega$ ✓。</p>
+<p><strong>答案</strong>：（1）并联约 $0.0503\,\Omega$（常取 $0.05\,\Omega$）的电阻；（2）串联 $990\,\Omega$ 的电阻。</p>
+<div class="deep"><strong>方法提炼</strong>：改装题三步走——① 判断「串分压、并分流」；② 抓住满偏时刻「表头电流仍是 $I_g$」这一不变量；③ 用倍数公式 $R=(n-1)R_g$ 或 $R=\dfrac{R_g}{n-1}$ 快速核对。</div>
+
+<h3>例2　非纯电阻电路：电动机的功率分析（必考题型）</h3>
+<p>一台直流电动机，线圈电阻 $r=1\,\Omega$，接在 $U=12\,\text{V}$ 的电源上，正常工作时通过线圈的电流 $I=2\,\text{A}$。求：</p>
+<p>（1）电动机消耗的电功率、线圈发热功率、输出的机械功率及效率；<br>
+（2）若转子被卡住不转，电路中的电流和发热功率变为多大？说明为什么容易烧毁电机。</p>
+<p><strong>过程分析</strong>：</p>
+<p>第（1）问，先定性：电动机正常转动时把电能转化为<strong>机械能 + 内能</strong>，是非纯电阻，欧姆定律不适用（可验证：$IR=2\,\text{V}&lt;U=12\,\text{V}$，果然 $U\neq IR$）。</p>
+<ul>
+  <li>输入总功率：$P_{\text{入}}=UI=12\times2=24\,\text{W}$（定义式，永远成立）；</li>
+  <li>线圈发热功率：$P_{\text{热}}=I^2r=2^2\times1=4\,\text{W}$（焦耳定律，对线圈电阻成立）；</li>
+  <li>机械功率：$P_{\text{机}}=P_{\text{入}}-P_{\text{热}}=24-4=20\,\text{W}$（能量守恒）；</li>
+  <li>效率：$\eta=\dfrac{P_{\text{机}}}{P_{\text{入}}}=\dfrac{20}{24}\approx83.3\%$。</li>
+</ul>
+<p>第（2）问，转子卡住后没有机械能输出，电动机<strong>退化为纯电阻</strong>，欧姆定律恢复适用：</p>
+$$I'=\frac{U}{r}=\frac{12}{1}=12\,\text{A},\qquad P_{\text{热}}'=I'^2r=12^2\times1=144\,\text{W}$$
+<p>发热功率从 $4\,\text{W}$ 猛增到 $144\,\text{W}$（36 倍），线圈迅速升温，绝缘层烧毁——所以电机严禁长时间堵转。</p>
+<p><strong>答案</strong>：（1）$24\,\text{W}$、$4\,\text{W}$、$20\,\text{W}$、约 $83.3\%$；（2）$12\,\text{A}$、$144\,\text{W}$。</p>
+<div class="warn"><strong>本题的坑</strong>：若第（1）问直接用 $P=\dfrac{U^2}{r}=\dfrac{144}{1}=144\,\text{W}$ 算总功率，就把正常工作的电动机当成了纯电阻——这是本章最典型的错误，请务必对照 3.5 的适用条件表再记一遍。</div>
+
+<h3>例3　闭合电路动态分析与最大输出功率（中档综合）</h3>
+<p>电源电动势 $E=6\,\text{V}$，内阻 $r=1\,\Omega$，外电路定值电阻 $R_1=5\,\Omega$ 与滑动变阻器 $R_2$ 串联。</p>
+<p>（1）$R_2$ 从 $14\,\Omega$ 调到 $4\,\Omega$ 的过程中，电流、路端电压、$R_1$ 两端电压如何变化？求出变化范围；<br>
+（2）若把 $R_1$ 与电源视为一个等效电源，$R_2$ 取何值时 $R_2$ 上消耗的功率最大？最大值是多少？</p>
+<p><strong>过程分析</strong>：</p>
+<p>第（1）问，先抓「总电阻单调性」：$R_2$ 减小 $\Rightarrow$ 总电阻 $R_1+R_2+r$ 减小 $\Rightarrow$ 电流增大；内压 $Ir$ 增大 $\Rightarrow$ 路端电压 $U=E-Ir$ 减小；$R_1$ 为定值，$U_1=IR_1$ 随电流增大而增大。</p>
+<ul>
+  <li>$R_2=14\,\Omega$ 时：$I=\dfrac{E}{R_1+R_2+r}=\dfrac{6}{5+14+1}=\dfrac{6}{20}=0.30\,\text{A}$，<br>
+  路端电压 $U=E-Ir=6-0.30\times1=5.7\,\text{V}$，$U_1=IR_1=0.30\times5=1.5\,\text{V}$；</li>
+  <li>$R_2=4\,\Omega$ 时：$I=\dfrac{6}{5+4+1}=\dfrac{6}{10}=0.60\,\text{A}$，<br>
+  $U=6-0.60\times1=5.4\,\text{V}$，$U_1=0.60\times5=3.0\,\text{V}$。</li>
+</ul>
+<p>故电流从 $0.30\,\text{A}$ 增大到 $0.60\,\text{A}$，路端电压从 $5.7\,\text{V}$ 减小到 $5.4\,\text{V}$，$R_1$ 电压从 $1.5\,\text{V}$ 增大到 $3.0\,\text{V}$。</p>
+<p>第（2）问，等效电源法：把 $R_1$ 并入内阻，$r'=r+R_1=1+5=6\,\Omega$，$E'=E=6\,\text{V}$。当 $R_2=r'=6\,\Omega$ 时 $R_2$ 功率最大：</p>
+$$P_{2\max}=\frac{E'^2}{4r'}=\frac{6^2}{4\times6}=\frac{36}{24}=1.5\,\text{W}$$
+<p>验算：$R_2=6\,\Omega$ 时 $I=\dfrac{6}{5+6+1}=0.5\,\text{A}$，$P_2=I^2R_2=0.25\times6=1.5\,\text{W}$ ✓。</p>
+<p><strong>答案</strong>：（1）电流 $0.30\to0.60\,\text{A}$，路端电压 $5.7\to5.4\,\text{V}$，$U_1$ 为 $1.5\to3.0\,\text{V}$；（2）$R_2=6\,\Omega$，$P_{2\max}=1.5\,\text{W}$。</p>
+<div class="deep"><strong>本题的坑</strong>：若忘记 $R_1$、直接套「$R_2=r=1\,\Omega$ 时功率最大」，得 $P=\dfrac{36}{4}=9\,\text{W}$——这是把「外电路总电阻等于内阻」错记成「可变电阻等于内阻」。可变电阻上功率最大的条件是：<strong>可变电阻等于电路中其余所有电阻之和</strong>。</div>
+
+<h3>例4　伏安法误差分析与测电源 $E$、$r$（实验题模板）</h3>
+<p>（1）用伏安法测电阻，电流表内阻 $R_{\text{A}}=0.1\,\Omega$，电压表内阻 $R_{\text{V}}=3\,\text{k}\Omega$。若待测电阻约 $10\,\Omega$，应选内接法还是外接法？测量值偏大还是偏小？</p>
+<p>（2）用电流表和电压表测电源电动势和内阻，两组数据：$U_1=1.40\,\text{V}$、$I_1=0.20\,\text{A}$；$U_2=1.00\,\text{V}$、$I_2=0.60\,\text{A}$。求 $E$ 和 $r$。</p>
+<p><strong>过程分析</strong>：</p>
+<p>第（1）问，先算临界电阻：</p>
+$$R_0=\sqrt{R_{\text{A}}R_{\text{V}}}=\sqrt{0.1\times3000}=\sqrt{300}\approx17.3\,\Omega$$
+<p>$R_x\approx10\,\Omega&lt;R_0$，属于「小电阻」，选<strong>外接法</strong>（电流表接在电压表测量范围之外）。外接时电压表测的是 $R_x$ 真实电压，但电流表测的是「$R_x$ 电流 + 电压表分流」，电流偏大，故</p>
+$$R_{\text{测}}=\frac{U}{I_{\text{测}}}=\frac{R_xR_{\text{V}}}{R_x+R_{\text{V}}}=\frac{10\times3000}{3010}\approx9.97\,\Omega&lt;R_x$$
+<p>测量值<strong>偏小</strong>（本题相对误差约 $0.3\%$，外接合理）。</p>
+<p>第（2）问，由 $U=E-Ir$ 列方程组：</p>
+$$\begin{cases}1.40=E-0.20\,r\\[2pt]1.00=E-0.60\,r\end{cases}\Rightarrow\ r=\frac{1.40-1.00}{0.60-0.20}=\frac{0.40}{0.40}=1.0\,\Omega$$
+<p>回代：$E=1.40+0.20\times1.0=1.60\,\text{V}$。验证第二式：$1.60-0.60\times1.0=1.00\,\text{V}$ ✓。</p>
+<p><strong>答案</strong>：（1）外接法，测量值偏小（约 $9.97\,\Omega$）；（2）$E=1.60\,\text{V}$，$r=1.0\,\Omega$。</p>
+<div class="key-point"><strong>口诀</strong>：「大内偏大，小外偏小」——大电阻用内接法、测量值偏大；小电阻用外接法、测量值偏小。判据 $R_0=\sqrt{R_{\text{A}}R_{\text{V}}}$：$R_x&gt;R_0$ 用内接，$R_x&lt;R_0$ 用外接。测 $E$、$r$ 时同样要分析电表内阻引起的系统误差：常用接法（电压表并在电源两端）下，$E_{\text{测}}&lt;E_{\text{真}}$、$r_{\text{测}}&lt;r_{\text{真}}$，因为电压表分流。</div>
+
+<h3>电路图示意（inline SVG）</h3>
+<p style="text-align:center; color:var(--muted); font-size:0.9em;">图1　伏安法两种接法对比</p>
+<div style="display:flex; justify-content:center; gap:30px; flex-wrap:wrap; margin:10px 0 6px;">
+<svg width="300" height="170" viewBox="0 0 300 170" xmlns="http://www.w3.org/2000/svg">
+  <text x="150" y="16" text-anchor="middle" font-size="13" fill="#1a365d" font-weight="bold">内接法（大电阻适用）</text>
+  <line x1="20" y1="140" x2="280" y2="140" stroke="#2d3748" stroke-width="1.5"/>
+  <line x1="20" y1="50" x2="20" y2="140" stroke="#2d3748" stroke-width="1.5"/>
+  <line x1="280" y1="50" x2="280" y2="140" stroke="#2d3748" stroke-width="1.5"/>
+  <line x1="20" y1="50" x2="60" y2="50" stroke="#2d3748" stroke-width="1.5"/>
+  <circle cx="85" cy="50" r="16" fill="#fff" stroke="#2b6cb0" stroke-width="2"/>
+  <text x="85" y="55" text-anchor="middle" font-size="14" fill="#2b6cb0">A</text>
+  <line x1="101" y1="50" x2="150" y2="50" stroke="#2d3748" stroke-width="1.5"/>
+  <rect x="150" y="42" width="70" height="16" fill="#fff" stroke="#2d3748" stroke-width="1.5"/>
+  <text x="185" y="35" text-anchor="middle" font-size="12" fill="#2d3748">R<tspan font-size="9" dy="2">x</tspan></text>
+  <line x1="220" y1="50" x2="280" y2="50" stroke="#2d3748" stroke-width="1.5"/>
+  <circle cx="185" cy="100" r="16" fill="#fff" stroke="#2b6cb0" stroke-width="2"/>
+  <text x="185" y="105" text-anchor="middle" font-size="14" fill="#2b6cb0">V</text>
+  <line x1="185" y1="58" x2="185" y2="84" stroke="#2d3748" stroke-width="1.5"/>
+  <line x1="185" y1="116" x2="185" y2="140" stroke="#2d3748" stroke-width="1.5"/>
+  <text x="150" y="163" text-anchor="middle" font-size="11" fill="#718096">V 测 A、Rx 总电压 → R测 = Rx + RA，偏大</text>
+</svg>
+<svg width="300" height="170" viewBox="0 0 300 170" xmlns="http://www.w3.org/2000/svg">
+  <text x="150" y="16" text-anchor="middle" font-size="13" fill="#1a365d" font-weight="bold">外接法（小电阻适用）</text>
+  <line x1="20" y1="140" x2="280" y2="140" stroke="#2d3748" stroke-width="1.5"/>
+  <line x1="20" y1="50" x2="20" y2="140" stroke="#2d3748" stroke-width="1.5"/>
+  <line x1="280" y1="50" x2="280" y2="140" stroke="#2d3748" stroke-width="1.5"/>
+  <line x1="20" y1="50" x2="70" y2="50" stroke="#2d3748" stroke-width="1.5"/>
+  <rect x="70" y="42" width="70" height="16" fill="#fff" stroke="#2d3748" stroke-width="1.5"/>
+  <text x="105" y="35" text-anchor="middle" font-size="12" fill="#2d3748">R<tspan font-size="9" dy="2">x</tspan></text>
+  <line x1="140" y1="50" x2="185" y2="50" stroke="#2d3748" stroke-width="1.5"/>
+  <circle cx="210" cy="50" r="16" fill="#fff" stroke="#2b6cb0" stroke-width="2"/>
+  <text x="210" y="55" text-anchor="middle" font-size="14" fill="#2b6cb0">A</text>
+  <line x1="226" y1="50" x2="280" y2="50" stroke="#2d3748" stroke-width="1.5"/>
+  <circle cx="105" cy="100" r="16" fill="#fff" stroke="#2b6cb0" stroke-width="2"/>
+  <text x="105" y="105" text-anchor="middle" font-size="14" fill="#2b6cb0">V</text>
+  <line x1="105" y1="58" x2="105" y2="84" stroke="#2d3748" stroke-width="1.5"/>
+  <line x1="105" y1="116" x2="105" y2="140" stroke="#2d3748" stroke-width="1.5"/>
+  <text x="150" y="163" text-anchor="middle" font-size="11" fill="#718096">A 测 Rx、V 总电流 → R测 = Rx∥RV，偏小</text>
+</svg>
+</div>
+<p style="text-align:center; color:var(--muted); font-size:0.9em;">图2　闭合电路（$E=U_{\text{外}}+Ir$）</p>
+<div style="display:flex; justify-content:center; margin:6px 0 10px;">
+<svg width="330" height="190" viewBox="0 0 330 190" xmlns="http://www.w3.org/2000/svg">
+  <line x1="30" y1="150" x2="300" y2="150" stroke="#2d3748" stroke-width="1.5"/>
+  <line x1="30" y1="40" x2="30" y2="150" stroke="#2d3748" stroke-width="1.5"/>
+  <line x1="300" y1="40" x2="300" y2="150" stroke="#2d3748" stroke-width="1.5"/>
+  <line x1="110" y1="150" x2="110" y2="150" stroke="#2d3748"/>
+  <line x1="70" y1="142" x2="70" y2="158" stroke="#2d3748" stroke-width="4"/>
+  <line x1="82" y1="146" x2="82" y2="154" stroke="#2d3748" stroke-width="1.5"/>
+  <text x="60" y="175" text-anchor="middle" font-size="12" fill="#2d3748">E, r</text>
+  <line x1="30" y1="40" x2="120" y2="40" stroke="#2d3748" stroke-width="1.5"/>
+  <rect x="120" y="32" width="80" height="16" fill="#fff" stroke="#2d3748" stroke-width="1.5"/>
+  <text x="160" y="25" text-anchor="middle" font-size="12" fill="#2d3748">R</text>
+  <line x1="200" y1="40" x2="300" y2="40" stroke="#2d3748" stroke-width="1.5"/>
+  <path d="M 235 70 a 12 12 0 1 1 12 0" fill="none" stroke="#e53e3e" stroke-width="1.5" marker-end="none"/>
+  <polygon points="247,66 251,74 243,74" fill="#e53e3e"/>
+  <text x="258" y="74" font-size="12" fill="#e53e3e">I</text>
+  <text x="165" y="120" text-anchor="middle" font-size="11" fill="#718096">U外 = E − Ir</text>
+</svg>
+</div>
+
+<h2 id="s5">五、易错点与成因分析</h2>
+
+<h3>易错点1：把电动机当纯电阻，用 $I=\dfrac{U}{R}$ 或 $P=\dfrac{U^2}{R}$</h3>
+<p><strong>典型表现</strong>：给电动机两端电压、线圈电阻，直接 $I=\dfrac{U}{r}$ 算工作电流，结果算出的电流比真实值大好几倍。</p>
+<p><strong>成因分析</strong>：根本原因是没理解「电动机转动时线圈切割磁感线产生<strong>反电动势</strong>」，两端电压的大部分要用来克服反电动势，只有一小部分 $Ir$ 驱动电流。换句话说，欧姆定律 $I=\dfrac{U}{R}$ 的前提「电能全部转化为内能」被破坏。以后见到电动机、电解槽、充电电池，第一反应必须是：<strong>欧姆定律不适用，用能量守恒 $UI=I^2r+P_{\text{其他}}$</strong>。</p>
+
+<h3>易错点2：内接/外接的误差方向记反</h3>
+<p><strong>典型表现</strong>：记得「内接法」就以为它「内部精确」，判断成测量值偏小。</p>
+<p><strong>成因分析</strong>：误差来自「多测了什么」。内接法电压表把电流表电压也测了进去 → 电压偏大 → $R_{\text{测}}=R_x+R_{\text{A}}$ <strong>偏大</strong>；外接法电流表把电压表电流也测了进去 → 电流偏大 → $R_{\text{测}}=R_x\parallel R_{\text{V}}$ <strong>偏小</strong>。口诀「<strong>大内偏大、小外偏小</strong>」中，前一个「大/小」指待测电阻大小（选法依据），后一个「偏大/偏小」指测量误差方向，两层含义别混。</p>
+
+<h3>易错点3：路端电压与外电阻的变化关系记错</h3>
+<p><strong>典型表现</strong>：认为「外电阻越大，电流越小，所以路端电压越低」。</p>
+<p><strong>成因分析</strong>：这是把 $U=IR$ 孤立地套在了变化的 $I$、$R$ 上——$I$ 减小的同时 $R$ 在增大，乘积升还是降无法直观看。正确链条是 $R\uparrow\to I=\dfrac{E}{R+r}\downarrow\to Ir\downarrow\to U=E-Ir\uparrow$（$E$、$r$ 不变，只盯内压）。记极限情形最稳：<strong>断路 $U=E$（最大），短路 $U=0$（最小）</strong>，于是「外阻大 → 接近断路 → $U$ 大」。</p>
+
+<h3>易错点4：电源输出功率最大 ≠ 效率最高</h3>
+<p><strong>典型表现</strong>：认为 $R=r$ 时效率也是最高的，或认为效率 100% 时输出功率最大。</p>
+<p><strong>成因分析</strong>：两个极值条件来自不同的函数。$P_{\text{出}}=\dfrac{E^2R}{(R+r)^2}$ 在 $R=r$ 取极大；$\eta=\dfrac{R}{R+r}$ 是单调增函数，$R$ 越大越省。$R=r$ 时效率恰为 50%。考题常把两条曲线放在同一图里考读图，务必分清横轴上哪个点是哪个量的极值。</p>
+
+<h3>易错点5：动态分析中「某个电阻减小」引发连锁判断失误</h3>
+<p><strong>典型表现</strong>：并联支路中滑片移动，只判断该支路电流，漏判干路电流与路端电压变化；或把「与该支路串联的部分电压变化方向」搞反。</p>
+<p><strong>成因分析</strong>：缺少固定分析程序。推荐「程序法」四步：① 局部电阻变化 → ② 总电阻变化（任何电阻减小，总电阻必减小）→ ③ 干路电流与路端电压（$I=\dfrac{E}{R_{\text{总}}+r}$，$U=E-Ir$）→ ④ 再回到各支路，先定值后变量。熟记口诀「<strong>串反并同</strong>」可提速：与变化电阻串联（或等效串联）的元件，电流电压变化与其相反；并联的则相同——但口诀必须由程序法支撑，不能脱离使用条件。</p>
+
+<h3>易错点6：电流方向与电子运动方向混淆、电解液中电荷量忘加绝对值</h3>
+<p><strong>典型表现</strong>：判断金属导体中「电流方向即电子移动方向」；电解液题中 $q=q_+-q_-$。</p>
+<p><strong>成因分析</strong>：定义记忆不牢。规定是「<strong>正电荷</strong>定向移动方向」；负电荷移动贡献的电流方向与其运动方向相反，所以正、负离子相向穿过同一截面时电流效果<strong>叠加</strong>，电量取绝对值之和。</p>
+
+<h3>易错点7：$W$、$Q$ 公式混用与单位失误</h3>
+<p><strong>典型表现</strong>：在非纯电阻电路中用 $Q=UIt$ 算电热（多算了）；或把 $1\,\text{kW·h}$ 当成 $1000\,\text{J}$。</p>
+<p><strong>成因分析</strong>：$W=UIt$ 是总电功，$Q=I^2Rt$ 是发热，只有纯电阻两者才相等。单位上 $1\,\text{kW·h}=10^3\,\text{W}\times3600\,\text{s}=3.6\times10^6\,\text{J}$，家电「度」就是它。</p>
+
+<h3>易错点8：测 $E$、$r$ 实验的系统误差方向判断错</h3>
+<p><strong>典型表现</strong>：背下「电压表分流」却推出 $E_{\text{测}}&gt;E_{\text{真}}$。</p>
+<p><strong>成因分析</strong>：常用接法中电压表并在电源两端，电流表测的不是总电流（漏了电压表支路电流）。可把电压表与电源看作「等效电源」：$E_{\text{测}}=\dfrac{R_{\text{V}}}{R_{\text{V}}+r}E&lt;E$，$r_{\text{测}}=\dfrac{R_{\text{V}}\,r}{R_{\text{V}}+r}&lt;r$，两者都偏小。结论：<strong>此接法适合测内阻较小的电源</strong>（如干电池），因为 $r\ll R_{\text{V}}$ 时误差可忽略。</p>
+
+<h2 id="s6">六、章末自检清单</h2>
+
+<h3>概念关</h3>
+<ul>
+  <li>☐ 能准确说出电流方向的规定，并解释金属、电解液中载流子运动方向与电流方向的关系</li>
+  <li>☐ 能区分电动势与电压（定义、做功主体、存在位置、断路/通路时的数值关系）</li>
+  <li>☐ 能区分电阻的定义式 $R=\dfrac{U}{I}$ 与决定式 $R=\rho\dfrac{L}{S}$，知道 $\rho$ 由什么决定</li>
+  <li>☐ 知道电流是标量，理解「有方向≠矢量」</li>
+</ul>
+
+<h3>公式关</h3>
+<ul>
+  <li>☐ 能独立推导 $I=nqSv$、串并联电阻公式、$E=U_{\text{外}}+Ir$</li>
+  <li>☐ 能默写并说明适用条件：$I=\dfrac{U}{R}$（纯电阻）、$I=\dfrac{E}{R+r}$（外电路纯电阻）、$U=E-Ir$（任意电路）</li>
+  <li>☐ 能说清 $P=UI$、$P=I^2R$、$P=\dfrac{U^2}{R}$ 三式在纯电阻/非纯电阻电路中的可用性</li>
+  <li>☐ 记住电表改装公式 $R_{\text{串}}=(n-1)R_g$、$R_{\text{并}}=\dfrac{R_g}{n-1}$ 并能推导</li>
+  <li>☐ 记住 $R=r$ 时 $P_{\max}=\dfrac{E^2}{4r}$（效率 50%），并会用等效电源法处理含定值电阻的变式</li>
+</ul>
+
+<h3>模型与实验关</h3>
+<ul>
+  <li>☐ 会按「局部→整体→局部」程序做闭合电路动态分析，掌握「串反并同」及使用条件</li>
+  <li>☐ 伏安法：会用 $R_0=\sqrt{R_{\text{A}}R_{\text{V}}}$ 选接法，会说清内接偏大、外接偏小的原因</li>
+  <li>☐ 测 $E$、$r$：会画电路图、会列 $U=E-Ir$ 方程组或用 $U\text{-}I$ 图像（纵截距 $E$、斜率绝对值 $r$）处理数据</li>
+  <li>☐ 知道常用接法测 $E$、$r$ 时测量值均偏小及其原因</li>
+  <li>☐ 限流/分压两种滑动变阻器接法的选择：测伏安特性曲线（从零调起）必须分压</li>
+</ul>
+
+<h3>易错点关</h3>
+<ul>
+  <li>☐ 见到电动机第一反应是「非纯电阻，用能量守恒」，绝不写 $I=\dfrac{U}{r}$（堵转除外）</li>
+  <li>☐ 路端电压判断走 $U=E-Ir$ 链条，不用 $U=IR$ 孤立判断</li>
+  <li>☐ 区分「输出功率最大」（$R=r$，$\eta=50\%$）与「效率最高」（$R$ 越大越高）</li>
+  <li>☐ 电解液电流计算中电量取正、负离子绝对值之和</li>
+  <li>☐ 单位规范：$1\,\text{kW·h}=3.6\times10^6\,\text{J}$；计算带单位、有效数字与题目一致</li>
+</ul>
+
+<div class="key-point">
+<strong>写在最后</strong>：恒定电流是「一分耕耘一分收获」的章节——题型固定、套路清晰，把上面的清单逐项打勾，电学实验题和动态分析题就会成为你的稳定得分点。加油，小兵！💪
+</div>
+
+</body>
+</html>

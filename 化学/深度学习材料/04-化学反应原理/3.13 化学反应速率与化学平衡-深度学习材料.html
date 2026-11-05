@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.13 化学反应速率与化学平衡-深度学习材料</title>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#0e7c7b; --subject-soft:#eef7f6;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 化学点缀层（无 JS，纯文本方程式） ===== */
+/* 语义卡片（例题=紫 / 易错=琥珀 / 概念=蓝 / 提示=科目色 / 结构=中性墨） */
+.card { border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 18px; margin: 14px 0; page-break-inside: avoid; }
+.card .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 10px; border-radius: var(--r-pill); margin-bottom: 8px; }
+.card.concept { background: var(--c-concept-bg); } .card.concept .tag { background: var(--c-concept); color: #fff; }
+.card.example { background: var(--c-example-bg); } .card.example .tag { background: var(--c-example); color: #fff; }
+.card.trap { background: var(--c-trap-bg); } .card.trap .tag { background: var(--c-trap); color: #fff; }
+.card.note { background: var(--subject-soft); } .card.note .tag { background: var(--subject); color: #fff; }
+.card.violet { background: var(--canvas); } .card.violet .tag { background: var(--ink); color: #fff; }
+/* 方程式容器（统一灰底盒 + 科目色左边条） */
+.eq { display: block; background: var(--formula-bg); border: 1px solid var(--line); border-left: 4px solid var(--subject); border-radius: 8px; padding: var(--formula-pad); margin: 10px 0; font-size: 16px; text-align: center; letter-spacing: .3px; page-break-inside: avoid; }
+.eq-arrow { position: relative; display: inline-block; margin: 0 6px; font-weight: 600; }
+.eq-arrow::before { content: attr(data-cond); position: absolute; left: 50%; transform: translateX(-50%); top: -1.05em; font-size: 10.5px; font-weight: 400; color: var(--ink-soft); white-space: nowrap; }
+.state { font-size: .72em; font-style: italic; color: var(--ink-soft); }
+sub, sup { font-size: .72em; line-height: 0; }
+.formula { font-size: 1.05em; }
+.kbd { background: #f0f2f5; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 13px; }
+/* 三栏对比 */
+.triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; page-break-inside: avoid; }
+.triple .cell { border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: 14px; }
+.triple .cell h4 { margin: 0 0 8px; font-size: 13.5px; text-align: center; padding: 4px 0; border-radius: 6px; color: #fff; }
+.triple .cell:nth-child(1) h4 { background: var(--c-trap); }
+.triple .cell:nth-child(2) h4 { background: var(--c-example); }
+.triple .cell:nth-child(3) h4 { background: var(--subject); }
+/* 步骤与答案 */
+.step { display: flex; gap: 10px; margin: 8px 0; }
+.step .no { flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--c-method); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.ans { background: #fff; border: 1px dashed var(--c-method); border-radius: 8px; padding: 8px 14px; margin: 8px 0; }
+.chap-foot { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-soft); text-align: center; }
+@media (max-width: 640px) { .triple { grid-template-columns: 1fr; } }
+@media print {
+  .card { border: 1px solid #999; background: #fff !important; }
+  .card .tag { border: 1px solid #333; background: #fff !important; color: #000; }
+  .eq { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .chap-foot { border-top: none; }
+}
+</style>
+</head>
+<body>
+<nav class="chap-nav">高考备考 · 化学 · 深度学习材料 ｜ 化学反应原理 ｜ 3.13 化学反应速率与化学平衡</nav>
+<header class="chap-head">
+  <h1>3.13 化学反应速率与化学平衡</h1>
+  <p class="chap-meta">高中化学 · 深度学习材料 · 面向 2029 届云南高考</p>
+  <p class="chap-intro">
+    上一章我们关心反应"放出多少热"（热力学方向），本章关心两件事：反应"进行多快"（速率）和"进行到什么程度"（平衡）。
+    这是整个高中化学难度最高、高考分值最重的章节——第 17 题反应原理大题的主战场。三段式计算、平衡移动判断、图象分析，三板斧必须练到滚瓜烂熟。
+  </p>
+</header>
+<main>
+
+<section>
+<h2>一、本章知识全景</h2>
+<table>
+<tr>
+<th>知识点</th>
+<th>核心内容</th>
+<th>高考要求</th>
+</tr>
+<tr>
+<td>化学反应速率</td>
+<td>v = Δc/Δt，单位 mol/(L·s) 或 mol/(L·min)；速率之比 = 化学计量数之比</td>
+<td>计算熟练，会换算不同物质表示的速率并比较快慢</td>
+</tr>
+<tr>
+<td>速率的影响因素</td>
+<td>浓度、压强（气体）、温度、催化剂、固体表面积；有效碰撞理论解释</td>
+<td>规律清楚，能用有效碰撞理论解释，知道催化剂降低活化能</td>
+</tr>
+<tr>
+<td>化学平衡状态</td>
+<td>可逆反应中 v(正) = v(逆) ≠ 0，各组分浓度保持不变；动态平衡</td>
+<td>能多角度判断平衡状态，正确率 100%</td>
+</tr>
+<tr>
+<td>化学平衡移动</td>
+<td>勒夏特列原理：改变条件，平衡向"减弱这种改变"的方向移动</td>
+<td>深刻理解，能准确判断移动方向及结果（减弱但不抵消）</td>
+</tr>
+<tr>
+<td>化学平衡常数</td>
+<td>K 的表达式、意义、计算；只与温度有关；固体和纯液体不写入</td>
+<td>三段式计算 K 熟练，能用 K 判断反应方向和程度</td>
+</tr>
+<tr>
+<td>平衡图象</td>
+<td>v-t 图、c-t 图、转化率-温度-压强图（"先拐先平数值大"）</td>
+<td>会读图：看横纵坐标、拐点、趋势，提取信息作答</td>
+</tr>
+<tr>
+<td>等效平衡</td>
+<td>恒温恒容（量相当）与恒温恒压（比相等）两种模型</td>
+<td>理解原理，能判断不同投料是否等效</td>
+</tr>
+</table>
+<div class="card note">
+<span class="tag">高考怎么考</span>
+<p>本章是第 17 题（约 14 分）的核心：① 三段式求 K 或转化率（2~4 分，计算必须全对）；② 平衡移动方向及原因表述（注意按"条件改变 → v(正)/v(逆) 谁大 → 移动方向 → 结果"的逻辑链规范作答）；③ 图象分析。选择题中也常有 1 题平衡判断。这一章学透，反应原理大题就有底气了。</p>
+</div>
+<div class="card violet">
+<span class="tag">学法建议</span>
+<p>本章是高中化学的"分水岭"，建议这样安排训练：</p>
+<ul>
+<li><strong>计算关</strong>：三段式每天 1 道，限时 5 分钟，做到"起始-转化-平衡"三行不假思索；</li>
+<li><strong>判断关</strong>：把"条件 → 速率 → 平衡 → K"对比表默写 3 遍，再用 20 道判断题检验；</li>
+<li><strong>图象关</strong>：收集 5 道不同类型的平衡图象题，统一用"拐点定条件、平台定移动"两步法分析，总结成自己的读图模板；</li>
+<li><strong>表述关</strong>：每周仿写 2 次"四层表述法"的答案，请老师或同学帮忙挑刺。</li>
+</ul>
+<p>本章内容多，别指望一遍学会——第一遍懂概念，第二遍练计算，第三遍攻图象，三轮之后你就是班里讲平衡题的那个人。</p>
+</div>
+</section>
+
+<section>
+<h2>二、核心概念精讲</h2>
+
+<h3>2.1 化学反应速率</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：用单位时间内反应物浓度的减小或生成物浓度的增加来表示反应进行的快慢：</p>
+<p class="eq"><span class="formula">v = Δc / Δt　　单位：mol/(L·s) 或 mol/(L·min)</span></p>
+<p><strong>三个要点</strong>：</p>
+<ol>
+<li><strong>是平均速率</strong>：v 是一段时间内的平均值，不是瞬时速率；浓度随时间变化，瞬时速率也在变；</li>
+<li><strong>总取正值</strong>：无论用反应物还是生成物表示，v 都是正数；</li>
+<li><strong>不能用固体或纯液体表示</strong>：它们的"浓度"是定值（视为常数），无法体现变化。</li>
+</ol>
+<p><strong>速率关系（最重要的换算规则）</strong>：同一反应中，用不同物质表示的速率数值可能不同，但<strong>速率之比等于化学计量数之比</strong>。对 aA + bB ⇌ cC + dD：</p>
+<p class="eq"><span class="formula">v(A) : v(B) : v(C) : v(D) = a : b : c : d</span></p>
+<p>比较同一反应在不同条件下的快慢时，必须先把各物质的速率<strong>换算成同一种物质</strong>再比较，否则就会闹"v(H<sub>2</sub>) = 0.3 比 v(NH<sub>3</sub>) = 0.2 快"这种忽略系数的笑话——换算后二者其实是同一个速率。</p>
+</div>
+
+<h3>2.2 影响反应速率的因素</h3>
+<table>
+<tr>
+<th>因素</th>
+<th>规律</th>
+<th>微观解释（有效碰撞理论）</th>
+</tr>
+<tr>
+<td>浓度</td>
+<td>增大反应物浓度，速率加快</td>
+<td>单位体积内活化分子数增多，有效碰撞频率增大</td>
+</tr>
+<tr>
+<td>压强（有气体参与）</td>
+<td>加压（缩小体积），气体浓度增大，速率加快</td>
+<td>本质是浓度效应；若充入"惰性气体"而容器体积不变，各组分浓度不变，速率<strong>不变</strong></td>
+</tr>
+<tr>
+<td>温度</td>
+<td>升温，速率显著加快（无论吸热还是放热反应）</td>
+<td>分子能量升高，活化分子百分数增大（这是主因）</td>
+</tr>
+<tr>
+<td>催化剂</td>
+<td>正催化剂大幅加快反应速率</td>
+<td>降低反应的活化能，使更多分子成为活化分子；不改变 ΔH，不改变平衡位置</td>
+</tr>
+<tr>
+<td>固体表面积</td>
+<td>粉碎、搅拌可加快反应</td>
+<td>接触面积增大，有效碰撞机会增多</td>
+</tr>
+</table>
+<div class="card note">
+<span class="tag">易混提醒</span>
+<p>升温对放热反应同样<strong>加快</strong>速率（只是平衡会逆向移动，见 2.4）；"速率"和"平衡"是两条独立的线：催化剂<strong>同时同等程度</strong>地加快正、逆反应速率，所以它能缩短到达平衡的时间，却<strong>不能让平衡移动</strong>。</p>
+</div>
+
+<div class="card violet">
+<span class="tag">对比归纳</span>
+<p><strong>"条件 → 速率 → 平衡"一表清（本章的主干逻辑）</strong>：</p>
+<table>
+<tr>
+<th>改变条件</th>
+<th>对速率的影响</th>
+<th>对平衡的影响</th>
+<th>对 K 的影响</th>
+</tr>
+<tr>
+<td>增大反应物浓度</td>
+<td>v(正) 加快</td>
+<td>正向移动</td>
+<td>不变</td>
+</tr>
+<tr>
+<td>加压（缩小体积）</td>
+<td>气体反应加快</td>
+<td>向气体分子数减小的方向移动</td>
+<td>不变</td>
+</tr>
+<tr>
+<td>恒容充惰性气体</td>
+<td>不变</td>
+<td>不移动</td>
+<td>不变</td>
+</tr>
+<tr>
+<td>升高温度</td>
+<td>正逆都加快</td>
+<td>向吸热方向移动</td>
+<td>改变（放热反应 K 减小）</td>
+</tr>
+<tr>
+<td>加催化剂</td>
+<td>正逆同等程度加快</td>
+<td>不移动</td>
+<td>不变</td>
+</tr>
+</table>
+<p>这张表是判断题的"总开关"，建议抄在笔记本上，做到默写。</p>
+</div>
+
+<h3>2.3 化学平衡状态</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：一定条件下，可逆反应进行到 v(正) = v(逆) ≠ 0 时，各组分的浓度（或百分含量）保持不变的状态。可逆反应中用 <strong>⇌</strong> 表示，例如：</p>
+<p class="eq"><span class="formula">N<sub>2</sub>(g) + 3H<sub>2</sub>(g) <span class="eq-arrow" data-cond="高温、高压、催化剂">⇌</span> 2NH<sub>3</sub>(g)　ΔH &lt; 0</span></p>
+<p><strong>五大特征（逆、等、动、定、变）</strong>：</p>
+<ul>
+<li><strong>逆</strong>：研究对象必须是可逆反应；</li>
+<li><strong>等</strong>：v(正) = v(逆)，这是平衡的本质标志；</li>
+<li><strong>动</strong>：动态平衡，反应并未停止，只是正逆抵消；</li>
+<li><strong>定</strong>：各组分浓度、百分含量、体系颜色、压强（气体分子数变化时）等保持恒定；</li>
+<li><strong>变</strong>：条件改变，原平衡被破坏，发生移动直至建立新平衡。</li>
+</ul>
+<p><strong>平衡状态的判断（选择题高频，口诀"变量不变即平衡"）</strong>：</p>
+<ul>
+<li>直接判据：同一物质的 v(正) = v(逆)；或 v(正, A) : v(逆, B) 等于化学计量数之比；</li>
+<li>间接判据：某"变量"（如气体总压强、混合气体平均摩尔质量、密度、颜色深浅）由变化变为不变，说明达到平衡；</li>
+<li>陷阱：若某量从反应一开始就恒定（如恒容容器中全是气体的体系总质量、反应前后气体分子数不变时的总压强），它的"不变"<strong>不能</strong>说明平衡。</li>
+</ul>
+</div>
+
+<h3>2.4 化学平衡移动与勒夏特列原理</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：如果改变影响平衡的一个条件（浓度、压强、温度），平衡就向着<strong>能够减弱这种改变</strong>的方向移动。这就是勒夏特列原理。</p>
+<p><strong>为什么（微观理解）</strong>：平衡是一种"自适应"的稳定状态。你加了反应物，体系就消耗它一点；你升温，体系就朝吸热方向走一点来"吸走"热量。注意是"<strong>减弱</strong>"而非"<strong>抵消</strong>"——新平衡只能部分补偿，不可能回到原样。</p>
+<p><strong>三大因素对平衡的影响（以 N<sub>2</sub> + 3H<sub>2</sub> ⇌ 2NH<sub>3</sub>　ΔH &lt; 0 为例）</strong>：</p>
+<table>
+<tr>
+<th>改变条件</th>
+<th>移动方向</th>
+<th>原因</th>
+</tr>
+<tr>
+<td>增大反应物浓度</td>
+<td>正向</td>
+<td>v(正) 瞬时增大，v(正) &gt; v(逆)</td>
+</tr>
+<tr>
+<td>增大压强（缩小体积）</td>
+<td>正向（气体分子数减小的方向）</td>
+<td>两边气体浓度都增大，但气体分子数多的一侧受影响更大</td>
+</tr>
+<tr>
+<td>升高温度</td>
+<td>逆向（吸热方向）</td>
+<td>吸热方向可以"消耗"多出来的热量</td>
+</tr>
+<tr>
+<td>加催化剂</td>
+<td><strong>不移动</strong></td>
+<td>v(正)、v(逆) 同等倍数增大，仍然相等</td>
+</tr>
+</table>
+<p><strong>适用边界</strong>：压强只影响"有气体且气体分子数前后不相等"的反应；若反应前后气体分子数相等（如 H<sub>2</sub> + I<sub>2</sub> ⇌ 2HI），改变压强平衡不移动。</p>
+</div>
+
+<div class="card note">
+<span class="tag">深入一步</span>
+<p><strong>平衡移动方向 ≠ 转化率一定升高</strong>，这是最容易被直觉带偏的地方：</p>
+<ul>
+<li>对 A + B ⇌ 产物 型反应，增大 A 的浓度，平衡正向移动，<strong>B 的转化率升高，但 A 自身的转化率反而降低</strong>（新增的 A 不可能全部转化）；</li>
+<li>对只有一种反应物的反应（如 2HI(g) ⇌ H<sub>2</sub>(g) + I<sub>2</sub>(g)），恒容下再充入 HI，相当于加压，而该反应气体分子数前后相等，平衡不移动，HI 转化率<strong>不变</strong>；</li>
+<li>升温：吸热方向的反应物转化率升高，放热方向的反应物转化率降低。</li>
+</ul>
+<p>判断转化率，永远回到"转化率 = 转化量 / 起始量"，分别看分子分母怎么变。</p>
+</div>
+
+<h3>2.5 化学平衡常数 K</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：一定温度下，可逆反应达到平衡时，生成物浓度幂之积与反应物浓度幂之积的比值。对 aA(g) + bB(g) ⇌ cC(g) + dD(g)：</p>
+<p class="eq"><span class="formula">K = c<sup>c</sup>(C) · c<sup>d</sup>(D) / [ c<sup>a</sup>(A) · c<sup>b</sup>(B) ]</span></p>
+<p><strong>四条铁律</strong>：</p>
+<ol>
+<li><strong>固体和纯液体不写入表达式</strong>：如 CaCO<sub>3</sub>(s) ⇌ CaO(s) + CO<sub>2</sub>(g) 的 K = c(CO<sub>2</sub>)；</li>
+<li><strong>K 只与温度有关</strong>：与浓度、压强、催化剂均无关。温度不变，K 不变；温度改变，K 才变（放热反应升温 K 减小，吸热反应升温 K 增大）；</li>
+<li><strong>K 与方程式写法对应</strong>：方程式系数加倍，K 变为平方；方向反转，K 变为倒数；</li>
+<li><strong>K 的意义</strong>：K 越大，反应进行得越完全。一般 K &gt; 10<sup>5</sup> 认为反应基本进行完全。</li>
+</ol>
+<p><strong>K 的应用——判断方向（浓度商 Q 与 K 比较）</strong>：</p>
+<ul>
+<li>Q &lt; K：反应向<strong>正</strong>方向进行；</li>
+<li>Q = K：处于平衡状态；</li>
+<li>Q &gt; K：反应向<strong>逆</strong>方向进行。</li>
+</ul>
+<p><strong>常见混淆</strong>：K 的表达式里用<strong>平衡浓度</strong>，不是起始浓度；K 有单位但中学阶段一律不写单位。</p>
+</div>
+
+<h3>2.6 三段式计算法（本章计算的万能钥匙）</h3>
+<div class="card violet">
+<span class="tag">方法模板</span>
+<p>对所有平衡计算，一律按"起始 → 转化 → 平衡"三段列式：</p>
+<table>
+<tr>
+<th></th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+</tr>
+<tr>
+<td>起始浓度（或物质的量）</td>
+<td>c<sub>0</sub>(A)</td>
+<td>c<sub>0</sub>(B)</td>
+<td>0</td>
+</tr>
+<tr>
+<td>转化浓度</td>
+<td>−ax</td>
+<td>−bx</td>
+<td>+cx</td>
+</tr>
+<tr>
+<td>平衡浓度</td>
+<td>c<sub>0</sub>(A) − ax</td>
+<td>c<sub>0</sub>(B) − bx</td>
+<td>cx</td>
+</tr>
+</table>
+<p><strong>使用要点</strong>：① 转化量之比严格按化学计量数分配；② 代入 K 表达式的必须是<strong>平衡浓度</strong>（若给的是物质的量，别忘了除以容器体积）；③ 转化率 = 转化量 / 起始量 × 100%。</p>
+</div>
+
+<h3>2.7 平衡图象分析</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>常见图象类型与读图要领</strong>：</p>
+<ul>
+<li><strong>v-t 图</strong>：看条件改变瞬间哪个速率发生"突变"。如增大反应物浓度，v(正) 瞬间上跳、v(逆) 不变，随后 v(正) 渐降、v(逆) 渐升至相等——平衡正向移动；若两速率同时同等程度跳变（如加催化剂、等气体分子数反应加压），平衡不移动。</li>
+<li><strong>c-t 图（或含量-t 图）</strong>：曲线先达到平台（拐点先出现）的条件更"快"（温度更高或压强更大）——口诀"<strong>先拐先平数值大</strong>"。再结合平台高低判断平衡移动方向，反推 ΔH 正负或气体分子数大小。</li>
+<li><strong>转化率-温度-压强图</strong>：固定压强看温度影响（判断 ΔH 正负），固定温度看压强影响（判断气体分子数变化），即"定一议二"。</li>
+</ul>
+<p><strong>读图四步</strong>：一看横纵坐标的含义与单位；二看曲线走向（增还是减）；三看拐点、交点、平台的含义；四把图象信息与平衡规律对接，落到结论上。</p>
+</div>
+
+<h3>2.8 等效平衡</h3>
+<div class="card concept">
+<span class="tag">核心概念</span>
+<p><strong>是什么</strong>：同一可逆反应，在相同条件下从不同投料出发，达到平衡时各组分的<strong>百分含量相同</strong>，这几个平衡互为等效平衡。</p>
+<p><strong>两种模型</strong>：</p>
+<ol>
+<li><strong>恒温恒容</strong>：把投料按化学计量数"折算到同一边"后，物质的量<strong>完全相等</strong>（量相当），则等效。例如 N<sub>2</sub> + 3H<sub>2</sub> ⇌ 2NH<sub>3</sub>，投"1 mol N<sub>2</sub> + 3 mol H<sub>2</sub>"与投"2 mol NH<sub>3</sub>"互为等效平衡（平衡时各组分百分含量相同）；</li>
+<li><strong>恒温恒压</strong>：折算到同一边后，物质的量<strong>成比例</strong>（比相等）即等效。例如恒温恒压下投"1 mol N<sub>2</sub> + 3 mol H<sub>2</sub>"与"2 mol N<sub>2</sub> + 6 mol H<sub>2</sub>"等效，后者各组分物质的量是前者的 2 倍，但百分含量相同。</li>
+</ol>
+<p><strong>理解钥匙</strong>：等效平衡的本质是"殊途同归"——无论正投、逆投还是中间投，只要折算后"家底"相当，终点就一样。这与盖斯定律"只看始态终态"的思想一脉相承。</p>
+</div>
+</section>
+
+<section>
+<h2>三、三重表征贯通</h2>
+
+<h3>3.1 Fe<sup>3+</sup> 与 SCN<sup>−</sup> 的可逆反应（平衡的建立与移动）</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>向 FeCl<sub>3</sub> 溶液中滴入 KSCN 溶液，溶液立即变为<strong>血红色</strong>。再滴加浓 FeCl<sub>3</sub> 溶液，红色<strong>加深</strong>；滴加 NaOH 溶液（消耗 Fe<sup>3+</sup>），红色<strong>变浅</strong>。颜色的深浅变化直接"直播"了平衡的移动。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>Fe<sup>3+</sup> 与 SCN<sup>−</sup> 结合成血红色的 Fe(SCN)<sub>3</sub>（正反应），同时 Fe(SCN)<sub>3</sub> 又在不断解离（逆反应）。平衡时两个方向仍在进行，只是速率相等、浓度不变。加入 Fe<sup>3+</sup> 后正反应速率瞬间增大，正方向占上风，更多 Fe(SCN)<sub>3</sub> 生成，红色加深。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p class="eq"><span class="formula">Fe<sup>3+</sup>(aq) + 3SCN<sup>−</sup>(aq) ⇌ Fe(SCN)<sub>3</sub>(aq)</span></p>
+<p>（血红色）　K = c[Fe(SCN)<sub>3</sub>] / { c(Fe<sup>3+</sup>) · c<sup>3</sup>(SCN<sup>−</sup>) }</p>
+</div>
+</div>
+
+<h3>3.2 NO<sub>2</sub> ⇌ N<sub>2</sub>O<sub>4</sub> 的温度实验（温度对平衡的影响）</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>装有 NO<sub>2</sub> 与 N<sub>2</sub>O<sub>4</sub> 混合气体的密闭圆底烧瓶，常温下呈<strong>红棕色</strong>。放入<strong>热水</strong>中，颜色明显<strong>变深</strong>；放入<strong>冰水</strong>中，颜色明显<strong>变浅</strong>。温度这只"无形的手"在拨动平衡。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>正方向（2 个 NO<sub>2</sub> 分子结合成 1 个 N<sub>2</sub>O<sub>4</sub>）是放热的。升温时，吸热的逆反应被"鼓励"，N<sub>2</sub>O<sub>4</sub> 更多地分解为 NO<sub>2</sub>，红棕色的 NO<sub>2</sub> 浓度增大，颜色变深；降温时平衡正向移动，无色的 N<sub>2</sub>O<sub>4</sub> 增多，颜色变浅。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p class="eq"><span class="formula">2NO<sub>2</sub>(g) ⇌ N<sub>2</sub>O<sub>4</sub>(g)　ΔH &lt; 0</span></p>
+<p>（红棕色）　　　（无色）　升温 K 减小，降温 K 增大。</p>
+</div>
+</div>
+
+<h3>3.3 工业合成氨（速率与平衡的权衡）</h3>
+<div class="triple">
+<div class="cell">
+<h4>宏观表征</h4>
+<p>合成氨工厂在<strong>高温（约 500 ℃）、高压（20~50 MPa）、铁催化剂</strong>条件下运行，出口气体中 NH<sub>3</sub> 只占一部分，未反应的 N<sub>2</sub>、H<sub>2</sub> 被冷凝分离后<strong>循环</strong>回反应塔——可逆反应不能进行到底，原料必须循环利用。</p>
+</div>
+<div class="cell">
+<h4>微观表征</h4>
+<p>该反应正向是"气体分子数减小（4→2）+ 放热"的反应。加压有利于平衡正向移动；低温也有利于平衡，但温度太低速率太慢、催化剂活性差，所以工业上选择"约 500 ℃"这个<strong>速率与产率的折中点</strong>，并用催化剂把速率补回来。</p>
+</div>
+<div class="cell">
+<h4>符号表征</h4>
+<p class="eq"><span class="formula">N<sub>2</sub>(g) + 3H<sub>2</sub>(g) <span class="eq-arrow" data-cond="高温、高压、催化剂">⇌</span> 2NH<sub>3</sub>(g)　ΔH = −92 kJ/mol</span></p>
+<p>K = c<sup>2</sup>(NH<sub>3</sub>) / [ c(N<sub>2</sub>) · c<sup>3</sup>(H<sub>2</sub>) ]，升温 K 减小。</p>
+</div>
+</div>
+</section>
+
+<section>
+<h2>四、典型例题分步拆解</h2>
+
+<div class="card example">
+<span class="tag">例题 1 · 反应速率的计算与换算</span>
+<p><strong>题目</strong>：一定温度下，在 2 L 密闭容器中进行反应 N<sub>2</sub>(g) + 3H<sub>2</sub>(g) ⇌ 2NH<sub>3</sub>(g)。测得 2 s 内 NH<sub>3</sub> 的浓度增加了 0.4 mol/L。求：</p>
+<p>（1）v(NH<sub>3</sub>)；（2）v(H<sub>2</sub>)；（3）2 s 内 H<sub>2</sub> 减少了多少摩尔？</p>
+<p><strong>【思路点拨】</strong>速率定义 v = Δc/Δt 先求 v(NH<sub>3</sub>)，再用"速率之比 = 化学计量数之比"换算 v(H<sub>2</sub>)，最后用 Δn = Δc×V 求物质的量。</p>
+<div class="step"><span class="no">1</span><p>v(NH<sub>3</sub>) = Δc/Δt = 0.4 mol/L ÷ 2 s = 0.2 mol/(L·s)。</p></div>
+<div class="step"><span class="no">2</span><p>由 v(H<sub>2</sub>) : v(NH<sub>3</sub>) = 3 : 2，得 v(H<sub>2</sub>) = 0.2 × 3/2 = 0.3 mol/(L·s)。</p></div>
+<div class="step"><span class="no">3</span><p>Δc(H<sub>2</sub>) = 0.3 mol/(L·s) × 2 s = 0.6 mol/L；Δn(H<sub>2</sub>) = 0.6 mol/L × 2 L = 1.2 mol。</p></div>
+<div class="ans"><strong>【答案】</strong>（1）v(NH<sub>3</sub>) = 0.2 mol/(L·s)；（2）v(H<sub>2</sub>) = 0.3 mol/(L·s)；（3）H<sub>2</sub> 减少 1.2 mol。</div>
+<p><strong>【方法总结】</strong>速率题三步走：定义式求一种 → 系数比换算 → 乘体积回物质的量。注意比较两个反应谁快时，一定要先换算成同种物质再比。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 2 · 三段式求平衡常数与转化率（高考核心模型）</span>
+<p><strong>题目</strong>：某温度下，在 2 L 密闭容器中充入 2 mol SO<sub>2</sub> 和 1 mol O<sub>2</sub>，发生反应 2SO<sub>2</sub>(g) + O<sub>2</sub>(g) ⇌ 2SO<sub>3</sub>(g)。达到平衡时测得 SO<sub>3</sub> 的物质的量为 1.2 mol。求：</p>
+<p>（1）该温度下反应的平衡常数 K；（2）SO<sub>2</sub> 的平衡转化率。</p>
+<p><strong>【思路点拨】</strong>可逆反应给了起始量和一种物质的平衡量，立刻想到三段式。注意本题给的是<strong>物质的量</strong>，代入 K 前必须除以体积 2 L 换算成浓度。</p>
+<div class="step"><span class="no">1</span><p>列三段式（单位：mol）：
+<br>起始：SO<sub>2</sub> = 2，O<sub>2</sub> = 1，SO<sub>3</sub> = 0；
+<br>转化：SO<sub>3</sub> 增加 1.2 mol，按系数比，SO<sub>2</sub> 减少 1.2 mol，O<sub>2</sub> 减少 1.2 × 1/2 = 0.6 mol；
+<br>平衡：SO<sub>2</sub> = 2 − 1.2 = 0.8 mol，O<sub>2</sub> = 1 − 0.6 = 0.4 mol，SO<sub>3</sub> = 1.2 mol。</p></div>
+<div class="step"><span class="no">2</span><p>换算成平衡浓度（除以 2 L）：c(SO<sub>2</sub>) = 0.4 mol/L，c(O<sub>2</sub>) = 0.2 mol/L，c(SO<sub>3</sub>) = 0.6 mol/L。</p></div>
+<div class="step"><span class="no">3</span><p>代入 K 表达式：
+<br>K = c<sup>2</sup>(SO<sub>3</sub>) / [ c<sup>2</sup>(SO<sub>2</sub>) · c(O<sub>2</sub>) ] = (0.6)<sup>2</sup> / [ (0.4)<sup>2</sup> × 0.2 ] = 0.36 / 0.032 = 11.25。</p></div>
+<div class="step"><span class="no">4</span><p>SO<sub>2</sub> 转化率 = 转化量 / 起始量 × 100% = 1.2 / 2 × 100% = 60%。</p></div>
+<div class="ans"><strong>【答案】</strong>（1）K = 11.25；（2）SO<sub>2</sub> 的平衡转化率为 60%。</div>
+<p><strong>【方法总结】</strong>三段式铁律：① 转化量严格按系数比分配；② K 里必须是<strong>平衡浓度</strong>，物质的量要先除体积；③ 算完检查三段数量级是否合理（平衡量不能为负）。这类题在高考中值 2~4 分，是必须零失误的"口粮题"。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 3 · 平衡移动方向判断</span>
+<p><strong>题目</strong>：对于已达平衡的反应 N<sub>2</sub>(g) + 3H<sub>2</sub>(g) ⇌ 2NH<sub>3</sub>(g)　ΔH &lt; 0，下列条件的改变分别使平衡向什么方向移动？</p>
+<p>（1）升高温度；（2）增大压强（缩小体积）；（3）加入催化剂；（4）恒容下充入少量氦气；（5）将 NH<sub>3</sub> 液化分离出去。</p>
+<p><strong>【思路点拨】</strong>勒夏特列原理逐条分析：先明确这个反应"正向 = 气体分子数减小 + 放热"，再看每个条件"推"平衡往哪边走。</p>
+<div class="step"><span class="no">1</span><p>升高温度：平衡向吸热方向移动，即<strong>逆向</strong>移动（合成氨的 K 减小）。</p></div>
+<div class="step"><span class="no">2</span><p>增大压强：平衡向气体分子数减小的方向移动，即<strong>正向</strong>移动（4 mol 气体 → 2 mol 气体）。</p></div>
+<div class="step"><span class="no">3</span><p>加入催化剂：v(正)、v(逆) 同等倍数增大，平衡<strong>不移动</strong>，只是更快达到平衡。</p></div>
+<div class="step"><span class="no">4</span><p>恒容充氦气：总压强增大，但 N<sub>2</sub>、H<sub>2</sub>、NH<sub>3</sub> 的浓度都没有变化（容器体积没变），v(正) 仍等于 v(逆)，平衡<strong>不移动</strong>。这是最容易错的一问！</p></div>
+<div class="step"><span class="no">5</span><p>分离 NH<sub>3</sub>：生成物浓度减小，平衡<strong>正向</strong>移动，补充 NH<sub>3</sub>（这正是工业上提高转化率的办法）。</p></div>
+<div class="ans"><strong>【答案】</strong>（1）逆向；（2）正向；（3）不移动；（4）不移动；（5）正向。</div>
+<p><strong>【方法总结】</strong>判断移动方向的三连问：条件改变了什么（浓度/压强/温度）→ v(正) 与 v(逆) 谁变得更大 → 平衡向哪移。特别提醒：<strong>"加压"必须作用于反应气体本身才有效</strong>，恒容充惰性气体等于"假加压"，各组分浓度纹丝不动。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 4 · 平衡状态的判断</span>
+<p><strong>题目</strong>：一定温度下，恒容密闭容器中发生反应 H<sub>2</sub>(g) + I<sub>2</sub>(g) ⇌ 2HI(g)。下列事实能说明反应已达到平衡状态的是（　　）</p>
+<p>A. 容器内气体总压强不再变化</p>
+<p>B. 单位时间内消耗 a mol H<sub>2</sub>，同时生成 2a mol HI</p>
+<p>C. 混合气体的颜色不再变化</p>
+<p>D. c(H<sub>2</sub>) : c(I<sub>2</sub>) : c(HI) = 1 : 1 : 2</p>
+<p><strong>【思路点拨】</strong>用"变量不变即平衡"检验各选项：这个反应前后气体分子数相等（1+1=2），所以总压强从头到尾都不变，是"伪变量"。</p>
+<div class="step"><span class="no">1</span><p>A 不能：该反应气体分子数前后相等，总压强自始至终恒定，它的"不变"与是否平衡无关。</p></div>
+<div class="step"><span class="no">2</span><p>B 不能：消耗 H<sub>2</sub> 和生成 HI 描述的都是<strong>正反应方向</strong>，且比例恒等于系数比，任何时刻都成立，无法说明 v(正) = v(逆)。</p></div>
+<div class="step"><span class="no">3</span><p>C 能：颜色由紫红色的 I<sub>2</sub>(g) 浓度决定。颜色不变 → c(I<sub>2</sub>) 不变 → 各组分浓度不变 → 达到平衡。</p></div>
+<div class="step"><span class="no">4</span><p>D 不能：平衡时浓度之比取决于起始投料和转化率，恰好等于系数比纯属巧合，不是平衡的必然标志。</p></div>
+<div class="ans"><strong>【答案】</strong>C</div>
+<p><strong>【方法总结】</strong>平衡判断两板斧：① 速率型表述必须"一正一逆且符合系数比"；② 浓度/压强/颜色/密度型表述必须确认该量在反应过程中确实是<strong>变量</strong>。先问自己"它一直在变吗"，再谈"它不变了说明什么"。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 5 · 不同条件下反应快慢的比较</span>
+<p><strong>题目</strong>：反应 4NH<sub>3</sub>(g) + 5O<sub>2</sub>(g) ⇌ 4NO(g) + 6H<sub>2</sub>O(g) 在四种不同条件下进行，测得的反应速率分别为：</p>
+<p>① v(NH<sub>3</sub>) = 0.4 mol/(L·s)；② v(O<sub>2</sub>) = 0.6 mol/(L·s)；③ v(NO) = 0.5 mol/(L·s)；④ v(H<sub>2</sub>O) = 0.9 mol/(L·s)。</p>
+<p>四种条件下反应由快到慢的顺序是？</p>
+<p><strong>【思路点拨】</strong>不同物质表示的速率不能直接比大小，必须换算成<strong>同一种物质</strong>。这里统一换算成 v(NH<sub>3</sub>)，用"速率 ÷ 自己的化学计量数 × 4"即可。</p>
+<div class="step"><span class="no">1</span><p>① 已经是 v(NH<sub>3</sub>) = 0.4 mol/(L·s)。</p></div>
+<div class="step"><span class="no">2</span><p>② 换算：v(NH<sub>3</sub>) = 0.6 × 4/5 = 0.48 mol/(L·s)。</p></div>
+<div class="step"><span class="no">3</span><p>③ 换算：v(NH<sub>3</sub>) = 0.5 × 4/4 = 0.5 mol/(L·s)。</p></div>
+<div class="step"><span class="no">4</span><p>④ 换算：v(NH<sub>3</sub>) = 0.9 × 4/6 = 0.6 mol/(L·s)。</p></div>
+<div class="step"><span class="no">5</span><p>比较：0.6 &gt; 0.5 &gt; 0.48 &gt; 0.4。</p></div>
+<div class="ans"><strong>【答案】</strong>④ &gt; ③ &gt; ② &gt; ①。</div>
+<p><strong>【方法总结】</strong>速率比较两步：统一物质 → 比数值。一个更快捷的等价做法是直接比较"速率 ÷ 化学计量数"（即反应进度速率），谁的商大谁快，可以省去换算到同一物质的步骤。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 6 · 平衡图象分析（"先拐先平"模型）</span>
+<p><strong>题目</strong>：某可逆反应 aA(g) + bB(g) ⇌ cC(g) 中，C 的百分含量（C%）随时间变化的图象显示：</p>
+<p>（1）温度为 T<sub>1</sub>、T<sub>2</sub> 的两条曲线中，T<sub>2</sub> 对应的曲线先出现拐点（先达平衡），且平衡时 C% 比 T<sub>1</sub> 时低；</p>
+<p>（2）压强为 P<sub>1</sub>、P<sub>2</sub> 的两条曲线中，P<sub>2</sub> 对应的曲线先达平衡，且平衡时 C% 比 P<sub>1</sub> 时高。</p>
+<p>请判断：T<sub>1</sub> 与 T<sub>2</sub> 的大小、ΔH 的正负、P<sub>1</sub> 与 P<sub>2</sub> 的大小、a+b 与 c 的大小。</p>
+<p><strong>【思路点拨】</strong>口诀"<strong>先拐先平数值大</strong>"：先达到平衡的一方条件更强（温度更高或压强更大）；再看平衡时 C% 的高低，判断条件改变使平衡向哪个方向移动，反推反应的热效应与气体分子数关系。</p>
+<div class="step"><span class="no">1</span><p>T<sub>2</sub> 先达平衡 → T<sub>2</sub> 时速率更快 → <strong>T<sub>2</sub> &gt; T<sub>1</sub></strong>。</p></div>
+<div class="step"><span class="no">2</span><p>由 T<sub>1</sub> → T<sub>2</sub> 是升温，平衡时 C% 降低 → 升温平衡逆向移动 → 逆反应吸热 → 正反应放热 → <strong>ΔH &lt; 0</strong>。</p></div>
+<div class="step"><span class="no">3</span><p>P<sub>2</sub> 先达平衡 → <strong>P<sub>2</sub> &gt; P<sub>1</sub></strong>。</p></div>
+<div class="step"><span class="no">4</span><p>由 P<sub>1</sub> → P<sub>2</sub> 是加压，平衡时 C% 升高 → 加压平衡正向移动 → 正方向气体分子数减小 → <strong>a + b &gt; c</strong>。</p></div>
+<div class="ans"><strong>【答案】</strong>T<sub>2</sub> &gt; T<sub>1</sub>；ΔH &lt; 0；P<sub>2</sub> &gt; P<sub>1</sub>；a + b &gt; c。</div>
+<p><strong>【方法总结】</strong>图象题答题模板："先拐先平数值大"定条件强弱 → "平台高低"定移动方向 → 用勒夏特列原理反推 ΔH 正负或气体分子数大小。两步缺一不可，只凭平台高低不定条件、只凭拐点不看平台，都会翻车。</p>
+</div>
+
+<div class="card example">
+<span class="tag">例题 7 · 等效平衡判断</span>
+<p><strong>题目</strong>：一定温度下，反应 2SO<sub>2</sub>(g) + O<sub>2</sub>(g) ⇌ 2SO<sub>3</sub>(g)。甲容器恒温恒容，乙容器恒温恒压，两容器起始都充入 2 mol SO<sub>2</sub> 和 1 mol O<sub>2</sub>，达到平衡。现分别做对比实验：</p>
+<p>（1）甲容器中改充 4 mol SO<sub>2</sub> 和 2 mol O<sub>2</sub>，新平衡与原平衡是否等效？SO<sub>3</sub> 的百分含量如何变化？</p>
+<p>（2）乙容器中改充 4 mol SO<sub>2</sub> 和 2 mol O<sub>2</sub>，新平衡与原平衡是否等效？SO<sub>3</sub> 的百分含量如何变化？</p>
+<p><strong>【思路点拨】</strong>先折算：4 mol SO<sub>2</sub> + 2 mol O<sub>2</sub> 恰好是原投料的 2 倍。恒温恒容下"量加倍"相当于加压，该反应正向气体分子数减小，加压会推动平衡正向移动，所以<strong>不等效</strong>；恒温恒压下"比相等"即等效。</p>
+<div class="step"><span class="no">1</span><p>折算判断：新投料 4 mol SO<sub>2</sub>、2 mol O<sub>2</sub> = 原投料的 2 倍，即"量加倍"。</p></div>
+<div class="step"><span class="no">2</span><p>甲（恒温恒容）：量加倍 → 相当于把原平衡"压缩进"原容器，压强增大 → 平衡向气体分子数减小的方向（正向）移动 → SO<sub>3</sub> 百分含量<strong>增大</strong>，与原平衡<strong>不等效</strong>。</p></div>
+<div class="step"><span class="no">3</span><p>乙（恒温恒压）：量加倍、体积也加倍，各组分浓度不变 → 与原平衡<strong>等效</strong>，SO<sub>3</sub> 百分含量<strong>不变</strong>（但 SO<sub>3</sub> 的物质的量是原来的 2 倍）。</p></div>
+<div class="ans"><strong>【答案】</strong>（1）不等效，SO<sub>3</sub> 百分含量增大；（2）等效，SO<sub>3</sub> 百分含量不变（物质的量加倍）。</div>
+<p><strong>【方法总结】</strong>等效平衡判定口诀：<strong>"恒容量相当，恒压比相等"</strong>。恒容时量加倍不是等效而是"加压效应"（仅对气体分子数变化的反应有效）；恒压时量加倍是等效，含量不变、总量加倍。答题时先写容器类型（恒容/恒压），再写折算结果，最后下结论。</p>
+</div>
+
+<div class="card violet">
+<span class="tag">答题模板</span>
+<p><strong>平衡移动的规范表述模板（大题采分点这样写）</strong>：</p>
+<p>以"合成氨反应达到平衡后升高温度，平衡如何移动？为什么？"为例，满分表述分四层：</p>
+<ol>
+<li><strong>摆事实</strong>：该反应正反应为放热反应（ΔH &lt; 0）；</li>
+<li><strong>说条件</strong>：升高温度，正、逆反应速率均增大，但吸热方向（逆反应）的速率增大得更多；</li>
+<li><strong>比大小</strong>：此时 v(逆) &gt; v(正)；</li>
+<li><strong>下结论</strong>：平衡向逆反应方向移动（或答：根据勒夏特列原理，升温使平衡向吸热方向移动）。</li>
+</ol>
+<p>只写"升温平衡逆向移动"不给原理，通常只能拿一半分；四层齐全才是满分答案。浓度、压强的表述仿照此模板，把"吸热方向"换成对应的"浓度增大的一方""气体分子数减小的一方"即可。</p>
+</div>
+</section>
+
+<section>
+<h2>五、易错点与成因分析</h2>
+
+<div class="card trap">
+<span class="tag">易错点 1</span>
+<p><strong>易错表现</strong>：用固体或纯液体的浓度变化表示反应速率，如"v( CaCO<sub>3</sub> ) = …"。</p>
+<p><strong>错误成因</strong>：机械套用 v = Δc/Δt，没有意识到固体、纯液体的浓度是常数，根本谈不上"浓度变化"。</p>
+<p><strong>正确理解</strong>：速率只能用气体或溶液中溶质的浓度变化来表示。固体参加的反应，其快慢用固体质量减少速率或表面积来描述。</p>
+<p><strong>避坑口诀</strong>：<strong>"固液无浓度，速率莫沾边"</strong>。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 2</span>
+<p><strong>易错表现</strong>：认为"增大浓度，平衡常数 K 增大"或"加压使 K 变大"。</p>
+<p><strong>错误成因</strong>：把"平衡移动"和"K 变化"混为一谈——浓度、压强确实能让平衡移动，但它们改变的是各组分的浓度，而不是 K 本身。</p>
+<p><strong>正确理解</strong>：K 是温度的"专属函数"。温度不变，无论怎么加料、加压，平衡再怎么移动，重新平衡后算出的 K 值不变。只有升温（放热反应 K 减小、吸热反应 K 增大）才能改变 K。</p>
+<p><strong>避坑口诀</strong>：<strong>"K 只认温度，其他一概不认"</strong>。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 3</span>
+<p><strong>易错表现</strong>：认为"加入催化剂能提高反应物的平衡转化率"。</p>
+<p><strong>错误成因</strong>：只看到催化剂"加快反应"，就想当然认为"反应更充分了"，混淆了"速率"与"限度"两个概念。</p>
+<p><strong>正确理解</strong>：催化剂同等程度地加快正、逆反应速率，v(正) 依然等于 v(逆)，平衡位置纹丝不动。它只缩短"到达平衡的时间"，不改变"平衡的终点"，转化率不变、K 不变、ΔH 也不变。</p>
+<p><strong>避坑口诀</strong>：<strong>"催化剂管快不管多"</strong>。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 4</span>
+<p><strong>易错表现</strong>：恒容容器中充入惰性气体，认为"压强增大，平衡向气体分子数减小的方向移动"。</p>
+<p><strong>错误成因</strong>：只盯着"总压强变大"这个表象，没有分析各反应组分的<strong>浓度（分压）</strong>是否变化。</p>
+<p><strong>正确理解</strong>：平衡移动由反应物和生成物的浓度决定。恒容充惰性气体，容器体积不变，各组分的物质的量浓度不变，v(正) = v(逆) 不变，平衡不移动。若是恒压充惰性气体，容器体积变大，相当于"减压"，平衡才会向气体分子数增大的方向移动。</p>
+<p><strong>避坑口诀</strong>：<strong>"恒容充惰不移动，恒压充惰当减压"</strong>。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 5</span>
+<p><strong>易错表现</strong>：认为"勒夏特列原理能让改变完全抵消"，如加压后新平衡的总压强回到原来的数值。</p>
+<p><strong>错误成因</strong>：对"减弱"二字理解不到位，把"减弱"误读成"消除"。</p>
+<p><strong>正确理解</strong>：平衡的移动只能部分补偿外界的改变。例如把体积压缩为原来的一半，平衡虽向气体分子数减小的方向移动，但新平衡的总压强仍比原来<strong>大</strong>（介于一倍与两倍之间）。勒夏特列原理是"和事佬"，只能缓和矛盾，不能抹平矛盾。</p>
+<p><strong>避坑口诀</strong>：<strong>"减弱不抵消，改变仍是改变"</strong>。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 6</span>
+<p><strong>易错表现</strong>：写 K 的表达式时把固体写进去，如 CaCO<sub>3</sub>(s) ⇌ CaO(s) + CO<sub>2</sub>(g) 的 K 写成 K = c(CaO)·c(CO<sub>2</sub>)/c(CaCO<sub>3</sub>)。</p>
+<p><strong>错误成因</strong>：照搬"生成物浓度幂之积 / 反应物浓度幂之积"的通式，不知道固体、纯液体的浓度是常数，已被"吸收"进 K 值里了。</p>
+<p><strong>正确理解</strong>：固体和纯液体的浓度不随其量改变，约定为 1，不写入表达式。该反应的正确表达式是 K = c(CO<sub>2</sub>)——这意味着平衡时 CO<sub>2</sub> 的浓度是定值，与 CaCO<sub>3</sub> 的量无关。</p>
+<p><strong>避坑口诀</strong>：<strong>"固纯液体不入式"</strong>。</p>
+</div>
+
+<div class="card trap">
+<span class="tag">易错点 7</span>
+<p><strong>易错表现</strong>：读平衡图象时把"先拐先平"记反，认为先达平衡的曲线对应较低的温度或压强；或只看平台高低就判断 ΔH，不先用拐点确定温度大小。</p>
+<p><strong>错误成因</strong>：没有建立"先达平衡 = 速率快 = 条件强（温度高/压强大）"的逻辑链，把图象当成孤立的几何图形死记硬背，两步推理（拐点定条件 → 平台定移动）只做了第二步。</p>
+<p><strong>正确理解</strong>：温度高、压强大时速率快，先达到平衡，曲线先出现拐点——所以"先拐"的一方条件数值更大。确定了温度（压强）谁大之后，再比较两条曲线平台的高低，才能判断升温（加压）使平衡向哪边移动，进而推出 ΔH 正负或气体分子数大小。</p>
+<p><strong>避坑口诀</strong>：<strong>"先拐先平数值大，平台高低定移动"</strong>——两句连用，顺序不乱。</p>
+</div>
+</section>
+
+<section>
+<h2>六、与前后章节的联系</h2>
+<ul>
+<li><strong>承接 3.12</strong>：ΔH 的正负决定温度对平衡的影响方向；热化学方程式中的 ΔH 会出现在本章的平衡计算与图象题中。</li>
+<li><strong>铺垫 3.14（水溶液中的离子平衡）</strong>：弱电解质的电离平衡、盐类水解平衡、沉淀溶解平衡，本质都是化学平衡，K 的思想会延伸为 K<sub>a</sub>、K<sub>b</sub>、K<sub>h</sub>、K<sub>sp</sub>。本章学透"平衡观"，下一章就是"换主角重演"。</li>
+<li><strong>铺垫 3.15（电化学）</strong>：电极反应的速率与限度分析、工业电解条件的选择，都离不开速率与平衡思维。</li>
+<li><strong>服务工业流程题</strong>：合成氨、接触法制硫酸的条件选择，是"速率 × 平衡 × 成本"三方博弈的经典案例，工业流程大题常以此为背景。</li>
+</ul>
+<div class="card note">
+<span class="tag">承上启下</span>
+<p>本章与相邻章节的联动复习建议：</p>
+<ul>
+<li>与 3.12 联动：把本章例题 3（平衡移动）与 3.12 的 ΔH 正负判断连起来看，确认"放热反应升温逆向移动"这一逻辑链完全打通；</li>
+<li>向 3.14 延伸：学完本章后，试着用同样的"三段式 + 平衡常数"思维去读弱电解质电离（K<sub>a</sub>），你会发现它只是换了个主角的化学平衡；</li>
+<li>向 3.15 铺垫：电化学中原电池的电流大小（速率）与反应限度同样受本章思维支配，提前建立"速率与限度"双线分析的习惯。</li>
+</ul>
+</div>
+</section>
+
+<section>
+<h2>七、章末自检清单</h2>
+<p>合上书本，逐条自测。能做到就打勾，做不到的立刻回读对应小节：</p>
+<ul class="checklist">
+<li>我能用 v = Δc/Δt 计算反应速率，并说明为什么不能用固体和纯液体表示速率。</li>
+<li>我能利用"速率之比 = 化学计量数之比"在不同物质之间换算速率并比较快慢。</li>
+<li>我能用有效碰撞理论解释浓度、温度、压强、催化剂对速率的影响。</li>
+<li>我能说出化学平衡的五大特征（逆、等、动、定、变），并理解"动态平衡"的含义。</li>
+<li>我能用"变量不变即平衡"的原则，从速率、浓度、压强、颜色、平均摩尔质量等角度判断平衡状态。</li>
+<li>我能用勒夏特列原理准确判断改变浓度、压强、温度时平衡的移动方向，并说清"减弱但不抵消"。</li>
+<li>我能解释催化剂为什么不影响平衡位置，以及恒容充惰性气体为什么平衡不移动。</li>
+<li>我能正确书写平衡常数表达式（固体、纯液体不写入），并牢记 K 只与温度有关。</li>
+<li>我能熟练列三段式计算 K、转化率，且记得把物质的量换算成浓度再代入。</li>
+<li>我能用 Q 与 K 的大小关系判断反应进行的方向。</li>
+<li>我能读懂 v-t 图、c-t 图，会用"先拐先平数值大"和"定一议二"分析平衡图象。</li>
+<li>我能说出恒温恒容（量相当）与恒温恒压（比相等）两种等效平衡的判定方法。</li>
+</ul>
+</section>
+
+</main>
+<footer class="chap-foot">高考备考 · 化学 · 深度学习材料 · 2026</footer>
+</body>
+</html>

@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>曲线运动与万有引力 - 深度学习材料</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1.0
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="../shared/mathjax-tex-svg.js" async></script>
+<style>
+:root {
+  --ink:#1f2933; --ink-soft:#52606d; --line:#e4e7eb;
+  --paper:#ffffff; --canvas:#f7f8fa;
+  --subject:#2b6cb0; --subject-soft:#ebf8ff;
+  --c-example:#6d28d9; --c-example-bg:#f5f3ff;
+  --c-trap:#b45309;    --c-trap-bg:#fff8ec;
+  --c-method:#047857;  --c-method-bg:#ecfdf5;
+  --c-check:#0f766e;   --c-check-bg:#f0fdfa;
+  --c-concept:#1b5f9e; --c-concept-bg:#eef4fb;
+  --c-key:#b91c1c;     --c-key-bg:#fef2f2;
+  --fs-body:16px; --fs-h1:26px; --fs-h2:22px; --fs-h3:17.5px; --fs-h4:16px;
+  --lh-body:1.8; --maxw:860px;
+  --r-card:10px; --r-pill:999px; --shadow-card:0 1px 4px rgba(15,23,42,.05);
+  --formula-bg:#f7f9fb; --formula-pad:10px 16px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 24px 28px 64px;
+  max-width: var(--maxw); margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: var(--fs-body); line-height: var(--lh-body);
+  color: var(--ink); background: var(--paper);
+}
+/* ----- 统一页头：极简面包屑骨架 ----- */
+.chap-nav { font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 20px; }
+.chap-nav a { color: var(--subject); text-decoration: none; }
+.chap-head h1 { font-size: var(--fs-h1); line-height: 1.4; color: var(--subject); letter-spacing: .5px; margin: 0 0 4px; }
+.chap-meta { font-size: 12.5px; color: var(--ink-soft); margin: 6px 0 10px; }
+.chap-intro { background: var(--subject-soft); border-left: 4px solid var(--subject); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14.5px; margin: 10px 0 0; }
+/* ----- 目录 ----- */
+.toc { background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 20px; margin: 18px 0; }
+.toc-label { font-size: 13px; font-weight: 700; color: var(--subject); margin-bottom: 8px; letter-spacing: .08em; }
+.toc-links { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.toc-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 3px 10px; border-radius: var(--r-pill); background: var(--subject-soft); transition: all .15s; }
+.toc-links a:hover { background: var(--subject); color: #fff; }
+.toc ol { margin: 6px 0 6px 22px; }
+.toc a { color: var(--subject); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+/* ----- 标题阶梯（裸选择器，兼容有无 main/.content 包裹） ----- */
+h2 {
+  font-size: var(--fs-h2); font-weight: 700; color: var(--ink);
+  margin: 40px 0 14px; padding: 6px 0 6px 14px; line-height: 1.5;
+  border-left: 5px solid var(--subject);
+  background: linear-gradient(to right, var(--subject-soft), transparent 70%);
+  border-radius: 0 8px 8px 0; scroll-margin-top: 20px;
+}
+h3 { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); margin: 26px 0 10px; scroll-margin-top: 20px; }
+h4 { font-size: var(--fs-h4); font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 24px; padding-left: 4px; }
+li { margin: 4px 0; }
+li ul, li ol { margin-top: 4px; margin-bottom: 4px; }
+strong { color: #111827; }
+a { color: var(--subject); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 36px 0; }
+blockquote { margin: 14px 0; padding: 10px 18px; border-left: 4px solid var(--subject); background: var(--subject-soft); color: var(--ink-soft); border-radius: 0 8px 8px 0; }
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+/* ----- 表格（统一：实色表头白字 + 细线全边框 + 斑马纹） ----- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 14.5px; background: var(--paper); }
+th { background: var(--subject); color: #fff; font-weight: 600; padding: 9px 12px; text-align: left; }
+th, td { border: 1px solid var(--line); }
+td { padding: 8px 12px; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfd; }
+/* ----- 自检清单（统一 ☐ 形态） ----- */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 6px 0 6px 30px; position: relative; border-bottom: 1px dashed var(--line); }
+.checklist li::before { content: "☐"; position: absolute; left: 4px; color: var(--c-check); font-size: 15px; }
+/* ----- 打印（统一基线） ----- */
+@media print {
+  @page { size: A4; margin: 16mm 15mm; }
+  body { max-width: none; padding: 0; font-size: 12pt; line-height: 1.7; background: #fff; }
+  .chap-nav, .toc { display: none; }
+  .chap-head h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 6px; }
+  .chap-intro { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+  main h2, .content h2, h2 { background: none; border-left: 4px solid #000; page-break-after: avoid; }
+  h3, h4 { page-break-after: avoid; }
+  table, figure, blockquote, .checklist { page-break-inside: avoid; }
+  th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #fff; }
+  a { color: #000; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  body { padding: 16px 14px 48px; font-size: 15px; }
+  .chap-head h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+
+/* ===== 物理点缀层（MathJax 运行时渲染） ===== */
+.hint { color: var(--ink-soft); text-align: center; font-size: 14px; margin-bottom: 24px; }
+/* 公式容器（统一灰底盒 + 科目色左边条） */
+.MathJax, mjx-container { font-size: 1.05em; }
+mjx-container[display="true"] {
+  padding: var(--formula-pad); background: var(--formula-bg);
+  border-radius: 8px; margin: 14px 0 !important;
+  border-left: 4px solid var(--subject); page-break-inside: avoid;
+}
+/* 语义组件：blockquote=深度思考(科目色) / .deep=方法绿 / .warn=易错琥珀 / .key-point=核心红 */
+blockquote { color: #2c5282; }
+blockquote strong { color: var(--subject); }
+blockquote ul { margin: 4px 0 0 20px; }
+.deep { background: var(--c-method-bg); border-left: 5px solid var(--c-method); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #22543d; page-break-inside: avoid; }
+.deep strong { color: var(--c-method); }
+.warn { background: var(--c-trap-bg); border-left: 5px solid var(--c-trap); padding: 12px 20px; margin: 14px 0; border-radius: 0 8px 8px 0; color: #744210; page-break-inside: avoid; }
+.warn strong { color: var(--c-trap); }
+.key-point { background: var(--c-key-bg); border-left: 4px solid var(--c-key); padding: 12px 20px; border-radius: 0 8px 8px 0; margin: 14px 0; page-break-inside: avoid; }
+.key-point strong { color: var(--c-key); }
+/* 知识地图 */
+.map { margin: 20px 0; padding: 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-card); page-break-inside: avoid; }
+.map .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.map .node { background: var(--subject); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: .95em; text-align: center; }
+.map .node.root { background: #1a365d; font-size: 1.1em; padding: 12px 28px; }
+.map .node.leaf { background: #fff; color: var(--ink); border: 1px solid #bee3f8; font-weight: 400; font-size: .9em; }
+.map .node.view { background: #d69e2e; }
+.map .arrow-down { text-align: center; color: var(--ink-soft); font-size: 1.3em; line-height: 1.2; }
+.stars { color: #d69e2e; letter-spacing: 2px; }
+.emoji { font-style: normal; }
+td { text-align: center; vertical-align: middle; }
+td.l { text-align: left; }
+@media print {
+  mjx-container[display="true"] { background: #fff; border: 1px solid #ccc; border-left: 3px solid #000; }
+  .deep, .warn, .key-point { background: #fff !important; border: 1px solid #999; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<nav class="chap-nav">高考备考 · 物理 · 深度学习材料 ｜ 3.3 曲线运动与万有引力</nav>
+<header class="chap-head">
+  <h1>曲线运动与万有引力</h1>
+  <p class="chap-meta"></p>
+</header>
+  <div class="subtitle">深度学习材料 · 概念 · 推导 · 模型 · 方法</div>
+  <div class="meta">
+    <span>高中物理 · 力学模块 · 高考必考重点</span><br>
+    <span>依据：《高考物理95+分备考指南》3.3节要求</span><br>
+    <span>适用：高一同步学习 &amp; 高考一轮复习</span><br>
+    <span>学生：小兵</span>
+  </div>
+</div>
+
+<p class="hint">
+  💡 提示：所有公式由 MathJax 渲染；带推导的公式请合上书独立推一遍
+</p>
+
+<!-- 目录 -->
+<div class="toc">
+  <strong>目录</strong>
+  <ol>
+    <li><a href="#s1">一、本章总览</a></li>
+    <li><a href="#s2">二、核心概念与物理量</a></li>
+    <li><a href="#s3">三、公式与推导（含适用条件）</a></li>
+    <li><a href="#s4">四、典型例题</a></li>
+    <li><a href="#s5">五、易错点与成因分析</a></li>
+    <li><a href="#s6">六、章末自检清单</a></li>
+  </ol>
+</div>
+
+<h2 id="s1">一、本章总览</h2>
+
+<p>小兵你好！从这一章开始，物理正式从「直线」走向「曲线」，从「地面」走向「星空」。前面学的匀变速直线运动、牛顿运动定律，处理的都是合力与速度共线的情形；而本章要回答两个全新的问题：<strong>当合力与速度不共线时，物体怎样运动？天体的运动由什么规律支配？</strong>这正是牛顿力学最辉煌的两场胜仗——平抛与圆周把「力改变运动」的思想推向二维世界，万有引力定律则第一次把地面上的物理和天上的物理统一成了同一套规律。</p>
+
+<p>在云南高考（物理满分 100 分，力学约 40 分）中，本章是力学两大综合主线之一（另一条是能量与动量）。<strong>平抛运动、圆周运动、万有引力与航天几乎年年必考</strong>：选择题常考卫星参量比较、小船渡河、圆锥摆；计算题常把平抛、圆周与机械能、动量综合成压轴情境。学透本章，等于拿下了力学的半壁江山。</p>
+
+<h3>本章知识体系图</h3>
+
+<div class="map">
+  <div class="row"><div class="node root">曲线运动与万有引力</div></div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node">曲线运动基础</div>
+    <div class="node">抛体运动</div>
+    <div class="node">圆周运动</div>
+    <div class="node">万有引力与航天</div>
+  </div>
+  <div class="arrow-down">↓</div>
+  <div class="row">
+    <div class="node leaf">条件：$\vec{F}$ 与 $\vec{v}$ 不共线</div>
+    <div class="node leaf">平抛规律与分解</div>
+    <div class="node leaf">描述量：$v$、$\omega$、$T$</div>
+    <div class="node leaf">万有引力定律</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">速度沿切线方向</div>
+    <div class="node leaf">两个重要推论</div>
+    <div class="node leaf">向心加速度 $a_n$</div>
+    <div class="node leaf">卫星参量比较</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">运动的合成与分解</div>
+    <div class="node leaf">斜抛简介</div>
+    <div class="node leaf">向心力来源分析</div>
+    <div class="node leaf">宇宙速度</div>
+  </div>
+  <div class="row">
+    <div class="node leaf">小船渡河 · 绳端分解</div>
+    <div class="node leaf">类平抛迁移</div>
+    <div class="node leaf">水平/竖直圆周模型</div>
+    <div class="node leaf">变轨 · 双星（95+）</div>
+  </div>
+</div>
+
+<h3>考点与考频速览</h3>
+
+<table>
+  <tr>
+    <th style="width:22%;">考点</th>
+    <th style="width:44%;">常见题型</th>
+    <th style="width:34%;">考频与地位</th>
+  </tr>
+  <tr>
+    <td class="l">运动的合成与分解</td>
+    <td class="l">小船渡河（最短时间/最短位移）、绳端速度分解</td>
+    <td class="l">选择题高频，方法性极强</td>
+  </tr>
+  <tr>
+    <td class="l">平抛运动</td>
+    <td class="l">分解求 $t$、$x$、落地速度；与斜面、圆周、能量综合</td>
+    <td class="l">几乎年年考，常进计算题</td>
+  </tr>
+  <tr>
+    <td class="l">圆周运动</td>
+    <td class="l">传动装置参量比较、向心力来源分析、竖直圆周临界</td>
+    <td class="l">选择+计算双高频</td>
+  </tr>
+  <tr>
+    <td class="l">万有引力与航天</td>
+    <td class="l">卫星 $v$、$\omega$、$T$、$a$ 比较，估算天体质量/密度，变轨</td>
+    <td class="l">几乎年年考，选择题为主</td>
+  </tr>
+  <tr>
+    <td class="l">宇宙速度</td>
+    <td class="l">第一宇宙速度的推导与数值、三个宇宙速度的区分</td>
+    <td class="l">常作选项或计算题小问</td>
+  </tr>
+</table>
+
+<blockquote>
+  <p><strong>深度思考：本章的一条暗线</strong></p>
+  <p>整章只有一个核心思想——<strong>「力决定加速度，加速度与速度的关系决定轨迹」</strong>。合力与速度不共线 → 轨迹弯曲；合力恒定（平抛）→ 匀变速曲线；合力总指向圆心且大小不变（匀速圆周）→ 轨迹为圆；合力满足平方反比（万有引力）→ 行星走椭圆、卫星走圆。学每一段时，都问自己一句：这里的合力是什么样子的？它怎样塑造了轨迹？</p>
+</blockquote>
+
+<h3>学习建议</h3>
+<ul>
+  <li><strong>先方法后模型</strong>：「运动的合成与分解」是本章唯一的方法论工具，小船渡河、平抛、斜抛全是它的应用，务必先吃透。</li>
+  <li><strong>推导重于记忆</strong>：平抛推论、向心力公式、第一宇宙速度、卫星参量公式都要能独立推导——高考选择题的选项常常是推导的中间步骤。</li>
+  <li><strong>模型成组记</strong>：小船渡河（两类极值）、圆锥摆、竖直圆周（最高点临界）、近地/同步卫星比较，每个模型配一道母题。</li>
+  <li><strong>规范不放松</strong>：矢量写 $\vec{v}$，单位写 $\,\text{m/s}$，天体计算保留 2~3 位有效数字，从现在养成习惯。</li>
+</ul>
+
+<h2 id="s2">二、核心概念与物理量</h2>
+
+<h3>2.1 曲线运动</h3>
+
+<h4>定义</h4>
+<p>运动轨迹是<strong>曲线</strong>的运动叫做曲线运动。注意判据看的是「轨迹的形状」，不是「速度大小变不变」——匀速圆周运动速率不变，但它是不折不扣的曲线运动。</p>
+
+<h4>速度方向</h4>
+<p>质点在某一点的瞬时速度方向，沿轨迹在该点的<strong>切线方向</strong>。由于曲线各点切线方向不同，所以：</p>
+<div class="key-point">
+  <strong>曲线运动一定是变速运动</strong>（速度方向时刻在变），一定存在加速度，合力一定不为零。反之，变速运动不一定是曲线运动（如匀加速直线运动）——「变速」与「曲线」之间不能互相推出，判据只有一个：$\vec{F}$（或 $\vec{a}$）与 $\vec{v}$ 是否共线。
+</div>
+
+<h4>曲线运动的条件</h4>
+<p>当物体所受<strong>合力（加速度）的方向与速度方向不在同一条直线上</strong>时，物体做曲线运动。进一步地：</p>
+<ul>
+  <li>合力与速度成<strong>锐角</strong>：速率增大（如平抛下落过程）；</li>
+  <li>合力与速度成<strong>钝角</strong>：速率减小（如斜抛上升过程）；</li>
+  <li>合力与速度<strong>始终垂直</strong>：速率不变（如匀速圆周运动）；</li>
+  <li>轨迹总是弯向合力一侧，即<strong>合力指向轨迹的凹侧</strong>（轨迹夹在速度方向与合力方向之间）。</li>
+</ul>
+
+<h4>两类典型的曲线运动</h4>
+<table>
+  <tr>
+    <th style="width:24%;">类型</th>
+    <th style="width:26%;">合力特征</th>
+    <th style="width:24%;">加速度特征</th>
+    <th style="width:26%;">代表</th>
+  </tr>
+  <tr>
+    <td class="l">匀变速曲线运动</td>
+    <td class="l">合力恒定</td>
+    <td class="l">$\vec{a}$ 恒定（大小方向都不变）</td>
+    <td class="l">平抛、斜抛</td>
+  </tr>
+  <tr>
+    <td class="l">变加速曲线运动</td>
+    <td class="l">合力变化</td>
+    <td class="l">$\vec{a}$ 方向（或大小）变化</td>
+    <td class="l">圆周运动</td>
+  </tr>
+</table>
+
+<h3>2.2 运动的合成与分解</h3>
+
+<p>一个物体同时参与几个运动时，这几个运动叫<strong>分运动</strong>，物体的实际运动叫<strong>合运动</strong>。已知分运动求合运动叫运动的合成，反之叫运动的分解。位移、速度、加速度都是矢量，合成与分解都遵循<strong>平行四边形定则</strong>（常用正交分解）。三个基本性质：</p>
+<ul>
+  <li><strong>等时性</strong>：合运动与各分运动同时发生、同时结束，时间相同——这是联立方程的桥梁；</li>
+  <li><strong>独立性</strong>：各分运动独立进行，互不影响（平抛的水平与竖直运动互不干扰）；</li>
+  <li><strong>等效性</strong>：合运动与各分运动的总效果相同。</li>
+</ul>
+
+<blockquote>
+  <p><strong>深度思考：分解的对象永远是「实际运动」</strong></p>
+  <p>运动分解时，被分解的一定是物体<strong>实际的速度（合速度）</strong>，分解方向按问题的物理约束来选：绳（杆）连接问题按「沿绳 + 垂直绳」分解，因为沿绳方向分速度相等；平抛按「水平 + 竖直」分解，因为两个方向受力各自独立。方向选对了，题目就解了一半。</p>
+</blockquote>
+
+<h3>2.3 本章核心物理量总表</h3>
+
+<table>
+  <tr>
+    <th style="width:15%;">物理量</th>
+    <th style="width:9%;">符号</th>
+    <th style="width:26%;">定义</th>
+    <th style="width:16%;">单位（SI）</th>
+    <th style="width:34%;">矢量/标量与方向</th>
+  </tr>
+  <tr>
+    <td class="l">线速度</td>
+    <td>$\vec{v}$</td>
+    <td class="l">弧长与所用时间之比 $v=\dfrac{\Delta s}{\Delta t}$</td>
+    <td>$\,\text{m/s}$</td>
+    <td class="l">矢量；方向沿圆（轨）周切线，时刻变化</td>
+  </tr>
+  <tr>
+    <td class="l">角速度</td>
+    <td>$\omega$</td>
+    <td class="l">半径转过的圆心角与时间之比 $\omega=\dfrac{\Delta\theta}{\Delta t}$</td>
+    <td>$\,\text{rad/s}$</td>
+    <td class="l">严格说是矢量；高中阶段只比较大小，方向用「顺时针/逆时针」描述</td>
+  </tr>
+  <tr>
+    <td class="l">周期</td>
+    <td>$T$</td>
+    <td class="l">运动一周所用的时间</td>
+    <td>$\,\text{s}$</td>
+    <td class="l">标量</td>
+  </tr>
+  <tr>
+    <td class="l">频率</td>
+    <td>$f$</td>
+    <td class="l">单位时间内完成圆周运动的圈数，$f=1/T$</td>
+    <td>$\,\text{Hz}$</td>
+    <td class="l">标量</td>
+  </tr>
+  <tr>
+    <td class="l">转速</td>
+    <td>$n$</td>
+    <td class="l">单位时间转过的圈数（与频率数值相同，单位习惯不同）</td>
+    <td>$\,\text{r/s}$（工程用 $\,\text{r/min}$）</td>
+    <td class="l">标量</td>
+  </tr>
+  <tr>
+    <td class="l">向心加速度</td>
+    <td>$\vec{a}_n$</td>
+    <td class="l">匀速圆周运动中指向圆心的加速度</td>
+    <td>$\,\text{m/s}^2$</td>
+    <td class="l">矢量；始终指向圆心，方向时刻变化</td>
+  </tr>
+  <tr>
+    <td class="l">向心力</td>
+    <td>$\vec{F}_n$</td>
+    <td class="l">产生向心加速度的合力（沿半径方向的分力）</td>
+    <td>$\,\text{N}$</td>
+    <td class="l">矢量；始终指向圆心；<strong>效果力</strong>，受力分析时不得单列</td>
+  </tr>
+  <tr>
+    <td class="l">万有引力常量</td>
+    <td>$G$</td>
+    <td class="l">$G=6.67\times10^{-11}\,\text{N}\cdot\text{m}^2/\text{kg}^2$，卡文迪许扭秤首测</td>
+    <td>$\,\text{N}\cdot\text{m}^2/\text{kg}^2$</td>
+    <td class="l">标量常量，与物体、介质均无关</td>
+  </tr>
+  <tr>
+    <td class="l">引力（向心）轨道半径</td>
+    <td>$r$</td>
+    <td class="l">两天体质心间距离，或卫星到<strong>地心</strong>的距离 $r=R+h$</td>
+    <td>$\,\text{m}$</td>
+    <td class="l">标量；最易错——不是高度 $h$</td>
+  </tr>
+</table>
+
+<div class="key-point">
+  <strong>矢量方向与正负号约定（本章专用，务必统一）</strong>
+  <ul style="margin-top:6px;">
+    <li><strong>平抛/斜抛</strong>：以抛出点为原点，水平方向取初速度方向为 $x$ 轴正方向，竖直方向高中阶段通常取<strong>竖直向下为 $y$ 轴正方向</strong>（这样 $y=\frac{1}{2}gt^2$、$v_y=gt$ 全部取正，最省事）；若取向上为正，则位移、速度公式要带负号，两套约定不可混用。</li>
+    <li><strong>圆周运动</strong>：沿半径指向圆心为向心方向正方向，$\sum F_{\text{指向圆心}}-\sum F_{\text{背离圆心}}=m\dfrac{v^2}{r}$；切线方向单独列方程。线速度方向沿切线，<strong>向心量（$a_n$、$F_n$）方向指向圆心</strong>，二者始终垂直。</li>
+    <li><strong>万有引力</strong>：引力方向沿两质点连线指向对方；卫星问题中「引力指向地心」即提供向心力，故列式 $G\dfrac{Mm}{r^2}=m\dfrac{v^2}{r}$ 时引力取正。</li>
+    <li><strong>书写规范</strong>：矢量用箭头记号 $\vec{v}$、$\vec{F}$；只谈大小写 $v$、$F$；单位一律用 $\,\text{m/s}$、$\,\text{rad/s}$ 形式；有效数字一般保留 2~3 位，题目给定 $g=10\,\text{m/s}^2$ 时不得改用 $9.8$。</li>
+  </ul>
+</div>
+
+<h2 id="s3">三、公式与推导（含适用条件）</h2>
+
+<h3>3.1 运动的合成与分解</h3>
+
+<p><strong>公式</strong>：设两个分运动的分位移、分速度、分加速度分别为 $\vec{x}_1,\vec{x}_2$ 等，则</p>
+$$\vec{x}=\vec{x}_1+\vec{x}_2,\qquad \vec{v}=\vec{v}_1+\vec{v}_2,\qquad \vec{a}=\vec{a}_1+\vec{a}_2$$
+<p>正交分解时，若两分速度 $v_1\perp v_2$，则合速度大小 $v=\sqrt{v_1^2+v_2^2}$，方向用 $\tan\theta=\dfrac{v_2}{v_1}$ 确定。</p>
+
+<p><strong>推导思路</strong>：矢量运算的平行四边形定则在位移、速度、加速度上逐一套用即可，没有新物理；真正的物理在于「独立性原理」——一个方向的受力与运动不影响另一方向，这才允许我们分方向列方程。</p>
+
+<div class="warn">
+  <strong>适用条件与边界</strong>：独立性原理是经典力学中「力的独立作用原理」的推论，适用于宏观低速、受力可分解的所有情形。注意：两分运动具有<strong>等时性</strong>，列方程时靠时间 $t$ 把两个方向联系起来；若物体间有约束（如同一根绳），还要附加约束方程（沿绳方向分速度相等）。
+</div>
+
+<h3>3.2 平抛运动</h3>
+
+<h4>规律与分解</h4>
+<p>水平方向不受力 → 匀速直线运动；竖直方向只受重力且初速度为零 → 自由落体运动。取抛出点为原点、水平向前为 $x$ 轴正方向、竖直向下为 $y$ 轴正方向：</p>
+$$x=v_0 t,\qquad y=\frac{1}{2}gt^2$$
+$$v_x=v_0,\qquad v_y=gt$$
+
+<p>合速度大小与方向（$\theta$ 为速度方向与水平方向的夹角，即速度偏转角）：</p>
+$$v=\sqrt{v_x^2+v_y^2}=\sqrt{v_0^2+g^2t^2},\qquad \tan\theta=\frac{v_y}{v_x}=\frac{gt}{v_0}$$
+
+<p>合位移大小与方向（$\alpha$ 为位移与水平方向的夹角，即位移偏转角）：</p>
+$$s=\sqrt{x^2+y^2},\qquad \tan\alpha=\frac{y}{x}=\frac{gt}{2v_0}$$
+
+<h4>轨迹方程</h4>
+<p>由 $x=v_0t$ 解出 $t=\dfrac{x}{v_0}$ 代入 $y=\dfrac{1}{2}gt^2$：</p>
+$$y=\frac{g}{2v_0^2}\,x^2$$
+<p>$y$ 是 $x$ 的二次函数——轨迹是<strong>抛物线</strong>，「抛物线」之名正由此来。</p>
+
+<h4>两个重要推论</h4>
+<div class="deep">
+  <strong>推论 1</strong>：任意时刻速度偏转角与位移偏转角满足
+  $$\tan\theta=2\tan\alpha$$
+  （对比上面两式即得：$\tan\theta=\dfrac{gt}{v_0}=2\cdot\dfrac{gt}{2v_0}=2\tan\alpha$。）<br>
+  <strong>推论 2</strong>：任意时刻速度的反向延长线必过此时水平位移的<strong>中点</strong>。设交点到落点的水平距离为 $x'$，由几何关系 $\tan\theta=\dfrac{y}{x'}$，又 $\tan\theta=2\dfrac{y}{x}$，故 $x'=\dfrac{x}{2}$。
+</div>
+
+<h4>飞行时间与射程</h4>
+<p>由 $h=\dfrac{1}{2}gt^2$ 得</p>
+$$t=\sqrt{\frac{2h}{g}},\qquad x=v_0\sqrt{\frac{2h}{g}}$$
+<p><strong>飞行时间只由下落高度决定</strong>，与初速度无关；射程由高度和初速度<strong>共同</strong>决定。</p>
+
+<div class="warn">
+  <strong>适用条件与边界</strong>：① 只受重力（忽略空气阻力）；② 初速度沿水平方向；③ 在地面附近、运动范围不大，$g$ 可视为常量。若初速度不水平 → 斜抛；若阻力不可忽略（如羽毛、乒乓球高速运动）→ 不再是抛物线。解题第一步永远是<strong>建系分解</strong>，切忌直接对「斜着的运动」套直线运动公式。
+</div>
+
+<h4>斜抛运动简介（了解）</h4>
+<p>初速度 $\vec{v}_0$ 与水平方向成 $\theta$ 角斜向上抛出：分解为水平匀速 $v_{0x}=v_0\cos\theta$ 与竖直上抛 $v_{0y}=v_0\sin\theta$。</p>
+<ul>
+  <li>最高点：竖直分速度为零，速度只剩水平分量 $v_0\cos\theta$（不是零！）；</li>
+  <li>射高 $H=\dfrac{v_0^2\sin^2\theta}{2g}$，射程 $X=\dfrac{v_0^2\sin 2\theta}{g}$，$\theta=45^\circ$ 时射程最大；</li>
+  <li>轨迹仍是对称抛物线，上升与下落过程时间相等。</li>
+</ul>
+
+<h3>3.3 圆周运动</h3>
+
+<h4>描述圆周运动的物理量及其关系</h4>
+$$v=\frac{2\pi r}{T},\qquad \omega=\frac{2\pi}{T}=2\pi f=2\pi n,\qquad v=\omega r$$
+<p><strong>推导思路</strong>：转一周，弧长 $2\pi r$、圆心角 $2\pi$，各除以周期 $T$ 即得前两个定义式；两式相除 $v=\dfrac{2\pi r/T}{2\pi/T}\cdot\dfrac{1}{r}$ 整理即得 $v=\omega r$。</p>
+
+<h4>向心加速度</h4>
+$$a_n=\frac{v^2}{r}=\omega^2 r=\frac{4\pi^2}{T^2}r=v\omega$$
+<blockquote>
+  <p><strong>推导思路（极限法，重在理解）</strong></p>
+  <p>设质点在极短时间 $\Delta t$ 内从 $A$ 点匀速率转到 $B$ 点，转过角度 $\Delta\theta$。把 $A$、$B$ 两点的速度矢量 $\vec{v}_A$、$\vec{v}_B$（大小都是 $v$）平移到同一起点，速度变化量 $\Delta\vec{v}=\vec{v}_B-\vec{v}_A$。当 $\Delta\theta\to 0$ 时，由相似三角形得 $|\Delta\vec{v}|\approx v\,\Delta\theta$，方向<strong>指向圆心</strong>。于是
+  $$a_n=\lim_{\Delta t\to 0}\frac{|\Delta\vec{v}|}{\Delta t}=v\lim_{\Delta t\to 0}\frac{\Delta\theta}{\Delta t}=v\omega=\frac{v^2}{r}$$
+  结论有两层：<strong>方向</strong>——向心加速度永远指向圆心；<strong>大小</strong>——$a_n=v^2/r$。速率不变而速度方向改变，照样有加速度，这正是「匀速圆周运动是变加速运动」的原因。</p>
+</blockquote>
+
+<h4>向心力</h4>
+$$F_n=ma_n=m\frac{v^2}{r}=m\omega^2 r=m\frac{4\pi^2}{T^2}r$$
+<p><strong>推导思路</strong>：牛顿第二定律 $\vec{F}=m\vec{a}$ 在圆周运动上的直接套用——既然有指向圆心的加速度，合力沿半径方向的分量必为 $m\dfrac{v^2}{r}$。</p>
+
+<div class="warn">
+  <strong>适用条件与边界</strong>：① $a_n=\dfrac{v^2}{r}$ 与 $F_n=m\dfrac{v^2}{r}$ 对<strong>变速圆周运动同样适用</strong>（瞬时值），因为推导只取了 $\Delta t\to 0$ 的极限；② 含 $\omega$、$T$、$f$、$n$ 的公式（如 $a_n=\omega^2 r$ 用来描述整周运动、$v=\dfrac{2\pi r}{T}$）只在<strong>匀速</strong>圆周运动中有简明意义；③ $F_n$ 是<strong>按效果命名的力</strong>，由重力、弹力、摩擦力等真实力的合力（或某力的分力）充当，受力分析时先画真实力，再令沿半径方向的合力等于 $m\dfrac{v^2}{r}$，<strong>绝不能额外多画一个「向心力」</strong>。
+</div>
+
+<h4>传动装置中的隐含关系</h4>
+<ul>
+  <li><strong>同轴转动</strong>：各点 $\omega$、$T$ 相同，$v\propto r$，$a_n\propto r$；</li>
+  <li><strong>皮带/齿轮/摩擦传动（不打滑）</strong>：接触处线速度 $v$ 相同，$\omega\propto\dfrac{1}{r}$，$a_n\propto\dfrac{1}{r}$。</li>
+</ul>
+
+<h3>3.4 万有引力定律</h3>
+
+<p><strong>内容</strong>：自然界中任何两个物体都相互吸引，引力的大小与两物体质量的乘积成正比，与它们之间距离的平方成反比：</p>
+$$F=G\frac{m_1 m_2}{r^2},\qquad G=6.67\times10^{-11}\,\text{N}\cdot\text{m}^2/\text{kg}^2$$
+
+<p><strong>推导思路（了解其逻辑链）</strong>：牛顿以行星运动为对象——由开普勒第三定律 $\dfrac{r^3}{T^2}=k$ 与圆周运动向心力公式 $F=m\dfrac{4\pi^2 r}{T^2}$ 联立，得 $F=\dfrac{4\pi^2 k m}{r^2}\propto\dfrac{m}{r^2}$；再由牛顿第三定律（太阳吸引行星，行星也吸引太阳）知 $F$ 应与两天体质量都成正比，最终归纳为 $F\propto\dfrac{m_1m_2}{r^2}$。$G$ 由卡文迪许用扭秤在实验室首次较精确地测出，他也因此被称为「第一个称出地球质量的人」。</p>
+
+<div class="warn">
+  <strong>适用条件与边界</strong>：① 公式严格适用于<strong>两个质点</strong>；② 对两个<strong>质量分布均匀的球体</strong>，可等效为质量集中在球心的质点，$r$ 取<strong>球心间距</strong>（不是表面间距）；③ $r$ 为质点间距离，不能说「$r\to 0$ 时 $F\to\infty$」——$r$ 趋于零时物体已不能视为质点，公式失效；④ 对质量分布不均或形状不规则的物体，需用微积分分割求和，中学不作要求。
+</div>
+
+<h3>3.5 万有引力与天体运动</h3>
+
+<h4>核心方程（万有引力充当向心力）</h4>
+<p>把天体（卫星）的轨道近似为圆，万有引力恰好提供向心力：</p>
+$$G\frac{Mm}{r^2}=m\frac{v^2}{r}=m\omega^2 r=m\frac{4\pi^2}{T^2}r=ma_n$$
+
+<h4>卫星参量随轨道半径的变化</h4>
+<p>逐项解出（每约去一个 $m$ 都是一次小胜利——卫星自身质量不出现，所以同一轨道上不同质量的卫星参量完全相同）：</p>
+$$v=\sqrt{\frac{GM}{r}},\qquad \omega=\sqrt{\frac{GM}{r^3}},\qquad T=2\pi\sqrt{\frac{r^3}{GM}},\qquad a_n=\frac{GM}{r^2}$$
+
+<div class="key-point">
+  <strong>结论（越高越慢）</strong>：轨道半径 $r$ 越大，$v$、$\omega$、$a_n$ 越小，周期 $T$ 越大。口诀：「<strong>高轨低速大周期</strong>」。注意比较的是<strong>稳定圆轨道</strong>上的运行参量，与变轨瞬间的点火加减速是两回事（见 3.7）。
+</div>
+
+<h4>黄金代换</h4>
+<p>在地球表面附近，忽略自转影响，物体的重力等于万有引力：</p>
+$$mg=G\frac{Mm}{R^2}\;\Rightarrow\; GM=gR^2$$
+<p>凡题目没给 $G$、$M$ 而给了 $g$、$R$，或反之，立刻想到用它代换——这是天体计算题的「万能钥匙」。</p>
+
+<h4>天体质量与密度的估算</h4>
+<ul>
+  <li>测出绕行天体的 $r$、$T$：$M=\dfrac{4\pi^2 r^3}{GT^2}$（只能求<strong>中心天体</strong>质量，求不出绕行天体质量 $m$——$m$ 被约掉了）；</li>
+  <li>再除以中心天体体积 $V=\dfrac{4}{3}\pi R^3$ 得密度 $\rho=\dfrac{3\pi r^3}{GT^2R^3}$；近地卫星 $r\approx R$ 时有简洁结论 $\rho=\dfrac{3\pi}{GT^2}$。</li>
+</ul>
+
+<div class="warn">
+  <strong>适用条件与边界</strong>：本节所有「参量公式」只适用于<strong>圆轨道</strong>（万有引力恰好等于所需向心力）。椭圆轨道要用开普勒三定律（面积定律、$\dfrac{a^3}{T^2}=k$，其中 $a$ 是半长轴）。另外，双星系统中两天体都绕共同圆心运动，公式形式不同（见 3.7），不可套用「一天体不动」的模型。
+</div>
+
+<h3>3.6 宇宙速度</h3>
+
+<h4>第一宇宙速度（环绕速度）的推导</h4>
+<p>设卫星紧贴地表做匀速圆周运动（近地卫星，$r\approx R$）。万有引力提供向心力，且地表附近引力等于重力：</p>
+$$G\frac{Mm}{R^2}=m\frac{v_1^2}{R}\;\Rightarrow\; v_1=\sqrt{\frac{GM}{R}}$$
+<p>用黄金代换 $GM=gR^2$ 可得另一等价形式：</p>
+$$v_1=\sqrt{gR}=\sqrt{9.8\times 6.4\times10^{6}}\,\text{m/s}\approx 7.9\,\text{km/s}$$
+<blockquote>
+  <p><strong>深度思考：为什么说它「既是最大、又是最小」？</strong></p>
+  <p>对<strong>圆轨道卫星</strong>，由 $v=\sqrt{GM/r}$，$r$ 最小（贴近地表）时速度最大，故 $7.9\,\text{km/s}$ 是<strong>最大环绕速度</strong>；对<strong>发射</strong>而言，速度达不到 $7.9\,\text{km/s}$ 的物体终会落回地面，故它是成为人造卫星所需的<strong>最小发射速度</strong>。「最大环绕」说的是运行，「最小发射」说的是入轨，两个角度、同一个数。</p>
+</blockquote>
+
+<h4>三个宇宙速度</h4>
+<table>
+  <tr>
+    <th style="width:22%;">宇宙速度</th>
+    <th style="width:20%;">数值</th>
+    <th style="width:58%;">意义</th>
+  </tr>
+  <tr>
+    <td class="l">第一宇宙速度 $v_1$</td>
+    <td>$7.9\,\text{km/s}$</td>
+    <td class="l">绕地球做匀速圆周运动的最小发射速度、最大环绕速度</td>
+  </tr>
+  <tr>
+    <td class="l">第二宇宙速度 $v_2$</td>
+    <td>$11.2\,\text{km/s}$</td>
+    <td class="l">挣脱地球引力束缚（成为绕日人造行星）的最小地面发射速度，$v_2=\sqrt{2}\,v_1$</td>
+  </tr>
+  <tr>
+    <td class="l">第三宇宙速度 $v_3$</td>
+    <td>$16.7\,\text{km/s}$</td>
+    <td class="l">挣脱太阳引力束缚、飞出太阳系的最小地面发射速度</td>
+  </tr>
+</table>
+<p>要求：<strong>会推导第一宇宙速度</strong>（两种形式），记住三个数值及其物理意义；第二、三宇宙速度的推导高考不作要求。</p>
+
+<h3>3.7 同步卫星、变轨与双星（95+ 要求）</h3>
+
+<h4>地球同步卫星</h4>
+<p>相对地面静止、周期等于地球自转周期的卫星。「四个一定」：</p>
+<ul>
+  <li><strong>轨道平面一定</strong>：必在赤道平面内（否则引力无法稳定提供指向地心的向心力并相对地面静止）；</li>
+  <li><strong>周期一定</strong>：$T=24\,\text{h}=8.64\times10^{4}\,\text{s}$；</li>
+  <li><strong>高度一定</strong>：由 $G\dfrac{Mm}{(R+h)^2}=m\dfrac{4\pi^2}{T^2}(R+h)$ 唯一解出 $h\approx3.6\times10^{4}\,\text{km}$（推导见例 4）；</li>
+  <li><strong>速率一定</strong>：$v\approx3.1\,\text{km/s}$，运行方向与地球自转方向相同。</li>
+</ul>
+
+<h4>卫星变轨问题</h4>
+<ul>
+  <li>圆轨道上<strong>点火加速</strong> → 万有引力不足以提供所需向心力 → 做离心运动 → 进入外侧椭圆轨道；椭圆远地点<strong>再次加速</strong> → 进入更高圆轨道；</li>
+  <li>反之，<strong>制动减速</strong> → 引力过剩 → 向心下坠 → 降到低轨；</li>
+  <li>参量关系：低轨圆速度 $v_1$、高轨圆速度 $v_3$，椭圆转移轨道上近地点速度 $v_{2P}$、远地点速度 $v_{2Q}$，则 $v_{2P}\gt v_1\gt v_3\gt v_{2Q}$（点火瞬间速度突变，稳定圆轨道仍满足「越高越慢」）；</li>
+  <li>能量：每次点火发动机做正功，机械能增大，故 $E_3\gt E_2\gt E_1$；周期由开普勒第三定律 $T_3\gt T_2\gt T_1$。</li>
+</ul>
+
+<h4>双星模型</h4>
+<p>两天体在相互万有引力作用下，绕<strong>连线上的共同圆心</strong>做匀速圆周运动。关键特征：<strong>角速度（周期）相同</strong>——否则两天体相对位置会变化，引力方向无法稳定提供向心力。设质量 $m_1$、$m_2$，间距 $L$，轨道半径 $r_1$、$r_2$（$r_1+r_2=L$）：</p>
+$$G\frac{m_1m_2}{L^2}=m_1\omega^2 r_1=m_2\omega^2 r_2$$
+<p>由后一等号得 $\boxed{m_1r_1=m_2r_2}$，即 $\dfrac{r_1}{r_2}=\dfrac{m_2}{m_1}$（质量大的半径小，圆心偏向大质量一侧），故 $r_1=\dfrac{m_2}{m_1+m_2}L$。两式相加消去 $r_1+r_2=L$ 得</p>
+$$\omega^2=\frac{G(m_1+m_2)}{L^3},\qquad T=2\pi\sqrt{\frac{L^3}{G(m_1+m_2)}}$$
+<div class="warn">
+  <strong>边界提醒</strong>：双星方程中<strong>引力里的距离是 $L$（两天体间距），向心力里的半径是 $r_1$（各自轨道半径）</strong>——两个「半径」不一样，这是双星与普通卫星问题的本质区别，也是命题人最爱设坑的地方。
+</div>
+
+<h2 id="s4">四、典型例题</h2>
+
+<p style="color: var(--muted);">说明：本章例题未特别注明时取 $g=10\,\text{m/s}^2$（例 4 天体计算取 $g=9.8\,\text{m/s}^2$ 并单独注明）。建议先独立做，再对照分步解析。</p>
+
+<h3>例 1　小船渡河（运动的合成与分解）<span class="stars">★★★</span></h3>
+
+<p>河宽 $d=100\,\text{m}$，水流速度 $v_1=3\,\text{m/s}$（平行于河岸），小船在静水中的速度 $v_2=5\,\text{m/s}$。求：</p>
+<p>（1）以最短时间渡河时，船头指向、渡河时间及到达对岸的位置；<br>（2）以最短位移渡河时，船头指向与渡河时间。</p>
+
+<h4>分步解析</h4>
+
+<p><strong>第 1 步：明确模型。</strong>船同时参与两个分运动——随水漂流（$v_1=3\,\text{m/s}$，沿河岸）与静水航行（$v_2=5\,\text{m/s}$，方向由船头决定）。合速度 $\vec{v}=\vec{v}_1+\vec{v}_2$。垂直河岸方向的位移必须等于河宽 $d$，这是基本约束。</p>
+
+<p><strong>第 2 步：最短时间。</strong>渡河时间由垂直河岸方向的分运动决定：$t=\dfrac{d}{v_{2\perp}}$。当船头<strong>垂直指向对岸</strong>时，船速全部用于横渡，$v_{2\perp}=v_2=5\,\text{m/s}$ 最大，时间最短：</p>
+$$t_{\min}=\frac{d}{v_2}=\frac{100\,\text{m}}{5\,\text{m/s}}=20\,\text{s}$$
+<p>此过程中船被水冲向下游 $x=v_1t_{\min}=3\times 20=60\,\text{m}$，即在正对岸点下游 $60\,\text{m}$ 处靠岸。合速度大小 $v=\sqrt{v_1^2+v_2^2}=\sqrt{34}\approx5.8\,\text{m/s}$。</p>
+
+<p><strong>第 3 步：最短位移。</strong>因 $v_2\gt v_1$，船速沿河岸的分量可以完全抵消水流，使<strong>合速度垂直于河岸</strong>，此时位移最短，恰等于河宽 $100\,\text{m}$。设船头偏向上游、与河岸成 $\theta$ 角：</p>
+$$v_2\cos\theta=v_1\;\Rightarrow\;\cos\theta=\frac{3}{5},\quad \theta=53^\circ$$
+<p>垂直河岸的有效速度 $v_\perp=v_2\sin\theta=5\times0.8=4\,\text{m/s}$，渡河时间</p>
+$$t=\frac{d}{v_\perp}=\frac{100\,\text{m}}{4\,\text{m/s}}=25\,\text{s}$$
+
+<blockquote>
+  <p><strong>深度思考</strong>：① 两类极值不可兼得——最短时间（$20\,\text{s}$）时船被冲到下游，最短位移（垂直过河）时用时反而更长（$25\,\text{s}$），因为船速的一部分被「浪费」在顶水上了。② 若 $v_2\lt v_1$（船比水慢），则无论如何都无法垂直过河，此时当合速度方向与船速方向垂直时位移最短，$s_{\min}=\dfrac{v_1}{v_2}d$（结论记住，推导可结合矢量三角形完成）。</p>
+</blockquote>
+
+<h3>例 2　平抛运动规律与推论<span class="stars">★★★</span></h3>
+
+<p>在距地面 $h=45\,\text{m}$ 高处，以 $v_0=10\,\text{m/s}$ 水平抛出一小球（取 $g=10\,\text{m/s}^2$，不计空气阻力）。求：（1）飞行时间；（2）水平射程；（3）落地速度大小与方向；（4）验证推论「落地速度的反向延长线过水平位移中点」。</p>
+
+<h4>分步解析</h4>
+
+<p><strong>第 1 步：分解。</strong>水平方向：匀速，$x=v_0t$；竖直方向：自由落体，$y=\dfrac{1}{2}gt^2$，$v_y=gt$。两分运动等时。</p>
+
+<p><strong>第 2 步：飞行时间（只由高度决定）。</strong></p>
+$$t=\sqrt{\frac{2h}{g}}=\sqrt{\frac{2\times45}{10}}\,\text{s}=3\,\text{s}$$
+
+<p><strong>第 3 步：水平射程。</strong></p>
+$$x=v_0t=10\times3\,\text{m}=30\,\text{m}$$
+
+<p><strong>第 4 步：落地速度。</strong>竖直分速度 $v_y=gt=10\times3=30\,\text{m/s}$，故</p>
+$$v=\sqrt{v_0^2+v_y^2}=\sqrt{10^2+30^2}=\sqrt{1000}=10\sqrt{10}\approx31.6\,\text{m/s}$$
+<p>设速度方向与水平面夹角为 $\theta$，则 $\tan\theta=\dfrac{v_y}{v_0}=3$，$\theta\approx71.6^\circ$，方向斜向下。</p>
+
+<p><strong>第 5 步：验证推论。</strong>把落地速度矢量反向延长，设其与水平线（抛出点高度处）的交点距抛出点水平距离为 $x_0$。由几何关系 $\tan\theta=\dfrac{h}{x-x_0}$：</p>
+$$x-x_0=\frac{h}{\tan\theta}=\frac{45}{3}\,\text{m}=15\,\text{m}\;\Rightarrow\; x_0=30-15=15\,\text{m}=\frac{x}{2}\ \checkmark$$
+<p>交点恰在水平位移中点，同时注意 $\tan\alpha=\dfrac{h}{x}=\dfrac{45}{30}=1.5$，$\tan\theta=3=2\tan\alpha$，与推论 1 一致。</p>
+
+<h3>例 3　圆锥摆（圆周运动向心力来源分析）<span class="stars">★★★★</span></h3>
+
+<p>长 $L=1\,\text{m}$ 的细线上端固定，下端系一质量 $m=0.5\,\text{kg}$ 的小球，小球在水平面内做匀速圆周运动，细线与竖直方向成 $\theta=60^\circ$ 角（取 $g=10\,\text{m/s}^2$）。求：（1）细线拉力；（2）小球线速度与角速度。</p>
+
+<h4>分步解析</h4>
+
+<p><strong>第 1 步：受力分析（只画真实力！）。</strong>小球受重力 $mg$（竖直向下）与细线拉力 $T$（沿线指向悬点）。圆周平面是<strong>水平面</strong>，圆心在悬点正下方，故向心力沿<strong>水平方向指向圆心</strong>。</p>
+
+<p><strong>第 2 步：正交分解。</strong>把拉力 $T$ 分解：竖直分量平衡重力，水平分量提供向心力：</p>
+$$T\cos\theta=mg,\qquad T\sin\theta=F_n=m\frac{v^2}{r}$$
+
+<p><strong>第 3 步：求拉力。</strong></p>
+$$T=\frac{mg}{\cos\theta}=\frac{0.5\times10}{\cos60^\circ}\,\text{N}=\frac{5}{0.5}\,\text{N}=10\,\text{N}$$
+
+<p><strong>第 4 步：求线速度。</strong>圆周半径 $r=L\sin\theta=1\times\dfrac{\sqrt3}{2}\approx0.866\,\text{m}$，向心力 $F_n=mg\tan\theta=5\sqrt3\approx8.66\,\text{N}$，故</p>
+$$v=\sqrt{\frac{F_n r}{m}}=\sqrt{\frac{5\sqrt3\times\frac{\sqrt3}{2}}{0.5}}=\sqrt{15}\approx3.9\,\text{m/s}$$
+
+<p><strong>第 5 步：求角速度。</strong>$\omega=\dfrac{v}{r}=\dfrac{\sqrt{15}}{\sqrt3/2}=2\sqrt5\approx4.5\,\text{rad/s}$。<strong>验证</strong>：圆锥摆有通式 $\omega=\sqrt{\dfrac{g}{L\cos\theta}}=\sqrt{\dfrac{10}{1\times0.5}}=\sqrt{20}=2\sqrt5\,\text{rad/s}$，一致 $\checkmark$。该通式还说明：$\omega$ 只取决于「悬点到圆周平面的竖直距离 $L\cos\theta$」，与摆球质量无关。</p>
+
+<blockquote>
+  <p><strong>深度思考</strong>：向心力是「效果力」——本题中它不是独立存在的力，而是拉力水平分量「客串」的角色。若受力图里在 $mg$、$T$ 之外再画一个「向心力」，就等于把同一效果算了两次，方程必错。</p>
+</blockquote>
+
+<h3>例 4　近地卫星、同步卫星与变轨<span class="stars">★★★★</span></h3>
+
+<p>已知地球半径 $R=6.4\times10^{6}\,\text{m}$，地表重力加速度 $g=9.8\,\text{m/s}^2$（本题取此值），同步卫星周期 $T=24\,\text{h}=8.64\times10^{4}\,\text{s}$，黄金代换 $GM=gR^2$。求：</p>
+<p>（1）近地卫星的运行速度（即第一宇宙速度）；<br>（2）同步卫星的轨道半径与距地高度；<br>（3）同步卫星的运行速度；<br>（4）比较近地卫星与同步卫星的 $v$、$a_n$、$T$；<br>（5）简述卫星由近地圆轨道进入同步圆轨道的变轨过程及速度、能量变化。</p>
+
+<h4>分步解析</h4>
+
+<p><strong>第 1 步：第一宇宙速度。</strong>近地卫星 $r\approx R$，万有引力（≈重力）提供向心力：</p>
+$$mg=m\frac{v_1^2}{R}\;\Rightarrow\;v_1=\sqrt{gR}=\sqrt{9.8\times6.4\times10^{6}}\,\text{m/s}\approx7.9\times10^{3}\,\text{m/s}=7.9\,\text{km/s}$$
+
+<p><strong>第 2 步：同步卫星轨道半径。</strong>万有引力提供向心力，用黄金代换 $GM=gR^2$：</p>
+$$G\frac{Mm}{r^2}=m\frac{4\pi^2}{T^2}r\;\Rightarrow\;r^3=\frac{GMT^2}{4\pi^2}=\frac{gR^2T^2}{4\pi^2}$$
+<p>代入数值：$gR^2=9.8\times(6.4\times10^{6})^2\approx4.01\times10^{14}\,\text{m}^3/\text{s}^2$，$T^2=(8.64\times10^{4})^2\approx7.46\times10^{9}\,\text{s}^2$，</p>
+$$r^3=\frac{4.01\times10^{14}\times7.46\times10^{9}}{39.5}\,\text{m}^3\approx7.59\times10^{22}\,\text{m}^3\;\Rightarrow\;r\approx4.2\times10^{7}\,\text{m}$$
+<p>距地高度 $h=r-R\approx4.2\times10^{7}-0.64\times10^{7}\approx3.6\times10^{7}\,\text{m}=3.6\times10^{4}\,\text{km}$（约为 $5.6$ 倍地球半径——这就是同步卫星「高度一定」的定量来源）。</p>
+
+<p><strong>第 3 步：同步卫星速度。</strong></p>
+$$v=\frac{2\pi r}{T}=\frac{2\pi\times4.2\times10^{7}}{8.64\times10^{4}}\,\text{m/s}\approx3.1\times10^{3}\,\text{m/s}=3.1\,\text{km/s}$$
+
+<p><strong>第 4 步：参量比较。</strong>近地卫星周期 $T_{\text{近}}=2\pi\sqrt{\dfrac{R}{g}}=2\pi\sqrt{\dfrac{6.4\times10^{6}}{9.8}}\approx5.1\times10^{3}\,\text{s}\approx1.4\,\text{h}$；同步卫星向心加速度 $a_{\text{同}}=\dfrac{GM}{r^2}=g\left(\dfrac{R}{r}\right)^2=9.8\times\left(\dfrac{6.4\times10^{6}}{4.2\times10^{7}}\right)^2\approx0.23\,\text{m/s}^2$。</p>
+
+<table>
+  <tr>
+    <th>卫星</th>
+    <th>轨道半径</th>
+    <th>运行速度 $v$</th>
+    <th>向心加速度 $a_n$</th>
+    <th>周期 $T$</th>
+  </tr>
+  <tr>
+    <td class="l">近地卫星</td>
+    <td>$R$</td>
+    <td>$7.9\,\text{km/s}$</td>
+    <td>$9.8\,\text{m/s}^2$</td>
+    <td>$\approx1.4\,\text{h}$</td>
+  </tr>
+  <tr>
+    <td class="l">同步卫星</td>
+    <td>$\approx6.6R$</td>
+    <td>$3.1\,\text{km/s}$</td>
+    <td>$\approx0.23\,\text{m/s}^2$</td>
+    <td>$24\,\text{h}$</td>
+  </tr>
+</table>
+<p>完美印证「高轨低速大周期」：$r$ 增大 $\Rightarrow$ $v$、$a_n$ 减小，$T$ 增大。</p>
+
+<p><strong>第 5 步：变轨分析。</strong>① 在近地圆轨道（轨道 1）上<strong>点火加速</strong>，进入椭圆转移轨道（轨道 2，近地点在轨道 1、远地点在同步高度）；② 到达远地点时<strong>再次点火加速</strong>，进入同步圆轨道（轨道 3）。速度关系：$v_{2P}\gt v_1\gt v_3\gt v_{2Q}$——两次点火都让卫星「瞬间提速」，但稳定后高轨运行速度反而更小；机械能逐步增大（$E_1\lt E_2\lt E_3$），周期逐步增大（开普勒第三定律）。</p>
+
+<div class="deep">
+  <strong>冲顶加餐（95+）：双星模型。</strong>两颗恒星质量分别为 $M$ 与 $2M$，相距 $L$，在相互引力作用下绕连线上的共同圆心做匀速圆周运动。求各自轨道半径与周期。<br>
+  <strong>解</strong>：由 $m_1r_1=m_2r_2$ 得 $r_1=\dfrac{2M}{M+2M}L=\dfrac{2}{3}L$，$r_2=\dfrac{1}{3}L$（大质量者轨道半径小）；由 $\omega^2=\dfrac{G(M+2M)}{L^3}=\dfrac{3GM}{L^3}$ 得
+  $$T=2\pi\sqrt{\frac{L^3}{3GM}}$$
+  <strong>验证</strong>：对星 1 列引力方程 $G\dfrac{M\cdot2M}{L^2}=M\omega^2\cdot\dfrac{2L}{3}$，化简同样得 $\omega^2=\dfrac{3GM}{L^3}\ \checkmark$。注意引力中用 $L$、向心力中用 $r_1=\dfrac{2L}{3}$，两个半径分工明确。
+</div>
+
+<h2 id="s5">五、易错点与成因分析</h2>
+
+<h3>易错点 1：认为「合力恒定，物体一定做直线运动」</h3>
+<p><strong>错因</strong>：把直线运动的条件误记成「受力恒定」。实际上直线还是曲线，只看<strong>合力（加速度）与速度是否共线</strong>，与合力是否恒定毫无关系。平抛运动合力（重力）恒定，轨迹却是抛物线——它是「匀变速曲线运动」。</p>
+<p><strong>纠正</strong>：判断三问——① 合力与速度共线吗？共线 → 直线；不共线 → 曲线。② 合力恒定吗？恒定 → 匀变速（直线或曲线皆有可能）。③ 合力指向哪？轨迹必弯向合力一侧（凹侧）。</p>
+
+<h3>易错点 2：把曲线运动的速度方向画成沿合力方向</h3>
+<p><strong>错因</strong>：直觉上以为「力往哪拉，物体就往哪跑」，混淆了<strong>速度方向</strong>与<strong>受力方向</strong>。速度沿轨迹<strong>切线</strong>，力（加速度）指向轨迹<strong>凹侧</strong>，二者一般不同向（只在直线运动中同线）。</p>
+<p><strong>纠正</strong>：画图先定切线标 $\vec{v}$，再在轨迹内侧标 $\vec{F}$、$\vec{a}$。记住：力改变的是速度的「下一步」，不是速度本身的方向。</p>
+
+<h3>易错点 3：受力分析时把「向心力」单独画出来</h3>
+<p><strong>错因</strong>：不理解向心力是<strong>按效果命名</strong>的力——它不是一个新的、独立存在的力，而是重力、弹力、摩擦力等真实力的合力（或分力）沿半径方向扮演「提供向心加速度」这一角色。多画一个 $F_n$，同一个效果就被算了两次，牛顿第二定律方程必然列错。</p>
+<p><strong>纠正</strong>：固定流程——① 只画真实力；② 沿「指向圆心」方向建轴；③ 该轴上真实力的代数和 $=m\dfrac{v^2}{r}$。例如圆锥摆中，是拉力 $T$ 的水平分量充当向心力，而不是「$T$、$mg$、向心力」三个力。</p>
+
+<h3>易错点 4：绳端速度分解时分解对象选错</h3>
+<p><strong>错因</strong>：绳（杆）连接体问题中，正确做法是<strong>把物体的实际速度（合速度）沿绳方向与垂直绳方向分解</strong>，再利用「沿绳方向分速度相等」建立联系。常见错误是方向搞反——把绳端速度当合速度去分解别的速度，或把分运动方向随意选取，导致约束方程错误。</p>
+<p><strong>纠正</strong>：三句话——分解对象＝实际速度；分解方向＝沿绳 + 垂直绳；约束方程＝同一条绳两端沿绳方向分速度相等。典型结论：人拉绳使船靠岸，船速 $v_{\text{船}}=\dfrac{v_{\text{人}}}{\cos\theta}$（$\theta$ 为绳与水面夹角），船速大于人拉绳速度。</p>
+
+<h3>易错点 5：混淆平抛「飞行时间」与「射程」的决定因素</h3>
+<p><strong>错因</strong>：凭感觉认为「初速度大就飞得久」。实际上由 $t=\sqrt{2h/g}$，<strong>时间只由高度决定</strong>；$x=v_0\sqrt{2h/g}$，<strong>射程由高度与初速度共同决定</strong>。两个从不同高度平抛的小球，比时间先比高度，与初速度无关。</p>
+<p><strong>纠正</strong>：写公式时顺手标注「由谁决定」；遇到比较类选择题，先问自己这个量是由哪个分运动决定的。</p>
+
+<h3>易错点 6：认为「匀速圆周运动是匀速运动，加速度为零」</h3>
+<p><strong>错因</strong>：把「匀速圆周」的「匀速」（<strong>速率</strong>不变）误当成「匀速直线运动」的「匀速」（<strong>速度</strong>不变）。速度是矢量，方向时刻沿切线变化，故必有加速度——向心加速度，其方向也时刻变化。</p>
+<p><strong>纠正</strong>：匀速圆周运动是<strong>变加速</strong>运动（加速度方向变），受力沿切线方向平衡、沿半径方向合力等于 $m\dfrac{v^2}{r}$。「匀速」二字在圆周语境下只承诺速率不变。</p>
+
+<h3>易错点 7：卫星变轨时速度与能量变化方向判断错误</h3>
+<p><strong>错因</strong>：把「点火加速」与「稳定圆轨道速度」混为一谈。疑惑「加速升轨，怎么到了高轨速度反而更小？」——其实两次点火改变的是<strong>瞬间</strong>速度，而「高轨低速」比较的是<strong>稳定圆轨道</strong>上的运行速度，两个比较对象不同。椭圆轨道上从近地点飞向远地点时引力做负功，速度还会自发减小。</p>
+<p><strong>纠正</strong>：画三条轨道（低圆 → 椭圆 → 高圆），标四个速度 $v_{2P}\gt v_1\gt v_3\gt v_{2Q}$；机械能 $E_1\lt E_2\lt E_3$（点火做正功）；周期 $T_1\lt T_2\lt T_3$（开普勒第三定律）。口诀：<strong>加速升轨、减速降轨；升轨之后慢而省、能量更高</strong>。</p>
+
+<h3>易错点 8：第一宇宙速度的理解偏差与公式中 $r$ 的误用</h3>
+<p><strong>错因</strong>：① 把 $7.9\,\text{km/s}$ 只当「最小发射速度」，忘了它也是「最大环绕速度」；② 在 $v=\sqrt{GM/r}$ 中把 $r$ 代成卫星距地面的<strong>高度</strong> $h$——$r$ 是到<strong>地心</strong>的距离，$r=R+h$；③ 同步卫星计算中周期用 $24\,\text{h}$ 却忘了换算成秒。</p>
+<p><strong>纠正</strong>：见到「轨道半径」三个字先写成 $r=R+h$；涉及天体计算统一换算成 SI 单位（m、s、kg），结果保留 2~3 位有效数字；理解性记忆「最大环绕、最小发射」的一体两面（见 3.6 深度思考）。</p>
+
+<h3>易错点 9：把重力与万有引力完全等同（进阶）</h3>
+<p><strong>错因</strong>：忽略地球自转时，万有引力的一个分力要提供物体随地球自转所需的向心力，另一个分力才是我们测到的重力。因此<strong>两极处重力最大、赤道处重力最小</strong>，$g$ 随纬度升高而增大，随海拔升高而减小。</p>
+<p><strong>纠正</strong>：中学计算中默认「忽略自转，$mg=G\dfrac{Mm}{R^2}$」，用黄金代换即可；但选择题若考「赤道与两极 $g$ 的比较」「同一物体在两极与赤道的视重」，要能想到自转向心力这层原因。</p>
+
+<h2 id="s6">六、章末自检清单</h2>
+
+<p>合上书本，逐项自测。能打「√」的标准：<strong>能口述定义、能默写公式、能独立推导、能讲清边界</strong>。</p>
+
+<h3>概念理解</h3>
+<ul>
+  <li>□ 能说清曲线运动的条件（$\vec{F}$ 与 $\vec{v}$ 不共线），知道合力指向轨迹凹侧、轨迹夹在速度与合力之间</li>
+  <li>□ 能解释「曲线运动一定是变速运动，变速运动不一定是曲线运动」</li>
+  <li>□ 能区分匀变速曲线运动（平抛）与变加速曲线运动（圆周）</li>
+  <li>□ 理解合运动与分运动的等时性、独立性、等效性</li>
+  <li>□ 理解向心力是效果力，受力分析时绝不单列</li>
+  <li>□ 能说清「匀速圆周运动是变加速运动」的原因</li>
+  <li>□ 理解第一宇宙速度「最大环绕、最小发射」的双重身份</li>
+</ul>
+
+<h3>公式与推导</h3>
+<ul>
+  <li>□ 默写平抛全套公式：$x=v_0t$、$y=\frac{1}{2}gt^2$、$v_x=v_0$、$v_y=gt$、$\tan\theta=\frac{gt}{v_0}$、$\tan\alpha=\frac{gt}{2v_0}$</li>
+  <li>□ 独立推导两个推论：$\tan\theta=2\tan\alpha$；速度反向延长线过水平位移中点</li>
+  <li>□ 默写圆周参量关系：$v=\omega r$、$\omega=\frac{2\pi}{T}=2\pi f$、$a_n=\frac{v^2}{r}=\omega^2 r=\frac{4\pi^2}{T^2}r$</li>
+  <li>□ 能概述向心加速度的极限推导思路（速度矢量三角形 → $\Delta\vec{v}$ 指向圆心）</li>
+  <li>□ 默写万有引力定律并说明适用条件（质点、均匀球体、$r$ 为质心间距）</li>
+  <li>□ 独立推导卫星参量公式 $v=\sqrt{\frac{GM}{r}}$、$\omega=\sqrt{\frac{GM}{r^3}}$、$T=2\pi\sqrt{\frac{r^3}{GM}}$、$a_n=\frac{GM}{r^2}$，并说出「高轨低速大周期」</li>
+  <li>□ 会用黄金代换 $GM=gR^2$，会推第一宇宙速度的两种形式 $v_1=\sqrt{\frac{GM}{R}}=\sqrt{gR}\approx7.9\,\text{km/s}$</li>
+  <li>□ 记住三个宇宙速度数值 $7.9$、$11.2$、$16.7\,\text{km/s}$ 及各自意义</li>
+</ul>
+
+<h3>模型与方法</h3>
+<ul>
+  <li>□ 小船渡河：会求最短时间（船头垂直对岸，$t=\frac{d}{v_{\text{船}}}$）与最短位移（$v_{\text{船}}\gt v_{\text{水}}$ 时垂直过河；$v_{\text{船}}\lt v_{\text{水}}$ 时 $s_{\min}=\frac{v_{\text{水}}}{v_{\text{船}}}d$）</li>
+  <li>□ 绳端速度分解：分解实际速度，沿绳方向分速度相等</li>
+  <li>□ 平抛模型：先分解再合成，时间由高度定，会结合斜面、圆弧面等落点情境</li>
+  <li>□ 水平面圆周：圆锥摆（$T=\frac{mg}{\cos\theta}$、$\omega=\sqrt{\frac{g}{L\cos\theta}}$）、转盘临界（最大静摩擦提供向心力）、火车转弯（支持力水平分量）</li>
+  <li>□ 竖直面圆周：最高点临界条件（绳/内轨 $v_{\min}=\sqrt{gR}$；杆/管可为零），最低点与最高点弹力差分析</li>
+  <li>□ 卫星模型：近地/同步/普通卫星参量比较，同步卫星「四个一定」</li>
+  <li>□ 变轨问题：加速升轨、减速降轨；$v_{2P}\gt v_1\gt v_3\gt v_{2Q}$，机械能递增</li>
+  <li>□ 双星模型（95+）：$m_1r_1=m_2r_2$，$\omega^2=\frac{G(m_1+m_2)}{L^3}$，分清引力距离 $L$ 与轨道半径 $r$</li>
+</ul>
+
+<h3>易错点自查</h3>
+<ul>
+  <li>□ 我判断直线/曲线只看 $\vec{F}$ 与 $\vec{v}$ 是否共线，不看力是否恒定</li>
+  <li>□ 我画圆周运动受力图时只画真实力，向心力不单列</li>
+  <li>□ 我在卫星公式中用的是 $r=R+h$，不会误代高度 $h$</li>
+  <li>□ 我知道 $a_n=\frac{v^2}{r}$ 对变速圆周同样适用，而 $\omega$、$T$ 相关公式主要用于匀速圆周</li>
+  <li>□ 我处理变轨问题时区分「瞬间点火速度」与「稳定轨道速度」</li>
+  <li>□ 我书写规范：矢量带箭头 $\vec{v}$，单位写 $\,\text{m/s}$、$\,\text{rad/s}$，按题目要求取 $g$ 值并保留有效数字</li>
+</ul>
+
+<div class="deep">
+  <strong>写给小兵</strong>：这一章是高中物理的第一次「升维」——从一条直线飞向平面与星空。刚开始觉得「情况多、公式杂」非常正常，破解之道只有一个：<strong>每次做题先画受力图、再找圆心、后建方程</strong>。当你在草稿纸上独立推出 $\tan\theta=2\tan\alpha$ 和 $v_1=\sqrt{gR}$ 的那一刻，你就已经站在牛顿的肩膀上，看见了和他同样的星空。高一打牢这一章，高二学天体与能量综合、高三冲刺压轴题都会轻松得多。加油！
+</div>
+
+</body>
+</html>
